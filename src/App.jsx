@@ -17,14 +17,14 @@ const createParticles = () => {
     const container = document.getElementById('particles-container');
     if (!container || container.childElementCount > 0) return;
     
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 30; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
         particle.style.left = Math.random() * 100 + '%';
-        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.width = Math.random() * 3 + 1 + 'px';
         particle.style.height = particle.style.width;
         particle.style.animationDelay = Math.random() * 20 + 's';
-        particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        particle.style.animationDuration = (Math.random() * 15 + 20) + 's';
         container.appendChild(particle);
     }
 };
@@ -53,7 +53,6 @@ function App() {
         createParticles();
         loadSavedHubs();
         const widget = new Widget(history.remoteStorage);
-        // Anexe o widget ao container.
         widget.attach("rs-widget-container"); 
     }, [history.remoteStorage]);
 
@@ -157,9 +156,29 @@ function App() {
         }
     };
 
-    if (hubLoading || itemLoading) return <Spinner />;
-    if (hubError) return <ErrorMessage message={hubError} onRetry={resetApp} />;
-    if (itemError) return <ErrorMessage message={itemError} onRetry={() => setSelectedItemData(null)} />;
+    if (hubLoading || itemLoading) return (
+        <div className="min-h-screen flex items-center justify-center relative">
+            <div className="animated-bg"></div>
+            <div id="particles-container"></div>
+            <Spinner />
+        </div>
+    );
+
+    if (hubError) return (
+        <div className="min-h-screen flex items-center justify-center relative">
+            <div className="animated-bg"></div>
+            <div id="particles-container"></div>
+            <ErrorMessage message={hubError} onRetry={resetApp} />
+        </div>
+    );
+
+    if (itemError) return (
+        <div className="min-h-screen flex items-center justify-center relative">
+            <div className="animated-bg"></div>
+            <div id="particles-container"></div>
+            <ErrorMessage message={itemError} onRetry={() => setSelectedItemData(null)} />
+        </div>
+    );
     
     const entryKeys = currentHubData ? getEntryKeys() : [];
     const currentEntryIndex = currentHubData ? entryKeys.indexOf(selectedEntryKey) : -1;
@@ -169,38 +188,93 @@ function App() {
             <div className="animated-bg"></div>
             <div id="particles-container"></div>
 
-            {/* Container do Widget */}
-            <div id="rs-widget-container" className="fixed top-4 right-4 z-50"></div>
+            {/* Container do Widget RemoteStorage */}
+            <div id="rs-widget-container" className="fixed top-6 right-6 z-50"></div>
 
-            <div className={`container mx-auto px-4 relative z-10 ${!currentHubData ? 'min-h-screen flex items-center justify-center' : 'py-8'}`}>
+            <div className="relative z-10">
                 {!currentHubData ? (
-                    <HubLoader 
-                        onLoadHub={loadHub} 
-                        loading={hubLoading} 
-                    />
-                ) : !selectedItemData ? (
-                    <>
-                        <div className="text-center mb-16 fade-in">
-                             <button onClick={resetApp} className="panel-dark px-4 py-2 rounded-lg text-sm text-red-300 hover:bg-white/10 transition-all">Carregar outro Hub</button>
+                    <div className="min-h-screen flex items-center justify-center p-6">
+                        <div className="w-full max-w-md">
+                            <HubLoader 
+                                onLoadHub={loadHub} 
+                                loading={hubLoading} 
+                            />
                         </div>
-                        <HubHeader 
-                            hub={currentHubData.hub} 
-                            social={currentHubData.social}
-                            onSaveHub={handleSaveHub}
-                            isHubSaved={isHubSaved}
-                        />
-                        <ItemGrid items={currentHubData.series} onSelectItem={selectItem} />
-                    </>
+                    </div>
+                ) : !selectedItemData ? (
+                    <div className="min-h-screen">
+                        {/* Header com navegação */}
+                        <header className="sticky top-0 z-40 glass-panel m-6 mb-0">
+                            <div className="flex items-center justify-between p-4">
+                                <div className="flex items-center space-x-4">
+                                    <button 
+                                        onClick={resetApp} 
+                                        className="btn-ghost text-red-400 hover:text-red-300"
+                                    >
+                                        ← Carregar outro Hub
+                                    </button>
+                                </div>
+                                
+                                <div className="flex items-center space-x-2">
+                                    <div className="badge badge-primary">
+                                        {currentHubData.series?.length || 0} itens
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        {/* Conteúdo principal */}
+                        <main className="container mx-auto px-6 pb-12">
+                            <div className="fade-in">
+                                <HubHeader 
+                                    hub={currentHubData.hub} 
+                                    social={currentHubData.social}
+                                    onSaveHub={handleSaveHub}
+                                    isHubSaved={isHubSaved}
+                                />
+                            </div>
+                            
+                            <div className="slide-in">
+                                <ItemGrid items={currentHubData.series} onSelectItem={selectItem} />
+                            </div>
+                        </main>
+                    </div>
                 ) : !selectedEntryKey ? (
-                    <>
-                        <ItemInfo itemData={selectedItemData} onBackToHub={backToHub} />
-                        <EntryList 
-                            itemData={selectedItemData} 
-                            onSelectEntry={selectEntry} 
-                            sortOrder={sortOrder}
-                            setSortOrder={setSortOrder}
-                        />
-                    </>
+                    <div className="min-h-screen">
+                        {/* Header de item */}
+                        <header className="sticky top-0 z-40 glass-panel m-6 mb-0">
+                            <div className="flex items-center justify-between p-4">
+                                <button 
+                                    onClick={backToHub} 
+                                    className="btn-ghost"
+                                >
+                                    ← Voltar ao Hub
+                                </button>
+                                
+                                <div className="flex items-center space-x-2">
+                                    <div className="badge badge-primary">
+                                        {Object.keys(selectedItemData.entries || {}).length} entradas
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        {/* Conteúdo do item */}
+                        <main className="container mx-auto px-6 pb-12">
+                            <div className="fade-in">
+                                <ItemInfo itemData={selectedItemData} onBackToHub={backToHub} />
+                            </div>
+                            
+                            <div className="slide-in">
+                                <EntryList 
+                                    itemData={selectedItemData} 
+                                    onSelectEntry={selectEntry} 
+                                    sortOrder={sortOrder}
+                                    setSortOrder={setSortOrder}
+                                />
+                            </div>
+                        </main>
+                    </div>
                 ) : (
                     <ItemViewer 
                         entry={selectedItemData.entries[selectedEntryKey]} 
