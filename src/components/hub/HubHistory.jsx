@@ -1,5 +1,6 @@
 import React from 'react';
-import { HistoryIcon, TrashIcon } from './Icones';
+import { HistoryIcon, TrashIcon } from '../common/Icones';
+import Image from '../common/Image';
 
 const HubHistory = ({ hubs, onSelectHub, onRemoveHub }) => {
     if (!hubs || hubs.length === 0) return null;
@@ -15,7 +16,11 @@ const HubHistory = ({ hubs, onSelectHub, onRemoveHub }) => {
                     <div key={hub.url} className="chapter-item flex items-center justify-between p-3 rounded-lg panel-dark cursor-pointer">
                         <div className="flex items-center gap-3 flex-1" onClick={() => onSelectHub(hub)}>
                             {hub.iconUrl && (
-                                <img src={`https://corsproxy.io/?${encodeURIComponent(hub.iconUrl)}`} alt={hub.title} className="w-8 h-8 rounded-full object-cover bg-gray-800" onError={(e) => { e.target.style.display = 'none'; }} />
+                                <Image 
+                                    src={hub.iconUrl} 
+                                    alt={hub.title} 
+                                    className="w-8 h-8 rounded-full object-cover bg-gray-800" 
+                                />
                             )}
                             <div className="flex-1">
                                 <p className="text-white font-medium truncate">{hub.title}</p>

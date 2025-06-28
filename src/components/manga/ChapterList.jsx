@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { SortAscendingIcon, SortDescendingIcon } from './Icones';
+import { SortAscendingIcon, SortDescendingIcon } from '../common/Icones';
 
 const ChapterList = ({ mangaData, onSelectChapter, sortOrder, setSortOrder }) => {
     const chapterKeys = useMemo(() => {

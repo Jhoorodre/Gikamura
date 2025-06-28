@@ -1,12 +1,18 @@
 import React from 'react';
-import { BookOpenIcon } from './Icones';
+import { BookOpenIcon } from '../common/Icones';
+import Image from '../common/Image';
 
 const MangaGrid = ({ series, onSelectManga }) => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {series.map((manga, index) => (
             <div key={manga.id} onClick={() => onSelectManga(manga)} className="manga-card panel-solid rounded-2xl overflow-hidden cursor-pointer group fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
                 <div className="relative aspect-[3/4] overflow-hidden">
-                    <img src={`https://corsproxy.io/?${encodeURIComponent(manga.cover.url)}`} alt={manga.cover.alt} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/400x600/1f2937/4b5563?text=Capa'; }}/>
+                    <Image 
+                        src={manga.cover.url} 
+                        alt={manga.cover.alt} 
+                        className="w-full h-full object-cover" 
+                        errorSrc='https://placehold.co/400x600/1f2937/4b5563?text=Capa'
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="bg-white/20 backdrop-blur-sm rounded-full p-4"><BookOpenIcon /></div>

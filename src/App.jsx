@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHistory } from './context/HistoryContext';
-import HubLoader from './components/HubLoader';
-import HubHeader from './components/HubHeader';
-import MangaGrid from './components/MangaGrid';
-import MangaInfo from './components/MangaInfo';
-import ChapterList from './components/ChapterList';
-import MangaViewer from './components/MangaViewer';
-import Spinner from './components/Spinner';
-import ErrorMessage from './components/ErrorMessage';
+import { useHistory } from './context/HistoryContext'; // CAMINHO CORRIGIDO
+import { useManga } from './hooks/useManga'; // CAMINHO CORRIGIDO
+import HubLoader from './components/hub/HubLoader';
+import HubHeader from './components/hub/HubHeader';
+import MangaGrid from './components/manga/MangaGrid';
+import MangaInfo from './components/manga/MangaInfo';
+import ChapterList from './components/manga/ChapterList';
+import MangaViewer from './components/manga/MangaViewer';
+import Spinner from './components/common/Spinner';
+import ErrorMessage from './components/common/ErrorMessage';
 import Widget from 'remotestorage-widget';
-import './App.css';
+import './styles/App.css'; // MANTIDO
+import { CORS_PROXY_URL } from './constants';
 
 const createParticles = () => {
     const container = document.getElementById('particles-container');
@@ -35,10 +37,11 @@ function App() {
     const [selectedChapterKey, setSelectedChapterKey] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [readingMode, setReadingMode] = useState('paginated');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [sortOrder, setSortOrder] = useState('desc');
     const history = useHistory();
+    const { loading: mangaLoading, error: mangaError, fetchMangaData } = useManga();
+    const [hubLoading, setHubLoading] = useState(false);
+    const [hubError, setHubError] = useState(null);
 
     const loadSavedHubs = async () => {
         const hubs = await history.getAllHubs();
@@ -80,41 +83,26 @@ function App() {
 
     const loadHub = async (url) => {
         try {
-            setLoading(true);
-            setError(null);
+            setHubLoading(true);
+            setHubError(null);
             setCurrentHubUrl(url);
-            const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+            const response = await fetch(`${CORS_PROXY_URL}${encodeURIComponent(url)}`);
             if (!response.ok) throw new Error(`Não foi possível carregar o hub (status: ${response.status})`);
             const data = await response.json();
             setHubData(data);
         } catch (err) {
-            setError(err.message);
+            setHubError(err.message);
         } finally {
-            setLoading(false);
+            setHubLoading(false);
         }
     };
 
     const selectManga = async (mangaObject) => {
-        try {
-            setLoading(true);
-            setError(null);
-            const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(mangaObject.data.url)}`);
-            if (!response.ok) throw new Error(`Não foi possível carregar os capítulos do mangá (status: ${response.status})`);
-            const chaptersData = await response.json();
-            
-            const completeMangaData = {
-                ...mangaObject,
-                chapters: chaptersData.chapters
-            };
-            
+        const completeMangaData = await fetchMangaData(mangaObject);
+        if (completeMangaData) {
             setSelectedMangaData(completeMangaData);
             setSelectedChapterKey(null);
             setCurrentPage(0);
-        } catch (err) {
-            console.error(err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -139,7 +127,7 @@ function App() {
          setHubData(null);
          setSelectedMangaData(null);
          setSelectedChapterKey(null);
-         setError(null);
+         setHubError(null);
          setCurrentHubUrl('');
     }
 
@@ -167,8 +155,9 @@ function App() {
         }
     };
 
-    if (loading) return <Spinner />;
-    if (error) return <ErrorMessage message={error} onRetry={resetApp} />;
+    if (hubLoading || mangaLoading) return <Spinner />;
+    if (hubError) return <ErrorMessage message={hubError} onRetry={resetApp} />;
+    if (mangaError) return <ErrorMessage message={mangaError} onRetry={() => setSelectedMangaData(null)} />;
     
     const chapterKeys = currentHubData ? getChapterKeys() : [];
     const currentChapterIndex = currentHubData ? chapterKeys.indexOf(selectedChapterKey) : -1;
@@ -179,15 +168,11 @@ function App() {
             <div id="particles-container"></div>
             <div id="rs-widget-container"></div>
             
-            {/* Este div agora controla o layout principal */}
             <div className={`container mx-auto px-4 relative z-10 ${!currentHubData ? 'min-h-screen flex items-center justify-center' : 'py-8'}`}>
                 {!currentHubData ? (
                     <HubLoader 
                         onLoadHub={loadHub} 
-                        loading={loading} 
-                        savedHubs={savedHubs}
-                        onSelectSavedHub={handleSelectSavedHub}
-                        onRemoveSavedHub={handleRemoveSavedHub}
+                        loading={hubLoading} 
                     />
                 ) : !selectedMangaData ? (
                     <>

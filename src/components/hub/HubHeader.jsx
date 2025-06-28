@@ -1,5 +1,7 @@
 import React from 'react';
-import { CloudIcon } from './Icones';
+import { CloudIcon } from '../common/Icones';
+import Image from '../common/Image';
+import Panel from '../common/Panel';
 
 const SocialLinks = ({ social }) => (
     <div className="mt-6">
@@ -13,11 +15,16 @@ const SocialLinks = ({ social }) => (
 );
 
 const HubHeader = ({ hub, social, onSaveHub, isHubSaved }) => (
-    <div className="panel-solid rounded-3xl p-8 mb-16 fade-in">
+    <Panel className="mb-16 fade-in">
         <div className="flex flex-col lg:flex-row items-center gap-8">
             <div className="relative flex-shrink-0">
                 <div className="neon-border rounded-full">
-                    <img src={`https://corsproxy.io/?${encodeURIComponent(hub.icon.url)}`} alt={hub.icon.alt} className="w-32 h-32 md:w-48 md:h-48 rounded-full object-cover shadow-2xl bg-gray-800" onError={(e) => { e.target.style.display = 'none'; }} />
+                    <Image
+                        src={hub.icon.url}
+                        alt={hub.icon.alt}
+                        className="w-32 h-32 md:w-48 md:h-48 rounded-full object-cover shadow-2xl bg-gray-800"
+                        errorSrc="https://placehold.co/192x192/1f2937/4b5563?text=Icon"
+                    />
                 </div>
             </div>
             <div className="flex-1 text-center lg:text-left">
@@ -41,7 +48,7 @@ const HubHeader = ({ hub, social, onSaveHub, isHubSaved }) => (
                 </div>
             </div>
         </div>
-    </div>
+    </Panel>
 );
 
 export default HubHeader;

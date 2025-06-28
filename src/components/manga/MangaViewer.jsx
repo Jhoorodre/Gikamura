@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon, ViewColumnsIcon, DocumentIcon, ArrowUpIcon } from './Icones';
-import Spinner from './Spinner';
-import ErrorMessage from './ErrorMessage';
+// Caminhos de importação corrigidos para a pasta 'common'
+import { ChevronLeftIcon, ChevronRightIcon, ViewColumnsIcon, DocumentIcon, ArrowUpIcon } from '../common/Icones';
+import Spinner from '../common/Spinner';
+import ErrorMessage from '../common/ErrorMessage';
+import Image from '../common/Image'; // Adicionado o novo componente de imagem
 
 const MangaViewer = ({ chapter, page, setPage, onBack, readingMode, setReadingMode, onNextChapter, onPrevChapter, isFirstChapter, isLastChapter }) => {
     const [showScrollTop, setShowScrollTop] = useState(false);
@@ -60,12 +62,32 @@ const MangaViewer = ({ chapter, page, setPage, onBack, readingMode, setReadingMo
 
             {readingMode === 'paginated' ? (
                 <div className="p-4 sm:p-8 fade-in">
-                    <div className="flex justify-center mb-6"><img src={`https://corsproxy.io/?${encodeURIComponent(pages[page])}`} alt={`Página ${page + 1}`} className="max-w-full h-auto rounded-xl shadow-2xl" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/800x1200/1f2937/4b5563?text=Erro+ao+Carregar'; }}/></div>
+                    <div className="flex justify-center mb-6">
+                        {/* <img> substituído por <Image> */}
+                        <Image 
+                            src={pages[page]} 
+                            alt={`Página ${page + 1}`} 
+                            className="max-w-full h-auto rounded-xl shadow-2xl" 
+                            errorSrc='https://placehold.co/800x1200/1f2937/4b5563?text=Erro+ao+Carregar'
+                        />
+                    </div>
                     <div className="flex justify-between items-center"><button onClick={goToPrevPage} disabled={page === 0} className={`px-4 py-3 md:px-8 md:py-4 rounded-xl transition-all duration-300 flex items-center gap-3 ${page === 0 ? 'panel-dark text-gray-500 cursor-not-allowed' : 'bg-gradient-to-r from-red-800 to-red-600 text-white hover:from-red-700 hover:to-red-500'}`}><ChevronLeftIcon /><span>Anterior</span></button><span className="text-white font-medium text-lg">{page + 1} / {totalPages}</span><button onClick={goToNextPage} disabled={page === totalPages - 1} className={`px-4 py-3 md:px-8 md:py-4 rounded-xl transition-all duration-300 flex items-center gap-3 ${page === totalPages - 1 ? 'panel-dark text-gray-500 cursor-not-allowed' : 'bg-gradient-to-r from-red-800 to-red-600 text-white hover:from-red-700 hover:to-red-500'}`}><span>Próxima</span><ChevronRightIcon /></button></div>
                 </div>
             ) : (
                 <div className="p-4 sm:p-8 fade-in">
-                    <div className="space-y-4">{pages.map((pageUrl, index) => (<div key={index} className="flex justify-center"><img src={`https://corsproxy.io/?${encodeURIComponent(pageUrl)}`} alt={`Página ${index + 1}`} className="max-w-full h-auto rounded-xl shadow-lg" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/800x1200/1f2937/4b5563?text=Erro+ao+Carregar'; }}/></div>))}</div>
+                    <div className="space-y-4">
+                        {pages.map((pageUrl, index) => (
+                            <div key={index} className="flex justify-center">
+                                {/* <img> substituído por <Image> */}
+                                <Image
+                                    src={pageUrl}
+                                    alt={`Página ${index + 1}`}
+                                    className="max-w-full h-auto rounded-xl shadow-lg"
+                                    errorSrc='https://placehold.co/800x1200/1f2937/4b5563?text=Erro+ao+Carregar'
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
             {showScrollTop && (<button onClick={scrollTop} className="fixed bottom-8 right-8 bg-gradient-to-r from-red-800 to-red-600 text-white p-4 rounded-full shadow-2xl hover:from-red-700 hover:to-red-500 transition-all duration-300 z-30"><ArrowUpIcon /></button>)}
