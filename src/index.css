@@ -200,3 +200,8 @@ body, html {
 ::-webkit-scrollbar-track { background: rgba(230, 230, 230, 0.1); border-radius: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--primary-gradient); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--secondary-gradient); }
+
+/* Esconde o widget do RemoteStorage */
+#rs-widget-container {
+    display: none !important;
+}
