@@ -7,10 +7,22 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build output
 dist
 dist-ssr
+
+# Test reports
+coverage
+.nyc_output
+
+# Environment variables
 *.local
+.env
+.env.*
+!/.env.example
 
 # Editor directories and files
 .vscode/*
@@ -22,4 +34,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Workspace file (geralmente específico do utilizador)
 gikamoe.code-workspace
+
+# Ficheiros de exemplo locais
+
+# Vite cache
+.vite/
