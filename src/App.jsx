@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHistory } from './context/HistoryContext'; // CAMINHO CORRIGIDO
-import { useManga } from './hooks/useManga'; // CAMINHO CORRIGIDO
+import { useHistory } from './context/HistoryContext';
+import { useItem } from './hooks/useItem';
 import HubLoader from './components/hub/HubLoader';
 import HubHeader from './components/hub/HubHeader';
-import MangaGrid from './components/manga/MangaGrid';
-import MangaInfo from './components/manga/MangaInfo';
-import ChapterList from './components/manga/ChapterList';
-import MangaViewer from './components/manga/MangaViewer';
+import ItemGrid from './components/item/ItemGrid';
+import ItemInfo from './components/item/ItemInfo';
+import EntryList from './components/item/EntryList';
+import ItemViewer from './components/item/ItemViewer';
 import Spinner from './components/common/Spinner';
 import ErrorMessage from './components/common/ErrorMessage';
 import Widget from 'remotestorage-widget';
-import './styles/App.css'; // MANTIDO
+import './styles/App.css';
 import { CORS_PROXY_URL } from './constants';
 
 const createParticles = () => {
@@ -33,13 +33,14 @@ function App() {
     const [currentHubData, setHubData] = useState(null);
     const [currentHubUrl, setCurrentHubUrl] = useState('');
     const [savedHubs, setSavedHubs] = useState([]);
-    const [selectedMangaData, setSelectedMangaData] = useState(null);
-    const [selectedChapterKey, setSelectedChapterKey] = useState(null);
+    const [selectedItemData, setSelectedItemData] = useState(null);
+    const [selectedEntryKey, setSelectedEntryKey] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [readingMode, setReadingMode] = useState('paginated');
     const [sortOrder, setSortOrder] = useState('desc');
+
     const history = useHistory();
-    const { loading: mangaLoading, error: mangaError, fetchMangaData } = useManga();
+    const { loading: itemLoading, error: itemError, fetchItemData } = useItem();
     const [hubLoading, setHubLoading] = useState(false);
     const [hubError, setHubError] = useState(null);
 
@@ -51,9 +52,10 @@ function App() {
     useEffect(() => {
         createParticles();
         loadSavedHubs();
-        const widget = new Widget(history.remoteStorage, {});
-        widget.attach("rs-widget-container");
-    }, []);
+        const widget = new Widget(history.remoteStorage);
+        // Anexe o widget ao container.
+        widget.attach("rs-widget-container"); 
+    }, [history.remoteStorage]);
 
     const isHubSaved = useMemo(() => {
         return savedHubs.some(hub => hub.url === currentHubUrl);
@@ -97,43 +99,43 @@ function App() {
         }
     };
 
-    const selectManga = async (mangaObject) => {
-        const completeMangaData = await fetchMangaData(mangaObject);
-        if (completeMangaData) {
-            setSelectedMangaData(completeMangaData);
-            setSelectedChapterKey(null);
+    const selectItem = async (itemObject) => {
+        const completeItemData = await fetchItemData(itemObject);
+        if (completeItemData) {
+            setSelectedItemData(completeItemData);
+            setSelectedEntryKey(null);
             setCurrentPage(0);
         }
     };
 
-    const selectChapter = (chapterKey) => {
-        setSelectedChapterKey(chapterKey);
+    const selectEntry = (entryKey) => {
+        setSelectedEntryKey(entryKey);
         setCurrentPage(0);
         window.scrollTo({top: 0, behavior: 'smooth'}); 
     };
 
     const backToHub = () => {
-        setSelectedMangaData(null);
-        setSelectedChapterKey(null);
+        setSelectedItemData(null);
+        setSelectedEntryKey(null);
         setCurrentPage(0);
     };
     
-    const backToManga = () => {
-        setSelectedChapterKey(null);
+    const backToItem = () => {
+        setSelectedEntryKey(null);
         setCurrentPage(0);
     };
     
     const resetApp = () => {
          setHubData(null);
-         setSelectedMangaData(null);
-         setSelectedChapterKey(null);
+         setSelectedItemData(null);
+         setSelectedEntryKey(null);
          setHubError(null);
          setCurrentHubUrl('');
     }
 
-    const getChapterKeys = () => {
-        if (!selectedMangaData?.chapters) return [];
-        const keys = Object.keys(selectedMangaData.chapters);
+    const getEntryKeys = () => {
+        if (!selectedItemData?.entries) return [];
+        const keys = Object.keys(selectedItemData.entries);
         return keys.sort((a, b) => {
             const numA = parseFloat(a.match(/(\d+(\.\d+)?)/)?.[0]) || 0;
             const numB = parseFloat(b.match(/(\d+(\.\d+)?)/)?.[0]) || 0;
@@ -145,36 +147,38 @@ function App() {
         });
     };
 
-    const navigateChapter = (direction) => {
-        const chapterKeys = getChapterKeys();
-        const currentIndex = chapterKeys.indexOf(selectedChapterKey);
+    const navigateEntry = (direction) => {
+        const entryKeys = getEntryKeys();
+        const currentIndex = entryKeys.indexOf(selectedEntryKey);
         const nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
         
-        if (nextIndex >= 0 && nextIndex < chapterKeys.length) {
-            selectChapter(chapterKeys[nextIndex]);
+        if (nextIndex >= 0 && nextIndex < entryKeys.length) {
+            selectEntry(entryKeys[nextIndex]);
         }
     };
 
-    if (hubLoading || mangaLoading) return <Spinner />;
+    if (hubLoading || itemLoading) return <Spinner />;
     if (hubError) return <ErrorMessage message={hubError} onRetry={resetApp} />;
-    if (mangaError) return <ErrorMessage message={mangaError} onRetry={() => setSelectedMangaData(null)} />;
+    if (itemError) return <ErrorMessage message={itemError} onRetry={() => setSelectedItemData(null)} />;
     
-    const chapterKeys = currentHubData ? getChapterKeys() : [];
-    const currentChapterIndex = currentHubData ? chapterKeys.indexOf(selectedChapterKey) : -1;
+    const entryKeys = currentHubData ? getEntryKeys() : [];
+    const currentEntryIndex = currentHubData ? entryKeys.indexOf(selectedEntryKey) : -1;
 
     return (
         <div className="min-h-screen text-white relative">
             <div className="animated-bg"></div>
             <div id="particles-container"></div>
-            <div id="rs-widget-container"></div>
-            
+
+            {/* Container do Widget */}
+            <div id="rs-widget-container" className="fixed top-4 right-4 z-50"></div>
+
             <div className={`container mx-auto px-4 relative z-10 ${!currentHubData ? 'min-h-screen flex items-center justify-center' : 'py-8'}`}>
                 {!currentHubData ? (
                     <HubLoader 
                         onLoadHub={loadHub} 
                         loading={hubLoading} 
                     />
-                ) : !selectedMangaData ? (
+                ) : !selectedItemData ? (
                     <>
                         <div className="text-center mb-16 fade-in">
                              <button onClick={resetApp} className="panel-dark px-4 py-2 rounded-lg text-sm text-red-300 hover:bg-white/10 transition-all">Carregar outro Hub</button>
@@ -185,30 +189,30 @@ function App() {
                             onSaveHub={handleSaveHub}
                             isHubSaved={isHubSaved}
                         />
-                        <MangaGrid series={currentHubData.series} onSelectManga={selectManga} />
+                        <ItemGrid items={currentHubData.series} onSelectItem={selectItem} />
                     </>
-                ) : !selectedChapterKey ? (
+                ) : !selectedEntryKey ? (
                     <>
-                        <MangaInfo mangaData={selectedMangaData} onBackToHub={backToHub} />
-                        <ChapterList 
-                            mangaData={selectedMangaData} 
-                            onSelectChapter={selectChapter} 
+                        <ItemInfo itemData={selectedItemData} onBackToHub={backToHub} />
+                        <EntryList 
+                            itemData={selectedItemData} 
+                            onSelectEntry={selectEntry} 
                             sortOrder={sortOrder}
                             setSortOrder={setSortOrder}
                         />
                     </>
                 ) : (
-                    <MangaViewer 
-                        chapter={selectedMangaData.chapters[selectedChapterKey]} 
+                    <ItemViewer 
+                        entry={selectedItemData.entries[selectedEntryKey]} 
                         page={currentPage} 
                         setPage={setCurrentPage} 
-                        onBack={backToManga}
+                        onBack={backToItem}
                         readingMode={readingMode} 
                         setReadingMode={setReadingMode}
-                        onNextChapter={() => navigateChapter('next')}
-                        onPrevChapter={() => navigateChapter('prev')}
-                        isFirstChapter={currentChapterIndex === 0}
-                        isLastChapter={chapterKeys.length > 0 && currentChapterIndex === chapterKeys.length - 1}
+                        onNextEntry={() => navigateEntry('next')}
+                        onPrevEntry={() => navigateEntry('prev')}
+                        isFirstEntry={currentEntryIndex === 0}
+                        isLastEntry={entryKeys.length > 0 && currentEntryIndex === entryKeys.length - 1}
                     />
                 )}
             </div>
