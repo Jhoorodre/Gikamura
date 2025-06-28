@@ -1,0 +1,10 @@
+# Arquivos de configuração do editor
+.vscode/
+.idea/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de configuração do VSCode
+gikamoe.code-workspace
