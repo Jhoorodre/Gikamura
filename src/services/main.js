@@ -203,24 +203,23 @@ function UI_HistoryView(o) {
 			this.unpinnedSeries.forEach((item) => {
 				this._.history.add(new UI_HistoryUnit({
 					url: item.url,
-					pinned: false,
 					slug: item.slug,
 					title: item.title,
 					source: item.source,
 					coverUrl: item.coverUrl
 				}).S.link(this));
 			});
-			if(this.unpinnedSeries.length == 2) this._.history.$.setAttribute('data-things', 2)
-			if(this.unpinnedSeries.length == 3) this._.history.$.setAttribute('data-things', 3)
 		}else{
 			this.$.classList.remove('has-history');
 		}
 
 		if(this.firstUse) {
-			this._.history_desc.innerHTML = `
-				<p style="text-align: center;opacity: 0.8;">Looks like your history is currently empty.<br>Open any series in the reader and you will see it here.<br>You will also have an option to erase your history.</p>`
+			this._.history_desc.innerHTML = `<p>History is currently empty. Once you start reading, your history will appear here.</p>`
+		}else{
+			this._.history_desc.innerHTML = '';
 		}
 
+		/*
 		if(!this._.history_sync.innerHTML) this._.history_sync.innerHTML = `
 		<h2 style="margin-top: 5rem;">History synchronisation</h2>
 		<p>You can synchronize your reading history and pinned galleries across different devices. This is done using a third-party data storage service (which you can also host yourself to have full control over your data).</p>
@@ -229,9 +228,10 @@ function UI_HistoryView(o) {
 		<div id="rs-widget"></div>`
 
 		if(!this.widget && document.getElementById("rs-widget")) {
-		this.widget = new Widget(remoteStorage, {});
-		this.widget.attach("rs-widget");
+			this.widget = new Widget(remoteStorage, {});
+			this.widget.attach("rs-widget");
 		}
+		*/
 
 		window.addEventListener('history-ready', () => {
 			this._.history_sync.classList.add('history-ready');

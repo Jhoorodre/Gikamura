@@ -8,12 +8,8 @@ import ItemViewer from './components/item/ItemViewer';
 import Spinner from './components/common/Spinner';
 import ErrorMessage from './components/common/ErrorMessage';
 import { useItem } from './hooks/useItem';
-
-// Importe o seu serviço (apenas para garantir que o código seja executado)
-import './services/remoteStorage.js';
-
-// Removendo importações nomeadas, pois remoteStorage, widget e globalHistoryHandler são globais
-// import { remoteStorage, widget, globalHistoryHandler } from './services/remoteStorage';
+import { remoteStorage, globalHistoryHandler } from './services/remoteStorage.js';
+import Widget from 'remotestorage-widget';
 
 import './styles/index.css';
 
@@ -47,29 +43,36 @@ function App() {
     const [hubError, setHubError] = useState(null);
 
     useEffect(() => {
+        // Cria as partículas (mantendo a sua função original)
         createParticles();
 
+        // Inicializa o widget do RemoteStorage
+        const widget = new Widget(remoteStorage);
+        widget.attach('remotestorage-widget');
+
+        // Define os listeners para o estado da conexão
         const handleConnectionChange = () => {
-            setIsConnected(window.remoteStorage.connected);
+            setIsConnected(remoteStorage.connected);
         };
 
-        // Adiciona listeners usando a variável global
-        if (window.remoteStorage) {
-            window.remoteStorage.on('connected', handleConnectionChange);
-            window.remoteStorage.on('disconnected', handleConnectionChange);
-            handleConnectionChange(); // Verifica o estado inicial
-        }
+        remoteStorage.on('connected', handleConnectionChange);
+        remoteStorage.on('disconnected', handleConnectionChange);
+        
+        // Verifica o estado inicial da conexão
+        handleConnectionChange();
 
+        // Função de limpeza para remover os listeners E O WIDGET quando o componente for desmontado
         return () => {
-            // Remove listeners usando a variável global
-            if (window.remoteStorage) {
-                window.remoteStorage.removeEventListener('connected', handleConnectionChange);
-                window.remoteStorage.removeEventListener('disconnected', handleConnectionChange);
+            remoteStorage.removeEventListener('connected', handleConnectionChange);
+            remoteStorage.removeEventListener('disconnected', handleConnectionChange);
+            if (widget && typeof widget.dispose === 'function') {
+                widget.dispose();
             }
         };
-    }, []);
+    }, []); // O array vazio [] garante que este código só é executado uma vez.
 
-    // Função para carregar o Hub, agora usando window.globalHistoryHandler
+
+    // Corrija a sua função loadHubAndSave
     const loadHubAndSave = async (url) => {
         setHubLoading(true);
         setHubError(null);
@@ -79,13 +82,12 @@ function App() {
             const data = await response.json();
             setHubData(data);
 
-            // Salva o hub no histórico se o usuário estiver conectado e globalHistoryHandler estiver disponível
-            if (window.remoteStorage && window.remoteStorage.connected && window.globalHistoryHandler) {
-                // Verifique se data.hub e data.hub.icon existem antes de acessar suas propriedades
+            // Salva o hub no histórico usando as instâncias importadas
+            if (remoteStorage.connected && globalHistoryHandler) { // <-- Use as instâncias importadas
                 const hubTitle = data.hub ? data.hub.title : "Hub Sem Título";
                 const hubIconUrl = (data.hub && data.hub.icon) ? data.hub.icon.url : undefined;
-                // Usando window.globalHistoryHandler
-                await window.globalHistoryHandler.addHub(url, hubTitle, hubIconUrl);
+                
+                await globalHistoryHandler.addHub(url, hubTitle, hubIconUrl);
             }
 
         } catch (err) {
