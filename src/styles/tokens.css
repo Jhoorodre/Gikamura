@@ -1,42 +1,38 @@
-/* src/styles/tokens.css - Design Tokens */
+/* src/styles/tokens.css - Design Tokens Atualizados */
 :root {
-  /* Colors */
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
+  /* Nova Paleta de Cores */
+  --color-dark-bg: #141414;        /* 70% */
+  --color-accent-red: #341111;     /* 20% */
+  --color-light-gray: #a4a4a4;    /* 10% */
 
-  --color-gray-50: #f8fafc;
-  --color-gray-100: #f1f5f9;
-  --color-gray-200: #e2e8f0;
-  --color-gray-300: #cbd5e1;
-  --color-gray-400: #94a3b8;
-  --color-gray-500: #64748b;
-  --color-gray-600: #475569;
-  --color-gray-700: #334155;
-  --color-gray-800: #1e293b;
-  --color-gray-900: #0f172a;
+  /* Cores Semânticas */
+  --color-background: var(--color-dark-bg);
+  --color-surface: #1f1f1f; /* Um tom ligeiramente mais claro que o fundo para contraste */
+  --color-surface-elevated: var(--color-accent-red);
+  --color-border: #4a4a4a; /* Um cinza para bordas sutis */
+  
+  --color-text-primary: var(--color-light-gray);
+  --color-text-secondary: #8b8b8b;
+  --color-text-muted: #6c6c6c;
 
+  /* Cores Primárias (baseadas no vermelho de destaque) */
+  --color-primary-50: #fcebeb;
+  --color-primary-100: #f6d0d0;
+  --color-primary-200: #f0b5b5;
+  --color-primary-300: #ea9a9a;
+  --color-primary-400: #e37f7f;
+  --color-primary-500: #dc6464;
+  --color-primary-600: #8B0000; /* Vermelho escuro para botões e ações principais */
+  --color-primary-700: var(--color-accent-red); /* Cor original para hovers ou variações */
+  --color-primary-800: #2c0f0f;
+  --color-primary-900: #1f0a0a;
+
+  /* Outras Cores (mantidas do original) */
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
 
-  /* Semantic Colors */
-  --color-background: var(--color-gray-900);
-  --color-surface: var(--color-gray-800);
-  --color-surface-elevated: var(--color-gray-700);
-  --color-border: var(--color-gray-600);
-  --color-text-primary: var(--color-gray-50);
-  --color-text-secondary: var(--color-gray-400);
-  --color-text-muted: var(--color-gray-500);
-
-  /* Spacing */
+  /* Espaçamento (Sem alterações) */
   --space-0: 0;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -51,7 +47,7 @@
   --space-20: 5rem;
   --space-24: 6rem;
 
-  /* Typography */
+  /* Tipografia (Sem alterações) */
   --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
 
@@ -73,7 +69,7 @@
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
 
-  /* Border Radius */
+  /* Border Radius (Sem alterações) */
   --radius-sm: 0.125rem;
   --radius-base: 0.25rem;
   --radius-md: 0.375rem;
@@ -82,19 +78,19 @@
   --radius-2xl: 1rem;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  /* Sombras (Ajustadas para o tema escuro) */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.15);
+  --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
 
-  /* Transitions */
+  /* Transições (Sem alterações) */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Z-index */
+  /* Z-index (Sem alterações) */
   --z-dropdown: 1000;
   --z-sticky: 1020;
   --z-fixed: 1030;

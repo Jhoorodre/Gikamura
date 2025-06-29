@@ -18,34 +18,34 @@
     font-weight: var(--font-weight-bold);
 }
 
-/* Fundo animado */
+/* Fundo animado, leve e performático */
 .animated-bg {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh; /* Garante que cubra a tela toda */
     z-index: -1;
-    background: 
-        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-        var(--color-background);
+    background-color: var(--color-background);
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.04) 0%, transparent 30%);
+    animation: subtle-breathing 15s ease-in-out infinite;
 }
 
-/* Partículas */
-.particle {
-    position: absolute;
-    background: var(--color-primary-500);
-    border-radius: var(--radius-full);
-    pointer-events: none;
-    animation: float 25s linear infinite;
-}
-
-@keyframes float {
-    0% { transform: translateY(100vh) scale(0); opacity: 0; }
-    10% { opacity: 0.5; }
-    90% { opacity: 0.5; }
-    100% { transform: translateY(-100px) scale(1); opacity: 0; }
+@keyframes subtle-breathing {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* Animações */
@@ -62,4 +62,59 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Estilização para o widget remotestorage */
+#remotestorage-widget {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--color-text-primary) !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  position: fixed !important;
+  bottom: 2rem;
+  left: 2rem;
+  width: 40px;
+  height: 40px;
+  z-index: 100;
+}
+
+#remotestorage-widget .rs-widget-button,
+#remotestorage-widget .rs-widget-button:hover {
+  background: none !important;
+  color: inherit !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+#remotestorage-widget .rs-widget-icon {
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+#remotestorage-widget p,
+#remotestorage-widget small,
+#remotestorage-widget .rs-widget-status,
+#remotestorage-widget .rs-widget-label {
+  display: none !important;
+}
+
+#remotestorage-widget a {
+  color: var(--color-primary-400) !important;
+}
+
+#remotestorage-widget .rs-widget-icon svg {
+  filter: invert(1) !important; /* Inverte o ícone laranja para branco/cinza */
+}
+
+/* Esconde o container padrão do widget, pois estamos a usar um botão personalizado */
+#remotestorage-widget {
+    display: none !important;
 }

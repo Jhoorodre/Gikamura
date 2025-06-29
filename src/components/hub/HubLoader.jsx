@@ -11,7 +11,7 @@ const HubLoader = ({ onLoadHub, loading }) => {
     };
 
     return (
-        <div className="card text-center w-full" style={{ maxWidth: '600px' }}>
+        <div className="card text-center mx-auto" style={{ maxWidth: '600px', width: '100%' }}>
             <h1 className="orbitron mb-6">
                 Carregar Hub
             </h1>
@@ -19,7 +19,7 @@ const HubLoader = ({ onLoadHub, loading }) => {
                 Insira o URL Json que deseja carregar.
             </p>
             <form onSubmit={handleSubmit} className="flex gap-4">
-                <div className="form-group w-full">
+                <div className="form-group flex-1">
                     <input 
                         type="url" 
                         value={url} 
