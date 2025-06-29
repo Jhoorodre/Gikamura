@@ -159,15 +159,14 @@ function App() {
 
             <main className="flex-grow flex flex-col">
                 {!currentHubData ? (
-                    <div className="flex-grow flex items-center justify-center p-4 min-h-screen">
-                        {/* A prop onLoadHub foi atualizada para loadHubAndSave */}
+                    <div className="flex-grow flex items-center justify-center p-4">
                         <HubLoader
                             onLoadHub={loadHubAndSave}
                             loading={hubLoading}
                         />
                     </div>
                 ) : (
-                    <div className="container mx-auto px-4 py-8">
+                    <div className="container mx-auto px-4 py-8 w-full">
                         {!selectedItemData ? (
                             <>
                                 <HubHeader hub={currentHubData.hub} />

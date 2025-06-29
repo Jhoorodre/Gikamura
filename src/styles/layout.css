@@ -1,6 +1,23 @@
-/* src/styles/layout.css - Layout Components */
+/* ========================================================================== */
+/* ==                CLASSES UTILITÁRIAS DE LAYOUT E GRID                == */
+/* ========================================================================== */
+/*
+ * Este arquivo fornece um conjunto de classes utilitárias para a construção
+ * de layouts, inspirado em frameworks como o Tailwind CSS.
+ *
+ * Inclui:
+ * - Containers para limitar a largura do conteúdo.
+ * - Um sistema de Grid para layouts em colunas.
+ * - Utilitários de Flexbox para alinhamento e espaçamento.
+ * - Classes de posicionamento e espaçamento.
+*/
 
-/* Container e Grid */
+
+/* ========================================================================== */
+/* == 1. CONTAINERS                                                      == */
+/* ========================================================================== */
+
+/* Container com largura máxima, centrado na página. */
 .container {
   width: 100%;
   max-width: 1200px;
@@ -8,179 +25,132 @@
   padding: 0 var(--space-6);
 }
 
+/* Container que ocupa 100% da largura, com padding lateral. */
 .container-fluid {
   width: 100%;
   padding: 0 var(--space-6);
 }
 
-/* Grid System */
+
+/* ========================================================================== */
+/* == 2. SISTEMA DE GRID                                                 == */
+/* ========================================================================== */
+
+/* Base para um container grid. */
 .grid {
   display: grid;
   gap: var(--space-6);
 }
 
+/* Variações de colunas fixas. */
 .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
 .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* Adicione mais conforme necessário (ex: .grid-cols-5) */
 
+/*
+ * Grid responsivo que preenche o espaço com colunas de no mínimo 280px,
+ * criando novas linhas se não houver espaço.
+*/
 .grid-auto-fill {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
+/*
+ * Similar ao auto-fill, mas expande as colunas para preencher o espaço
+ * restante se houver poucas colunas na linha.
+*/
 .grid-auto-fit {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
-/* Flexbox utilities */
-.flex {
-  display: flex;
-}
 
-.flex-col {
-  flex-direction: column;
-}
+/* ========================================================================== */
+/* == 3. UTILITÁRIOS DE FLEXBOX                                          == */
+/* ========================================================================== */
 
-.items-center {
-  align-items: center;
-}
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-grow { flex-grow: 1; }
 
-.items-start {
-  align-items: flex-start;
-}
+/* Alinhamento de Itens (vertical em flex-row, horizontal em flex-col) */
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
 
-.items-end {
-  align-items: flex-end;
-}
+/* Justificação de Conteúdo (horizontal em flex-row, vertical em flex-col) */
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
 
-.justify-center {
-  justify-content: center;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.justify-start {
-  justify-content: flex-start;
-}
-
-.justify-end {
-  justify-content: flex-end;
-}
-
+/* Espaçamento entre elementos (Gap) */
 .gap-1 { gap: var(--space-1); }
 .gap-2 { gap: var(--space-2); }
 .gap-3 { gap: var(--space-3); }
 .gap-4 { gap: var(--space-4); }
+.gap-5 { gap: var(--space-5); }
 .gap-6 { gap: var(--space-6); }
 .gap-8 { gap: var(--space-8); }
+.gap-10 { gap: var(--space-10); }
+.gap-12 { gap: var(--space-12); }
 
-/* Positioning */
-.relative {
-  position: relative;
-}
 
-.absolute {
-  position: absolute;
-}
+/* ========================================================================== */
+/* == 4. POSICIONAMENTO E ESPAÇAMENTO                                    == */
+/* ========================================================================== */
 
-.fixed {
-  position: fixed;
-}
+/* Posicionamento */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; top: 0; } /* 'top: 0' é um padrão comum */
 
-.sticky {
-  position: sticky;
-}
+/* Display */
+.block { display: block; }
+.inline-block { display: inline-block; }
+.hidden { display: none; }
 
-/* Background */
-.bg-background {
-  background-color: var(--color-background);
-}
-
-.bg-surface {
-  background-color: var(--color-surface);
-}
-
-.bg-surface-elevated {
-  background-color: var(--color-surface-elevated);
-}
-
-/* Spacing utilities */
-.p-0 { padding: var(--space-0); }
-.p-1 { padding: var(--space-1); }
-.p-2 { padding: var(--space-2); }
-.p-3 { padding: var(--space-3); }
-.p-4 { padding: var(--space-4); }
-.p-6 { padding: var(--space-6); }
-.p-8 { padding: var(--space-8); }
-
-.px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
-.px-6 { padding-left: var(--space-6); padding-right: var(--space-6); }
-.py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
-.py-6 { padding-top: var(--space-6); padding-bottom: var(--space-6); }
-
-.m-0 { margin: var(--space-0); }
-.m-2 { margin: var(--space-2); }
-.m-4 { margin: var(--space-4); }
-.m-6 { margin: var(--space-6); }
-
+/* Margens e Paddings (exemplo, pode ser expandido) */
+.m-auto { margin: auto; }
 .mx-auto { margin-left: auto; margin-right: auto; }
-.my-4 { margin-top: var(--space-4); margin-bottom: var(--space-4); }
-.my-6 { margin-top: var(--space-6); margin-bottom: var(--space-6); }
+.my-auto { margin-top: auto; margin-bottom: auto; }
 
-.mb-2 { margin-bottom: var(--space-2); }
-.mb-4 { margin-bottom: var(--space-4); }
-.mb-6 { margin-bottom: var(--space-6); }
-.mb-8 { margin-bottom: var(--space-8); }
+.p-4 { padding: var(--space-4); }
+.px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
+.py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+/* Adicione mais classes de espaçamento conforme necessário */
 
-/* Width and Height */
-.w-full { width: 100%; }
-.h-full { height: 100%; }
-.min-h-screen { min-height: 100vh; }
-.min-h-full { min-height: 100%; }
 
-/* Overflow */
-.overflow-hidden { overflow: hidden; }
-.overflow-auto { overflow: auto; }
+/* ========================================================================== */
+/* == 5. CORES DE FUNDO                                                  == */
+/* ========================================================================== */
 
-/* Z-index */
-.z-10 { z-index: 10; }
-.z-20 { z-index: 20; }
-.z-30 { z-index: 30; }
-.z-40 { z-index: var(--z-fixed); }
-.z-50 { z-index: var(--z-modal); }
+.bg-background { background-color: var(--color-background); }
+.bg-surface { background-color: var(--color-surface); }
+.bg-primary { background-color: var(--color-primary-500); }
+.bg-transparent { background-color: transparent; }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 var(--space-4);
-  }
-  
-  .grid-cols-2 {
-    grid-template-columns: 1fr;
-  }
-  
-  .grid-cols-3 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  
-  .grid-cols-4 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  
-  .grid-auto-fill {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
-}
 
-@media (max-width: 480px) {
-  .grid-cols-3,
-  .grid-cols-4 {
-    grid-template-columns: 1fr;
-  }
-  
-  .grid-auto-fill {
-    grid-template-columns: 1fr;
-  }
-}
+/* ========================================================================== */
+/* == 6. BORDAS                                                          == */
+/* ========================================================================== */
+
+.border { border: 1px solid var(--color-border); }
+.border-t { border-top: 1px solid var(--color-border); }
+.border-b { border-bottom: 1px solid var(--color-border); }
+.border-l { border-left: 1px solid var(--color-border); }
+.border-r { border-right: 1px solid var(--color-border); }
+.border-none { border: none; }
+
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-full { border-radius: 9999px; }

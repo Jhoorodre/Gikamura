@@ -1,0 +1,224 @@
+/* ========================================================================== */
+/* ==           CUSTOM STYLES FOR REMOTESTORAGE WIDGET                   == */
+/* ========================================================================== */
+/*
+ * This file provides a complete visual overhaul for the RemoteStorage widget.
+ * It establishes a minimalist, modern look with two main appearances:
+ * 1. A circular "bubble" when the widget is closed.
+ * 2. A clean, functional panel when the widget is open.
+ *
+ * The styles are highly specific to override the widget's default CSS.
+*/
+
+
+/* ========================================================================== */
+/* == 1. WIDGET BASE CONTAINER                                           == */
+/* ========================================================================== */
+
+/* Sets the widget's fixed position on the screen and base font. */
+#remotestorage-widget {
+    position: fixed !important;
+    bottom: var(--space-6) !important;
+    left: var(--space-6) !important;
+    z-index: var(--z-widget, 1100) !important;
+    font-family: var(--font-family-sans) !important;
+}
+
+
+/* ========================================================================== */
+/* == 2. CLOSED STATE (THE BUBBLE)                                       == */
+/* ========================================================================== */
+
+/* --- Base style for the circular bubble --- */
+#remotestorage-widget .rs-widget.rs-closed {
+    /* Shape and size */
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+
+    /* Appearance */
+    background-color: var(--color-surface, #18181b) !important;
+    border: 1.5px solid var(--color-border) !important;
+    box-shadow: var(--shadow-lg) !important;
+    cursor: pointer !important;
+    transition: all var(--transition-base) !important;
+
+    /* Content Alignment: Centers the icon container */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* --- Hide internal panels when the widget is closed --- */
+#remotestorage-widget .rs-widget.rs-closed > div[class*="rs-box"] {
+    display: none !important;
+}
+
+/* --- Icon container within the bubble --- */
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon {
+    /* Ensures the icon container is visible and fills the bubble */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* --- Hide the default SVG icon provided by the widget --- */
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon > svg {
+    display: none !important;
+}
+
+
+/* --- Custom Icons using the ::after pseudo-element --- */
+
+/* Base for all our custom icons */
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon::after {
+    content: '' !important;
+    display: block !important;
+    width: 24px !important;
+    height: 24px !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: contain !important;
+}
+
+/* Icon for "Initial" state (needs login) */
+#remotestorage-widget .rs-widget.rs-closed.rs-state-initial .rs-widget-icon::after {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>') !important;
+    opacity: 0.9 !important;
+}
+
+/* Icon for "Not Connected" state (generic, e.g., after an error) */
+#remotestorage-widget .rs-widget.rs-closed:not(.rs-state-connected):not(.rs-state-initial) .rs-widget-icon::after {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="1.5"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 13v6"/><path d="m8 16 4-3 4 3"/></svg>') !important;
+    opacity: 0.8 !important;
+}
+
+/* Style and Icon for "Connected" state (synced) */
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected {
+    background-color: var(--color-success-bg, #10b98122) !important;
+    border-color: var(--color-success, #10b981) !important;
+}
+
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected .rs-widget-icon::after {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2310b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>') !important;
+    opacity: 1 !important;
+}
+
+
+/* ========================================================================== */
+/* == 3. OPEN STATE (THE PANEL)                                          == */
+/* ========================================================================== */
+
+/* --- Base style for the open panel --- */
+#remotestorage-widget .rs-widget:not(.rs-closed) {
+    /* Shape and size */
+    min-width: 320px !important;
+    width: 340px !important;
+    border-radius: var(--radius-lg) !important;
+    padding: var(--space-4) !important;
+
+    /* Appearance */
+    background: var(--color-surface, #18181b) !important;
+    box-shadow: var(--shadow-lg) !important;
+    display: block !important;
+
+    /* Animation */
+    animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
+/* --- Content area within the panel --- */
+#remotestorage-widget .rs-content {
+    padding: var(--space-4) !important;
+}
+
+/* --- Text elements inside the panel --- */
+#remotestorage-widget .rs-big-headline {
+    font-family: var(--font-family-mono);
+    font-size: 1.3rem !important;
+    font-weight: var(--font-weight-bold) !important;
+    color: var(--color-text-primary) !important;
+    margin-bottom: var(--space-2) !important;
+    text-align: center;
+}
+
+#remotestorage-widget .rs-short-desc {
+    font-size: var(--font-size-sm) !important;
+    color: var(--color-text-secondary) !important;
+    text-align: center;
+    margin-bottom: var(--space-6) !important;
+}
+
+/* --- Sign-in form elements --- */
+#remotestorage-widget .rs-sign-in-form input[type="text"] {
+    width: 100% !important;
+    background-color: var(--color-dark-bg) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-text-primary) !important;
+    border-radius: var(--radius-md) !important;
+    padding: var(--space-3) !important;
+    margin-bottom: var(--space-4) !important;
+}
+
+#remotestorage-widget .rs-connect {
+    width: 100% !important;
+    background-color: var(--color-primary-600) !important;
+    color: var(--color-light-gray) !important;
+    border: none !important;
+    border-radius: var(--radius-md) !important;
+    font-weight: var(--font-weight-bold) !important;
+    padding: var(--space-3) !important;
+    cursor: pointer !important;
+}
+
+
+/* --- Specific styles for the "Connected" open panel --- */
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) {
+    background: var(--color-success-bg, #10b98122) !important;
+    border-color: var(--color-success, #10b981) !important;
+}
+
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-box-connected {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+}
+
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons {
+    display: flex !important;
+    gap: 12px !important;
+}
+
+/* Buttons for "Sync" and "Disconnect" */
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 10px !important;
+    background: var(--color-surface, #18181b) !important;
+    border: 1.5px solid var(--color-border) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: var(--color-text-secondary) !important;
+    font-size: 1.2rem !important;
+    transition: all 0.2s;
+}
+
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons button:hover {
+    border-color: var(--color-primary-600) !important;
+    color: var(--color-primary-600) !important;
+}
+
+/* Hides the text inside the sync/disconnect buttons to show only the icons */
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons button span {
+    display: none !important;
+}

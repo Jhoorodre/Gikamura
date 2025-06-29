@@ -1,48 +1,81 @@
-/* src/styles/animations.css - Animações Sutis */
+/* ========================================================================== */
+/* ==                      ANIMAÇÕES GLOBAIS DA APLICAÇÃO                  == */
+/* ========================================================================== */
+/*
+ * Este arquivo define um conjunto de animações reutilizáveis para a interface.
+ * Inclui animações de entrada, efeitos de hover e indicadores de loading.
+ * O objetivo é criar uma experiência de usuário fluida e agradável.
+*/
 
-/* Animações de entrada */
+
+/* ========================================================================== */
+/* == 1. ANIMAÇÕES DE ENTRADA                                            == */
+/* ========================================================================== */
+/*
+ * Classes para aplicar em elementos que devem aparecer de forma suave
+ * quando são renderizados na tela.
+*/
+
+/* Aparecimento gradual (fade in) */
 .fade-in {
   opacity: 0;
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn var(--transition-fast) ease-out forwards;
 }
 
+/* Deslizar de baixo para cima com fade */
 .slide-in-up {
   opacity: 0;
   transform: translateY(20px);
-  animation: slideInUp 0.5s ease-out forwards;
+  animation: slideInUp var(--transition-base) ease-out forwards;
 }
 
+/* Deslizar da esquerda para a direita com fade */
 .slide-in-left {
   opacity: 0;
   transform: translateX(-20px);
-  animation: slideInLeft 0.5s ease-out forwards;
+  animation: slideInLeft var(--transition-base) ease-out forwards;
 }
 
+/* Deslizar da direita para a esquerda com fade */
 .slide-in-right {
   opacity: 0;
   transform: translateX(20px);
-  animation: slideInRight 0.5s ease-out forwards;
+  animation: slideInRight var(--transition-base) ease-out forwards;
 }
 
-/* Animações escalonadas para listas */
+
+/* ========================================================================== */
+/* == 2. ANIMAÇÃO ESCALONADA (STAGGER)                                   == */
+/* ========================================================================== */
+/*
+ * Aplica uma animação de entrada em uma lista de elementos com um pequeno
+ * atraso (delay) entre cada item, criando um efeito cascata.
+ *
+ * Uso: Adicione a classe `.stagger-animation` ao container pai.
+*/
 .stagger-animation > * {
   opacity: 0;
   transform: translateY(20px);
-  animation: slideInUp 0.5s ease-out forwards;
+  animation: slideInUp var(--transition-base) ease-out forwards;
 }
 
+/* Atrasos incrementais para os primeiros 10 itens da lista */
 .stagger-animation > *:nth-child(1) { animation-delay: 0.05s; }
-.stagger-animation > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-animation > *:nth-child(2) { animation-delay: 0.10s; }
 .stagger-animation > *:nth-child(3) { animation-delay: 0.15s; }
-.stagger-animation > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-animation > *:nth-child(4) { animation-delay: 0.20s; }
 .stagger-animation > *:nth-child(5) { animation-delay: 0.25s; }
-.stagger-animation > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-animation > *:nth-child(6) { animation-delay: 0.30s; }
 .stagger-animation > *:nth-child(7) { animation-delay: 0.35s; }
-.stagger-animation > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-animation > *:nth-child(8) { animation-delay: 0.40s; }
 .stagger-animation > *:nth-child(9) { animation-delay: 0.45s; }
-.stagger-animation > *:nth-child(10) { animation-delay: 0.5s; }
+.stagger-animation > *:nth-child(10) { animation-delay: 0.50s; }
 
-/* Keyframes */
+
+/* ========================================================================== */
+/* == 3. KEYFRAMES (DEFINIÇÕES DAS ANIMAÇÕES)                            == */
+/* ========================================================================== */
+
 @keyframes fadeIn {
   to {
     opacity: 1;
@@ -70,24 +103,33 @@
   }
 }
 
-/* Animações de hover subtis */
+
+/* ========================================================================== */
+/* == 4. EFEITOS DE HOVER (INTERAÇÃO)                                    == */
+/* ========================================================================== */
+
+/* Eleva o elemento sutilmente ao passar o mouse */
 .hover-lift {
   transition: transform var(--transition-base);
 }
-
 .hover-lift:hover {
   transform: translateY(-2px);
 }
 
+/* Aumenta a escala do elemento sutilmente ao passar o mouse */
 .hover-scale {
   transition: transform var(--transition-base);
 }
-
 .hover-scale:hover {
   transform: scale(1.02);
 }
 
-/* Animações de loading */
+
+/* ========================================================================== */
+/* == 5. ANIMAÇÕES DE LOADING                                            == */
+/* ========================================================================== */
+
+/* Animação de pulso para esqueletos de UI (skeleton loaders) */
 .pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -101,22 +143,16 @@
   }
 }
 
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--color-surface) 25%,
-    var(--color-surface-elevated) 50%,
-    var(--color-surface) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s linear infinite;
+/* Animação de rotação para ícones de spinner */
+.spin {
+    animation: spin 1s linear infinite;
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

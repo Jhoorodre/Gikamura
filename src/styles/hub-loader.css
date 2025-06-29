@@ -1,13 +1,37 @@
-/* HubLoader Styles - Design Minimalista */
+/* ========================================================================== */
+/* ==                  ESTILOS DO COMPONENTE HUB LOADER                    == */
+/* ========================================================================== */
+/*
+ * Este arquivo define os estilos para o componente "Hub Loader", que é
+ * usado para carregar e interagir com "hubs" (provavelmente fontes de dados
+ * ou configurações).
+ *
+ * O design é minimalista e centrado, focado na usabilidade.
+*/
+
+
+/* ========================================================================== */
+/* == 1. CONTAINER PRINCIPAL                                             == */
+/* ========================================================================== */
+
+/*
+ * Este container ocupa todo o espaço disponível (altura e largura)
+ * e usa flexbox para centralizar o painel de conteúdo.
+*/
 .hub-loader-container {
-  min-height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
-  position: relative;
 }
 
+/* ========================================================================== */
+/* == 2. PAINEL DE CONTEÚDO                                              == */
+/* ========================================================================== */
+
+/* O painel principal que contém todos os elementos. */
 .hub-loader-content {
   width: 100%;
   max-width: 640px;
@@ -16,10 +40,14 @@
   border-radius: var(--radius-xl);
   padding: var(--space-8);
   position: relative;
-  animation: slideUp 0.4s ease-out;
+  animation: slideInUp var(--transition-base) ease-out; /* Animação de entrada */
 }
 
-/* Header minimalista */
+
+/* ========================================================================== */
+/* == 3. CABEÇALHO                                                       == */
+/* ========================================================================== */
+
 .hub-loader-header {
   text-align: center;
   margin-bottom: var(--space-8);
@@ -38,31 +66,39 @@
   margin: 0;
 }
 
-/* Formulário */
+
+/* ========================================================================== */
+/* == 4. FORMULÁRIO DE ENTRADA                                           == */
+/* ========================================================================== */
+
 .hub-loader-form {
   margin-bottom: var(--space-6);
 }
 
+/* Agrupa o campo de input e o botão. */
 .hub-loader-input-group {
   display: flex;
   gap: var(--space-3);
-  align-items: stretch;
+  align-items: stretch; /* Garante que o input e o botão tenham a mesma altura */
 }
 
+/* Campo de texto para URL ou ID do hub. */
 .hub-loader-input {
-  flex: 1;
+  flex: 1; /* Ocupa o espaço restante */
   padding: var(--space-3) var(--space-4);
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   color: var(--color-text-primary);
+  transition: all var(--transition-fast);
 }
-
 .hub-loader-input:focus {
+  outline: none;
   border-color: var(--color-primary-600);
-  box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.1);
+  box-shadow: 0 0 0 2px var(--color-primary-500-alpha);
 }
 
+/* Botão para submeter o formulário. */
 .hub-loader-button {
   display: flex;
   align-items: center;
@@ -74,12 +110,22 @@
   border: none;
   border-radius: var(--radius-lg);
   cursor: pointer;
+  transition: background-color var(--transition-fast);
 }
-
 .hub-loader-button:hover:not(:disabled) {
   background: var(--color-primary-700);
 }
+.hub-loader-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
+
+/* ========================================================================== */
+/* == 5. INDICADOR DE LOADING (SPINNER)                                  == */
+/* ========================================================================== */
+
+/* Spinner exibido dentro do botão durante o carregamento. */
 .hub-loader-spinner {
   width: 18px;
   height: 18px;
@@ -89,8 +135,39 @@
   animation: spin 1s linear infinite;
 }
 
-/* Animações */
-@keyframes slideUp {
+
+/* ========================================================================== */
+/* == 6. HISTÓRICO E OUTRAS SEÇÕES                                       == */
+/* ========================================================================== */
+
+.hub-history-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+    text-align: center;
+}
+
+.hub-history-list {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.hub-history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--color-surface-elevated);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+}
+
+/* ========================================================================== */
+/* == 7. ANIMAÇÕES                                                        == */
+/* ========================================================================== */
+
+@keyframes slideInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -107,7 +184,10 @@
   }
 }
 
-/* Estilização do Widget do RemoteStorage */
+/* ========================================================================== */
+/* == 8. ESTILIZAÇÃO DO WIDGET DO REMOTESTORAGE                           == */
+/* ========================================================================== */
+
 /* Removendo estilo para o contêiner específico */
 /* #remotestorage-widget-container { ... } */
 

@@ -1,22 +1,41 @@
-/* src/styles/base.css - Base Styles e Reset */
+/* ========================================================================== */
+/* ==                  ESTILOS BASE E RESET DA APLICAÇÃO                   == */
+/* ========================================================================== */
+/*
+ * Este arquivo define os estilos fundamentais e realiza um "reset" para
+ * garantir consistência visual em diferentes navegadores.
+ *
+ * Inclui:
+ * - Reset de margens e paddings.
+ * - Definição da tipografia base (corpo, títulos, links).
+ * - Estilos padrão para elementos comuns como imagens e formulários.
+*/
 
-/* Reset básico e configurações globais */
+
+/* ========================================================================== */
+/* == 1. RESET E CONFIGURAÇÕES GLOBAIS                                   == */
+/* ========================================================================== */
+
+/* Garante que o modelo de caixa (box model) seja consistente. */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
+/* Remove margens e paddings padrão de todos os elementos. */
 * {
   margin: 0;
   padding: 0;
 }
 
+/* Configurações globais para o HTML. */
 html {
-  font-size: 16px;
-  scroll-behavior: smooth;
+  font-size: 16px; /* Define a base para unidades 'rem' */
+  scroll-behavior: smooth; /* Rolagem suave para âncoras */
 }
 
+/* Estilos padrão para o corpo da página. */
 body {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-base);
@@ -24,18 +43,24 @@ body {
   line-height: var(--line-height-normal);
   color: var(--color-text-primary);
   background-color: var(--color-background);
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased; /* Melhora a renderização de fontes */
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  overflow-x: hidden; /* Previne scroll horizontal indesejado */
 }
 
-/* Elementos de texto */
+
+/* ========================================================================== */
+/* == 2. TIPOGRAFIA                                                      == */
+/* ========================================================================== */
+
+/* Estilos base para todos os títulos. */
 h1, h2, h3, h4, h5, h6 {
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
   color: var(--color-text-primary);
 }
 
+/* Tamanhos de fonte para cada nível de título. */
 h1 { font-size: var(--font-size-4xl); }
 h2 { font-size: var(--font-size-3xl); }
 h3 { font-size: var(--font-size-2xl); }
@@ -43,46 +68,61 @@ h4 { font-size: var(--font-size-xl); }
 h5 { font-size: var(--font-size-lg); }
 h6 { font-size: var(--font-size-base); }
 
+/* Estilo padrão para parágrafos. */
 p {
   color: var(--color-text-secondary);
   line-height: var(--line-height-relaxed);
 }
 
+/* Estilo padrão para links. */
 a {
   color: var(--color-primary-400);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
-
 a:hover {
   color: var(--color-primary-300);
 }
 
-/* Listas */
+
+/* ========================================================================== */
+/* == 3. ELEMENTOS COMUNS                                                == */
+/* ========================================================================== */
+
+/* Remove os marcadores padrão de listas. */
 ul, ol {
   list-style: none;
 }
 
-/* Imagens e mídia */
+/* Garante que imagens sejam responsivas. */
 img {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-/* Formulários */
+/* Garante que elementos de formulário herdem a fonte do corpo. */
 button, input, textarea, select {
   font: inherit;
   color: inherit;
 }
 
+/* Remove estilos padrão de botões. */
 button {
   cursor: pointer;
   border: none;
   background: none;
 }
 
-/* Utilitários de acessibilidade */
+
+/* ========================================================================== */
+/* == 4. UTILITÁRIOS DE ACESSIBILIDADE                                   == */
+/* ========================================================================== */
+
+/*
+ * Classe para esconder visualmente um elemento, mas mantê-lo acessível
+ * para leitores de tela.
+*/
 .sr-only {
   position: absolute;
   width: 1px;
@@ -95,33 +135,35 @@ button {
   border: 0;
 }
 
-/* Focus styles */
+/*
+ * Estilo de foco visível e consistente para navegação via teclado.
+ * A classe `.focus-visible` é geralmente adicionada via JavaScript.
+*/
 .focus-visible:focus-visible {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
-/* Scrollbar personalizada */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+/* ========================================================================== */
+/* == 5. ESTILOS PARA COMPONENTES ESPECÍFICOS                              == */
+/* ========================================================================== */
 
-::-webkit-scrollbar-track {
-  background: var(--color-surface);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gray-500);
-}
-
-/* Scrollbar para Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) var(--color-surface);
-}
+/*
+ * Aqui você pode adicionar estilos específicos para componentes da sua
+ * aplicação, como botões, cartões, modais, etc.
+ *
+ * Exemplo:
+ *
+ * .btn {
+ *   background-color: var(--color-primary);
+ *   color: white;
+ *   padding: 0.5rem 1rem;
+ *   border-radius: var(--radius-md);
+ *   transition: background-color var(--transition-fast);
+ * }
+ *
+ * .btn:hover {
+ *   background-color: var(--color-primary-dark);
+ * }
+*/
