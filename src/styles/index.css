@@ -4,7 +4,6 @@
 @import './components.css';
 @import './animations.css';
 @import './hub-loader.css';
-@import './remotestorage-widget.css';
 
 /* Estilos específicos da aplicação */
 
@@ -12,6 +11,8 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 1;
 }
 
 /* Tipografia específica */
@@ -20,35 +21,74 @@
     font-weight: var(--font-weight-bold);
 }
 
-/* Fundo animado, leve e performático */
+/* --- NOVO FUNDO ANIMADO --- */
+/* Um fundo mais dinâmico com um efeito de aurora */
 .animated-bg {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100vh;
-    z-index: -1;
+    z-index: -2; /* Colocado atrás de tudo */
     background-color: var(--color-background);
-    background-image: 
-        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.04) 0%, transparent 30%);
-    animation: subtle-breathing 15s ease-in-out infinite;
+    background-image:
+        /* Opacidade aumentada para um efeito mais presente */
+        radial-gradient(ellipse at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(139, 0, 0, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 90%, rgba(59, 130, 246, 0.12) 0%, transparent 50%);
+    animation: move-aurora 30s ease-in-out infinite alternate;
 }
 
-@keyframes subtle-breathing {
+@keyframes move-aurora {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+    to {
+        transform: scale(1.2) rotate(20deg);
+    }
+}
+/* --- FIM DO NOVO FUNDO ANIMADO --- */
+
+
+/* --- ESTILOS DAS PARTÍCULAS QUE FALTAVAM --- */
+#particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none; /* Garante que as partículas não interfiram com cliques */
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    bottom: 0; /* Começam de baixo */
+    background-color: var(--color-light-gray);
+    border-radius: 50%;
+    opacity: 0;
+    /* A animação é definida via JS no App.jsx */
+    animation-name: rise;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes rise {
     0% {
-        transform: scale(1);
-        opacity: 1;
+        transform: translateY(0) scale(0.5);
+        opacity: 0.5;
     }
     50% {
-        transform: scale(1.05);
         opacity: 0.8;
     }
     100% {
-        transform: scale(1);
-        opacity: 1;
+        transform: translateY(-110vh) scale(1); /* Sobe até desaparecer */
+        opacity: 0;
     }
 }
+/* --- FIM DOS ESTILOS DAS PARTÍCULAS --- */
+
 
 /* Animações */
 .fade-in {
@@ -78,7 +118,8 @@
   justify-content: center;
   position: fixed !important; /* Aplicar posicionamento ao botão */
   bottom: 2rem; /* Aplicar posicionamento ao botão */
-  left: 2rem; /* Aplicar posicionamento ao botão */
+  right: 2rem; /* Aplicar posicionamento ao botão */
+  left: auto !important; /* Remover posicionamento esquerdo */
   width: 40px; /* Aplicar dimensionamento ao botão */
   height: 40px; /* Aplicar dimensionamento ao botão */
   z-index: 100; /* Garantir que o botão esteja acima de outros elementos */
@@ -87,4 +128,67 @@
 
 .remotestorage-button svg {
   filter: invert(1) !important; /* Inverte o ícone laranja para branco/cinza */
+}
+
+/* Estilos para o widget minimalista de conexão */
+.storage-widget-button {
+    position: fixed;
+    bottom: var(--space-6); /* Posição na parte inferior */
+    right: var(--space-6); /* Posição na parte direita */
+    z-index: 100; /* Garante que fique acima de outros elementos */
+    background-color: var(--color-primary-600); /* Cor de fundo */
+    color: white; /* Cor do texto/ícone */
+    border: none;
+    border-radius: 50%; /* Formato redondo */
+    width: 48px; /* Tamanho do botão */
+    height: 48px; /* Tamanho do botão */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xl); /* Tamanho do ícone/texto */
+    cursor: pointer;
+    box-shadow: var(--shadow-md); /* Sombra sutil */
+    transition: background-color 0.2s ease, transform 0.2s ease; /* Adicionado transform para animação */
+}
+
+.storage-widget-button:hover {
+    background-color: var(--color-primary-700); /* Cor ao passar o mouse */
+    transform: scale(1.1); /* Efeito de zoom suave */
+}
+
+/* Estilos para posicionar o contêiner principal do widget remotestorage */
+.remotestorage-widget,
+.remotestorage-widget * { /* Aplicar a todos os elementos dentro do widget também, se necessário */
+  position: fixed !important;
+  bottom: 2rem !important;
+  right: 2rem !important;
+  left: auto !important; /* Garante que não haja posicionamento à esquerda */
+  top: auto !important; /* Garante que não haja posicionamento superior */
+  z-index: 1000 !important; /* Garante que fique acima da maioria dos outros elementos */
+}
+
+/* Estilos para posicionar o contêiner do widget remotestorage no canto inferior direito */
+#remotestorage-widget-container {
+  position: fixed !important; /* Força o posicionamento fixo */
+  bottom: 20px !important; /* Distância da parte inferior */
+  right: 20px !important; /* Distância da parte direita */
+  left: auto !important; /* Garante que não haja posicionamento à esquerda */
+  top: auto !important; /* Garante que não haja posicionamento superior */
+  z-index: 1000 !important; /* Garante que fique acima da maioria dos outros elementos */
+  /* Opcional: adicione uma borda ou fundo temporário para depuração */
+  /* border: 1px solid red !important; */
+  /* background-color: rgba(255, 0, 0, 0.1) !important; */
+}
+
+/* Estilos para garantir que o widget dentro do contêiner não sobrescreva o posicionamento */
+#remotestorage-widget-container .remotestorage-widget {
+    position: static !important; /* Remove o posicionamento fixo padrão do widget */
+    /* Adicione outras regras de reset se necessário, como top, left, bottom, right */
+    top: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    right: auto !important;
+    /* Remova margens ou transformações que possam afetar o posicionamento */
+    margin: 0 !important;
+    transform: none !important;
 }

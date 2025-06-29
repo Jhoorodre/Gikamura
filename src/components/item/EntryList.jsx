@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 
-const ChapterList = ({ mangaData, onSelectChapter, sortOrder, setSortOrder }) => {
-    const chapterKeys = useMemo(() => {
-        if (!mangaData?.chapters) return [];
-        const keys = Object.keys(mangaData.chapters);
+const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder }) => {
+    const entryKeys = useMemo(() => {
+        if (!itemData?.entries) return [];
+        const keys = Object.keys(itemData.entries);
         return keys.sort((a, b) => {
             const numA = parseFloat(a.match(/(\d+(\.\d+)?)/)?.[0]) || 0;
             const numB = parseFloat(b.match(/(\d+(\.\d+)?)/)?.[0]) || 0;
@@ -12,7 +12,7 @@ const ChapterList = ({ mangaData, onSelectChapter, sortOrder, setSortOrder }) =>
             }
             return sortOrder === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
         });
-    }, [mangaData, sortOrder]);
+    }, [itemData, sortOrder]);
 
     return (
         <div className="panel">
@@ -23,15 +23,15 @@ const ChapterList = ({ mangaData, onSelectChapter, sortOrder, setSortOrder }) =>
                 </button>
             </div>
             <div className="panel-body flex flex-col gap-2">
-                {chapterKeys.map((key) => {
-                    const chapter = mangaData.chapters[key];
+                {entryKeys.map((key) => {
+                    const entry = itemData.entries[key];
                     return (
                         <button 
                             key={key} 
-                            onClick={() => onSelectChapter(key)}
+                            onClick={() => onSelectEntry(key)}
                             className="entry-item"
                         >
-                            <span className="entry-item-title">Cap. {key}: {chapter.title}</span>
+                            <span className="entry-item-title">Cap. {key}: {entry.title}</span>
                         </button>
                     );
                 })}
@@ -40,4 +40,4 @@ const ChapterList = ({ mangaData, onSelectChapter, sortOrder, setSortOrder }) =>
     );
 };
 
-export default ChapterList;
+export default EntryList;

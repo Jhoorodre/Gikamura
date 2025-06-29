@@ -5,13 +5,12 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
-  background: var(--color-background);
   position: relative;
 }
 
 .hub-loader-content {
   width: 100%;
-  max-width: 480px;
+  max-width: 640px; /* Aumentado de 480px para preencher melhor a tela */
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
@@ -31,14 +30,12 @@
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0 0 var(--space-2) 0;
-  letter-spacing: -0.025em;
 }
 
 .hub-loader-subtitle {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   margin: 0;
-  line-height: var(--line-height-relaxed);
 }
 
 /* Formulário */
@@ -55,27 +52,15 @@
 .hub-loader-input {
   flex: 1;
   padding: var(--space-3) var(--space-4);
-  font-size: var(--font-size-sm);
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   color: var(--color-text-primary);
-  transition: all var(--transition-fast);
-  outline: none;
 }
 
 .hub-loader-input:focus {
   border-color: var(--color-primary-600);
   box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.1);
-}
-
-.hub-loader-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.hub-loader-input::placeholder {
-  color: var(--color-text-muted);
 }
 
 .hub-loader-button {
@@ -88,27 +73,11 @@
   color: white;
   border: none;
   border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: all var(--transition-fast);
-  min-width: 100px;
-  height: 44px;
 }
 
 .hub-loader-button:hover:not(:disabled) {
   background: var(--color-primary-700);
-  transform: translateY(-1px);
-}
-
-.hub-loader-button:active {
-  transform: translateY(0);
-}
-
-.hub-loader-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
 }
 
 .hub-loader-spinner {
@@ -139,12 +108,10 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
 
 .storage-indicator.connected {
   background: var(--color-success);
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
 .storage-indicator.disconnected {
@@ -165,7 +132,6 @@
   border: 1px solid var(--color-primary-600);
   border-radius: var(--radius-base);
   cursor: pointer;
-  transition: all var(--transition-fast);
 }
 
 .storage-connect-btn:hover {
@@ -173,61 +139,48 @@
   color: white;
 }
 
-/* Footer */
-.hub-loader-footer {
-  text-align: center;
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-border);
-}
-
-.hub-loader-hint {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
-/* Botão RemoteStorage flutuante */
-.rs-floating-button {
+/* Estilos para o botão do ícone de nuvem no canto inferior esquerdo */
+.cloud-icon-button {
   position: fixed;
-  bottom: var(--space-6);
-  right: var(--space-6);
-  width: 48px;
-  height: 48px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
+  bottom: var(--space-4); /* Distância da parte inferior */
+  left: var(--space-4); /* Distância da parte esquerda */
+  z-index: 100; /* Garante que fique acima da maioria dos outros elementos */
+  background: var(--color-surface-elevated); /* Fundo sutil */
+  border: 1px solid var(--color-border); /* Borda */
+  border-radius: 50%; /* Redondo */
+  width: 48px; /* Tamanho do botão */
+  height: 48px; /* Tamanho do botão */
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: var(--shadow-md); /* Sombra */
   transition: all var(--transition-fast);
-  z-index: var(--z-fixed);
-  box-shadow: var(--shadow-lg);
 }
 
-.rs-floating-button:hover {
-  background: var(--color-surface-elevated);
-  border-color: var(--color-primary-600);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
+.cloud-icon-button:hover {
+  background: var(--color-surface); /* Mudar fundo ao passar o mouse */
+  border-color: var(--color-primary-600); /* Mudar borda ao passar o mouse */
 }
 
-.rs-floating-button svg {
-  color: var(--color-text-secondary);
-  transition: color var(--transition-fast);
+.cloud-icon-button svg {
+    width: 24px; /* Tamanho do ícone */
+    height: 24px; /* Tamanho do ícone */
+    color: var(--color-text-secondary); /* Cor do ícone */
+    transition: color var(--transition-fast);
 }
 
-.rs-floating-button:hover svg {
-  color: var(--color-primary-600);
+.cloud-icon-button:hover svg {
+    color: var(--color-primary-400); /* Mudar cor do ícone ao passar o mouse */
 }
 
 /* Animações */
 @keyframes slideUp {
-  0% {
+  from {
     opacity: 0;
     transform: translateY(20px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateY(0);
   }
@@ -255,13 +208,6 @@
   
   .hub-loader-button {
     width: 100%;
-  }
-  
-  .rs-floating-button {
-    bottom: var(--space-4);
-    right: var(--space-4);
-    width: 44px;
-    height: 44px;
   }
 }
 

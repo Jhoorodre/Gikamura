@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useHistory } from './context/HistoryContext';
-import { useItem } from './hooks/useItem';
+import React, { useState, useEffect } from 'react';
 import HubLoader from './components/hub/HubLoader';
 import HubHeader from './components/hub/HubHeader';
 import ItemGrid from './components/item/ItemGrid';
@@ -9,10 +7,13 @@ import EntryList from './components/item/EntryList';
 import ItemViewer from './components/item/ItemViewer';
 import Spinner from './components/common/Spinner';
 import ErrorMessage from './components/common/ErrorMessage';
-import Widget from 'remotestorage-widget';
+import { useItem } from './hooks/useItem';
+import { widget, remoteStorage } from './services/remoteStorage'; // Importamos o widget e a instância do remoteStorage
+
 import './styles/index.css';
 
 const createParticles = () => {
+    // A sua função de partículas permanece a mesma
     const container = document.getElementById('particles-container');
     if (!container || container.childElementCount > 0) return;
     for (let i = 0; i < 20; i++) {
@@ -34,33 +35,45 @@ function App() {
     const [currentPage, setCurrentPage] = useState(0);
     const [readingMode, setReadingMode] = useState('paginated');
     const [sortOrder, setSortOrder] = useState('desc');
+    const [isConnected, setIsConnected] = useState(false); // Estado para saber se está conectado
 
-    const history = useHistory();
-    const { remoteStorage } = history; // Obter remoteStorage do contexto
     const { loading: itemLoading, error: itemError, fetchItemData } = useItem();
     const [hubLoading, setHubLoading] = useState(false);
     const [hubError, setHubError] = useState(null);
-    const widgetRef = useRef();
-    const [widgetReady, setWidgetReady] = useState(false);
 
     useEffect(() => {
         createParticles();
-        // Cria e anexa o widget SOMENTE QUANDO remoteStorage estiver disponível
-        if (remoteStorage) {
-            widgetRef.current = new Widget(remoteStorage);
-            widgetRef.current.attach(); // Anexa o widget ao DOM
-            setWidgetReady(true);
-        } else {
-            // Opcional: lidar com o caso onde remoteStorage ainda não está pronto
-            setWidgetReady(false);
-        }
-    }, [remoteStorage]); // Depender de remoteStorage para recriar/anexar o widget se ele mudar
 
-    // Adiciona referência ao widget para o botão customizado
-    const handleWidgetClick = () => {
-        if (widgetRef.current) {
-            widgetRef.current.toggle(); // Usa toggle para mostrar/ocultar o widget
+        // Monitora o estado da conexão do RemoteStorage
+        const handleConnectionChange = () => {
+            setIsConnected(remoteStorage.connected);
+        };
+
+        remoteStorage.on('connected', handleConnectionChange);
+        remoteStorage.on('disconnected', handleConnectionChange);
+        handleConnectionChange(); // Verifica o estado inicial
+
+        // Anexa o widget ao contêiner após a renderização inicial
+        if (typeof document !== 'undefined') {
+            widget.attach('remotestorage-widget-container');
         }
+
+        return () => {
+            remoteStorage.removeEventListener('connected', handleConnectionChange);
+            remoteStorage.removeEventListener('disconnected', handleConnectionChange);
+            // Opcional: Limpar o widget ao desmontar o componente, se necessário
+            // if (typeof document !== 'undefined') {
+            //     const container = document.getElementById('remotestorage-widget-container');
+            //     if (container) {
+            //         container.innerHTML = ''; // Remove o conteúdo do widget
+            //     }
+            // }
+        };
+    }, []);
+    
+    // Função para mostrar/ocultar o widget NATIVO
+    const handleToggleWidget = () => {
+        widget.toggle();
     };
 
     const loadHub = async (url) => {
@@ -108,34 +121,18 @@ function App() {
         setHubData(null);
         setSelectedItemData(null);
         setSelectedEntryKey(null);
-        setHubError(null);
+        setCurrentPage(0);
     };
 
     const getEntryKeys = () => {
-        if (!selectedItemData?.entries) return [];
+        if (!selectedItemData || !selectedItemData.entries) return [];
         const keys = Object.keys(selectedItemData.entries);
-        return keys.sort((a, b) => {
-            const numA = parseFloat(a.match(/(\d+(\.\d+)?)/)?.[0]) || 0;
-            const numB = parseFloat(b.match(/(\d+(\.\d+)?)/)?.[0]) || 0;
-            if (numA !== numB) {
-                return sortOrder === 'asc' ? numA - numB : numB - numA;
-            }
-            return sortOrder === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
-        });
-    };
-
-    const navigateEntry = (direction) => {
-        const entryKeys = getEntryKeys();
-        const currentIndex = entryKeys.indexOf(selectedEntryKey);
-        const nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
-        if (nextIndex >= 0 && nextIndex < entryKeys.length) {
-            selectEntry(entryKeys[nextIndex]);
-        }
+        return sortOrder === 'asc' ? keys.sort((a, b) => a - b) : keys.sort((a, b) => b - a);
     };
 
     if (hubLoading || itemLoading) return <div className="min-h-screen flex items-center justify-center"><Spinner /></div>;
-    if (hubError) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message={hubError} onRetry={resetApp} /></div>;
-    if (itemError) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message={itemError} onRetry={() => setSelectedItemData(null)} /></div>;
+
+    if (hubError) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message={`Erro ao carregar hub: ${hubError}`} /></div>;
 
     const entryKeys = currentHubData ? getEntryKeys() : [];
     const currentEntryIndex = currentHubData ? entryKeys.indexOf(selectedEntryKey) : -1;
@@ -144,26 +141,15 @@ function App() {
         <div className="min-h-screen flex flex-col">
             <div className="animated-bg"></div>
             <div id="particles-container"></div>
-
-            {/* Botão customizado RemoteStorage minimalista no canto inferior esquerdo */}
-            {widgetReady && (
-                <button
-                    onClick={handleWidgetClick}
-                    className="remotestorage-button"
-                    title="Conectar armazenamento"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                </button>
-            )}
-
+            
             <main className="flex-grow flex flex-col">
                 {!currentHubData ? (
                     <div className="flex-grow flex items-center justify-center p-4 min-h-screen">
                         <HubLoader
                             onLoadHub={loadHub}
                             loading={hubLoading}
+                            isConnected={isConnected} // Passa o estado da conexão
+                            onConnectClick={handleToggleWidget} // Passa a função para abrir o widget
                         />
                     </div>
                 ) : (
@@ -191,10 +177,22 @@ function App() {
                                 onBack={backToItem}
                                 readingMode={readingMode}
                                 setReadingMode={setReadingMode}
-                                onNextEntry={() => navigateEntry('next')}
-                                onPrevEntry={() => navigateEntry('prev')}
-                                isFirstEntry={currentEntryIndex === 0}
-                                isLastEntry={entryKeys.length > 0 && currentEntryIndex === entryKeys.length - 1}
+                                totalPages={selectedItemData.entries[selectedEntryKey].pages.length}
+                                currentPageIndex={currentPage}
+                                onNextPage={() => setCurrentPage(prev => Math.min(prev + 1, selectedItemData.entries[selectedEntryKey].pages.length - 1))}
+                                onPrevPage={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                                onNextEntry={() => {
+                                    const nextIndex = currentEntryIndex + 1;
+                                    if (nextIndex < entryKeys.length) {
+                                        selectEntry(entryKeys[nextIndex]);
+                                    }
+                                }}
+                                onPrevEntry={() => {
+                                    const prevIndex = currentEntryIndex - 1;
+                                    if (prevIndex >= 0) {
+                                        selectEntry(entryKeys[prevIndex]);
+                                    }
+                                }}
                             />
                         )}
                     </div>
