@@ -37,6 +37,8 @@ function App() {
     const [readingMode, setReadingMode] = useState('paginated');
     const [sortOrder, setSortOrder] = useState('desc');
     const [isConnected, setIsConnected] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false); // 1. Estado para controlar a sincronização
+    const [conflictMessage, setConflictMessage] = useState(null);
 
     const { loading: itemLoading, error: itemError, fetchItemData } = useItem();
     const [hubLoading, setHubLoading] = useState(false);
@@ -62,7 +64,20 @@ function App() {
 
         remoteStorage.on('connected', handleConnectionChange);
         remoteStorage.on('disconnected', handleConnectionChange);
-        
+
+        const handleSyncReqDone = () => setIsSyncing(true); // 4. Handler para início da sincronização
+        const handleSyncDone = () => setIsSyncing(false); // 5. Handler para fim da sincronização
+
+        remoteStorage.on('sync-req-done', handleSyncReqDone); // 6. Adiciona o listener para sync-req-done
+        remoteStorage.on('sync-done', handleSyncDone); // 7. Adiciona o listener para sync-done
+
+        const handleConflict = (conflictEvent) => {
+            console.warn("Conflito detectado!", conflictEvent);
+            setConflictMessage("Detectamos um conflito de dados. A versão mais recente foi mantida.");
+            setTimeout(() => setConflictMessage(null), 7000); // Mensagem some após 7s
+        };
+        remoteStorage.on('conflict', handleConflict);
+
         // Verifica o estado inicial da conexão
         handleConnectionChange();
 
@@ -70,14 +85,9 @@ function App() {
         return () => {
             remoteStorage.removeEventListener('connected', handleConnectionChange);
             remoteStorage.removeEventListener('disconnected', handleConnectionChange);
-            
-            // A limpeza do widget não é mais necessária aqui,
-            // pois o widget persiste durante a vida da aplicação.
-            // Se precisar desmontá-lo em algum momento, a lógica seria:
-            // if (widgetRef.current && typeof widgetRef.current.dispose === 'function') {
-            //     widgetRef.current.dispose();
-            //     widgetRef.current = null;
-            // }
+            remoteStorage.removeEventListener('sync-req-done', handleSyncReqDone); // 8. Remove o listener para sync-req-done
+            remoteStorage.removeEventListener('sync-done', handleSyncDone); // 9. Remove o listener para sync-done
+            remoteStorage.removeEventListener('conflict', handleConflict);
         };
     }, []); // O array vazio [] garante que este código só é executado uma vez.
 
@@ -86,20 +96,30 @@ function App() {
     const loadHubAndSave = async (url) => {
         setHubLoading(true);
         setHubError(null);
+
+        // Tenta carregar do cache primeiro
+        const cachedHub = sessionStorage.getItem(url);
+        if (cachedHub) {
+            console.log("Hub carregado do cache!");
+            setHubData(JSON.parse(cachedHub));
+            setHubLoading(false);
+            return;
+        }
+
         try {
             const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
             if (!response.ok) throw new Error(`Não foi possível carregar o hub (status: ${response.status})`);
             const data = await response.json();
+            // Salva no cache após o sucesso
+            sessionStorage.setItem(url, JSON.stringify(data));
             setHubData(data);
 
             // Salva o hub no histórico usando as instâncias importadas
             if (remoteStorage.connected && globalHistoryHandler) { // <-- Use as instâncias importadas
                 const hubTitle = data.hub ? data.hub.title : "Hub Sem Título";
                 const hubIconUrl = (data.hub && data.hub.icon) ? data.hub.icon.url : undefined;
-                
                 await globalHistoryHandler.addHub(url, hubTitle, hubIconUrl);
             }
-
         } catch (err) {
             setHubError(err.message);
         } finally {
@@ -156,6 +176,16 @@ function App() {
         <div className="min-h-screen flex flex-col">
             <div className="animated-bg"></div>
             <div id="particles-container"></div>
+            {isSyncing && (
+                <div className="sync-indicator">
+                    <Spinner size="sm" text="Sincronizando..." />
+                </div>
+            )}
+            {conflictMessage && (
+                <div className="conflict-indicator">
+                    <ErrorMessage message={conflictMessage} />
+                </div>
+            )}
 
             <main className="flex-grow flex flex-col">
                 {!currentHubData ? (
