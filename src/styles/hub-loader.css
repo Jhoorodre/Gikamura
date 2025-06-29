@@ -10,7 +10,7 @@
 
 .hub-loader-content {
   width: 100%;
-  max-width: 640px; /* Aumentado de 480px para preencher melhor a tela */
+  max-width: 640px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
@@ -89,89 +89,39 @@
   animation: spin 1s linear infinite;
 }
 
-/* Status do armazenamento */
-.hub-loader-status {
-  margin-bottom: var(--space-6);
-  padding: var(--space-4);
-  background: var(--color-background);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-}
-
-.storage-status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.storage-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.storage-indicator.connected {
-  background: var(--color-success);
-}
-
-.storage-indicator.disconnected {
-  background: var(--color-text-muted);
-}
-
-.storage-text {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-  flex: 1;
-}
-
-.storage-connect-btn {
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--font-size-xs);
-  background: transparent;
-  color: var(--color-primary-600);
-  border: 1px solid var(--color-primary-600);
-  border-radius: var(--radius-base);
-  cursor: pointer;
-}
-
-.storage-connect-btn:hover {
-  background: var(--color-primary-600);
-  color: white;
-}
-
 /* Estilos para o botão do ícone de nuvem no canto inferior esquerdo */
 .cloud-icon-button {
   position: fixed;
-  bottom: var(--space-4); /* Distância da parte inferior */
-  left: var(--space-4); /* Distância da parte esquerda */
-  z-index: 100; /* Garante que fique acima da maioria dos outros elementos */
-  background: var(--color-surface-elevated); /* Fundo sutil */
-  border: 1px solid var(--color-border); /* Borda */
-  border-radius: 50%; /* Redondo */
-  width: 48px; /* Tamanho do botão */
-  height: 48px; /* Tamanho do botão */
+  bottom: var(--space-4);
+  left: var(--space-4);
+  z-index: 100;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: var(--shadow-md); /* Sombra */
+  box-shadow: var(--shadow-md);
   transition: all var(--transition-fast);
 }
 
 .cloud-icon-button:hover {
-  background: var(--color-surface); /* Mudar fundo ao passar o mouse */
-  border-color: var(--color-primary-600); /* Mudar borda ao passar o mouse */
+  background: var(--color-surface);
+  border-color: var(--color-primary-600);
 }
 
 .cloud-icon-button svg {
-    width: 24px; /* Tamanho do ícone */
-    height: 24px; /* Tamanho do ícone */
-    color: var(--color-text-secondary); /* Cor do ícone */
+    width: 24px;
+    height: 24px;
+    color: var(--color-text-secondary);
     transition: color var(--transition-fast);
 }
 
 .cloud-icon-button:hover svg {
-    color: var(--color-primary-400); /* Mudar cor do ícone ao passar o mouse */
+    color: var(--color-primary-400);
 }
 
 /* Animações */
@@ -192,77 +142,10 @@
   }
 }
 
-/* Responsividade */
-@media (max-width: 640px) {
-  .hub-loader-container {
-    padding: var(--space-4);
-  }
-  
-  .hub-loader-content {
-    padding: var(--space-6);
-  }
-  
-  .hub-loader-input-group {
-    flex-direction: column;
-  }
-  
-  .hub-loader-button {
-    width: 100%;
-  }
-}
-
-/* RemoteStorage Widget Styling */
-#remotestorage-widget {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  z-index: var(--z-modal) !important;
-  background: var(--color-surface) !important;
-  border: 1px solid var(--color-border) !important;
-  border-radius: var(--radius-xl) !important;
-  padding: var(--space-6) !important;
-  box-shadow: var(--shadow-xl) !important;
-  color: var(--color-text-primary) !important;
-  max-width: 400px !important;
-  width: 90vw !important;
-}
-
-#remotestorage-widget::backdrop {
-  background: rgba(0, 0, 0, 0.6) !important;
-}
-
-/* Ocultar elementos desnecessários do widget original */
-#remotestorage-widget .rs-cube,
-#remotestorage-widget .rs-logo {
-  display: none !important;
-}
-
-#remotestorage-widget .rs-bubble {
-  background: var(--color-surface) !important;
-  border: 1px solid var(--color-border) !important;
-  color: var(--color-text-primary) !important;
-}
-
-#remotestorage-widget input {
-  background: var(--color-background) !important;
-  border: 1px solid var(--color-border) !important;
-  color: var(--color-text-primary) !important;
-  border-radius: var(--radius-lg) !important;
-  padding: var(--space-3) !important;
-}
-
-#remotestorage-widget button {
-  background: var(--color-primary-600) !important;
-  color: white !important;
-  border: none !important;
-  border-radius: var(--radius-lg) !important;
-  padding: var(--space-3) var(--space-4) !important;
-  font-weight: var(--font-weight-medium) !important;
-  cursor: pointer !important;
-  transition: all var(--transition-fast) !important;
-}
-
-#remotestorage-widget button:hover {
-  background: var(--color-primary-700) !important;
+/* Estilização do Widget do RemoteStorage */
+#remotestorage-widget-container {
+  position: fixed;
+  z-index: 999;
+  bottom: 80px;  /* Posição acima do botão */
+  left: 20px;
 }

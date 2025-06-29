@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import HubLoader from './components/hub/HubLoader';
+import HubLoader from './components/hub/HubLoaderComponent.jsx'; // A importação foi atualizada para o novo nome do arquivo
 import HubHeader from './components/hub/HubHeader';
 import ItemGrid from './components/item/ItemGrid';
 import ItemInfo from './components/item/ItemInfo';
@@ -8,7 +8,7 @@ import ItemViewer from './components/item/ItemViewer';
 import Spinner from './components/common/Spinner';
 import ErrorMessage from './components/common/ErrorMessage';
 import { useItem } from './hooks/useItem';
-import { remoteStorage, attachWidget, toggleWidget } from './services/remoteStorage';
+import { remoteStorage, widget, connect } from './services/remoteStorage';
 
 import './styles/index.css';
 
@@ -43,7 +43,6 @@ function App() {
     useEffect(() => {
         createParticles();
 
-        // Monitora o estado da conexão do RemoteStorage
         const handleConnectionChange = () => {
             setIsConnected(remoteStorage.connected);
         };
@@ -52,13 +51,10 @@ function App() {
         remoteStorage.on('disconnected', handleConnectionChange);
         handleConnectionChange(); // Verifica o estado inicial
 
-        // Aguarda o DOM estar pronto antes de anexar o widget
-        const timeoutId = setTimeout(() => {
-            attachWidget();
-        }, 100);
+        // Anexa o widget ao contêiner
+        widget.attach('remotestorage-widget-container');
 
         return () => {
-            clearTimeout(timeoutId);
             remoteStorage.removeEventListener('connected', handleConnectionChange);
             remoteStorage.removeEventListener('disconnected', handleConnectionChange);
         };
@@ -135,8 +131,31 @@ function App() {
             <div className="animated-bg"></div>
             <div id="particles-container"></div>
             
-            {/* Container fixo para o widget do Remote Storage */}
+            {/* Contêiner do widget e botão de conexão */}
             <div id="remotestorage-widget-container"></div>
+            {!currentHubData && (
+                 <button
+                    type="button"
+                    onClick={connect}
+                    className="cloud-icon-button"
+                    title={isConnected ? 'Ver Conta Remote Storage' : 'Conectar Remote Storage'}
+                >
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-5 w-5" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor" 
+                        strokeWidth={2}
+                    >
+                        <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" 
+                        />
+                    </svg>
+                </button>
+            )}
             
             <main className="flex-grow flex flex-col">
                 {!currentHubData ? (
@@ -144,8 +163,6 @@ function App() {
                         <HubLoader
                             onLoadHub={loadHub}
                             loading={hubLoading}
-                            isConnected={isConnected}
-                            onConnectClick={handleToggleWidget}
                         />
                     </div>
                 ) : (

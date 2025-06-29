@@ -5,60 +5,26 @@ const RS_PATH = "cubari";
 
 // 1. Inicializa a lógica do RemoteStorage
 const remoteStorage = new RemoteStorage({
-  cache: true, // Ativa o cache para uso offline
+  cache: true,
 });
 
-// 2. Requisita permissão para ler e escrever na pasta 'hub-data'
+// 2. Requisita permissão de escrita/leitura
 remoteStorage.access.claim("hub-data", "rw");
 
-// 3. Ativa o cache para essa pasta
+// 3. Ativa o cache para a pasta
 remoteStorage.caching.enable("/hub-data/");
 
-// 4. Inicializa o Widget NATIVO
-const widget = new Widget(remoteStorage, {
-  // Configurações para forçar o posicionamento
-  autoCloseAfter: 0, // Não fecha automaticamente
-  modalBackdrop: false, // Remove o backdrop
-});
+// 4. Inicializa o Widget nativo
+const widget = new Widget(remoteStorage);
 
-// 5. Função para anexar o widget corretamente
-const attachWidget = () => {
-  if (typeof document !== "undefined") {
-    const container = document.getElementById('remotestorage-widget-container');
-    if (container) {
-      // Limpa qualquer conteúdo anterior
-      container.innerHTML = '';
-      
-      // Anexa o widget
-      widget.attach('remotestorage-widget-container');
-      
-      // Força o posicionamento após anexar
-      setTimeout(() => {
-        const widgetElement = container.querySelector('.rs-widget');
-        if (widgetElement) {
-          // Remove qualquer estilo inline que possa estar centralizando
-          widgetElement.style.position = 'relative';
-          widgetElement.style.top = 'auto';
-          widgetElement.style.left = 'auto';
-          widgetElement.style.right = 'auto';
-          widgetElement.style.bottom = 'auto';
-          widgetElement.style.transform = 'none';
-          widgetElement.style.margin = '0';
-        }
-      }, 100);
+// 5. Função para ATIVAR o widget (não mais para anexar)
+const connect = () => {
+    if (widget && typeof widget.toggle === 'function') {
+        widget.toggle();
     }
-  }
 };
 
-// 6. Função para toggle do widget
-const toggleWidget = () => {
-  if (widget && typeof widget.toggle === 'function') {
-    widget.toggle();
-  }
-};
-
-// 7. Exporta as funções e instâncias
-export { widget, remoteStorage, attachWidget, toggleWidget };
+export { remoteStorage, widget, connect };
 
 const globalHistoryHandler = (() => {
   const SORT_KEY = "timestamp";
