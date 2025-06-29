@@ -1,30 +1,52 @@
-import RemoteStorage from "remotestoragejs";
-import Widget from "remotestorage-widget";
+const RS_PATH = "Gika";
 
-const RS_PATH = "cubari";
+const remoteStorage = (() => {
+  const Model = {
+    name: RS_PATH,
+    builder: (privateClient) => {
+      // ... (código existente de SERIES_META)
 
-// 1. Inicializa a lógica do RemoteStorage
-const remoteStorage = new RemoteStorage({
-  cache: true,
-});
+      const HUB_META = "hub";
+      const HUB_REPLACEMENT_STR = "{HUB_URL_REPLACEMENT}";
+      const HUB_META_PATH_BASE = "hubs/";
+      const HUB_META_PATH = `${HUB_META_PATH_BASE}${HUB_REPLACEMENT_STR}`;
 
-// 2. Requisita permissão de escrita/leitura
-remoteStorage.access.claim("hub-data", "rw");
+      privateClient.declareType(HUB_META, {
+        type: "object",
+        properties: {
+          url: { type: "string" },
+          title: { type: "string" },
+          iconUrl: { type: "string" }, // -> CORRIGIDO: Adicionado campo para o ícone
+          timestamp: { type: "number" },
+        },
+        required: ["url", "title", "timestamp"], // iconUrl não é estritamente necessário
+      });
 
-// 3. Ativa o cache para a pasta
-remoteStorage.caching.enable("/hub-data/");
+      // -> CORRIGIDO: O construtor agora aceita 'iconUrl'
+      let hubPathBuilder = (path, hubUrl) => path.replace(HUB_REPLACEMENT_STR, btoa(hubUrl));
+      let hubBuilder = (url, title, iconUrl) => ({ url, title, iconUrl, timestamp: Date.now() });
 
-// 4. Inicializa o Widget nativo
-const widget = new Widget(remoteStorage);
+      return {
+        exports: {
+          // -> CORRIGIDO: A função 'addHub' agora aceita e guarda o 'iconUrl'
+          addHub: (url, title, iconUrl) => privateClient.storeObject(HUB_META, hubPathBuilder(HUB_META_PATH, url), hubBuilder(url, title, iconUrl)),
+          removeHub: (url) => privateClient.remove(hubPathBuilder(HUB_META_PATH, url)),
+          getAllHubs: () => privateClient.getAll(HUB_META_PATH_BASE),
+        },
+      };
+    },
+  };
 
-// 5. Função para ATIVAR o widget (não mais para anexar)
-const connect = () => {
-    if (widget && typeof widget.toggle === 'function') {
-        widget.toggle();
-    }
-};
+  let rs = new RemoteStorage({
+    cache: true,
+    modules: [Model],
+  });
 
-export { remoteStorage, widget, connect };
+  rs.access.claim(RS_PATH, "rw");
+  rs.caching.enable(`/${RS_PATH}/`);
+
+  return rs;
+})();
 
 const globalHistoryHandler = (() => {
   const SORT_KEY = "timestamp";
@@ -33,6 +55,7 @@ const globalHistoryHandler = (() => {
     return obj ? Object.values(obj).sort((a, b) => b[key] - a[key]) : [];
   };
 
+  // -> CORRIGIDO: A função 'addHub' agora passa o 'iconUrl'
   const addHub = (url, title, iconUrl) => remoteStorage[RS_PATH].addHub(url, title, iconUrl);
   const removeHub = (url) => remoteStorage[RS_PATH].removeHub(url);
   const getAllHubs = async () => sortObjectByKey(await remoteStorage[RS_PATH].getAllHubs(), SORT_KEY);
