@@ -1,151 +1,486 @@
-import RemoteStorage from 'remotestoragejs';
-import Widget from 'remotestorage-widget';
+import RemoteStorage from "remotestoragejs";
 
-// Define o nome do módulo de armazenamento. Pode ser "cubari", "Gika", ou o que preferir.
 const RS_PATH = "Gika";
 
-// --- Módulo Customizado para o RemoteStorage ---
-const GikaModule = {
-  name: RS_PATH,
-  builder: (privateClient) => {
-    const HUB_META_TYPE = "hub";
-    const HUB_META_PATH_BASE = "hubs/";
-    
-    // Declara o "schema" ou a estrutura de dados para um hub.
-    privateClient.declareType(HUB_META_TYPE, {
-      type: "object",
-      properties: {
-        url: { type: "string", required: true },
-        title: { type: "string", required: true },
-        iconUrl: { type: "string" }, // O URL do ícone é opcional
-        timestamp: { type: "number", required: true },
-      },
-    });
+export const remoteStorage = (() => {
+  // Define the schema for our history
+  const Model = {
+    name: RS_PATH,
+    builder: (privateClient) => {
+      // Series configuration
+      const SERIES_META = "series";
+      const SERIES_REPLACEMENT_STR = "{SOURCE_SLUG_REPLACEMENT}";
+      const SERIES_META_PATH_BASE = "series/";
+      const SERIES_META_PATH = `${SERIES_META_PATH_BASE}${SERIES_REPLACEMENT_STR}`;
 
-    /**
-     * Constrói o caminho único para cada hub guardado.
-     * Usa btoa() para codificar a URL e usá-la como um nome de ficheiro seguro.
-     * @param {string} hubUrl - A URL do hub.
-     * @returns {string} O caminho para o ficheiro do hub.
-     */
-    const getHubPath = (hubUrl) => `${HUB_META_PATH_BASE}${btoa(hubUrl)}`;
+      privateClient.declareType(SERIES_META, {
+        type: "object",
+        properties: {
+          slug: {
+            type: "string",
+          },
+          coverUrl: {
+            type: "string",
+          },
+          source: {
+            type: "string",
+          },
+          url: {
+            type: "string",
+          },
+          title: {
+            type: "string",
+          },
+          timestamp: {
+            type: "number",
+          },
+          chapters: {
+            type: "array",
+            default: [], // Note that these aren't validated by our schema handler
+          },
+          pinned: {
+            type: "boolean",
+            default: false, // Thus it's documenting only; handle it
+          },
+        },
+        required: [
+          "slug",
+          "source",
+          "url",
+          "title",
+          "timestamp",
+          "chapters",
+          "pinned",
+        ],
+      });
 
-    /**
-     * Cria um objeto de hub com os dados necessários.
-     * @param {string} url - A URL do hub.
-     * @param {string} title - O título do hub.
-     * @param {string} iconUrl - O URL do ícone do hub.
-     * @returns {object} O objeto de hub.
-     */
-    const createHubObject = (url, title, iconUrl) => ({
-      url,
-      title,
-      iconUrl,
-      timestamp: Date.now(),
-    });
+      // Hub configuration
+      const HUB_META = "hub";
+      const HUB_REPLACEMENT_STR = "{HUB_URL_REPLACEMENT}";
+      const HUB_META_PATH_BASE = "hubs/";
+      const HUB_META_PATH = `${HUB_META_PATH_BASE}${HUB_REPLACEMENT_STR}`;
 
-    // Expõe as funções que o seu código irá usar.
-    return {
-      exports: {
-        /**
-         * Guarda as informações de um hub no armazenamento remoto.
-         * @param {string} url - A URL do hub a ser guardada.
-         * @param {string} title - O título do hub.
-         * @param {string} iconUrl - O URL do ícone do hub.
-         */
-        addHub: (url, title, iconUrl) =>
-          privateClient.storeObject(
-            HUB_META_TYPE,
-            getHubPath(url),
-            createHubObject(url, title, iconUrl)
-          ),
+      privateClient.declareType(HUB_META, {
+        type: "object",
+        properties: {
+          url: { type: "string" },
+          title: { type: "string" },
+          iconUrl: { type: "string" },
+          timestamp: { type: "number" },
+        },
+        required: ["url", "title", "timestamp"],
+      });
 
-        /**
-         * Remove um hub do armazenamento remoto.
-         * @param {string} url - A URL do hub a ser removido.
-         */
-        removeHub: (url) => privateClient.remove(getHubPath(url)),
+      // Series helper functions
+      let slugBuilder = (slug, source) => {
+        return `${source}-${slug}`;
+      };
 
-        /**
-         * Obtém todos os hubs guardados.
-         * @returns {Promise<object>} Uma promessa que resolve para um objeto com todos os hubs.
-         */
-        getAllHubs: () => privateClient.getAll(HUB_META_PATH_BASE),
-      },
-    };
-  },
+      let pathBuilder = (path, slug, source) => {
+        return path.replace(SERIES_REPLACEMENT_STR, slugBuilder(slug, source));
+      };
+
+      let seriesBuilder = (
+        slug,
+        coverUrl,
+        source,
+        url,
+        title,
+        pinned,
+        chapters
+      ) => {
+        return {
+          slug: slug,
+          coverUrl: coverUrl || "",
+          source: source,
+          url: url,
+          title: title,
+          timestamp: Date.now(),
+          chapters: chapters || [],
+          pinned: pinned === undefined ? false : pinned,
+        };
+      };
+
+      // Hub helper functions
+      let hubPathBuilder = (path, hubUrl) => path.replace(HUB_REPLACEMENT_STR, btoa(hubUrl));
+      let hubBuilder = (url, title, iconUrl) => ({ url, title, iconUrl: iconUrl || "", timestamp: Date.now() });
+
+      return {
+        exports: {
+          // Series exports
+          slugBuilder,
+          addSeries: (slug, coverUrl, source, url, title, pinned, chapters) => {
+            let toStore = seriesBuilder(
+              slug,
+              coverUrl,
+              source,
+              url,
+              title,
+              pinned,
+              chapters
+            );
+            return privateClient.storeObject(
+              SERIES_META,
+              pathBuilder(SERIES_META_PATH, slug, source),
+              toStore
+            );
+          },
+          editSeries: async (
+            slug,
+            coverUrl,
+            source,
+            url,
+            title,
+            pinned,
+            chapters
+          ) => {
+            let obj = await privateClient.getObject(
+              pathBuilder(SERIES_META_PATH, slug, source)
+            );
+            if (obj) {
+              let toStore = seriesBuilder(
+                slug || obj.slug,
+                coverUrl || obj.coverUrl,
+                source || obj.source,
+                url || obj.url,
+                title || obj.title,
+                pinned !== undefined ? pinned : obj.pinned,
+                chapters || obj.chapters // Empty array is truthy
+              );
+              return privateClient.storeObject(
+                SERIES_META,
+                pathBuilder(SERIES_META_PATH, slug, source),
+                toStore
+              );
+            } else {
+              console.error(
+                "[Remote Storage] Cannot edit a non-existent series."
+              );
+            }
+          },
+          getSeries: (slug, source) => {
+            return privateClient.getObject(
+              pathBuilder(SERIES_META_PATH, slug, source),
+              false // Disable maxAge in order to prevent negative caching
+            );
+          },
+          removeSeries: (slug, source) => {
+            return privateClient.remove(
+              pathBuilder(SERIES_META_PATH, slug, source)
+            );
+          },
+          getAllSeries: () => {
+            // Note for the future: getAll gives you the objects within, while
+            // getListing gives you just a list of files; thus, this gives you the
+            // metadata within
+            if (privateClient.storage.connected) {
+              // maxAge cache in millis
+              return privateClient.getAll(SERIES_META_PATH_BASE, 60000);
+            } else {
+              // Promise resolves immediately if no storage is connected
+              // https://remotestoragejs.readthedocs.io/en/v1.2.3/js-api/base-client.html#caching-logic-for-read-operations
+              return privateClient.getAll(SERIES_META_PATH_BASE);
+            }
+          },
+          
+          // Hub exports
+          addHub: (url, title, iconUrl) => privateClient.storeObject(HUB_META, hubPathBuilder(HUB_META_PATH, url), hubBuilder(url, title, iconUrl)),
+          removeHub: (url) => privateClient.remove(hubPathBuilder(HUB_META_PATH, url)),
+          getAllHubs: () => privateClient.getAll(HUB_META_PATH_BASE),
+        },
+      };
+    },
+  };
+
+  let remoteStorage = new RemoteStorage({
+    cache: true,
+    modules: [Model],
+    // This is LITERALLY not documented, but I've dug into the code to find
+    // this behaviour; IndexedDB can fail to open if the previous commit failed,
+    // which causes startup times of the app to skyrocket. We'll disable it
+    // completely.
+    // https://github.com/remotestorage/remotestorage.js/blob/0e6ef757e6fd2d5c067207cb07b7d62e820a58ec/src/features.ts#L57-L65
+    disableFeatures: ["Dropbox", "GoogleDrive", "IndexedDB"],
+  });
+
+  remoteStorage.access.claim(RS_PATH, "rw");
+  remoteStorage.caching.enable(`/${RS_PATH}/`);
+
+  return remoteStorage;
+})();
+
+// This will be the main handler that deals with both
+// chapter and series history. All logic should be here
+// and abstracted from the rest of the code
+export const globalHistoryHandler = (() => {
+  const SORT_KEY = "timestamp";
+  const MAX_VALUES = 20;
+
+  // Helper to return an array of objects from a nested object, sorted by key
+  let sortObjectByKey = (obj, key) => {
+    if (!obj) return [];
+    let sortable = [];
+    for (let k in obj) {
+      sortable.push(obj[k]);
+    }
+    sortable.sort((f, s) => s[key] - f[key]);
+    return sortable;
+  };
+
+  const sync = async () => {
+    // Sync operation ensures the local cache doesn't have any dangling objects.
+    // We'll sort for the timestamp key since that's what we use everywhere else
+    let allSeries = await remoteStorage[RS_PATH].getAllSeries();
+    for (const [key, value] of Object.entries(allSeries)) {
+      try {
+        if (!value[SORT_KEY]) {
+          // We don't use split here since the slug can potentially include "-"
+          let separatorIndex = key.indexOf("-");
+          let slug = key.slice(separatorIndex + 1);
+          let source = key.slice(0, separatorIndex);
+          await remoteStorage[RS_PATH].removeSeries(slug, source);
+        }
+      } catch (e) {
+        console.error("[Global History] Sync error, continuing.");
+      }
+    }
+  };
+
+  // Series methods
+  const pushSeries = async (slug, coverUrl, source, url, title) => {
+    await sync();
+    let allCurrentSeries = sortObjectByKey(
+      (await remoteStorage[RS_PATH].getAllSeries()) || {},
+      SORT_KEY
+    );
+    let existingSeries = allCurrentSeries.find(
+      (e) => e.slug === slug && e.source === source
+    );
+
+    allCurrentSeries = allCurrentSeries.filter((e) => !e.pinned);
+
+    // Be mindful of the cap regardless of the state of the tree
+    while (allCurrentSeries.length + (existingSeries ? 0 : 1) > MAX_VALUES) {
+      let last = allCurrentSeries.pop();
+      await remoteStorage[RS_PATH].removeSeries(last.slug, last.source);
+    }
+
+    if (existingSeries) {
+      // Effectively this updates the timestamp of the series, pushing it to the top
+      return remoteStorage[RS_PATH].editSeries(
+        slug,
+        coverUrl,
+        source,
+        url,
+        title,
+        existingSeries.pinned,
+        existingSeries.chapters
+      );
+    } else {
+      return remoteStorage[RS_PATH].addSeries(
+        slug,
+        coverUrl,
+        source,
+        url,
+        title,
+        undefined,
+        undefined
+      );
+    }
+  };
+
+  const removeSeries = async (slug, source) => {
+    await sync();
+    return remoteStorage[RS_PATH].removeSeries(slug, source);
+  };
+
+  const removeAllUnpinnedSeries = async () => {
+    let series = await globalHistoryHandler.getAllUnpinnedSeries();
+    if (series) {
+      Array.prototype.forEach.call(series, (srs) => {
+        removeSeries(srs.slug, srs.source);
+      });
+    }
+  };
+
+  const addChapters = async (slug, source, chapters) => {
+    let existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+
+    if (existingSeries) {
+      chapters = [...new Set([...chapters, ...existingSeries.chapters])];
+      return remoteStorage[RS_PATH].editSeries(
+        slug,
+        undefined,
+        source,
+        undefined,
+        undefined,
+        undefined,
+        chapters
+      );
+    } else {
+      console.error("[Global History] addChapters - Series didn't exist.");
+    }
+  };
+
+  const addChapter = async (slug, source, chapter) => {
+    return addChapters(slug, source, [chapter]);
+  };
+
+  const removeChapter = async (slug, source, chapter) => {
+    let existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+
+    if (existingSeries) {
+      let chapters = existingSeries.chapters.filter((e) => e !== chapter);
+      return remoteStorage[RS_PATH].editSeries(
+        slug,
+        undefined,
+        source,
+        undefined,
+        undefined,
+        undefined,
+        chapters
+      );
+    } else {
+      console.error("[Global History] removeChapter - Series didn't exist.");
+    }
+  };
+
+  const removeAllChapters = async (slug, source) => {
+    let existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+
+    if (existingSeries) {
+      return remoteStorage[RS_PATH].editSeries(
+        slug,
+        undefined,
+        source,
+        undefined,
+        undefined,
+        undefined,
+        []
+      );
+    } else {
+      console.error(
+        "[Global History] removeAllChapters - series didn't exist."
+      );
+    }
+  };
+
+  const getReadChapters = async (slug, source) => {
+    let existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+
+    if (existingSeries) {
+      return existingSeries.chapters;
+    } else {
+      console.error("[Global History] getReadChapters - series didn't exist.");
+    }
+  };
+
+  const isSeriesPinned = async (slug, source) => {
+    let existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+    return existingSeries && existingSeries.pinned ? true : false; // Always return a boolean
+  };
+
+  const pinSeries = async (slug, coverUrl, source, url, title) => {
+    let existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+
+    if (existingSeries) {
+      return remoteStorage[RS_PATH].editSeries(
+        slug,
+        undefined,
+        source,
+        undefined,
+        undefined,
+        true,
+        undefined
+      );
+    } else {
+      return remoteStorage[RS_PATH].addSeries(
+        slug,
+        coverUrl,
+        source,
+        url,
+        title,
+        true,
+        undefined
+      );
+    }
+  };
+
+  const unpinSeries = async (slug, source) => {
+    let existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+
+    if (existingSeries) {
+      return remoteStorage[RS_PATH].editSeries(
+        slug,
+        undefined,
+        source,
+        undefined,
+        undefined,
+        false,
+        undefined
+      );
+    } else {
+      console.error("[Global History] unpinSeries - series didn't exist.");
+    }
+  };
+
+  const getAllPinnedSeries = async () => {
+    await sync();
+    return sortObjectByKey(
+      (await remoteStorage[RS_PATH].getAllSeries()) || {},
+      SORT_KEY
+    ).filter((e) => e.pinned);
+  };
+
+  const getAllUnpinnedSeries = async () => {
+    await sync();
+    return sortObjectByKey(
+      (await remoteStorage[RS_PATH].getAllSeries()) || {},
+      SORT_KEY
+    ).filter((e) => !e.pinned);
+  };
+
+  // Hub methods
+  const addHub = (url, title, iconUrl) => remoteStorage[RS_PATH].addHub(url, title, iconUrl);
+  const removeHub = (url) => remoteStorage[RS_PATH].removeHub(url);
+  const getAllHubs = async () => sortObjectByKey(await remoteStorage[RS_PATH].getAllHubs(), SORT_KEY);
+
+  return {
+    // Series methods
+    max: MAX_VALUES,
+    pushSeries,
+    removeSeries,
+    removeAllUnpinnedSeries,
+    addChapters,
+    addChapter,
+    removeChapter,
+    removeAllChapters,
+    getReadChapters,
+    isSeriesPinned,
+    pinSeries,
+    unpinSeries,
+    getAllPinnedSeries,
+    getAllUnpinnedSeries,
+    // Hub methods
+    addHub,
+    removeHub,
+    getAllHubs,
+  };
+})();
+
+export const purgePreviousCache = () => {
+  // Remove the nodes from the internal tree structure
+  remoteStorage.caching.reset();
+  // Clean up orphaned cache entries from the last time the app was loaded
+  for (let [key, value] of Object.entries(localStorage)) {
+    if (key.startsWith("remotestorage") && value === "undefined") {
+      localStorage.removeItem(key);
+    }
+  }
 };
 
-// --- Inicialização do RemoteStorage ---
-export const remoteStorage = new RemoteStorage({
-  cache: true,
-  modules: [GikaModule], // Adiciona o seu módulo customizado
-});
-
-// Reivindica acesso de leitura e escrita para o seu módulo
-remoteStorage.access.claim(RS_PATH, "rw");
-
-// Ativa o cache para o seu módulo
-remoteStorage.caching.enable(`/${RS_PATH}/`);
-
-// --- Inicialização do Widget ---
-export const widget = new Widget(remoteStorage);
-
-// --- Funções Auxiliares Exportadas ---
-
-/**
- * Inicia o processo de conexão do widget do RemoteStorage.
- * O widget irá tratar da interface de utilizador para a autenticação.
- */
-export const connect = () => {
-  widget.connect();
-};
-
-/**
- * Alterna a visibilidade do widget.
- */
-export const toggleWidget = () => {
-    widget.toggle();
-};
-
-
-// --- Handler Global (Opcional, mas mantém a consistência com o seu código) ---
-// Este handler facilita o acesso às funções do módulo.
-const globalHistoryHandler = {
-  /**
-   * Adiciona um hub ao histórico.
-   * @param {string} url - A URL do hub.
-   * @param {string} title - O título do hub.
-   * @param {string} iconUrl - O URL do ícone do hub.
-   */
-  addHub: (url, title, iconUrl) => remoteStorage[RS_PATH].addHub(url, title, iconUrl),
-  
-  /**
-   * Remove um hub do histórico.
-   * @param {string} url - A URL do hub.
-   */
-  removeHub: (url) => remoteStorage[RS_PATH].removeHub(url),
-
-  /**
-   * Obtém todos os hubs guardados e ordena-os por data (mais recente primeiro).
-   * @returns {Promise<Array<object>>} Uma promessa que resolve para uma lista de hubs.
-   */
-  getAllHubs: async () => {
-    const hubs = await remoteStorage[RS_PATH].getAllHubs();
-    // Verifica se hubs é um objeto antes de tentar ordenar
-    return hubs ? Object.values(hubs).sort((a, b) => b.timestamp - a.timestamp) : [];
-  },
-};
-
-// Disponibiliza as instâncias globalmente para fácil acesso em toda a aplicação,
-// especialmente para scripts que não são módulos ES6.
-window.remoteStorage = remoteStorage;
-window.globalHistoryHandler = globalHistoryHandler;
-window.Widget = Widget; // Garante que a classe Widget esteja disponível globalmente
-
-// Inicializa e anexa o widget quando o remoteStorage estiver pronto
-remoteStorage.on('ready', () => {
-  console.log('RemoteStorage is ready. Attaching widget.'); // Add console log
-  const widget = new Widget(remoteStorage);
-  widget.attach(); // Anexa globalmente, como no HTML
-});
+// For compatibility with the second file's window exports
+if (typeof window !== 'undefined') {
+  window.remoteStorage = remoteStorage;
+  window.globalHistoryHandler = globalHistoryHandler;
+}
