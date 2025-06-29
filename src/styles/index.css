@@ -96,236 +96,87 @@
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(var(--space-4));
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(var(--space-4)); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Estilização para o botão customizado do remotestorage */
-.remotestorage-button {
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  color: var(--color-text-primary) !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  position: fixed !important; /* Aplicar posicionamento ao botão */
-  bottom: 2rem; /* Aplicar posicionamento ao botão */
-  right: 2rem; /* Aplicar posicionamento ao botão */
-  left: auto !important; /* Remover posicionamento esquerdo */
-  width: 40px; /* Aplicar dimensionamento ao botão */
-  height: 40px; /* Aplicar dimensionamento ao botão */
-  z-index: 100; /* Garantir que o botão esteja acima de outros elementos */
-  cursor: pointer;
-}
+/* =================================================================== */
+/* VERSÃO 3: ESTILOS CORRIGIDOS PARA O WIDGET (COM CLIQUE FUNCIONAL) */
+/* =================================================================== */
 
-.remotestorage-button svg {
-  filter: invert(1) !important; /* Inverte o ícone laranja para branco/cinza */
-}
-
-/* Estilos para o widget minimalista de conexão */
-.storage-widget-button {
-    position: fixed;
-    bottom: var(--space-6); /* Posição na parte inferior */
-    right: var(--space-6); /* Posição na parte direita */
-    z-index: 100; /* Garante que fique acima de outros elementos */
-    background-color: var(--color-primary-600); /* Cor de fundo */
-    color: white; /* Cor do texto/ícone */
-    border: none;
-    border-radius: 50%; /* Formato redondo */
-    width: 48px; /* Tamanho do botão */
-    height: 48px; /* Tamanho do botão */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-xl); /* Tamanho do ícone/texto */
-    cursor: pointer;
-    box-shadow: var(--shadow-md); /* Sombra sutil */
-    transition: background-color 0.2s ease, transform 0.2s ease; /* Adicionado transform para animação */
-}
-
-.storage-widget-button:hover {
-    background-color: var(--color-primary-700); /* Cor ao passar o mouse */
-    transform: scale(1.1); /* Efeito de zoom suave */
-}
-
-/* Estilos para posicionar o contêiner principal do widget remotestorage */
-.remotestorage-widget,
-.remotestorage-widget * { /* Aplicar a todos os elementos dentro do widget também, se necessário */
-  position: fixed !important;
-  bottom: 2rem !important;
-  right: 2rem !important;
-  left: auto !important; /* Garante que não haja posicionamento à esquerda */
-  top: auto !important; /* Garante que não haja posicionamento superior */
-  z-index: 1000 !important; /* Garante que fique acima da maioria dos outros elementos */
-}
-
-/* Estilos para posicionar o contêiner do widget remotestorage no canto inferior direito */
-#remotestorage-widget-container {
-  position: fixed !important; /* Força o posicionamento fixo */
-  bottom: 20px !important; /* Distância da parte inferior */
-  right: 20px !important; /* Distância da parte direita */
-  left: auto !important; /* Garante que não haja posicionamento à esquerda */
-  top: auto !important; /* Garante que não haja posicionamento superior */
-  z-index: 1000 !important; /* Garante que fique acima da maioria dos outros elementos */
-  /* Opcional: adicione uma borda ou fundo temporário para depuração */
-  /* border: 1px solid red !important; */
-  /* background-color: rgba(255, 0, 0, 0.1) !important; */
-}
-
-/* Estilos para garantir que o widget dentro do contêiner não sobrescreva o posicionamento */
-#remotestorage-widget-container .remotestorage-widget {
-    position: static !important; /* Remove o posicionamento fixo padrão do widget */
-    /* Adicione outras regras de reset se necessário, como top, left, bottom, right */
-    top: auto !important;
-    left: auto !important;
-    bottom: auto !important;
-    right: auto !important;
-    /* Remova margens ou transformações que possam afetar o posicionamento */
-    margin: 0 !important;
-    transform: none !important;
-}
-
-/* Estilos adicionados para o Remote Storage Widget */
-
-/* CSS para posicionar o Remote Storage Widget no canto inferior esquerdo */
-
-/* Estilo para o botão da nuvem no canto inferior esquerdo */
-.cloud-icon-button {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  width: 50px;
-  height: 50px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 1000;
-  backdrop-filter: blur(10px);
-}
-
-.cloud-icon-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-}
-
-/* Container para o widget do Remote Storage */
-#remotestorage-widget-container {
-  position: fixed !important;
-  bottom: 80px !important; /* Acima do botão da nuvem */
-  left: 20px !important;
-  z-index: 999 !important;
-  max-width: 300px;
-}
-
-/* Estilos para o widget nativo do Remote Storage quando aparece */
-#remotestorage-widget-container .rs-widget {
-  position: relative !important;
-  background: rgba(40, 44, 52, 0.95) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 8px !important;
-  backdrop-filter: blur(10px) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* Estilos para os elementos internos do widget */
-#remotestorage-widget-container .rs-widget * {
-  color: white !important;
-}
-
-#remotestorage-widget-container .rs-widget input {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 4px !important;
-  color: white !important;
-  padding: 8px !important;
-}
-
-#remotestorage-widget-container .rs-widget input::placeholder {
-  color: rgba(255, 255, 255, 0.6) !important;
-}
-
-#remotestorage-widget-container .rs-widget button {
-  background: #dc2626 !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 4px !important;
-  padding: 8px 16px !important;
-  cursor: pointer !important;
-  transition: background-color 0.3s ease !important;
-}
-
-#remotestorage-widget-container .rs-widget button:hover {
-  background: #b91c1c !important;
-}
-
-/* Oculta o widget por padrão */
-#remotestorage-widget-container .rs-widget {
-  display: none;
-}
-
-/* Mostra o widget quando ativo */
-#remotestorage-widget-container .rs-widget.rs-state-connected,
-#remotestorage-widget-container .rs-widget.rs-state-busy,
-#remotestorage-widget-container .rs-widget.rs-state-offline,
-#remotestorage-widget-container .rs-widget.rs-state-error,
-#remotestorage-widget-container .rs-widget.rs-state-unauthorized,
-#remotestorage-widget-container .rs-widget.rs-open {
-  display: block !important;
-}
-
-/* Força o posicionamento correto do widget quando está aberto */
-.rs-widget.rs-open {
-  position: fixed !important;
-  bottom: 80px !important;
-  left: 20px !important;
-  top: auto !important;
-  right: auto !important;
-  transform: none !important;
-}
-
-/* Remove qualquer transformação que possa estar centralizando o widget */
-#remotestorage-widget-container .rs-widget,
-.rs-widget {
-  transform: none !important;
-  left: 0 !important;
-  top: auto !important;
-  right: auto !important;
-  margin: 0 !important;
-}
-
-/* Garante que o backdrop não interfira */
-.rs-widget-overlay {
+/*
+ * 1. Oculta APENAS os elementos visuais que não queremos.
+ * Isso deixa a caixa que contém o clique (.rs-box-initial) intacta.
+*/
+#remotestorage-widget.rs-state-initial .rs-widget-icon,
+#remotestorage-widget.rs-state-initial .rs-small-headline,
+#remotestorage-widget.rs-state-initial .rs-sub-headline {
   display: none !important;
 }
 
-/* Estilização específica para o modo conectado */
-.rs-widget.rs-state-connected {
-  background: rgba(34, 197, 94, 0.2) !important;
-  border-color: rgba(34, 197, 94, 0.3) !important;
+/*
+ * 2. Estiliza o WIDGET PRINCIPAL (o contêiner) para ser o nosso botão.
+*/
+#remotestorage-widget.rs-state-initial {
+  /* Aparência */
+  background-color: rgba(40, 40, 40, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(5px);
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  opacity: 0.8;
+
+  /* Tamanho e Posição */
+  width: 48px !important;
+  height: 48px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  cursor: pointer;
+
+  /* Animação */
+  transition: all 0.3s ease;
 }
 
-/* Estilização para modo offline */
-.rs-widget.rs-state-offline {
-  background: rgba(251, 191, 36, 0.2) !important;
-  border-color: rgba(251, 191, 36, 0.3) !important;
+#remotestorage-widget.rs-state-initial:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
-/* Estilização para modo de erro */
-.rs-widget.rs-state-error {
-  background: rgba(239, 68, 68, 0.2) !important;
-  border-color: rgba(239, 68, 68, 0.3) !important;
+/*
+ * 3. Garante que a caixa interna (que recebe o clique) ocupe todo o espaço
+ * e seja transparente, para vermos o ícone que está no fundo do pai.
+*/
+#remotestorage-widget.rs-state-initial .rs-box-initial {
+    opacity: 1 !important;
+    max-height: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important;
+}
+
+
+/*
+ * 4. Aplica o ícone SVG diretamente no fundo do widget principal.
+*/
+#remotestorage-widget.rs-state-initial {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.9 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z'/%3E%3C/svg%3E");
+  background-size: 65%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/*
+ * 5. Consistência para o estado CONECTADO e FECHADO
+ * Mantém a aparência de ícone redondo.
+*/
+#remotestorage-widget.rs-state-connected.rs-closed {
+    background: rgba(40, 40, 40, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+    width: 48px !important;
+    height: 48px !important;
+}
+
+#remotestorage-widget.rs-state-connected.rs-closed .rs-widget-icon {
+    display: none !important;
 }
