@@ -1,0 +1,99 @@
+/* Estilos específicos para o RemoteStorage e seu widget */
+
+/* Contêiner principal do widget */
+#remotestorage-widget {
+  /* Garantir que o widget não seja afetado por estilos externos de posicionamento/exibição */
+  position: initial !important;
+  display: initial !important;
+  width: initial !important;
+  height: initial !important;
+  z-index: initial !important;
+  bottom: initial !important;
+  left: initial !important;
+  right: initial !important;
+  top: initial !important;
+  margin: initial !important;
+  padding: initial !important;
+  /* Manter apenas estilos visuais se necessário */
+  background: initial !important; /* Remover background */
+  border: initial !important; /* Remover border */
+  box-shadow: initial !important; /* Remover box-shadow */
+  color: initial !important; /* Remover color */
+  box-sizing: border-box !important; /* Garantir modelo de caixa consistente */
+}
+
+/* Garantir que o backdrop do modal cubra toda a tela */
+.remotestorage-widget-modal-backdrop {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.75) !important; /* Exemplo de fundo escuro semi-transparente */
+    z-index: 99 !important; /* Abaixo do widget, mas acima do conteúdo da página */
+    display: block !important; /* Garantir que o backdrop seja exibido */
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important; /* Garantir modelo de caixa consistente */
+}
+
+/* Estilos para o conteúdo principal do widget modal */
+.rs-widget {
+    /* Garantir que o widget esteja centralizado e visível */
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 100 !important;
+    display: block !important; /* Garantir que o widget seja exibido */
+    /* Adicionar estilos visuais se desejar, como background, padding, border-radius, etc. */
+    background-color: var(--color-background-secondary) !important; /* Exemplo */
+    padding: var(--space-4) !important; /* Exemplo */
+    border-radius: var(--border-radius-md) !important; /* Exemplo */
+    box-shadow: var(--shadow-lg) !important; /* Exemplo */
+    color: var(--color-text-primary) !important; /* Exemplo */
+    /* Adicionar max-width e max-height para responsividade se necessário */
+    max-width: 90vw !important; /* Usar viewport width */
+    max-height: 90vh !important; /* Usar viewport height */
+    width: auto !important; /* Permitir que a largura seja ajustada pelo conteúdo/max-width */
+    height: auto !important; /* Permitir que a altura seja ajustada pelo conteúdo/max-height */
+    overflow: auto !important; /* Adicionar scroll se o conteúdo for maior que o modal */
+    margin: 0 !important;
+    box-sizing: border-box !important; /* Garantir modelo de caixa consistente */
+}
+
+/* Estilos para outros elementos internos do widget se necessário */
+/* Ex: .rs-box, .rs-state-initial, .rs-widget-icon, etc. */
+.rs-box,
+.rs-state-initial,
+.rs-widget-icon,
+.rs-content,
+.rs-sign-in-form {
+    position: initial !important;
+    display: initial !important;
+    width: initial !important;
+    height: initial !important;
+    margin: initial !important;
+    padding: initial !important;
+    overflow: initial !important;
+    box-sizing: border-box !important; /* Garantir modelo de caixa consistente */
+}
+
+/* Garantir que o html e body não impeçam a rolagem dentro do modal, se necessário */
+html,
+body {
+    overflow: initial !important;
+}
+
+#remotestorage-widget .rs-widget-button,
+#remotestorage-widget .rs-widget-button:hover {
+  background: none !important;
+  color: inherit !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+#remotestorage-widget .rs-widget-icon svg {
+  filter: invert(1) !important; /* Inverte o ícone laranja para branco/cinza */
+}

@@ -44,15 +44,16 @@ function App() {
 
     useEffect(() => {
         createParticles();
-        // Sempre cria uma nova instância do widget ao montar
+        // Sempre cria uma nova instância do widget ao montar e anexa ao DOM
         widgetRef.current = new Widget(history.remoteStorage);
+        widgetRef.current.attach(); // Anexa o widget ao DOM
         setWidgetReady(true);
     }, [history.remoteStorage]);
 
     // Adiciona referência ao widget para o botão customizado
     const handleWidgetClick = () => {
         if (widgetRef.current) {
-            widgetRef.current.display();
+            widgetRef.current.toggle(); // Usa toggle para mostrar/ocultar o widget
         }
     };
 
@@ -142,11 +143,10 @@ function App() {
             {widgetReady && (
                 <button
                     onClick={handleWidgetClick}
-                    className="fixed bottom-6 left-6 z-50 bg-transparent border-0 p-0 m-0 flex items-center justify-center"
-                    style={{ width: 40, height: 40 }}
+                    className="remotestorage-button"
                     title="Conectar armazenamento"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                 </button>
