@@ -2,7 +2,7 @@ import RemoteStorage from 'remotestoragejs';
 import Widget from 'remotestorage-widget';
 
 // Define o nome do módulo de armazenamento. Pode ser "cubari", "Gika", ou o que preferir.
-const RS_PATH = "cubari";
+const RS_PATH = "Gika";
 
 // --- Módulo Customizado para o RemoteStorage ---
 const GikaModule = {
@@ -79,12 +79,6 @@ const GikaModule = {
 // --- Inicialização do RemoteStorage ---
 export const remoteStorage = new RemoteStorage({
   cache: true,
-  changeEvents: {
-    local: true,
-    window: false,
-    remote: true,
-    conflict: true,
-  },
   modules: [GikaModule], // Adiciona o seu módulo customizado
 });
 
@@ -95,7 +89,6 @@ remoteStorage.access.claim(RS_PATH, "rw");
 remoteStorage.caching.enable(`/${RS_PATH}/`);
 
 // --- Inicialização do Widget ---
-// Cria a instância do widget UMA VEZ
 export const widget = new Widget(remoteStorage);
 
 // --- Funções Auxiliares Exportadas ---
@@ -150,8 +143,9 @@ window.remoteStorage = remoteStorage;
 window.globalHistoryHandler = globalHistoryHandler;
 window.Widget = Widget; // Garante que a classe Widget esteja disponível globalmente
 
-// Anexa o widget quando o remoteStorage estiver pronto, usando a instância exportada
+// Inicializa e anexa o widget quando o remoteStorage estiver pronto
 remoteStorage.on('ready', () => {
-  console.log('RemoteStorage is ready. Attaching widget.');
-  widget.attach(); // <-- Anexa a instância exportada
+  console.log('RemoteStorage is ready. Attaching widget.'); // Add console log
+  const widget = new Widget(remoteStorage);
+  widget.attach(); // Anexa globalmente, como no HTML
 });
