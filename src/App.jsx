@@ -148,9 +148,22 @@ function App() {
     };
 
     const selectEntry = (entryKey) => {
-        setSelectedEntryKey(entryKey);
-        setCurrentPage(0);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (remoteStorage.connected && selectedItemData) {
+            globalHistoryHandler.getLastReadPage(selectedItemData.slug, selectedItemData.source?.id)
+                .then(lastRead => {
+                    if (lastRead && lastRead.chapterKey === entryKey) {
+                        setCurrentPage(lastRead.page);
+                    } else {
+                        setCurrentPage(0);
+                    }
+                    setSelectedEntryKey(entryKey);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+        } else {
+            setCurrentPage(0);
+            setSelectedEntryKey(entryKey);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         // Salva capítulo como lido
         if (remoteStorage.connected && selectedItemData) {
             globalHistoryHandler.addChapter(selectedItemData.slug, selectedItemData.source?.id, entryKey)
@@ -238,6 +251,7 @@ function App() {
                         ) : (
                             <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Spinner /></div>}>
                                 <ItemViewer
+                                    itemData={{...selectedItemData, selectedEntryKey, source: { id: selectedItemData.source?.id }}}
                                     entry={selectedItemData.entries[selectedEntryKey]}
                                     page={currentPage}
                                     setPage={setCurrentPage}

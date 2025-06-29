@@ -56,11 +56,64 @@ export const createGlobalHistoryHandler = (remoteStorage) => {
     return existingSeries ? existingSeries.chapters || [] : [];
   };
 
+  // Atualiza a última página lida
+  const setLastReadPage = async (slug, source, chapterKey, page) => {
+    let existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+    if (existingSeries) {
+      const lastRead = { chapterKey, page };
+      return remoteStorage[RS_PATH].editSeries(
+        slug, undefined, source, undefined, undefined, undefined, undefined, lastRead
+      );
+    }
+  };
+
+  // Obtém a última página lida
+  const getLastReadPage = async (slug, source) => {
+    const existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+    return existingSeries ? existingSeries.lastRead : null;
+  };
+
+  // Ajuste: editSeries precisa aceitar lastRead
+  const editSeries = async (
+    slug,
+    coverUrl,
+    source,
+    url,
+    title,
+    pinned,
+    chapters,
+    lastRead
+  ) => {
+    let obj = await remoteStorage[RS_PATH].getSeries(slug, source);
+    if (obj) {
+      let toStore = Model.builder().exports.seriesBuilder(
+        slug || obj.slug,
+        coverUrl || obj.coverUrl,
+        source || obj.source,
+        url || obj.url,
+        title || obj.title,
+        pinned !== undefined ? pinned : obj.pinned,
+        chapters || obj.chapters,
+        lastRead !== undefined ? lastRead : obj.lastRead
+      );
+      return remoteStorage[RS_PATH].storeObject(
+        Model.builder().exports.SERIES_META,
+        Model.builder().exports.pathBuilder(Model.builder().exports.SERIES_META_PATH, slug, source),
+        toStore
+      );
+    } else {
+      console.error("[Remote Storage] Cannot edit a non-existent series.");
+    }
+  };
+
   return {
     // Series methods
     max: MAX_VALUES,
     addChapter,
     getReadChapters,
+    setLastReadPage,
+    getLastReadPage,
+    editSeries,
     // Hub methods
     addHub,
     removeHub,

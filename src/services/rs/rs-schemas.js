@@ -21,6 +21,14 @@ export const Model = {
         timestamp: { type: "number" },
         chapters: { type: "array", default: [] },
         pinned: { type: "boolean", default: false },
+        lastRead: {
+          type: "object",
+          properties: {
+            chapterKey: { type: "string" },
+            page: { type: "number" }
+          },
+          required: []
+        }
       },
       required: [
         "slug",
@@ -53,7 +61,7 @@ export const Model = {
     // Funções auxiliares e exports
     let slugBuilder = (slug, source) => `${source}-${slug}`;
     let pathBuilder = (path, slug, source) => path.replace(SERIES_REPLACEMENT_STR, slugBuilder(slug, source));
-    let seriesBuilder = (slug, coverUrl, source, url, title, pinned, chapters) => ({
+    let seriesBuilder = (slug, coverUrl, source, url, title, pinned, chapters, lastRead) => ({
       slug,
       coverUrl: coverUrl || "",
       source,
@@ -62,6 +70,7 @@ export const Model = {
       timestamp: Date.now(),
       chapters: chapters || [],
       pinned: pinned === undefined ? false : pinned,
+      lastRead: lastRead || null
     });
     let hubPathBuilder = (path, hubUrl) => path.replace(HUB_REPLACEMENT_STR, btoa(hubUrl));
     let hubBuilder = (url, title, iconUrl) => ({ url, title, iconUrl: iconUrl || "", timestamp: Date.now() });

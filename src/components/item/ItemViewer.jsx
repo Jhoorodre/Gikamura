@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import Spinner from '../common/Spinner';
 import ErrorMessage from '../common/ErrorMessage';
 import Image from '../common/Image';
+import { remoteStorage, globalHistoryHandler } from '../../services/remoteStorage.js';
 
-const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode, onNextEntry, onPrevEntry, isFirstEntry, isLastEntry }) => {
+const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode, onNextEntry, onPrevEntry, isFirstEntry, isLastEntry, itemData }) => {
     const [showControls, setShowControls] = useState(true);
     const controlTimeout = useRef(null);
 
@@ -44,6 +45,17 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [page, totalPages, readingMode, onNextEntry, onPrevEntry]);
+
+    useEffect(() => {
+        if (remoteStorage.connected && itemData && entry) {
+            globalHistoryHandler.setLastReadPage(
+                itemData.slug,
+                itemData.source?.id,
+                itemData.selectedEntryKey,
+                page
+            );
+        }
+    }, [page, itemData, entry]);
 
     return (
         <div className="relative">
