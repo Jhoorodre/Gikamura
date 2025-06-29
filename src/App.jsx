@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // 1. Adicione o useRef aqui
 import HubLoader from './components/hub/HubLoaderComponent.jsx';
 import HubHeader from './components/hub/HubHeader';
 import ItemGrid from './components/item/ItemGrid';
@@ -42,13 +42,18 @@ function App() {
     const [hubLoading, setHubLoading] = useState(false);
     const [hubError, setHubError] = useState(null);
 
+    const widgetRef = useRef(null); // 2. Crie uma ref para guardar a instância do widget
+
     useEffect(() => {
         // Cria as partículas (mantendo a sua função original)
         createParticles();
 
-        // Inicializa o widget do RemoteStorage
-        const widget = new Widget(remoteStorage);
-        widget.attach('remotestorage-widget');
+        // 3. Verifique se o widget já foi criado antes de o inicializar
+        if (!widgetRef.current) {
+            const widget = new Widget(remoteStorage);
+            widget.attach('remotestorage-widget');
+            widgetRef.current = widget; // Guarda a instância na ref
+        }
 
         // Define os listeners para o estado da conexão
         const handleConnectionChange = () => {
@@ -61,13 +66,18 @@ function App() {
         // Verifica o estado inicial da conexão
         handleConnectionChange();
 
-        // Função de limpeza para remover os listeners E O WIDGET quando o componente for desmontado
+        // 4. A função de limpeza agora usa a ref
         return () => {
             remoteStorage.removeEventListener('connected', handleConnectionChange);
             remoteStorage.removeEventListener('disconnected', handleConnectionChange);
-            if (widget && typeof widget.dispose === 'function') {
-                widget.dispose();
-            }
+            
+            // A limpeza do widget não é mais necessária aqui,
+            // pois o widget persiste durante a vida da aplicação.
+            // Se precisar desmontá-lo em algum momento, a lógica seria:
+            // if (widgetRef.current && typeof widgetRef.current.dispose === 'function') {
+            //     widgetRef.current.dispose();
+            //     widgetRef.current = null;
+            // }
         };
     }, []); // O array vazio [] garante que este código só é executado uma vez.
 
