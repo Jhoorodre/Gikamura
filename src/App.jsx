@@ -36,6 +36,7 @@ function App() {
     const [sortOrder, setSortOrder] = useState('desc');
 
     const history = useHistory();
+    const { remoteStorage } = history; // Obter remoteStorage do contexto
     const { loading: itemLoading, error: itemError, fetchItemData } = useItem();
     const [hubLoading, setHubLoading] = useState(false);
     const [hubError, setHubError] = useState(null);
@@ -44,11 +45,16 @@ function App() {
 
     useEffect(() => {
         createParticles();
-        // Sempre cria uma nova instância do widget ao montar e anexa ao DOM
-        widgetRef.current = new Widget(history.remoteStorage);
-        widgetRef.current.attach(); // Anexa o widget ao DOM
-        setWidgetReady(true);
-    }, [history.remoteStorage]);
+        // Cria e anexa o widget SOMENTE QUANDO remoteStorage estiver disponível
+        if (remoteStorage) {
+            widgetRef.current = new Widget(remoteStorage);
+            widgetRef.current.attach(); // Anexa o widget ao DOM
+            setWidgetReady(true);
+        } else {
+            // Opcional: lidar com o caso onde remoteStorage ainda não está pronto
+            setWidgetReady(false);
+        }
+    }, [remoteStorage]); // Depender de remoteStorage para recriar/anexar o widget se ele mudar
 
     // Adiciona referência ao widget para o botão customizado
     const handleWidgetClick = () => {
