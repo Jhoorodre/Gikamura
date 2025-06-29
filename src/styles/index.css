@@ -93,279 +93,292 @@
 }
 
 /* =================================================================== */
-/* WIDGET REMOTESTORAGE MODERNO E MINIMALISTA */
+/* WIDGET REMOTESTORAGE - VERSÃO CORRIGIDA PARA BUGS                  */
 /* =================================================================== */
 
-/* Reset e posicionamento principal */
+/* --- POSICIONAMENTO E ISOLAMENTO --- */
 #remotestorage-widget {
     position: fixed !important;
     bottom: 24px !important;
     left: 24px !important;
-    z-index: 10000 !important;
-    font-family: var(--font-family-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif) !important;
+    z-index: 999999 !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
     font-size: 14px !important;
-    line-height: 1.5 !important;
-    color: var(--color-text-primary, #ffffff) !important;
+    pointer-events: auto !important;
+    isolation: isolate !important; /* Cria novo contexto de empilhamento */
 }
 
-/* Container principal do widget */
+/* --- RESET COMPLETO DO WIDGET --- */
+#remotestorage-widget * {
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 #remotestorage-widget .rs-widget {
+    /* Reset completo */
     all: unset !important;
+    
+    /* Estrutura básica */
     display: block !important;
-    background: rgba(0, 0, 0, 0.85) !important;
-    backdrop-filter: blur(12px) !important;
+    position: relative !important;
+    width: auto !important;
+    height: auto !important;
+    
+    /* Visual */
+    background: rgba(20, 20, 20, 0.95) !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 16px !important;
     box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
-    overflow: hidden !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    max-width: 320px !important;
-    min-width: 280px !important;
+        0 10px 25px -5px rgba(0, 0, 0, 0.3),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    
+    /* Transições suaves */
+    transition: all 0.3s ease !important;
+    
+    /* Correção de rendering */
+    transform: translateZ(0) !important; /* Force hardware acceleration */
+    backface-visibility: hidden !important;
+    perspective: 1000px !important;
 }
 
-/* Hover effect para o widget */
-#remotestorage-widget .rs-widget:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 
-        0 12px 40px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
-}
-
-/* Header do widget */
-#remotestorage-widget .rs-widget-header {
-    padding: 20px 20px 16px 20px !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+/* --- ESTADO FECHADO (ÍCONE CIRCULAR) --- */
+#remotestorage-widget .rs-widget.rs-closed {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
-    gap: 12px !important;
+    justify-content: center !important;
+    overflow: hidden !important;
 }
 
-/* Logo/Ícone principal */
-#remotestorage-widget .rs-main-logo {
-    width: 24px !important;
-    height: 24px !important;
-    flex-shrink: 0 !important;
+#remotestorage-widget .rs-widget.rs-closed:hover {
+    transform: scale(1.08) translateZ(0) !important;
+    box-shadow: 
+        0 15px 35px -5px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(59, 130, 246, 0.2) !important;
 }
 
-#remotestorage-widget .rs-main-logo path,
-#remotestorage-widget .rs-main-logo polygon {
-    fill: rgba(255, 255, 255, 0.8) !important;
-    transition: fill 0.2s ease !important;
+/* --- ESTADO ABERTO (EXPANDIDO) --- */
+#remotestorage-widget .rs-widget:not(.rs-closed) {
+    width: 320px !important;
+    min-height: 60px !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
 }
 
-/* Estado conectado - ícone verde */
-#remotestorage-widget.rs-state-connected .rs-main-logo path,
-#remotestorage-widget.rs-state-connected .rs-main-logo polygon {
-    fill: #10b981 !important;
+/* --- ÍCONE DO WIDGET --- */
+#remotestorage-widget .rs-widget-icon {
+    display: none !important; /* Escondido por padrão */
+    width: 100% !important;
+    height: 100% !important;
+    color: #ffffff !important;
+    font-size: 18px !important;
+    text-align: center !important;
+    line-height: 56px !important;
 }
 
-/* Títulos e subtítulos - design limpo */
-#remotestorage-widget .rs-small-headline {
+/* Mostra ícone apenas quando fechado */
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon {
+    display: block !important;
+}
+
+/* Ícone usando CSS puro */
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon::before {
+    content: '☁' !important;
+    font-size: 22px !important;
+    display: inline-block !important;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)) !important;
+}
+
+/* --- CORREÇÃO CRÍTICA: GERENCIAMENTO DE CONTEÚDO --- */
+#remotestorage-widget .rs-box {
+    /* Estado padrão: invisível e fora do layout */
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Mostra APENAS a caixa selecionada quando widget está aberto */
+#remotestorage-widget .rs-widget:not(.rs-closed) .rs-box.rs-selected {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    animation: fadeInContent 0.3s ease forwards !important;
+}
+
+@keyframes fadeInContent {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- CONTEÚDO INTERNO --- */
+#remotestorage-widget .rs-content {
+    padding: 20px !important;
+    width: 100% !important;
+}
+
+/* --- TEXTOS --- */
+#remotestorage-widget .rs-big-headline {
     font-size: 16px !important;
     font-weight: 600 !important;
     color: #ffffff !important;
-    margin: 0 !important;
+    text-align: center !important;
+    margin-bottom: 12px !important;
     line-height: 1.3 !important;
-    letter-spacing: -0.01em !important;
 }
 
-#remotestorage-widget .rs-sub-headline {
-    font-size: 13px !important;
-    font-weight: 400 !important;
+#remotestorage-widget .rs-short-desc,
+#remotestorage-widget .rs-help {
+    font-size: 12px !important;
     color: rgba(255, 255, 255, 0.7) !important;
-    margin: 4px 0 0 0 !important;
+    text-align: center !important;
     line-height: 1.4 !important;
+    margin-bottom: 8px !important;
 }
 
-/* Área de conteúdo principal */
-#remotestorage-widget .rs-box-initial,
-#remotestorage-widget .rs-box-connected {
-    padding: 20px !important;
-    background: transparent !important;
+#remotestorage-widget .rs-help {
+    margin-top: 12px !important;
+    margin-bottom: 0 !important;
 }
 
-/* Formulário de login moderno */
+/* --- FORMULÁRIO --- */
 #remotestorage-widget .rs-sign-in-form {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
     margin-top: 16px !important;
 }
 
 #remotestorage-widget .rs-sign-in-form input[type="text"] {
-    all: unset !important;
     width: 100% !important;
-    padding: 12px 16px !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    padding: 10px 12px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 8px !important;
     color: #ffffff !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
+    font-family: inherit !important;
+    outline: none !important;
     transition: all 0.2s ease !important;
-    box-sizing: border-box !important;
 }
 
 #remotestorage-widget .rs-sign-in-form input[type="text"]:focus {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    border-color: rgba(59, 130, 246, 0.6) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
 #remotestorage-widget .rs-sign-in-form input[type="text"]::placeholder {
     color: rgba(255, 255, 255, 0.5) !important;
 }
 
-/* Botão de conexão moderno */
-#remotestorage-widget .rs-sign-in-form button.rs-connect {
-    all: unset !important;
+/* --- BOTÃO --- */
+#remotestorage-widget .rs-connect {
     width: 100% !important;
-    padding: 12px 16px !important;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    padding: 10px 16px !important;
+    background: #3b82f6 !important;
     color: #ffffff !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
+    border: none !important;
     border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    font-family: inherit !important;
     cursor: pointer !important;
+    margin-top: 12px !important;
     transition: all 0.2s ease !important;
-    text-align: center !important;
-    box-sizing: border-box !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
+    outline: none !important;
 }
 
-#remotestorage-widget .rs-sign-in-form button.rs-connect:hover {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+#remotestorage-widget .rs-connect:hover:not(:disabled) {
+    background: #2563eb !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
 }
 
-#remotestorage-widget .rs-sign-in-form button.rs-connect:active {
+#remotestorage-widget .rs-connect:active {
     transform: translateY(0) !important;
 }
 
-/* Link de ajuda */
-#remotestorage-widget .rs-sign-in-form a.rs-help {
-    color: rgba(59, 130, 246, 0.8) !important;
-    text-decoration: none !important;
-    font-size: 13px !important;
-    text-align: center !important;
-    transition: color 0.2s ease !important;
+#remotestorage-widget .rs-connect:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
 }
 
-#remotestorage-widget .rs-sign-in-form a.rs-help:hover {
-    color: #3b82f6 !important;
-    text-decoration: underline !important;
+/* --- LISTA DE PROVEDORES (se existir) --- */
+#remotestorage-widget .rs-provider-list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 16px 0 0 0 !important;
 }
 
-/* Estado conectado */
-#remotestorage-widget.rs-state-connected .rs-widget {
-    border-color: rgba(16, 185, 129, 0.3) !important;
+#remotestorage-widget .rs-provider-list li {
+    margin-bottom: 8px !important;
 }
 
-#remotestorage-widget.rs-state-connected .rs-widget-header {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%) !important;
-}
-
-/* Informações de conexão */
-#remotestorage-widget .rs-info-block {
+#remotestorage-widget .rs-provider-list button {
+    width: 100% !important;
+    padding: 8px 12px !important;
     background: rgba(255, 255, 255, 0.05) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 8px !important;
-    padding: 12px !important;
-    margin-top: 12px !important;
-}
-
-#remotestorage-widget .rs-info-block p {
-    color: rgba(255, 255, 255, 0.8) !important;
-    font-size: 13px !important;
-    margin: 0 !important;
-    line-height: 1.4 !important;
-}
-
-/* Botão de desconectar */
-#remotestorage-widget button.rs-disconnect {
-    all: unset !important;
-    width: 100% !important;
-    padding: 10px 16px !important;
-    background: rgba(239, 68, 68, 0.1) !important;
-    border: 1px solid rgba(239, 68, 68, 0.3) !important;
-    color: #ef4444 !important;
-    font-size: 13px !important;
-    font-weight: 500 !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
-    text-align: center !important;
-    margin-top: 12px !important;
-    box-sizing: border-box !important;
 }
 
-#remotestorage-widget button.rs-disconnect:hover {
-    background: rgba(239, 68, 68, 0.2) !important;
-    border-color: rgba(239, 68, 68, 0.5) !important;
+#remotestorage-widget .rs-provider-list button:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Estados de loading */
-#remotestorage-widget .rs-spinner {
-    width: 16px !important;
-    height: 16px !important;
-    border: 2px solid rgba(255, 255, 255, 0.3) !important;
-    border-top: 2px solid #ffffff !important;
-    border-radius: 50% !important;
-    animation: rs-spin 1s linear infinite !important;
-}
-
-@keyframes rs-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Responsividade para mobile */
-@media (max-width: 640px) {
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 480px) {
     #remotestorage-widget {
-        bottom: 16px !important;
         left: 16px !important;
-        right: 16px !important;
-        width: auto !important;
+        bottom: 16px !important;
     }
     
-    #remotestorage-widget .rs-widget {
-        min-width: unset !important;
-        max-width: unset !important;
-        width: 100% !important;
+    #remotestorage-widget .rs-widget:not(.rs-closed) {
+        width: 280px !important;
+    }
+    
+    #remotestorage-widget .rs-content {
+        padding: 16px !important;
     }
 }
 
-/* Estados de erro */
-#remotestorage-widget.rs-state-error .rs-widget {
-    border-color: rgba(239, 68, 68, 0.4) !important;
+/* --- CORREÇÕES ESPECÍFICAS PARA BUGS COMUNS --- */
+
+/* Previne conflitos com outros elementos */
+#remotestorage-widget {
+    contain: layout style !important;
 }
 
-#remotestorage-widget.rs-state-error .rs-widget-header {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%) !important;
+/* Garante que elementos internos não vazem */
+#remotestorage-widget .rs-widget * {
+    position: static !important;
+    float: none !important;
+    clear: none !important;
 }
 
-#remotestorage-widget.rs-state-error .rs-main-logo path,
-#remotestorage-widget.rs-state-error .rs-main-logo polygon {
-    fill: #ef4444 !important;
-}
-
-/* Animações de entrada */
+/* Previne interferência de CSS externo */
 #remotestorage-widget .rs-widget {
-    animation: slideInFromBottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    text-decoration: none !important;
+    vertical-align: baseline !important;
 }
 
-@keyframes slideInFromBottom {
-    0% {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+/* Força reflow quando necessário */
+#remotestorage-widget .rs-widget.rs-closed {
+    contain: strict !important;
+}
+
+#remotestorage-widget .rs-widget:not(.rs-closed) {
+    contain: layout style !important;
 }
