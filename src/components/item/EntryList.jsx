@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder }) => {
+const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapters = [] }) => {
     const entryKeys = useMemo(() => {
         if (!itemData?.entries) return [];
         const keys = Object.keys(itemData.entries);
@@ -25,11 +25,12 @@ const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder }) => {
             <div className="panel-body flex flex-col gap-2">
                 {entryKeys.map((key) => {
                     const entry = itemData.entries[key];
+                    const isRead = readChapters.includes(key);
                     return (
-                        <button 
-                            key={key} 
+                        <button
+                            key={key}
                             onClick={() => onSelectEntry(key)}
-                            className="entry-item"
+                            className={`entry-item ${isRead ? 'read' : ''}`}
                         >
                             <span className="entry-item-title">Cap. {key}: {entry.title}</span>
                         </button>

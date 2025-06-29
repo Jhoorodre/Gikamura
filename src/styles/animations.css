@@ -156,3 +156,13 @@
         transform: rotate(360deg);
     }
 }
+
+/* Transição suave entre telas principais */
+.view-container {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

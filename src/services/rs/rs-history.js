@@ -37,9 +37,30 @@ export const createGlobalHistoryHandler = (remoteStorage) => {
   const removeHub = (url) => remoteStorage[RS_PATH].removeHub(url);
   const getAllHubs = async () => sortObjectByKey(await remoteStorage[RS_PATH].getAllHubs(), SORT_KEY);
 
+  // Adiciona capítulo lido
+  const addChapter = async (slug, source, chapter) => {
+    let existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+    if (existingSeries) {
+      const chapters = [...new Set([...(existingSeries.chapters || []), chapter])];
+      return remoteStorage[RS_PATH].editSeries(
+        slug, undefined, source, undefined, undefined, undefined, chapters
+      );
+    } else {
+      console.error("[Global History] addChapter - A série não existia.");
+    }
+  };
+
+  // Obtém capítulos lidos
+  const getReadChapters = async (slug, source) => {
+    const existingSeries = await remoteStorage[RS_PATH].getSeries(slug, source);
+    return existingSeries ? existingSeries.chapters || [] : [];
+  };
+
   return {
     // Series methods
     max: MAX_VALUES,
+    addChapter,
+    getReadChapters,
     // Hub methods
     addHub,
     removeHub,

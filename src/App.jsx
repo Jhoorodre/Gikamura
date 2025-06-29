@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react'; // 1. Adicione o useRef aqui
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import HubLoader from './components/hub/HubLoaderComponent.jsx';
 import HubHeader from './components/hub/HubHeader';
 import ItemGrid from './components/item/ItemGrid';
 import ItemInfo from './components/item/ItemInfo';
 import EntryList from './components/item/EntryList';
-import ItemViewer from './components/item/ItemViewer';
+const ItemViewer = React.lazy(() => import('./components/item/ItemViewer.jsx'));
+import ItemGridSkeleton from './components/item/ItemGridSkeleton.jsx';
 import Spinner from './components/common/Spinner';
 import ErrorMessage from './components/common/ErrorMessage';
 import { useItem } from './hooks/useItem';
@@ -45,6 +46,9 @@ function App() {
     const [hubError, setHubError] = useState(null);
 
     const widgetRef = useRef(null); // 2. Crie uma ref para guardar a instância do widget
+
+    // Estado para capítulos lidos
+    const [readChapters, setReadChapters] = useState([]);
 
     useEffect(() => {
         // Cria as partículas (mantendo a sua função original)
@@ -133,6 +137,13 @@ function App() {
             setSelectedItemData(completeItemData);
             setSelectedEntryKey(null);
             setCurrentPage(0);
+            // Carrega capítulos lidos
+            if (remoteStorage.connected) {
+                globalHistoryHandler.getReadChapters(itemObject.slug, itemObject.source?.id)
+                    .then(chapters => setReadChapters(chapters || []));
+            } else {
+                setReadChapters([]);
+            }
         }
     };
 
@@ -140,6 +151,13 @@ function App() {
         setSelectedEntryKey(entryKey);
         setCurrentPage(0);
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Salva capítulo como lido
+        if (remoteStorage.connected && selectedItemData) {
+            globalHistoryHandler.addChapter(selectedItemData.slug, selectedItemData.source?.id, entryKey)
+                .then(() => {
+                    setReadChapters(prev => [...new Set([...prev, entryKey])]);
+                });
+        }
     };
 
     const backToHub = () => {
@@ -186,7 +204,6 @@ function App() {
                     <ErrorMessage message={conflictMessage} />
                 </div>
             )}
-
             <main className="flex-grow flex flex-col">
                 {!currentHubData ? (
                     <div className="flex-grow flex items-center justify-center p-4">
@@ -197,10 +214,15 @@ function App() {
                     </div>
                 ) : (
                     <div className="container mx-auto px-4 py-8 w-full">
+                        <div className="view-container" key={selectedItemData ? 'item-view' : 'hub-view'}>
                         {!selectedItemData ? (
                             <>
                                 <HubHeader hub={currentHubData.hub} />
-                                <ItemGrid items={currentHubData.series} onSelectItem={selectItem} />
+                                {itemLoading ? (
+                                    <ItemGridSkeleton />
+                                ) : (
+                                    <ItemGrid items={currentHubData.series} onSelectItem={selectItem} />
+                                )}
                             </>
                         ) : !selectedEntryKey ? (
                             <>
@@ -210,34 +232,38 @@ function App() {
                                     onSelectEntry={selectEntry}
                                     sortOrder={sortOrder}
                                     setSortOrder={setSortOrder}
+                                    readChapters={readChapters}
                                 />
                             </>
                         ) : (
-                            <ItemViewer
-                                entry={selectedItemData.entries[selectedEntryKey]}
-                                page={currentPage}
-                                setPage={setCurrentPage}
-                                onBack={backToItem}
-                                readingMode={readingMode}
-                                setReadingMode={setReadingMode}
-                                totalPages={selectedItemData.entries[selectedEntryKey].pages.length}
-                                currentPageIndex={currentPage}
-                                onNextPage={() => setCurrentPage(prev => Math.min(prev + 1, selectedItemData.entries[selectedEntryKey].pages.length - 1))}
-                                onPrevPage={() => setCurrentPage(prev => Math.max(0, prev - 1))}
-                                onNextEntry={() => {
-                                    const nextIndex = currentEntryIndex + 1;
-                                    if (nextIndex < entryKeys.length) {
-                                        selectEntry(entryKeys[nextIndex]);
-                                    }
-                                }}
-                                onPrevEntry={() => {
-                                    const prevIndex = currentEntryIndex - 1;
-                                    if (prevIndex >= 0) {
-                                        selectEntry(entryKeys[prevIndex]);
-                                    }
-                                }}
-                            />
+                            <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Spinner /></div>}>
+                                <ItemViewer
+                                    entry={selectedItemData.entries[selectedEntryKey]}
+                                    page={currentPage}
+                                    setPage={setCurrentPage}
+                                    onBack={backToItem}
+                                    readingMode={readingMode}
+                                    setReadingMode={setReadingMode}
+                                    totalPages={selectedItemData.entries[selectedEntryKey].pages.length}
+                                    currentPageIndex={currentPage}
+                                    onNextPage={() => setCurrentPage(prev => Math.min(prev + 1, selectedItemData.entries[selectedEntryKey].pages.length - 1))}
+                                    onPrevPage={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                                    onNextEntry={() => {
+                                        const nextIndex = currentEntryIndex + 1;
+                                        if (nextIndex < entryKeys.length) {
+                                            selectEntry(entryKeys[nextIndex]);
+                                        }
+                                    }}
+                                    onPrevEntry={() => {
+                                        const prevIndex = currentEntryIndex - 1;
+                                        if (prevIndex >= 0) {
+                                            selectEntry(entryKeys[prevIndex]);
+                                        }
+                                    }}
+                                />
+                            </Suspense>
                         )}
+                        </div>
                     </div>
                 )}
             </main>
