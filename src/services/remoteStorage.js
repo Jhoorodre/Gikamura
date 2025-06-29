@@ -1,4 +1,5 @@
 import RemoteStorage from "remotestoragejs";
+import Widget from "remotestorage-widget";
 
 const RS_PATH = "Gika";
 
@@ -208,6 +209,10 @@ export const remoteStorage = (() => {
 
   return remoteStorage;
 })();
+
+// Inicializa e anexa o widget DEPOIS que remoteStorage foi definido.
+const widget = new Widget(remoteStorage);
+widget.attach();
 
 // This will be the main handler that deals with both
 // chapter and series history. All logic should be here
