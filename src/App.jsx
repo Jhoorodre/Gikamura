@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import HubLoader from './components/hub/HubLoaderComponent.jsx'; // A importação foi atualizada para o novo nome do arquivo
+import HubLoader from './components/hub/HubLoaderComponent.jsx';
 import HubHeader from './components/hub/HubHeader';
 import ItemGrid from './components/item/ItemGrid';
 import ItemInfo from './components/item/ItemInfo';
@@ -8,10 +8,16 @@ import ItemViewer from './components/item/ItemViewer';
 import Spinner from './components/common/Spinner';
 import ErrorMessage from './components/common/ErrorMessage';
 import { useItem } from './hooks/useItem';
-import { remoteStorage, widget, connect } from './services/remoteStorage';
+
+// Importe o seu serviço (apenas para garantir que o código seja executado)
+import './services/remoteStorage.js';
+
+// Removendo importações nomeadas, pois remoteStorage, widget e globalHistoryHandler são globais
+// import { remoteStorage, widget, globalHistoryHandler } from './services/remoteStorage';
 
 import './styles/index.css';
 
+// Função para criar as partículas (mantida do seu exemplo)
 const createParticles = () => {
     const container = document.getElementById('particles-container');
     if (!container || container.childElementCount > 0) return;
@@ -44,35 +50,44 @@ function App() {
         createParticles();
 
         const handleConnectionChange = () => {
-            setIsConnected(remoteStorage.connected);
+            setIsConnected(window.remoteStorage.connected);
         };
 
-        remoteStorage.on('connected', handleConnectionChange);
-        remoteStorage.on('disconnected', handleConnectionChange);
-        handleConnectionChange(); // Verifica o estado inicial
-
-        // Anexa o widget ao contêiner
-        widget.attach('remotestorage-widget-container');
+        // Adiciona listeners usando a variável global
+        if (window.remoteStorage) {
+            window.remoteStorage.on('connected', handleConnectionChange);
+            window.remoteStorage.on('disconnected', handleConnectionChange);
+            handleConnectionChange(); // Verifica o estado inicial
+        }
 
         return () => {
-            remoteStorage.removeEventListener('connected', handleConnectionChange);
-            remoteStorage.removeEventListener('disconnected', handleConnectionChange);
+            // Remove listeners usando a variável global
+            if (window.remoteStorage) {
+                window.remoteStorage.removeEventListener('connected', handleConnectionChange);
+                window.remoteStorage.removeEventListener('disconnected', handleConnectionChange);
+            }
         };
     }, []);
-    
-    // Função para mostrar/ocultar o widget
-    const handleToggleWidget = () => {
-        toggleWidget();
-    };
 
-    const loadHub = async (url) => {
+    // Função para carregar o Hub, agora usando window.globalHistoryHandler
+    const loadHubAndSave = async (url) => {
+        setHubLoading(true);
+        setHubError(null);
         try {
-            setHubLoading(true);
-            setHubError(null);
             const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
             if (!response.ok) throw new Error(`Não foi possível carregar o hub (status: ${response.status})`);
             const data = await response.json();
             setHubData(data);
+
+            // Salva o hub no histórico se o usuário estiver conectado e globalHistoryHandler estiver disponível
+            if (window.remoteStorage && window.remoteStorage.connected && window.globalHistoryHandler) {
+                // Verifique se data.hub e data.hub.icon existem antes de acessar suas propriedades
+                const hubTitle = data.hub ? data.hub.title : "Hub Sem Título";
+                const hubIconUrl = (data.hub && data.hub.icon) ? data.hub.icon.url : undefined;
+                // Usando window.globalHistoryHandler
+                await window.globalHistoryHandler.addHub(url, hubTitle, hubIconUrl);
+            }
+
         } catch (err) {
             setHubError(err.message);
         } finally {
@@ -120,7 +135,6 @@ function App() {
     };
 
     if (hubLoading || itemLoading) return <div className="min-h-screen flex items-center justify-center"><Spinner /></div>;
-
     if (hubError) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message={`Erro ao carregar hub: ${hubError}`} /></div>;
 
     const entryKeys = currentHubData ? getEntryKeys() : [];
@@ -130,38 +144,13 @@ function App() {
         <div className="min-h-screen flex flex-col">
             <div className="animated-bg"></div>
             <div id="particles-container"></div>
-            
-            {/* Contêiner do widget e botão de conexão */}
-            <div id="remotestorage-widget-container"></div>
-            {!currentHubData && (
-                 <button
-                    type="button"
-                    onClick={connect}
-                    className="cloud-icon-button"
-                    title={isConnected ? 'Ver Conta Remote Storage' : 'Conectar Remote Storage'}
-                >
-                    <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        className="h-5 w-5" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
-                        stroke="currentColor" 
-                        strokeWidth={2}
-                    >
-                        <path 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" 
-                        />
-                    </svg>
-                </button>
-            )}
-            
+
             <main className="flex-grow flex flex-col">
                 {!currentHubData ? (
                     <div className="flex-grow flex items-center justify-center p-4 min-h-screen">
+                        {/* A prop onLoadHub foi atualizada para loadHubAndSave */}
                         <HubLoader
-                            onLoadHub={loadHub}
+                            onLoadHub={loadHubAndSave}
                             loading={hubLoading}
                         />
                     </div>

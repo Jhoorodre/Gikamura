@@ -1,71 +1,151 @@
+import RemoteStorage from 'remotestoragejs';
+import Widget from 'remotestorage-widget';
+
+// Define o nome do módulo de armazenamento. Pode ser "cubari", "Gika", ou o que preferir.
 const RS_PATH = "Gika";
 
-const remoteStorage = (() => {
-  const Model = {
-    name: RS_PATH,
-    builder: (privateClient) => {
-      // ... (código existente de SERIES_META)
+// --- Módulo Customizado para o RemoteStorage ---
+const GikaModule = {
+  name: RS_PATH,
+  builder: (privateClient) => {
+    const HUB_META_TYPE = "hub";
+    const HUB_META_PATH_BASE = "hubs/";
+    
+    // Declara o "schema" ou a estrutura de dados para um hub.
+    privateClient.declareType(HUB_META_TYPE, {
+      type: "object",
+      properties: {
+        url: { type: "string", required: true },
+        title: { type: "string", required: true },
+        iconUrl: { type: "string" }, // O URL do ícone é opcional
+        timestamp: { type: "number", required: true },
+      },
+    });
 
-      const HUB_META = "hub";
-      const HUB_REPLACEMENT_STR = "{HUB_URL_REPLACEMENT}";
-      const HUB_META_PATH_BASE = "hubs/";
-      const HUB_META_PATH = `${HUB_META_PATH_BASE}${HUB_REPLACEMENT_STR}`;
+    /**
+     * Constrói o caminho único para cada hub guardado.
+     * Usa btoa() para codificar a URL e usá-la como um nome de ficheiro seguro.
+     * @param {string} hubUrl - A URL do hub.
+     * @returns {string} O caminho para o ficheiro do hub.
+     */
+    const getHubPath = (hubUrl) => `${HUB_META_PATH_BASE}${btoa(hubUrl)}`;
 
-      privateClient.declareType(HUB_META, {
-        type: "object",
-        properties: {
-          url: { type: "string" },
-          title: { type: "string" },
-          iconUrl: { type: "string" }, // -> CORRIGIDO: Adicionado campo para o ícone
-          timestamp: { type: "number" },
-        },
-        required: ["url", "title", "timestamp"], // iconUrl não é estritamente necessário
-      });
+    /**
+     * Cria um objeto de hub com os dados necessários.
+     * @param {string} url - A URL do hub.
+     * @param {string} title - O título do hub.
+     * @param {string} iconUrl - O URL do ícone do hub.
+     * @returns {object} O objeto de hub.
+     */
+    const createHubObject = (url, title, iconUrl) => ({
+      url,
+      title,
+      iconUrl,
+      timestamp: Date.now(),
+    });
 
-      // -> CORRIGIDO: O construtor agora aceita 'iconUrl'
-      let hubPathBuilder = (path, hubUrl) => path.replace(HUB_REPLACEMENT_STR, btoa(hubUrl));
-      let hubBuilder = (url, title, iconUrl) => ({ url, title, iconUrl, timestamp: Date.now() });
+    // Expõe as funções que o seu código irá usar.
+    return {
+      exports: {
+        /**
+         * Guarda as informações de um hub no armazenamento remoto.
+         * @param {string} url - A URL do hub a ser guardada.
+         * @param {string} title - O título do hub.
+         * @param {string} iconUrl - O URL do ícone do hub.
+         */
+        addHub: (url, title, iconUrl) =>
+          privateClient.storeObject(
+            HUB_META_TYPE,
+            getHubPath(url),
+            createHubObject(url, title, iconUrl)
+          ),
 
-      return {
-        exports: {
-          // -> CORRIGIDO: A função 'addHub' agora aceita e guarda o 'iconUrl'
-          addHub: (url, title, iconUrl) => privateClient.storeObject(HUB_META, hubPathBuilder(HUB_META_PATH, url), hubBuilder(url, title, iconUrl)),
-          removeHub: (url) => privateClient.remove(hubPathBuilder(HUB_META_PATH, url)),
-          getAllHubs: () => privateClient.getAll(HUB_META_PATH_BASE),
-        },
-      };
-    },
-  };
+        /**
+         * Remove um hub do armazenamento remoto.
+         * @param {string} url - A URL do hub a ser removido.
+         */
+        removeHub: (url) => privateClient.remove(getHubPath(url)),
 
-  let rs = new RemoteStorage({
-    cache: true,
-    modules: [Model],
-  });
+        /**
+         * Obtém todos os hubs guardados.
+         * @returns {Promise<object>} Uma promessa que resolve para um objeto com todos os hubs.
+         */
+        getAllHubs: () => privateClient.getAll(HUB_META_PATH_BASE),
+      },
+    };
+  },
+};
 
-  rs.access.claim(RS_PATH, "rw");
-  rs.caching.enable(`/${RS_PATH}/`);
+// --- Inicialização do RemoteStorage ---
+export const remoteStorage = new RemoteStorage({
+  cache: true,
+  modules: [GikaModule], // Adiciona o seu módulo customizado
+});
 
-  return rs;
-})();
+// Reivindica acesso de leitura e escrita para o seu módulo
+remoteStorage.access.claim(RS_PATH, "rw");
 
-const globalHistoryHandler = (() => {
-  const SORT_KEY = "timestamp";
+// Ativa o cache para o seu módulo
+remoteStorage.caching.enable(`/${RS_PATH}/`);
 
-  let sortObjectByKey = (obj, key) => {
-    return obj ? Object.values(obj).sort((a, b) => b[key] - a[key]) : [];
-  };
+// --- Inicialização do Widget ---
+export const widget = new Widget(remoteStorage);
 
-  // -> CORRIGIDO: A função 'addHub' agora passa o 'iconUrl'
-  const addHub = (url, title, iconUrl) => remoteStorage[RS_PATH].addHub(url, title, iconUrl);
-  const removeHub = (url) => remoteStorage[RS_PATH].removeHub(url);
-  const getAllHubs = async () => sortObjectByKey(await remoteStorage[RS_PATH].getAllHubs(), SORT_KEY);
+// --- Funções Auxiliares Exportadas ---
 
-  return {
-    addHub,
-    removeHub,
-    getAllHubs,
-  };
-})();
+/**
+ * Inicia o processo de conexão do widget do RemoteStorage.
+ * O widget irá tratar da interface de utilizador para a autenticação.
+ */
+export const connect = () => {
+  widget.connect();
+};
 
+/**
+ * Alterna a visibilidade do widget.
+ */
+export const toggleWidget = () => {
+    widget.toggle();
+};
+
+
+// --- Handler Global (Opcional, mas mantém a consistência com o seu código) ---
+// Este handler facilita o acesso às funções do módulo.
+const globalHistoryHandler = {
+  /**
+   * Adiciona um hub ao histórico.
+   * @param {string} url - A URL do hub.
+   * @param {string} title - O título do hub.
+   * @param {string} iconUrl - O URL do ícone do hub.
+   */
+  addHub: (url, title, iconUrl) => remoteStorage[RS_PATH].addHub(url, title, iconUrl),
+  
+  /**
+   * Remove um hub do histórico.
+   * @param {string} url - A URL do hub.
+   */
+  removeHub: (url) => remoteStorage[RS_PATH].removeHub(url),
+
+  /**
+   * Obtém todos os hubs guardados e ordena-os por data (mais recente primeiro).
+   * @returns {Promise<Array<object>>} Uma promessa que resolve para uma lista de hubs.
+   */
+  getAllHubs: async () => {
+    const hubs = await remoteStorage[RS_PATH].getAllHubs();
+    // Verifica se hubs é um objeto antes de tentar ordenar
+    return hubs ? Object.values(hubs).sort((a, b) => b.timestamp - a.timestamp) : [];
+  },
+};
+
+// Disponibiliza as instâncias globalmente para fácil acesso em toda a aplicação,
+// especialmente para scripts que não são módulos ES6.
 window.remoteStorage = remoteStorage;
 window.globalHistoryHandler = globalHistoryHandler;
+window.Widget = Widget; // Garante que a classe Widget esteja disponível globalmente
+
+// Inicializa e anexa o widget quando o remoteStorage estiver pronto
+remoteStorage.on('ready', () => {
+  console.log('RemoteStorage is ready. Attaching widget.'); // Add console log
+  const widget = new Widget(remoteStorage);
+  widget.attach(); // Anexa globalmente, como no HTML
+});
