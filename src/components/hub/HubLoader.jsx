@@ -5,11 +5,29 @@ import HubHistory from './HubHistory';
 
 const HubLoader = ({ onLoadHub, loading }) => {
     const [url, setUrl] = useState("https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/main/hub_tog.json");
+    const [error, setError] = useState('');
     const { savedHubs, removeHub } = useAppContext();
 
+    /**
+     * Constrói uma URL para a própria aplicação com a URL do hub
+     * codificada em base64 e a abre numa nova guia.
+     */
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (url.trim()) onLoadHub(url.trim());
+        setError(''); // Limpa erros anteriores ao submeter
+        const targetUrl = url.trim();
+
+        if (targetUrl) {
+            try {
+                const encodedHubUrl = btoa(targetUrl);
+                // Exemplo: http://localhost:5173/#/?hub=BASE64_STRING
+                const newAppUrl = `${window.location.origin}/#/?hub=${encodedHubUrl}`;
+                window.open(newAppUrl, '_blank', 'noopener,noreferrer');
+            } catch (error) {
+                console.error("Falha ao codificar a URL do hub:", error);
+                setError("URL inválida ou erro ao processar. Verifique o formato da URL e tente novamente.");
+            }
+        }
     };
 
     return (
@@ -18,7 +36,7 @@ const HubLoader = ({ onLoadHub, loading }) => {
                 <div className="hub-loader-header">
                     <h1 className="hub-loader-title">Leitor de Mangá</h1>
                     <p className="hub-loader-subtitle">
-                        Cole a URL de um `hub.json` para começar a ler.
+                        Cole a URL de um `hub.json` para carregar a aplicação numa nova guia.
                     </p>
                 </div>
                 <form className="hub-loader-form" onSubmit={handleSubmit}>
@@ -27,7 +45,11 @@ const HubLoader = ({ onLoadHub, loading }) => {
                             id="hub-url"
                             type="url"
                             value={url}
-                            onChange={(e) => setUrl(e.target.value)}
+                            onChange={(e) => {
+                                setUrl(e.target.value);
+                                // Limpa a mensagem de erro assim que o usuário começa a corrigir
+                                if (error) setError('');
+                            }}
                             className="hub-loader-input"
                             placeholder="https://exemplo.com/hub.json"
                             required
@@ -41,15 +63,19 @@ const HubLoader = ({ onLoadHub, loading }) => {
                             {loading ? (
                                 <div className="hub-loader-spinner" />
                             ) : (
-                                'Carregar'
+                                'Carregar Hub'
                             )}
                         </button>
                     </div>
+                    {/* Exibe a mensagem de erro logo abaixo do input */}
+                    {error && (
+                        <p className="text-red-400 text-sm mt-2 text-center">{error}</p>
+                    )}
                 </form>
 
                 <HubHistory 
                     hubs={savedHubs}
-                    onSelectHub={(hub) => onLoadHub(hub.url)}
+                    onSelectHub={(hub) => onLoadHub(hub.url)} // O histórico continua carregando na mesma aba
                     onRemoveHub={removeHub}
                 />
             </div>

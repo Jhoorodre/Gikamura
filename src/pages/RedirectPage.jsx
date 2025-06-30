@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 /**
  * Esta página recebe uma URL codificada em Base64 como parâmetro,
- * a decodifica e redireciona o usuário para o destino final.
+ * a descodifica e redireciona o utilizador para o destino final.
  */
 function RedirectPage() {
   // Pega o parâmetro :base64Url da rota (ex: /redirect/aHR0cHM6Ly9nb29nbGUuY29t)
