@@ -3,7 +3,7 @@ import { RS_PATH } from "./rs-config.js";
 export const Model = {
   name: RS_PATH,
   builder: (privateClient) => {
-    // MODIFICADO: O tipo agora representa apenas o progresso da série
+    // Define o "molde" para o progresso da série
     privateClient.declareType("series-progress", {
       type: "object",
       properties: {
@@ -25,7 +25,7 @@ export const Model = {
     const HUB_PATH = "hubs/";
     const SERIES_PROGRESS_PATH = "series-progress/"; // Novo caminho para os dados
 
-    // --- Métodos de Hub permanecem os mesmos ---
+    // --- Métodos de Hub ---
     const addHub = (url, title, iconUrl) => {
       const hubId = btoa(url);
       return privateClient.storeObject("hub", `${HUB_PATH}${hubId}`, { url, title, iconUrl, timestamp: Date.now() });
@@ -39,7 +39,7 @@ export const Model = {
     };
     // --- Fim dos Métodos de Hub ---
 
-    // MODIFICADO: Métodos agora focados apenas em progresso
+    // --- Métodos de Progresso ---
     // Cria uma chave limpa e segura para usar como nome de ficheiro
     const getProgressKey = (slug, source) => {
         const cleanSource = source.replace(/[^a-zA-Z0-9-]/g, '-');
@@ -89,6 +89,7 @@ export const Model = {
 
     return {
       exports: {
+        // "Exporta" as funções para serem usadas na aplicação
         addHub,
         removeHub,
         getAllHubs,

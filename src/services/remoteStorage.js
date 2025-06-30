@@ -1,3 +1,4 @@
+// src/services/remoteStorage.js
 import RemoteStorage from "remotestoragejs";
 import { RS_PATH } from "./rs/rs-config.js";
 import { Model as CustomModule } from "./rs/rs-schemas.js";
@@ -5,12 +6,10 @@ import { Model as CustomModule } from "./rs/rs-schemas.js";
 // 1. Cria a instância do RemoteStorage
 const remoteStorage = new RemoteStorage({
   cache: true,
-  // Carrega nosso módulo personalizado
-  modules: [CustomModule],
+  modules: [CustomModule], // Carrega nosso módulo personalizado
 });
 
-// 2. Requisita acesso ao módulo "Gika" (ou o nome que estiver no config)
-// com permissão de leitura e escrita (rw)
+// 2. Requisita acesso ao módulo "Gika" com permissão de leitura/escrita
 remoteStorage.access.claim(RS_PATH, "rw");
 
 // 3. Habilita o cache para nosso módulo
@@ -21,5 +20,5 @@ if (typeof window !== 'undefined') {
   window.remoteStorage = remoteStorage;
 }
 
-// 5. Exporta a instância pronta para ser usada na aplicação
+// ... exporta a instância
 export { remoteStorage };
