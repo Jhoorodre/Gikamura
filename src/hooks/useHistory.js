@@ -1,19 +1,20 @@
 // src/hooks/useHistory.js
 import { useState, useEffect, useCallback } from 'react';
-import { remoteStorage, globalHistoryHandler } from '../services/remoteStorage';
+import { remoteStorage } from '../services/remotestorage';
+import { RS_PATH } from '../services/rs/rs-config';
 
 export const useHistory = () => {
     const [savedHubs, setSavedHubs] = useState([]);
     const [isConnected, setIsConnected] = useState(remoteStorage.connected);
 
     const loadSavedHubs = useCallback(async () => {
-        if (remoteStorage.connected) {
+        if (remoteStorage.connected && remoteStorage[RS_PATH]) {
             try {
-                const hubs = await globalHistoryHandler.getAllHubs();
+                const hubs = await remoteStorage[RS_PATH].getAllHubs();
                 setSavedHubs(hubs || []);
             } catch (error) {
                 console.error("Erro ao carregar hubs salvos:", error);
-                // Você pode querer definir um estado de erro aqui para a UI
+                setSavedHubs([]);
             }
         }
     }, []);
@@ -29,15 +30,14 @@ export const useHistory = () => {
             }
         };
 
-        // CORREÇÃO: Usar 'sync-done' para recarregar os dados após a sincronização.
-        const handleDataChange = () => {
+        const handleSyncDone = () => {
             console.log("Sincronização concluída, recarregando hubs.");
             loadSavedHubs();
         };
 
-        remoteStorage.on('connected', handleConnectionChange);
-        remoteStorage.on('disconnected', handleConnectionChange);
-        remoteStorage.on('sync-done', handleDataChange); // <--- A LINHA CORRIGIDA
+        remoteStorage.addEventListener('connected', handleConnectionChange);
+        remoteStorage.addEventListener('disconnected', handleConnectionChange);
+        remoteStorage.addEventListener('sync-done', handleSyncDone);
 
         // Carga inicial
         handleConnectionChange();
@@ -45,16 +45,20 @@ export const useHistory = () => {
         return () => {
             remoteStorage.removeEventListener('connected', handleConnectionChange);
             remoteStorage.removeEventListener('disconnected', handleConnectionChange);
-            remoteStorage.removeEventListener('sync-done', handleDataChange); // <--- A LINHA CORRIGIDA
+            remoteStorage.removeEventListener('sync-done', handleSyncDone);
         };
     }, [loadSavedHubs]);
 
     const addHub = (url, title, iconUrl) => {
-        return globalHistoryHandler.addHub(url, title, iconUrl);
+        if (remoteStorage.connected && remoteStorage[RS_PATH]) {
+            return remoteStorage[RS_PATH].addHub(url, title, iconUrl);
+        }
     };
     
     const removeHub = (url) => {
-        return globalHistoryHandler.removeHub(url);
+        if (remoteStorage.connected && remoteStorage[RS_PATH]) {
+            return remoteStorage[RS_PATH].removeHub(url);
+        }
     };
 
     return { isConnected, savedHubs, addHub, removeHub, loadSavedHubs };

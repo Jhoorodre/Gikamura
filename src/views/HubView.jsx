@@ -12,7 +12,7 @@ const HubView = () => {
         item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const handleSelectItem = async (item) => {
-        await selectItem(item);
+        await selectItem(item, currentHubData.hub.id);
         navigate(`/series/${item.slug}`);
     };
     return (

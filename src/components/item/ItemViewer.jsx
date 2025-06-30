@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import Spinner from '../common/Spinner';
 import ErrorMessage from '../common/ErrorMessage';
 import Image from '../common/Image';
-import { remoteStorage, globalHistoryHandler } from '../../services/remoteStorage.js';
+import { remoteStorage } from '../../services/remotestorage.js';
+import { RS_PATH } from '../../services/rs/rs-config.js';
 
 const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode, onNextEntry, onPrevEntry, isFirstEntry, isLastEntry, itemData }) => {
     const [showControls, setShowControls] = useState(true);
@@ -58,8 +59,8 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
     }, [page, totalPages, readingMode, onNextEntry, onPrevEntry]);
 
     useEffect(() => {
-        if (remoteStorage.connected && itemData && entry) {
-            globalHistoryHandler.setLastReadPage(
+        if (remoteStorage.connected && itemData && entry && remoteStorage[RS_PATH]) {
+            remoteStorage[RS_PATH].setLastReadPage(
                 itemData.slug,
                 itemData.source?.id,
                 itemData.selectedEntryKey,

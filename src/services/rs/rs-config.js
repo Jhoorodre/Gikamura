@@ -1,16 +1,6 @@
-import RemoteStorage from "remotestoragejs";
-
-const RS_PATH = "Gika";
-
-export const createRemoteStorage = (modules) => {
-  const remoteStorage = new RemoteStorage({
-    cache: true,
-    modules,
-    disableFeatures: ["Dropbox", "GoogleDrive", "IndexedDB"],
-  });
-  remoteStorage.access.claim(RS_PATH, "rw");
-  remoteStorage.caching.enable(`/${RS_PATH}/`);
-  return remoteStorage;
-};
-
-export { RS_PATH };
+/**
+ * O nome do seu módulo no RemoteStorage.
+ * Altere o valor aqui para renomear o módulo em toda a aplicação.
+ * Exemplo: export const RS_PATH = "MeuLeitor";
+ */
+export const RS_PATH = "Gika";

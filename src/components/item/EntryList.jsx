@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { globalHistoryHandler } from '../../services/remoteStorage';
+import { remoteStorage } from '../../services/remotestorage';
 
 const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapters = [] }) => {
     const entryKeys = useMemo(() => {
@@ -15,6 +15,9 @@ const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapt
         });
     }, [itemData, sortOrder]);
 
+    // A verificação de "online" vem diretamente do objeto remoteStorage
+    const isOnline = remoteStorage.remote.online;
+
     return (
         <div className="panel">
             <div className="panel-header flex justify-between items-center">
@@ -27,8 +30,8 @@ const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapt
                 {entryKeys.map((key) => {
                     const entry = itemData.entries[key];
                     const isRead = readChapters.includes(key);
-                    // Adiciona classe se capítulo foi lido offline e não sincronizado
-                    const isPending = isRead && !globalHistoryHandler.isOnline();
+                    // A verificação agora usa a propriedade 'online' do remoteStorage
+                    const isPending = isRead && !isOnline;
                     return (
                         <button
                             key={key}
@@ -36,6 +39,7 @@ const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapt
                             className={`entry-item ${isRead ? 'read' : ''}`}
                         >
                             <span className="entry-item-title">Cap. {key}: {entry.title}</span>
+                            {isPending && <span className="text-xs text-yellow-400 ml-2">(Pendente)</span>}
                         </button>
                     );
                 })}

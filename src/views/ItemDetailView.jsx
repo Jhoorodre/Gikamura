@@ -4,18 +4,31 @@ import { useAppContext } from '../context/AppContext';
 import ItemInfo from '../components/item/ItemInfo';
 import EntryList from '../components/item/EntryList';
 import Button from '../components/common/Button';
+import Spinner from '../components/common/Spinner';
+import ErrorMessage from '../components/common/ErrorMessage';
 
 const ItemDetailView = () => {
     const { slug } = useParams();
     const navigate = useNavigate();
-    const { currentHubData, selectedItemData, selectItem, clearSelectedItem, readChapters } = useAppContext();
-    const item = currentHubData?.series.find(i => i.slug === slug);
+    const { currentHubData, selectedItemData, selectItem, clearSelectedItem, itemLoading, itemError } = useAppContext();
+    const itemFromHub = currentHubData?.series.find(i => i.slug === slug);
+
     React.useEffect(() => {
-        if (item && (!selectedItemData || selectedItemData.slug !== slug)) {
-            selectItem(item);
+        if (itemFromHub && currentHubData?.hub?.id && (!selectedItemData || selectedItemData.slug !== slug)) {
+            selectItem(itemFromHub, currentHubData.hub.id);
         }
-    }, [item, slug]);
-    if (!item) return <div>Carregando...</div>;
+    }, [itemFromHub, slug, currentHubData?.hub?.id, selectedItemData, selectItem]);
+
+    if (itemLoading) {
+        return <div className="min-h-[50vh] flex items-center justify-center"><Spinner text="Carregando detalhes da série..." /></div>;
+    }
+    if (itemError) {
+        return <ErrorMessage message={itemError} onRetry={() => selectItem(itemFromHub, currentHubData.hub.id)} />;
+    }
+    if (!selectedItemData || !itemFromHub) {
+        return <div className="min-h-[50vh] flex items-center justify-center"><Spinner text="Preparando série..." /></div>;
+    }
+
     return (
         <>
             <div className="mb-4">
@@ -23,12 +36,14 @@ const ItemDetailView = () => {
                     &larr; Voltar para a lista
                 </Button>
             </div>
-            <ItemInfo itemData={item} />
-            <EntryList
-                itemData={item}
-                onSelectEntry={entryKey => navigate(`/series/${item.slug}/read/${entryKey}`)}
-                readChapters={readChapters}
-            />
+            <ItemInfo itemData={{ ...itemFromHub, ...selectedItemData }} />
+            {selectedItemData.entries && Array.isArray(selectedItemData.chapters) && (
+                <EntryList
+                    itemData={selectedItemData}
+                    onSelectEntry={entryKey => navigate(`/series/${itemFromHub.slug}/read/${entryKey}`)}
+                    readChapters={selectedItemData.chapters}
+                />
+            )}
         </>
     );
 };
