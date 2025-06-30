@@ -3,8 +3,6 @@ import { fetchData } from '../services/api';
 import { remoteStorage } from '../services/remotestorage';
 import { RS_PATH } from '../services/rs/rs-config';
 
-const CACHE_EXPIRATION_MS = 60 * 60 * 1000;
-
 export const useItem = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -14,48 +12,32 @@ export const useItem = () => {
         setLoading(true);
         setError(null);
 
-        if (!sourceId) {
-            setError("A origem (sourceId) do item não foi fornecida.");
+        if (!sourceId || !itemObject?.data?.url) {
+            setError("Informações da série incompletas para carregar.");
             setLoading(false);
             return;
         }
 
         try {
             const module = remoteStorage[RS_PATH];
-            let cachedItem = null;
+            // Busca o progresso e os dados da série em paralelo
+            const [progress, seriesData] = await Promise.all([
+                (remoteStorage.connected && module) 
+                    ? module.getSeriesProgress(itemObject.slug, sourceId).catch(() => null) 
+                    : Promise.resolve(null),
+                fetchData(itemObject.data.url)
+            ]);
 
-            if (remoteStorage.connected && module) {
-                cachedItem = await module.getSeries(itemObject.slug, sourceId).catch(() => null);
-            }
-
-            // Estado inicial seguro
-            setSelectedItemData({ ...itemObject, sourceId, chapters: cachedItem?.chapters || [] });
-
-            const isCacheExpired = !cachedItem || (Date.now() - cachedItem.timestamp > CACHE_EXPIRATION_MS);
-
-            if (navigator.onLine && isCacheExpired) {
-                const freshData = await fetchData(itemObject.data.url);
-                setSelectedItemData({ 
-                    ...itemObject, 
-                    sourceId, 
-                    entries: freshData.chapters, 
-                    chapters: cachedItem?.chapters || [] 
-                });
-                if (remoteStorage.connected && module) {
-                    await module.saveSeries(itemObject.slug, sourceId, itemObject.title, freshData.chapters);
-                }
-            } else if (!cachedItem && !navigator.onLine) {
-                setError("Você está offline e este item não está no cache.");
-            } else if (cachedItem) {
-                 setSelectedItemData({ 
-                    ...itemObject, 
-                    sourceId, 
-                    entries: cachedItem.entries, 
-                    chapters: cachedItem.chapters || [] 
-                });
-            }
-
+            setSelectedItemData({
+                ...itemObject,
+                ...seriesData,
+                entries: seriesData.chapters,
+                sourceId: sourceId,
+                readChapterKeys: progress?.readChapterKeys || [],
+                lastRead: progress?.lastRead || null,
+            });
         } catch (err) {
+            console.error("Erro ao carregar dados do item:", err);
             setError(err.message);
         } finally {
             setLoading(false);

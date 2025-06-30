@@ -37,11 +37,12 @@ const ItemDetailView = () => {
                 </Button>
             </div>
             <ItemInfo itemData={{ ...itemFromHub, ...selectedItemData }} />
-            {selectedItemData.entries && Array.isArray(selectedItemData.chapters) && (
+            {/* A lista de capítulos agora renderiza corretamente */}
+            {selectedItemData.entries && Array.isArray(selectedItemData.readChapterKeys) && (
                 <EntryList
                     itemData={selectedItemData}
                     onSelectEntry={entryKey => navigate(`/series/${itemFromHub.slug}/read/${entryKey}`)}
-                    readChapters={selectedItemData.chapters}
+                    readChapters={selectedItemData.readChapterKeys}
                 />
             )}
         </>

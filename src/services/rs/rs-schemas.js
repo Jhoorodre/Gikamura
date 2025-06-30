@@ -3,25 +3,13 @@ import { RS_PATH } from "./rs-config.js";
 export const Model = {
   name: RS_PATH,
   builder: (privateClient) => {
-    // === DEFINIÇÃO DOS SCHEMAS ===
-    privateClient.declareType("hub", {
-      type: "object",
-      properties: {
-        url: { type: "string" },
-        title: { type: "string" },
-        iconUrl: { type: "string" },
-        timestamp: { type: "number" },
-      },
-      required: ["url", "title", "timestamp"],
-    });
-
-    privateClient.declareType("series", {
+    // MODIFICADO: O tipo agora representa apenas o progresso da série
+    privateClient.declareType("series-progress", {
       type: "object",
       properties: {
         slug: { type: "string" },
         source: { type: "string" },
-        title: { type: "string" },
-        chapters: { type: "array", default: [] },
+        readChapterKeys: { type: "array", default: [] },
         lastRead: {
           type: "object",
           properties: {
@@ -31,102 +19,62 @@ export const Model = {
         },
         timestamp: { type: "number" },
       },
-      required: ["slug", "source", "title", "timestamp"],
+      required: ["slug", "source"],
     });
 
-    // === CAMINHOS ===
     const HUB_PATH = "hubs/";
-    const SERIES_PATH = "series/";
+    const SERIES_PROGRESS_PATH = "series-progress/"; // Novo caminho para os dados
 
-    // === MÉTODOS PARA HUBS ===
+    // --- Métodos de Hub permanecem os mesmos ---
     const addHub = (url, title, iconUrl) => {
       const hubId = btoa(url);
-      const hubData = {
-        url,
-        title: title || "Hub Sem Título",
-        iconUrl: iconUrl || "",
-        timestamp: Date.now(),
-      };
-      return privateClient.storeObject("hub", `${HUB_PATH}${hubId}`, hubData);
+      return privateClient.storeObject("hub", `${HUB_PATH}${hubId}`, { url, title, iconUrl, timestamp: Date.now() });
     };
-
-    const removeHub = (url) => {
-      const hubId = btoa(url);
-      return privateClient.remove(`${HUB_PATH}${hubId}`);
-    };
-
+    const removeHub = (url) => privateClient.remove(`${HUB_PATH}${btoa(url)}`);
     const getAllHubs = async () => {
-      const listing = await privateClient.getListing(HUB_PATH);
-      if (!listing || Object.keys(listing).length === 0) {
-        return [];
-      }
-      const hubPromises = Object.keys(listing).map(hubId =>
-        privateClient.getObject(`${HUB_PATH}${hubId}`).catch(err => {
-          console.error(`Falha ao carregar hub ${hubId}:`, err);
-          return null;
-        })
-      );
-      const hubs = await Promise.all(hubPromises);
-      return hubs
-        .filter(hub => hub)
-        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        const listing = await privateClient.getListing(HUB_PATH);
+        if (!listing) return [];
+        const hubs = await Promise.all(Object.keys(listing).map(hubId => privateClient.getObject(`${HUB_PATH}${hubId}`)));
+        return hubs.filter(hub => hub).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    };
+    // --- Fim dos Métodos de Hub ---
+
+    // MODIFICADO: Métodos agora focados apenas em progresso
+    const getProgressKey = (slug, source) => `${source}-${slug}`;
+
+    const getSeriesProgress = (slug, source) => {
+      const progressKey = getProgressKey(slug, source);
+      return privateClient.getObject(`${SERIES_PROGRESS_PATH}${progressKey}`);
     };
 
-    // === MÉTODOS PARA SÉRIES E CAPÍTULOS ===
-    const getSeriesKey = (slug, source) => `${source}-${slug}`;
-
-    const getSeries = (slug, source) => {
-      const seriesKey = getSeriesKey(slug, source);
-      return privateClient.getObject(`${SERIES_PATH}${seriesKey}`);
+    const saveSeriesProgress = async (slug, source, data) => {
+        const progressKey = getProgressKey(slug, source);
+        let progress = await getSeriesProgress(slug, source).catch(() => null);
+        if (!progress) {
+            progress = { slug, source };
+        }
+        Object.assign(progress, data, { timestamp: Date.now() });
+        return privateClient.storeObject("series-progress", `${SERIES_PROGRESS_PATH}${progressKey}`, progress);
     };
-
-    const saveSeries = async (slug, source, title, chapters) => {
-      const seriesKey = getSeriesKey(slug, source);
-      let series = await privateClient.getObject(`${SERIES_PATH}${seriesKey}`).catch(() => null);
-      if (!series) {
-        series = { slug, source, title };
-      }
-      series.chapters = chapters;
-      series.timestamp = Date.now();
-      return privateClient.storeObject("series", `${SERIES_PATH}${seriesKey}`, series);
-    };
-
-    const addChapter = async (slug, source, chapterKey) => {
-      const seriesKey = getSeriesKey(slug, source);
-      let series = await privateClient.getObject(`${SERIES_PATH}${seriesKey}`).catch(() => null);
-      if (series) {
-        const chapters = [...new Set([...(series.chapters || []), chapterKey])];
-        series.chapters = chapters;
-        series.timestamp = Date.now();
-        return privateClient.storeObject("series", `${SERIES_PATH}${seriesKey}`, series);
-      }
-    };
-
-    const getReadChapters = async (slug, source) => {
-      const series = await getSeries(slug, source).catch(() => null);
-      return series ? series.chapters || [] : [];
-    };
-
+    
     const setLastReadPage = async (slug, source, chapterKey, page) => {
-      const seriesKey = getSeriesKey(slug, source);
-      let series = await privateClient.getObject(`${SERIES_PATH}${seriesKey}`).catch(() => null);
-      if (series) {
-        series.lastRead = { chapterKey, page };
-        series.timestamp = Date.now();
-        return privateClient.storeObject("series", `${SERIES_PATH}${seriesKey}`, series);
-      }
+        const progress = await getSeriesProgress(slug, source).catch(() => ({}));
+        const readKeys = new Set(progress.readChapterKeys || []);
+        readKeys.add(chapterKey);
+        
+        const newProgress = {
+            lastRead: { chapterKey, page },
+            readChapterKeys: [...readKeys]
+        };
+        return saveSeriesProgress(slug, source, newProgress);
     };
 
-    // Exporta todas as funções que queremos usar na aplicação
     return {
       exports: {
         addHub,
         removeHub,
         getAllHubs,
-        getSeries,
-        saveSeries,
-        addChapter,
-        getReadChapters,
+        getSeriesProgress,
         setLastReadPage,
       },
     };

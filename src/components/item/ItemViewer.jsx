@@ -5,7 +5,8 @@ import Image from '../common/Image';
 import { remoteStorage } from '../../services/remotestorage.js';
 import { RS_PATH } from '../../services/rs/rs-config.js';
 
-const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode, onNextEntry, onPrevEntry, isFirstEntry, isLastEntry, itemData }) => {
+// Adicione entryKey aos parâmetros recebidos
+const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode, onNextEntry, onPrevEntry, isFirstEntry, isLastEntry, itemData, entryKey }) => {
     const [showControls, setShowControls] = useState(true);
     const controlTimeout = useRef(null);
 
@@ -27,11 +28,23 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
         };
     }, []);
 
+    // Corrigindo o useEffect para salvar o progresso
+    useEffect(() => {
+        if (remoteStorage.connected && remoteStorage[RS_PATH] && itemData?.slug && itemData?.sourceId && entryKey) {
+            remoteStorage[RS_PATH].setLastReadPage(
+                itemData.slug,
+                itemData.sourceId,
+                entryKey, // Usa a entryKey recebida
+                page
+            );
+        }
+    }, [page, itemData, entryKey]); // Adiciona entryKey às dependências
+
     const pages = entry.groups[Object.keys(entry.groups)[0]] || [];
     const totalPages = pages.length;
 
     if (!entry || pages.length === 0) {
-        return <ErrorMessage message="Entrada sem páginas ou com dados inválidos." onRetry={onBack} />;
+        return <ErrorMessage message="Capítulo sem páginas ou com dados inválidos." onRetry={onBack} />;
     }
     if (readingMode === 'paginated' && (page >= totalPages || page < 0)) {
         setPage(0);
@@ -39,11 +52,11 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
     }
 
     const goToNextPage = () => {
-        showControlsWithTimeout(); // Garante que controles fiquem visíveis após clique
+        showControlsWithTimeout();
         if (page < totalPages - 1) setPage(p => p + 1); else onNextEntry();
     };
     const goToPrevPage = () => {
-        showControlsWithTimeout(); // Garante que controles fiquem visíveis após clique
+        showControlsWithTimeout();
         if (page > 0) setPage(p => p - 1); else onPrevEntry();
     };
 
@@ -57,17 +70,6 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [page, totalPages, readingMode, onNextEntry, onPrevEntry]);
-
-    useEffect(() => {
-        if (remoteStorage.connected && itemData && entry && remoteStorage[RS_PATH]) {
-            remoteStorage[RS_PATH].setLastReadPage(
-                itemData.slug,
-                itemData.source?.id,
-                itemData.selectedEntryKey,
-                page
-            );
-        }
-    }, [page, itemData, entry]);
 
     return (
         <div className="relative">
