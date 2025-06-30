@@ -15,7 +15,17 @@ export const AppProvider = ({ children }) => {
     const [isSyncing, setIsSyncing] = useState(false);
     const [isOffline, setIsOffline] = useState(() => !navigator.onLine);
     const [conflictMessage, setConflictMessage] = useState(null);
-    const { loading: itemLoading, error: itemError, fetchItemData } = useItem();
+
+    // Inclui todos os valores do hook useItem
+    const {
+        loading: itemLoading,
+        error: itemError,
+        fetchItemData: selectItem,
+        offline,
+        offlineError,
+        selectedItemData,
+        clearSelectedItem
+    } = useItem();
 
     useEffect(() => {
         const handleConnectionChange = () => setIsConnected(remoteStorage.connected);
@@ -23,10 +33,14 @@ export const AppProvider = ({ children }) => {
         const handleSyncDone = () => setIsSyncing(false);
         const handleOffline = () => setIsOffline(true);
         const handleOnline = () => setIsOffline(false);
-        const handleConflict = (e) => {
-            console.warn("Conflito de dados:", e);
-            setConflictMessage("Conflito de dados detectado. A versão mais recente foi aplicada.");
-            setTimeout(() => setConflictMessage(null), 7000);
+        const handleConflict = (conflictEvent) => {
+            console.warn("Conflito detectado:", conflictEvent);
+            setConflictMessage(
+                conflictEvent && conflictEvent.path
+                    ? `Conflito de dados em \"${conflictEvent.path}\". A versão mais recente foi aplicada para manter tudo sincronizado.`
+                    : "Conflito de dados detectado. A versão mais recente foi aplicada."
+            );
+            setTimeout(() => setConflictMessage(null), 8000);
         };
         remoteStorage.on('connected', handleConnectionChange);
         remoteStorage.on('disconnected', handleConnectionChange);
@@ -68,6 +82,13 @@ export const AppProvider = ({ children }) => {
         isOffline,
         isConnected,
         loadHub,
+        itemLoading,
+        itemError,
+        selectedItemData,
+        selectItem,
+        clearSelectedItem,
+        offline,
+        offlineError
     };
 
     return (

@@ -24,7 +24,18 @@ export const fetchData = async (url) => {
     try {
         const response = await fetch(`${CORS_PROXY_URL}${encodeURIComponent(url)}`);
         if (!response.ok) {
-            const error = new Error(`Erro HTTP: ${response.status} ${response.statusText}`);
+            let errorMessage;
+            switch (response.status) {
+                case 404:
+                    errorMessage = "O recurso solicitado não foi encontrado (Erro 404).";
+                    break;
+                case 500:
+                    errorMessage = "Ocorreu um erro no servidor (Erro 500). Tente novamente mais tarde.";
+                    break;
+                default:
+                    errorMessage = `Erro ao carregar os dados. Status: ${response.status}.`;
+            }
+            const error = new Error(errorMessage);
             error.status = response.status;
             throw error;
         }
@@ -33,13 +44,13 @@ export const fetchData = async (url) => {
         try {
             storageCache.setItem(cacheKey, JSON.stringify(data));
         } catch (e) {
-            console.warn("Não foi possível salvar no sessionStorage. Cache pode estar cheio.");
+            console.warn("Não foi possível salvar no sessionStorage. O cache pode estar cheio.");
         }
         return data;
     } catch (error) {
         if (error instanceof SyntaxError) {
             console.error("Falha ao analisar JSON:", error);
-            throw new Error("A resposta recebida não é um JSON válido.");
+            throw new Error("A resposta do servidor não é um JSON válido. Verifique a URL do hub.");
         }
         throw error;
     }

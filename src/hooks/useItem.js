@@ -100,5 +100,7 @@ export const useItem = () => {
         }
     };
 
-    return { loading, error, fetchItemData, offline, offlineError, selectedItemData };
+    const clearSelectedItem = () => setSelectedItemData(null);
+
+    return { loading, error, fetchItemData, offline, offlineError, selectedItemData, clearSelectedItem };
 };

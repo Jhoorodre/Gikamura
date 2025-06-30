@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, Suspense } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
 import HubLoader from './components/hub/HubLoaderComponent.jsx';
@@ -11,7 +11,6 @@ import ErrorMessage from './components/common/ErrorMessage';
 import { remoteStorage } from './services/remoteStorage';
 import './styles/index.css';
 
-// Função para criar as partículas (mantida do seu exemplo)
 const createParticles = () => {
     const container = document.getElementById('particles-container');
     if (!container || container.childElementCount > 0) return;
@@ -35,55 +34,18 @@ function App() {
         loadHub,
         isSyncing,
         conflictMessage,
-        offline: isOffline
+        isOffline,
+        isConnected
     } = useAppContext();
     const widgetRef = useRef(null);
-
     useEffect(() => {
-        // Cria as partículas (mantendo a sua função original)
         createParticles();
-
-        // 3. Verifique se o widget já foi criado antes de o inicializar
         if (!widgetRef.current) {
             const widget = new Widget(remoteStorage);
             widget.attach('remotestorage-widget');
-            widgetRef.current = widget; // Guarda a instância na ref
+            widgetRef.current = widget;
         }
-
-        // Define os listeners para o estado da conexão
-        const handleConnectionChange = () => {
-            setIsConnected(remoteStorage.connected);
-        };
-
-        remoteStorage.on('connected', handleConnectionChange);
-        remoteStorage.on('disconnected', handleConnectionChange);
-
-        const handleSyncReqDone = () => setIsSyncing(true); // 4. Handler para início da sincronização
-        const handleSyncDone = () => setIsSyncing(false); // 5. Handler para fim da sincronização
-
-        remoteStorage.on('sync-req-done', handleSyncReqDone); // 6. Adiciona o listener para sync-req-done
-        remoteStorage.on('sync-done', handleSyncDone); // 7. Adiciona o listener para sync-done
-
-        const handleConflict = (conflictEvent) => {
-            console.warn("Conflito detectado!", conflictEvent);
-            setConflictMessage("Detectamos um conflito de dados. A versão mais recente foi mantida.");
-            setTimeout(() => setConflictMessage(null), 7000); // Mensagem some após 7s
-        };
-        remoteStorage.on('conflict', handleConflict);
-
-        // Verifica o estado inicial da conexão
-        handleConnectionChange();
-
-        // 4. A função de limpeza agora usa a ref
-        return () => {
-            remoteStorage.removeEventListener('connected', handleConnectionChange);
-            remoteStorage.removeEventListener('disconnected', handleConnectionChange);
-            remoteStorage.removeEventListener('sync-req-done', handleSyncReqDone); // 8. Remove o listener para sync-req-done
-            remoteStorage.removeEventListener('sync-done', handleSyncDone); // 9. Remove o listener para sync-done
-            remoteStorage.removeEventListener('conflict', handleConflict);
-        };
-    }, []); // O array vazio [] garante que este código só é executado uma vez.
-
+    }, []);
     return (
         <div className="min-h-screen flex flex-col">
             {isOffline && (
@@ -106,7 +68,7 @@ function App() {
             <main className="flex-grow flex flex-col">
                 <div className="container mx-auto px-4 py-8 w-full">
                     {hubLoading && <Spinner />}
-                    {hubError && <ErrorMessage message={hubError} onRetry={() => loadHub()} />}
+                    {hubError && <ErrorMessage message={hubError} onRetry={() => currentHubData && loadHub(currentHubData.url)} />}
                     {!hubLoading && !hubError && (
                         !currentHubData
                             ? <HubLoader onLoadHub={loadHub} />
