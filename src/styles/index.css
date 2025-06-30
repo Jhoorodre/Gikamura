@@ -92,3 +92,24 @@
     from { opacity: 0; transform: translateY(var(--space-4)); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Indicadores de Sincronização e Conflito */
+.sync-indicator, .conflict-indicator {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background-color: var(--color-surface-elevated, #fff);
+    color: var(--color-text-primary, #222);
+    padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+    border-radius: var(--radius-lg, 0.5rem);
+    z-index: var(--z-popover, 1000);
+    box-shadow: var(--shadow-lg, 0 2px 8px rgba(0,0,0,0.15));
+    display: flex;
+    align-items: center;
+    gap: var(--space-3, 0.75rem);
+}
+
+.conflict-indicator {
+    background-color: var(--color-warning-bg, #fffbe6);
+    color: var(--color-warning-dark, #b45309);
+}

@@ -8,11 +8,16 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
     const [showControls, setShowControls] = useState(true);
     const controlTimeout = useRef(null);
 
+    // Função para mostrar controles e reiniciar timer
+    const showControlsWithTimeout = () => {
+        setShowControls(true);
+        clearTimeout(controlTimeout.current);
+        controlTimeout.current = setTimeout(() => setShowControls(false), 3000);
+    };
+
     useEffect(() => {
         const handleMouseMove = () => {
-            setShowControls(true);
-            clearTimeout(controlTimeout.current);
-            controlTimeout.current = setTimeout(() => setShowControls(false), 3000);
+            showControlsWithTimeout();
         };
         window.addEventListener('mousemove', handleMouseMove);
         return () => {
@@ -32,8 +37,14 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
         return <Spinner />;
     }
 
-    const goToNextPage = () => { if (page < totalPages - 1) setPage(p => p + 1); else onNextEntry(); };
-    const goToPrevPage = () => { if (page > 0) setPage(p => p - 1); else onPrevEntry(); };
+    const goToNextPage = () => {
+        showControlsWithTimeout(); // Garante que controles fiquem visíveis após clique
+        if (page < totalPages - 1) setPage(p => p + 1); else onNextEntry();
+    };
+    const goToPrevPage = () => {
+        showControlsWithTimeout(); // Garante que controles fiquem visíveis após clique
+        if (page > 0) setPage(p => p - 1); else onPrevEntry();
+    };
 
     useEffect(() => {
         const handleKeyDown = (e) => {

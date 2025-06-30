@@ -1,14 +1,14 @@
 import React, { createContext, useContext } from 'react';
+import { useHistory as useHistoryHook } from '../hooks/useHistory';
 
 const HistoryContext = createContext();
 
 export const useHistory = () => useContext(HistoryContext);
 
 export const HistoryProvider = ({ children }) => {
-    const value = {};
-
+    const history = useHistoryHook();
     return (
-        <HistoryContext.Provider value={value}>
+        <HistoryContext.Provider value={history}>
             {children}
         </HistoryContext.Provider>
     );

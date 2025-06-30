@@ -10,7 +10,9 @@ import Spinner from './components/common/Spinner';
 import ErrorMessage from './components/common/ErrorMessage';
 import { useItem } from './hooks/useItem';
 import { remoteStorage, globalHistoryHandler } from './services/remoteStorage.js';
+import { fetchData } from './services/api';
 import Widget from 'remotestorage-widget';
+import { useHistory } from './context/HistoryContext';
 
 import './styles/index.css';
 
@@ -41,14 +43,21 @@ function App() {
     const [isSyncing, setIsSyncing] = useState(false); // 1. Estado para controlar a sincronização
     const [conflictMessage, setConflictMessage] = useState(null);
 
-    const { loading: itemLoading, error: itemError, fetchItemData } = useItem();
+    const { loading: itemLoading, error: itemError, fetchItemData, offline, offlineError } = useItem();
     const [hubLoading, setHubLoading] = useState(false);
     const [hubError, setHubError] = useState(null);
 
     const widgetRef = useRef(null); // 2. Crie uma ref para guardar a instância do widget
+    const { isConnected: historyIsConnected, savedHubs, addHub, removeHub, loadSavedHubs } = useHistory(); // Contexto HistoryContext
 
     // Estado para capítulos lidos
     const [readChapters, setReadChapters] = useState([]);
+
+    // Estado para busca de séries
+    const [searchTerm, setSearchTerm] = useState("");
+
+    // Estado para detectar modo offline
+    const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
     useEffect(() => {
         // Cria as partículas (mantendo a sua função original)
@@ -100,7 +109,6 @@ function App() {
     const loadHubAndSave = async (url) => {
         setHubLoading(true);
         setHubError(null);
-
         // Tenta carregar do cache primeiro
         const cachedHub = sessionStorage.getItem(url);
         if (cachedHub) {
@@ -109,17 +117,11 @@ function App() {
             setHubLoading(false);
             return;
         }
-
         try {
-            const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-            if (!response.ok) throw new Error(`Não foi possível carregar o hub (status: ${response.status})`);
-            const data = await response.json();
-            // Salva no cache após o sucesso
+            const data = await fetchData(url);
             sessionStorage.setItem(url, JSON.stringify(data));
             setHubData(data);
-
-            // Salva o hub no histórico usando as instâncias importadas
-            if (remoteStorage.connected && globalHistoryHandler) { // <-- Use as instâncias importadas
+            if (remoteStorage.connected && globalHistoryHandler) {
                 const hubTitle = data.hub ? data.hub.title : "Hub Sem Título";
                 const hubIconUrl = (data.hub && data.hub.icon) ? data.hub.icon.url : undefined;
                 await globalHistoryHandler.addHub(url, hubTitle, hubIconUrl);
@@ -132,7 +134,8 @@ function App() {
     };
 
     const selectItem = async (itemObject) => {
-        const completeItemData = await fetchItemData(itemObject);
+        // Se offline, tenta buscar do cache
+        const completeItemData = await fetchItemData(itemObject, isOffline);
         if (completeItemData) {
             setSelectedItemData(completeItemData);
             setSelectedEntryKey(null);
@@ -197,14 +200,42 @@ function App() {
         return sortOrder === 'asc' ? keys.sort((a, b) => a - b) : keys.sort((a, b) => b - a);
     };
 
+    // Função para pinar/despinar série
+    const handlePinToggle = async (item) => {
+        if (!item.slug || !item.source?.id) return;
+        if (item.pinned) {
+            await globalHistoryHandler.unpinSeries(item.slug, item.source.id);
+        } else {
+            await globalHistoryHandler.pinSeries(item.slug, item.cover?.url, item.source.id, item.url, item.title);
+        }
+        // Atualiza a lista após pin/unpin
+        setHubData((prev) => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                series: prev.series.map(s =>
+                    s.slug === item.slug && s.source?.id === item.source?.id
+                        ? { ...s, pinned: !item.pinned }
+                        : s
+                )
+            };
+        });
+    };
+
     if (hubLoading || itemLoading) return <div className="min-h-screen flex items-center justify-center"><Spinner /></div>;
     if (hubError) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message={`Erro ao carregar hub: ${hubError}`} /></div>;
+    if (itemError || offlineError) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message={itemError || offlineError} /></div>;
 
     const entryKeys = currentHubData ? getEntryKeys() : [];
     const currentEntryIndex = currentHubData ? entryKeys.indexOf(selectedEntryKey) : -1;
 
     return (
         <div className="min-h-screen flex flex-col">
+            {isOffline && (
+                <div className="bg-yellow-200 text-yellow-900 text-center py-2 font-semibold z-50">
+                    Você está offline. Apenas conteúdo já carregado estará disponível.
+                </div>
+            )}
             <div className="animated-bg"></div>
             <div id="particles-container"></div>
             {isSyncing && (
@@ -231,7 +262,8 @@ function App() {
                         {!selectedItemData ? (
                             <>
                                 <HubHeader hub={currentHubData.hub} />
-                                {itemLoading ? (
+                                {/* Usar o skeleton enquanto os itens do hub estão carregando */}
+                                {hubLoading ? (
                                     <ItemGridSkeleton />
                                 ) : (
                                     <ItemGrid items={currentHubData.series} onSelectItem={selectItem} />
@@ -240,13 +272,24 @@ function App() {
                         ) : !selectedEntryKey ? (
                             <>
                                 <ItemInfo itemData={selectedItemData} onBackToHub={backToHub} />
-                                <EntryList
-                                    itemData={selectedItemData}
-                                    onSelectEntry={selectEntry}
-                                    sortOrder={sortOrder}
-                                    setSortOrder={setSortOrder}
-                                    readChapters={readChapters}
-                                />
+                                {/* Skeleton para lista de capítulos */}
+                                {itemLoading ? (
+                                    <div className="panel-body">
+                                        <div className="space-y-2">
+                                            <div className="h-10 bg-slate-700 rounded-lg animate-pulse"></div>
+                                            <div className="h-10 bg-slate-700 rounded-lg animate-pulse" style={{ animationDelay: '0.1s' }}></div>
+                                            <div className="h-10 bg-slate-700 rounded-lg animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <EntryList
+                                        itemData={selectedItemData}
+                                        onSelectEntry={selectEntry}
+                                        sortOrder={sortOrder}
+                                        setSortOrder={setSortOrder}
+                                        readChapters={readChapters}
+                                    />
+                                )}
                             </>
                         ) : (
                             <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Spinner /></div>}>
@@ -258,10 +301,8 @@ function App() {
                                     onBack={backToItem}
                                     readingMode={readingMode}
                                     setReadingMode={setReadingMode}
-                                    totalPages={selectedItemData.entries[selectedEntryKey].pages.length}
-                                    currentPageIndex={currentPage}
-                                    onNextPage={() => setCurrentPage(prev => Math.min(prev + 1, selectedItemData.entries[selectedEntryKey].pages.length - 1))}
-                                    onPrevPage={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                                    isFirstEntry={currentEntryIndex === 0}
+                                    isLastEntry={currentEntryIndex === entryKeys.length - 1}
                                     onNextEntry={() => {
                                         const nextIndex = currentEntryIndex + 1;
                                         if (nextIndex < entryKeys.length) {
