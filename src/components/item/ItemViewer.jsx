@@ -5,10 +5,10 @@ import Image from '../common/Image';
 import { remoteStorage } from '../../services/remotestorage.js';
 import { RS_PATH } from '../../services/rs/rs-config.js';
 
-// Adicione entryKey aos parâmetros recebidos
 const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode, onNextEntry, onPrevEntry, isFirstEntry, isLastEntry, itemData, entryKey }) => {
     const [showControls, setShowControls] = useState(true);
     const controlTimeout = useRef(null);
+    const [lastSavedPage, setLastSavedPage] = useState(-1); // Estado para controlar a última página salva
 
     // Função para mostrar controles e reiniciar timer
     const showControlsWithTimeout = () => {
@@ -28,29 +28,27 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
         };
     }, []);
 
-    const [lastSavedPage, setLastSavedPage] = useState(-1); // 1. NOVO ESTADO PARA CONTROLAR A ÚLTIMA PÁGINA SALVA
-
-    // 2. USEEFFECT OTIMIZADO COM DEBOUNCING
+    // EFEITO DE SALVAMENTO OTIMIZADO
     useEffect(() => {
-        // Apenas salva se as condições forem válidas e a página for diferente da última que foi salva
+        // Apenas continua se o utilizador estiver conectado e a página tiver realmente mudado
         if (remoteStorage.connected && remoteStorage[RS_PATH] && itemData?.slug && itemData?.sourceId && entryKey && page !== lastSavedPage) {
-            // Cria um temporizador para salvar após 1 segundo de inatividade
+            // Debounce: espera 1 segundo de inatividade antes de salvar
             const timeoutId = setTimeout(() => {
-                console.log(`Salvando progresso: Página ${page} do capítulo ${entryKey}`);
+                console.log(`Salvando progresso: Página ${page + 1} do capítulo ${entryKey}`);
                 remoteStorage[RS_PATH].setLastReadPage(
                     itemData.slug,
                     itemData.sourceId,
                     entryKey,
                     page
                 ).then(() => {
-                    setLastSavedPage(page); // Atualiza a última página salva após o sucesso
+                    setLastSavedPage(page); // Atualiza o estado para evitar salvamentos repetidos
                 }).catch(console.error);
-            }, 1000); // Atraso de 1000ms (1 segundo)
+            }, 1000); // Atraso de 1 segundo
 
-            // Limpa o temporizador se o usuário mudar de página antes do tempo
+            // Limpa o temporizador se a página mudar novamente antes do atraso
             return () => clearTimeout(timeoutId);
         }
-    }, [page, itemData, entryKey, lastSavedPage]); // Adiciona lastSavedPage às dependências
+    }, [page, itemData, entryKey, lastSavedPage]); // Dependências do efeito
 
     const pages = entry.groups[Object.keys(entry.groups)[0]] || [];
     const totalPages = pages.length;
