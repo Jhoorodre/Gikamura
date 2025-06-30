@@ -40,7 +40,12 @@ export const Model = {
     // --- Fim dos Métodos de Hub ---
 
     // MODIFICADO: Métodos agora focados apenas em progresso
-    const getProgressKey = (slug, source) => `${source}-${slug}`;
+    // Cria uma chave limpa e segura para usar como nome de ficheiro
+    const getProgressKey = (slug, source) => {
+        const cleanSource = source.replace(/[^a-zA-Z0-9-]/g, '-');
+        const cleanSlug = slug.replace(/[^a-zA-Z0-9-]/g, '-');
+        return `${cleanSource}-${cleanSlug}`;
+    };
 
     const getSeriesProgress = (slug, source) => {
       const progressKey = getProgressKey(slug, source);
@@ -51,17 +56,18 @@ export const Model = {
         const progressKey = getProgressKey(slug, source);
         let progress = await getSeriesProgress(slug, source).catch(() => null);
         if (!progress) {
-            progress = { slug, source };
+            progress = { slug, source, readChapterKeys: [], lastRead: null };
         }
         Object.assign(progress, data, { timestamp: Date.now() });
         return privateClient.storeObject("series-progress", `${SERIES_PROGRESS_PATH}${progressKey}`, progress);
     };
     
     const setLastReadPage = async (slug, source, chapterKey, page) => {
+        // Garante que 'progress' seja um objeto, mesmo que a busca falhe
         const progress = await getSeriesProgress(slug, source).catch(() => ({}));
+        // Garante que 'readChapterKeys' seja um array
         const readKeys = new Set(progress.readChapterKeys || []);
         readKeys.add(chapterKey);
-        
         const newProgress = {
             lastRead: { chapterKey, page },
             readChapterKeys: [...readKeys]

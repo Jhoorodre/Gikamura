@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useItem } from '../hooks/useItem';
 import { fetchData } from '../services/api';
-import { remoteStorage } from '../services/remoteStorage';
+import { remoteStorage } from '../services/remotestorage';
 
 const AppContext = createContext();
 
@@ -16,13 +16,10 @@ export const AppProvider = ({ children }) => {
     const [isOffline, setIsOffline] = useState(() => !navigator.onLine);
     const [conflictMessage, setConflictMessage] = useState(null);
 
-    // Inclui todos os valores do hook useItem
     const {
         loading: itemLoading,
         error: itemError,
-        fetchItemData: selectItem,
-        offline,
-        offlineError,
+        fetchItemData, // O hook exporta como fetchItemData
         selectedItemData,
         clearSelectedItem
     } = useItem();
@@ -37,7 +34,7 @@ export const AppProvider = ({ children }) => {
             console.warn("Conflito detectado:", conflictEvent);
             setConflictMessage(
                 conflictEvent && conflictEvent.path
-                    ? `Conflito de dados em \"${conflictEvent.path}\". A versão mais recente foi aplicada para manter tudo sincronizado.`
+                    ? `Conflito de dados em "${conflictEvent.path}". A versão mais recente foi aplicada para manter tudo sincronizado.`
                     : "Conflito de dados detectado. A versão mais recente foi aplicada."
             );
             setTimeout(() => setConflictMessage(null), 8000);
@@ -85,10 +82,8 @@ export const AppProvider = ({ children }) => {
         itemLoading,
         itemError,
         selectedItemData,
-        selectItem,
+        selectItem: fetchItemData, // Renomeia fetchItemData para selectItem para clareza
         clearSelectedItem,
-        offline,
-        offlineError
     };
 
     return (

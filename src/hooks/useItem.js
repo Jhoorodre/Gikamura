@@ -8,37 +8,37 @@ export const useItem = () => {
     const [error, setError] = useState(null);
     const [selectedItemData, setSelectedItemData] = useState(null);
 
-    const fetchItemData = useCallback(async (itemObject, sourceId) => {
+    const fetchItemData = useCallback(async (itemFromHub, hubId) => {
         setLoading(true);
         setError(null);
+        setSelectedItemData(null); // Limpa dados anteriores
 
-        if (!sourceId || !itemObject?.data?.url) {
-            setError("Informações da série incompletas para carregar.");
+        if (!hubId || !itemFromHub?.data?.url) {
+            setError("Ficheiro do Hub (hub.json) está mal configurado. Falta a 'data.url' da série.");
             setLoading(false);
             return;
         }
 
         try {
+            // Passo 1: Busca os dados detalhados da série (o "reader.json")
+            const seriesDetails = await fetchData(itemFromHub.data.url);
+            // Passo 2: Em paralelo, busca o progresso de leitura, se conectado
             const module = remoteStorage[RS_PATH];
-            // Busca o progresso e os dados da série em paralelo
-            const [progress, seriesData] = await Promise.all([
-                (remoteStorage.connected && module) 
-                    ? module.getSeriesProgress(itemObject.slug, sourceId).catch(() => null) 
-                    : Promise.resolve(null),
-                fetchData(itemObject.data.url)
-            ]);
-
+            const progress = (remoteStorage.connected && module)
+                ? await module.getSeriesProgress(itemFromHub.slug, hubId).catch(() => null)
+                : null;
+            // Passo 3: Unifica todos os dados num único objeto
             setSelectedItemData({
-                ...itemObject,
-                ...seriesData,
-                entries: seriesData.chapters,
-                sourceId: sourceId,
+                ...itemFromHub,          // Dados básicos do hub.json (id, slug, etc.)
+                ...seriesDetails,        // Dados detalhados (title, description, author do reader.json)
+                entries: seriesDetails.chapters, // Renomeia para 'entries' para uso interno
+                sourceId: hubId,         // ID do Hub para salvar o progresso
                 readChapterKeys: progress?.readChapterKeys || [],
                 lastRead: progress?.lastRead || null,
             });
         } catch (err) {
-            console.error("Erro ao carregar dados do item:", err);
-            setError(err.message);
+            console.error("Erro detalhado ao carregar dados do item:", err);
+            setError(`Não foi possível carregar os detalhes da série. Verifique a URL em hub.json. (Erro: ${err.message})`);
         } finally {
             setLoading(false);
         }
