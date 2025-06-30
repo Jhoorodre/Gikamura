@@ -28,17 +28,29 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
         };
     }, []);
 
-    // Corrigindo o useEffect para salvar o progresso
+    const [lastSavedPage, setLastSavedPage] = useState(-1); // 1. NOVO ESTADO PARA CONTROLAR A ÚLTIMA PÁGINA SALVA
+
+    // 2. USEEFFECT OTIMIZADO COM DEBOUNCING
     useEffect(() => {
-        if (remoteStorage.connected && remoteStorage[RS_PATH] && itemData?.slug && itemData?.sourceId && entryKey) {
-            remoteStorage[RS_PATH].setLastReadPage(
-                itemData.slug,
-                itemData.sourceId,
-                entryKey, // Usa a entryKey recebida
-                page
-            );
+        // Apenas salva se as condições forem válidas e a página for diferente da última que foi salva
+        if (remoteStorage.connected && remoteStorage[RS_PATH] && itemData?.slug && itemData?.sourceId && entryKey && page !== lastSavedPage) {
+            // Cria um temporizador para salvar após 1 segundo de inatividade
+            const timeoutId = setTimeout(() => {
+                console.log(`Salvando progresso: Página ${page} do capítulo ${entryKey}`);
+                remoteStorage[RS_PATH].setLastReadPage(
+                    itemData.slug,
+                    itemData.sourceId,
+                    entryKey,
+                    page
+                ).then(() => {
+                    setLastSavedPage(page); // Atualiza a última página salva após o sucesso
+                }).catch(console.error);
+            }, 1000); // Atraso de 1000ms (1 segundo)
+
+            // Limpa o temporizador se o usuário mudar de página antes do tempo
+            return () => clearTimeout(timeoutId);
         }
-    }, [page, itemData, entryKey]); // Adiciona entryKey às dependências
+    }, [page, itemData, entryKey, lastSavedPage]); // Adiciona lastSavedPage às dependências
 
     const pages = entry.groups[Object.keys(entry.groups)[0]] || [];
     const totalPages = pages.length;

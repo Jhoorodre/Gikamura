@@ -47,9 +47,22 @@ export const Model = {
         return `${cleanSource}-${cleanSlug}`;
     };
 
-    const getSeriesProgress = (slug, source) => {
+    // FUNÇÃO CORRIGIDA
+    const getSeriesProgress = async (slug, source) => {
       const progressKey = getProgressKey(slug, source);
-      return privateClient.getObject(`${SERIES_PROGRESS_PATH}${progressKey}`);
+      try {
+        // Tentamos obter o objeto de progresso
+        return await privateClient.getObject(`${SERIES_PROGRESS_PATH}${progressKey}`);
+      } catch (error) {
+        // Se for um erro 404 (não encontrado), retornamos null, o que é esperado.
+        if (error && error.message && error.message.includes('404')) {
+            console.log(`Progresso para a série "${slug}" ainda não existe. Isso é normal.`);
+            return null; 
+        }
+        // Para qualquer outro tipo de erro, nós o relançamos.
+        console.error(`Erro inesperado ao buscar progresso para "${slug}":`, error);
+        throw error;
+      }
     };
 
     const saveSeriesProgress = async (slug, source, data) => {
