@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
 import HubLoader from './components/hub/HubLoaderComponent.jsx';
 import Widget from 'remotestorage-widget';
@@ -10,6 +10,7 @@ import Spinner from './components/common/Spinner';
 import ItemGridSkeleton from './components/item/ItemGridSkeleton';
 import ErrorMessage from './components/common/ErrorMessage';
 import { remoteStorage } from './services/remotestorage';
+import RedirectPage from './pages/RedirectPage';
 import { createParticles } from './utils/particles.js';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         isOffline,
         isConnected
     } = useAppContext();
+    const location = useLocation();
     const widgetRef = useRef(null);
     useEffect(() => {
         createParticles();
@@ -31,7 +33,10 @@ function App() {
             widget.attach('remotestorage-widget');
             widgetRef.current = widget;
         }
-    }, []);
+        // Recria as partículas ao mudar de rota para garantir que a animação
+        // não seja interrompida por renderizações de componentes.
+        createParticles();
+    }, [location.pathname]);
     return (
         <div className="min-h-screen flex flex-col">
             {isOffline && (
@@ -53,19 +58,19 @@ function App() {
             )}
             <main className="flex-grow flex flex-col">
                 <div className="container mx-auto px-4 py-8 w-full">
-                    {hubLoading && <ItemGridSkeleton />}
-                    {hubError && <ErrorMessage message={hubError} onRetry={() => currentHubData && loadHub(currentHubData.url)} />}
-                    {!hubLoading && !hubError && (
-                        !currentHubData
-                            ? <HubLoader onLoadHub={loadHub} loading={hubLoading} />
-                            : (
-                                <Routes>
-                                    <Route path="/" element={<HubView />} />
-                                    <Route path="/series/:slug" element={<ItemDetailView />} />
-                                    <Route path="/series/:slug/read/:entryKey" element={<ReaderView />} />
-                                </Routes>
-                            )
-                    )}
+                    <Routes>
+                        {/* Rota de redirecionamento sempre disponível */}
+                        <Route path="/redirect/:base64Url" element={<RedirectPage />} />
+
+                        {/* Rotas principais da aplicação */}
+                        <Route path="/" element={
+                            hubLoading ? <ItemGridSkeleton /> :
+                            hubError ? <ErrorMessage message={hubError} onRetry={() => currentHubData && loadHub(currentHubData.url)} /> :
+                            !currentHubData ? <HubLoader onLoadHub={loadHub} loading={hubLoading} /> : <HubView />
+                        } />
+                        <Route path="/series/:slug" element={<ItemDetailView />} />
+                        <Route path="/series/:slug/read/:entryKey" element={<ReaderView />} />
+                    </Routes>
                 </div>
             </main>
         </div>
