@@ -429,10 +429,10 @@
   opacity: 0.6;
 }
 .entry-item.read .entry-item-title::after {
-    content: " (lido)";
-    color: var(--color-text-muted, #888);
-    font-size: var(--font-size-xs, 0.75rem);
-    margin-left: var(--space-2, 0.5rem);
+  content: " (lido)";
+  color: var(--color-text-muted, #888);
+  font-size: var(--font-size-xs, 0.75rem);
+  margin-left: var(--space-2, 0.5rem);
 }
 
 /* Título do item na lista */

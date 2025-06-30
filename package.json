@@ -12,6 +12,7 @@
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.3",
     "remotestorage-widget": "^1.7.0",
     "remotestoragejs": "^2.0.0-beta.7"
   },

@@ -33,10 +33,9 @@ const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapt
                         <button
                             key={key}
                             onClick={() => onSelectEntry(key)}
-                            className={`entry-item ${isRead ? 'read' : ''} ${isPending ? 'pending' : ''}`}
+                            className={`entry-item ${isRead ? 'read' : ''}`}
                         >
                             <span className="entry-item-title">Cap. {key}: {entry.title}</span>
-                            {isPending && <span className="badge badge-warning ml-2">Pendente</span>}
                         </button>
                     );
                 })}

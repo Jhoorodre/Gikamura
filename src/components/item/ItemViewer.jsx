@@ -87,14 +87,28 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
             <div className="pt-24">
                 {readingMode === 'paginated' ? (
                     <div className="flex items-center justify-center">
-                        <div className="absolute left-0 top-0 h-full w-1/3 cursor-pointer" onClick={goToPrevPage}></div>
+                        <button
+                            type="button"
+                            onClick={goToPrevPage}
+                            className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10"
+                            aria-label="Página Anterior"
+                            tabIndex={0}
+                            style={{ background: 'transparent', border: 'none' }}
+                        />
                         <Image
                             src={pages[page]}
                             alt={`Página ${page + 1}`}
                             className="max-w-full max-h-[85vh] object-contain"
                             errorSrc="https://placehold.co/800x1200/1e293b/94a3b8?text=Erro"
                         />
-                        <div className="absolute right-0 top-0 h-full w-1/3 cursor-pointer" onClick={goToNextPage}></div>
+                        <button
+                            type="button"
+                            onClick={goToNextPage}
+                            className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10"
+                            aria-label="Próxima Página"
+                            tabIndex={0}
+                            style={{ background: 'transparent', border: 'none' }}
+                        />
                     </div>
                 ) : (
                     <div className="max-w-4xl mx-auto flex flex-col gap-2">
