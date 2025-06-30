@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import '../../styles/hub-loader.css';
 import HubHistory from './HubHistory';
+import { BookOpenIcon } from '../common/Icones';
 
 // Definimos o componente como uma constante
 const HubLoaderComponent = ({ onLoadHub, loading }) => {
     const [url, setUrl] = useState("https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/main/hub_tog.json");
     const [error, setError] = useState('');
-    const { savedHubs, removeHub } = useAppContext();
+    const { savedHubs, removeHub, isConnected } = useAppContext();
 
     /**
      * Constrói uma URL para a nova rota com a URL do hub
@@ -77,6 +79,21 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
                         <p className="text-red-400 text-sm mt-2 text-center">{error}</p>
                     )}
                 </form>
+
+                {/* Card da Biblioteca - Aparece apenas se conectado */}
+                {isConnected && (
+                    <Link to="/library" className="card-elevated block p-6 rounded-xl mb-6 hover:border-primary-600 border border-transparent transition-all duration-300 group">
+                        <div className="flex items-center gap-4">
+                            <div className="bg-primary-600 p-3 rounded-lg">
+                                <BookOpenIcon />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-white orbitron group-hover:text-primary-300 transition-colors">Acessar Biblioteca</h3>
+                                <p className="text-slate-400 text-sm">Veja suas séries fixadas e histórico de leitura.</p>
+                            </div>
+                        </div>
+                    </Link>
+                )}
 
                 <HubHistory
                     hubs={savedHubs}

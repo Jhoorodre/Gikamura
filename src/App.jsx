@@ -14,6 +14,7 @@ import HubLoaderPage from './pages/HubLoaderPage';
 import { createParticles } from './utils/particles.js';
 import MainContent from './components/common/MainContent';
 import HubRouteHandler from './views/HubRouteHandler';
+import LibraryPage from './pages/LibraryPage';
 
 function App() {
     const {
@@ -64,6 +65,8 @@ function App() {
                         {/* ROTA DO LEITOR ATUALIZADA */}
                         <Route path="/read/:encodedSeriesId/:encodedEntryKey" element={<ReaderView />} />
                         <Route path="/redirect/:base64Url" element={<RedirectPage />} />
+                        {/* ROTA DA BIBLIOTECA */}
+                        <Route path="/library" element={<LibraryPage />} />
                     </Routes>
                 </div>
             </main>
