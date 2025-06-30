@@ -22,47 +22,83 @@ const validateItemData = (data) => {
     return true;
 };
 
+const CACHE_EXPIRATION_MS = 60 * 60 * 1000; // 1 hora
+
 export const useItem = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [offline, setOffline] = useState(false);
     const [offlineError, setOfflineError] = useState(null);
+    const [selectedItemData, setSelectedItemData] = useState(null);
 
-    // Novo: busca do cache do RemoteStorage
-    const fetchItemData = async (itemObject, preferCache = false) => {
+    // Busca dados do remoteStorage, retorna {data, timestamp} ou null
+    const getCachedSeries = async (itemObject) => {
+        try {
+            const series = await remoteStorage.Gika.getSeries(itemObject.slug, itemObject.source?.id);
+            if (series && series.url && series.timestamp) {
+                const data = await fetchData(series.url, true); // true: força cache
+                validateItemData(data);
+                return { data, timestamp: series.timestamp };
+            }
+        } catch (e) {
+            // Falha ao buscar do cache
+        }
+        return null;
+    };
+
+    // Salva dados no remoteStorage com timestamp
+    const saveSeriesToCache = async (itemObject, chapters) => {
+        try {
+            await remoteStorage.Gika.saveSeries({
+                ...itemObject,
+                entries: chapters,
+                timestamp: Date.now(),
+            });
+        } catch (e) {
+            // Falha ao salvar no cache
+        }
+    };
+
+    // Estratégia offline-first com stale-while-revalidate
+    const fetchItemData = async (itemObject) => {
         setLoading(true);
         setError(null);
         setOffline(false);
         setOfflineError(null);
+        let cached = null;
+        let usedCache = false;
         try {
-            let data = null;
-            // Se preferCache ou offline, tenta buscar do RemoteStorage
-            if (preferCache || !navigator.onLine) {
-                try {
-                    const series = await remoteStorage.Gika.getSeries(itemObject.slug, itemObject.source?.id);
-                    if (series && series.url) {
-                        // Busca o JSON do capítulo salvo
-                        data = await fetchData(series.url);
-                        validateItemData(data);
-                        setOffline(true);
-                        return { ...itemObject, entries: data.chapters };
-                    }
-                } catch (e) {
-                    setOfflineError('Capítulo não disponível offline.');
-                    throw new Error('Capítulo não disponível offline.');
-                }
+            // 1. Tenta buscar do remoteStorage primeiro
+            cached = await getCachedSeries(itemObject);
+            if (cached) {
+                setOffline(true);
+                setSelectedItemData({ ...itemObject, entries: cached.data.chapters });
+                usedCache = true;
             }
-            // Se online, busca normalmente
-            data = await fetchData(itemObject.data.url);
-            validateItemData(data);
-            return { ...itemObject, entries: data.chapters };
+            // 2. Decide se precisa atualizar (expirado ou nunca buscou)
+            const expired = !cached || (Date.now() - cached.timestamp > CACHE_EXPIRATION_MS);
+            if (navigator.onLine && expired) {
+                try {
+                    const freshData = await fetchData(itemObject.data.url);
+                    validateItemData(freshData);
+                    // Só atualiza se mudou
+                    if (!cached || JSON.stringify(cached.data.chapters) !== JSON.stringify(freshData.chapters)) {
+                        setSelectedItemData({ ...itemObject, entries: freshData.chapters });
+                        setOffline(false);
+                        await saveSeriesToCache(itemObject, freshData.chapters);
+                    }
+                } catch (err) {
+                    if (!usedCache) setError(err.message);
+                }
+            } else if (!cached && !navigator.onLine) {
+                setError('Você está offline e este item não está disponível no cache.');
+            }
         } catch (err) {
             setError(err.message);
-            return null;
         } finally {
             setLoading(false);
         }
     };
 
-    return { loading, error, fetchItemData, offline, offlineError };
+    return { loading, error, fetchItemData, offline, offlineError, selectedItemData };
 };

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { globalHistoryHandler } from '../../services/remoteStorage';
 
 const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapters = [] }) => {
     const entryKeys = useMemo(() => {
@@ -26,13 +27,16 @@ const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapt
                 {entryKeys.map((key) => {
                     const entry = itemData.entries[key];
                     const isRead = readChapters.includes(key);
+                    // Adiciona classe se capítulo foi lido offline e não sincronizado
+                    const isPending = isRead && !globalHistoryHandler.isOnline();
                     return (
                         <button
                             key={key}
                             onClick={() => onSelectEntry(key)}
-                            className={`entry-item ${isRead ? 'read' : ''}`}
+                            className={`entry-item ${isRead ? 'read' : ''} ${isPending ? 'pending' : ''}`}
                         >
                             <span className="entry-item-title">Cap. {key}: {entry.title}</span>
+                            {isPending && <span className="badge badge-warning ml-2">Pendente</span>}
                         </button>
                     );
                 })}

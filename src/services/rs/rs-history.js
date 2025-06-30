@@ -106,6 +106,8 @@ export const createGlobalHistoryHandler = (remoteStorage) => {
     }
   };
 
+  const isOnline = () => remoteStorage.connected;
+
   return {
     // Series methods
     max: MAX_VALUES,
@@ -114,6 +116,7 @@ export const createGlobalHistoryHandler = (remoteStorage) => {
     setLastReadPage,
     getLastReadPage,
     editSeries,
+    isOnline,
     // Hub methods
     addHub,
     removeHub,

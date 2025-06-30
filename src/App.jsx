@@ -1,20 +1,16 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import HubLoader from './components/hub/HubLoaderComponent.jsx';
-import HubHeader from './components/hub/HubHeader';
-import ItemGrid from './components/item/ItemGrid';
-import ItemInfo from './components/item/ItemInfo';
-import EntryList from './components/item/EntryList';
-const ItemViewer = React.lazy(() => import('./components/item/ItemViewer.jsx'));
-import ItemGridSkeleton from './components/item/ItemGridSkeleton.jsx';
-import Spinner from './components/common/Spinner';
-import ErrorMessage from './components/common/ErrorMessage';
-import { useItem } from './hooks/useItem';
-import { remoteStorage, globalHistoryHandler } from './services/remoteStorage.js';
-import { fetchData } from './services/api';
 import Widget from 'remotestorage-widget';
 import { useHistory } from './context/HistoryContext';
 
+import { useItem } from './hooks/useItem';
+import { remoteStorage, globalHistoryHandler } from './services/remoteStorage.js';
+import { fetchData } from './services/api';
 import './styles/index.css';
+import HubView from './views/HubView';
+import ItemDetailView from './views/ItemDetailView';
+import ReaderView from './views/ReaderView';
+import Spinner from './components/common/Spinner';
 
 // Função para criar as partículas (mantida do seu exemplo)
 const createParticles = () => {
@@ -222,12 +218,69 @@ function App() {
         });
     };
 
-    if (hubLoading || itemLoading) return <div className="min-h-screen flex items-center justify-center"><Spinner /></div>;
-    if (hubError) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message={`Erro ao carregar hub: ${hubError}`} /></div>;
-    if (itemError || offlineError) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message={itemError || offlineError} /></div>;
+    // Filtra as séries com base no termo de busca
+    const filteredSeries = currentHubData?.series.filter(item =>
+        item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
-    const entryKeys = currentHubData ? getEntryKeys() : [];
-    const currentEntryIndex = currentHubData ? entryKeys.indexOf(selectedEntryKey) : -1;
+    const renderContent = () => {
+        if (hubLoading) {
+            return <div className="flex justify-center items-center h-64"><Spinner /></div>;
+        }
+        if (!currentHubData) {
+            return <HubLoader onLoadHub={loadHubAndSave} loading={hubLoading} error={hubError} />;
+        }
+        if (!selectedItemData) {
+            return (
+                <HubView
+                    hub={currentHubData.hub}
+                    series={filteredSeries}
+                    onSelectItem={selectItem}
+                    searchTerm={searchTerm}
+                    onSearchChange={e => setSearchTerm(e.target.value)}
+                />
+            );
+        }
+        if (!selectedEntryKey) {
+            if (itemLoading) {
+                return <div className="flex justify-center items-center h-64"><Spinner /></div>;
+            }
+            if (itemError) {
+                return <ErrorMessage message={itemError} onRetry={() => selectItem(selectedItemData)} />;
+            }
+            return (
+                <ItemDetailView
+                    item={selectedItemData}
+                    onBack={backToHub}
+                    onSelectEntry={selectEntry}
+                    readChapters={readChapters}
+                />
+            );
+        }
+        return <ReaderView
+            itemData={{...selectedItemData, selectedEntryKey, source: { id: selectedItemData.source?.id }}}
+            entry={selectedItemData.entries[selectedEntryKey]}
+            page={currentPage}
+            setPage={setCurrentPage}
+            onBack={backToItem}
+            readingMode={readingMode}
+            setReadingMode={setReadingMode}
+            isFirstEntry={currentEntryIndex === 0}
+            isLastEntry={currentEntryIndex === entryKeys.length - 1}
+            onNextEntry={() => {
+                const nextIndex = currentEntryIndex + 1;
+                if (nextIndex < entryKeys.length) {
+                    selectEntry(entryKeys[nextIndex]);
+                }
+            }}
+            onPrevEntry={() => {
+                const prevIndex = currentEntryIndex - 1;
+                if (prevIndex >= 0) {
+                    selectEntry(entryKeys[prevIndex]);
+                }
+            }}
+        />;
+    };
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -249,78 +302,9 @@ function App() {
                 </div>
             )}
             <main className="flex-grow flex flex-col">
-                {!currentHubData ? (
-                    <div className="flex-grow flex items-center justify-center p-4">
-                        <HubLoader
-                            onLoadHub={loadHubAndSave}
-                            loading={hubLoading}
-                        />
-                    </div>
-                ) : (
-                    <div className="container mx-auto px-4 py-8 w-full">
-                        <div className="view-container" key={selectedItemData ? 'item-view' : 'hub-view'}>
-                        {!selectedItemData ? (
-                            <>
-                                <HubHeader hub={currentHubData.hub} />
-                                {/* Usar o skeleton enquanto os itens do hub estão carregando */}
-                                {hubLoading ? (
-                                    <ItemGridSkeleton />
-                                ) : (
-                                    <ItemGrid items={currentHubData.series} onSelectItem={selectItem} />
-                                )}
-                            </>
-                        ) : !selectedEntryKey ? (
-                            <>
-                                <ItemInfo itemData={selectedItemData} onBackToHub={backToHub} />
-                                {/* Skeleton para lista de capítulos */}
-                                {itemLoading ? (
-                                    <div className="panel-body">
-                                        <div className="space-y-2">
-                                            <div className="h-10 bg-slate-700 rounded-lg animate-pulse"></div>
-                                            <div className="h-10 bg-slate-700 rounded-lg animate-pulse" style={{ animationDelay: '0.1s' }}></div>
-                                            <div className="h-10 bg-slate-700 rounded-lg animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <EntryList
-                                        itemData={selectedItemData}
-                                        onSelectEntry={selectEntry}
-                                        sortOrder={sortOrder}
-                                        setSortOrder={setSortOrder}
-                                        readChapters={readChapters}
-                                    />
-                                )}
-                            </>
-                        ) : (
-                            <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Spinner /></div>}>
-                                <ItemViewer
-                                    itemData={{...selectedItemData, selectedEntryKey, source: { id: selectedItemData.source?.id }}}
-                                    entry={selectedItemData.entries[selectedEntryKey]}
-                                    page={currentPage}
-                                    setPage={setCurrentPage}
-                                    onBack={backToItem}
-                                    readingMode={readingMode}
-                                    setReadingMode={setReadingMode}
-                                    isFirstEntry={currentEntryIndex === 0}
-                                    isLastEntry={currentEntryIndex === entryKeys.length - 1}
-                                    onNextEntry={() => {
-                                        const nextIndex = currentEntryIndex + 1;
-                                        if (nextIndex < entryKeys.length) {
-                                            selectEntry(entryKeys[nextIndex]);
-                                        }
-                                    }}
-                                    onPrevEntry={() => {
-                                        const prevIndex = currentEntryIndex - 1;
-                                        if (prevIndex >= 0) {
-                                            selectEntry(entryKeys[prevIndex]);
-                                        }
-                                    }}
-                                />
-                            </Suspense>
-                        )}
-                        </div>
-                    </div>
-                )}
+                <div className="container mx-auto px-4 py-8 w-full">
+                    {renderContent()}
+                </div>
             </main>
         </div>
     );
