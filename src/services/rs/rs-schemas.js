@@ -1,100 +1,106 @@
 import { RS_PATH } from "./rs-config.js";
 
+const SERIES_TYPE = "series";
+const HUB_TYPE = "hub";
+
+const SERIES_PATH_BASE = "series/";
+const HUB_PATH_BASE = "hubs/";
+
 export const Model = {
   name: RS_PATH,
   builder: (privateClient) => {
-    // Define o "molde" para o progresso da série
-    privateClient.declareType("series-progress", {
+    // --- Definição dos Schemas ---
+    privateClient.declareType(SERIES_TYPE, {
       type: "object",
       properties: {
         slug: { type: "string" },
+        coverUrl: { type: "string" },
         source: { type: "string" },
-        readChapterKeys: { type: "array", default: [] },
-        lastRead: {
-          type: "object",
-          properties: {
-            chapterKey: { type: "string" },
-            page: { type: "number" },
-          },
-        },
+        url: { type: "string" },
+        title: { type: "string" },
         timestamp: { type: "number" },
+        chapters: { type: "array", default: [] },
+        pinned: { type: "boolean", default: false },
       },
-      required: ["slug", "source"],
+      required: ["slug", "source", "url", "title", "timestamp", "chapters", "pinned"],
     });
 
-    const HUB_PATH = "hubs/";
-    const SERIES_PROGRESS_PATH = "series-progress/"; // Novo caminho para os dados
+    privateClient.declareType(HUB_TYPE, {
+      type: "object",
+      properties: {
+        url: { type: "string" },
+        title: { type: "string" },
+        iconUrl: { type: "string" },
+        timestamp: { type: "number" },
+      },
+      required: ["url", "title", "timestamp"],
+    });
 
-    // --- Métodos de Hub ---
-    const addHub = (url, title, iconUrl) => {
-      const hubId = btoa(url);
-      return privateClient.storeObject("hub", `${HUB_PATH}${hubId}`, { url, title, iconUrl, timestamp: Date.now() });
-    };
-    const removeHub = (url) => privateClient.remove(`${HUB_PATH}${btoa(url)}`);
-    const getAllHubs = async () => {
-        const listing = await privateClient.getListing(HUB_PATH);
-        if (!listing) return [];
-        const hubs = await Promise.all(Object.keys(listing).map(hubId => privateClient.getObject(`${HUB_PATH}${hubId}`)));
-        return hubs.filter(hub => hub).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-    };
-    // --- Fim dos Métodos de Hub ---
+    // --- Funções Auxiliares ---
+    const getSeriesKey = (slug, source) => `${source}-${slug}`;
+    const getHubKey = (url) => btoa(url);
 
-    // --- Métodos de Progresso ---
-    // Cria uma chave limpa e segura para usar como nome de ficheiro
-    const getProgressKey = (slug, source) => {
-        const cleanSource = source.replace(/[^a-zA-Z0-9-]/g, '-');
-        const cleanSlug = slug.replace(/[^a-zA-Z0-9-]/g, '-');
-        return `${cleanSource}-${cleanSlug}`;
-    };
-
-    // FUNÇÃO OTIMIZADA
-    const getSeriesProgress = async (slug, source) => {
-      const progressKey = getProgressKey(slug, source);
-      try {
-        return await privateClient.getObject(`${SERIES_PROGRESS_PATH}${progressKey}`);
-      } catch (error) {
-        // Trata o erro 404 de forma silenciosa, pois significa apenas que o progresso não foi salvo ainda.
-        if (error && error.message && error.message.includes('404')) {
-            console.log(`Progresso para "${slug}" não encontrado. Retornando null.`);
-            return null;
-        }
-        // Para outros erros, é importante que eles apareçam para depuração.
-        console.error(`Erro inesperado ao buscar progresso para "${slug}":`, error);
-        throw error;
-      }
-    };
-
-    const saveSeriesProgress = async (slug, source, data) => {
-        const progressKey = getProgressKey(slug, source);
-        let progress = await getSeriesProgress(slug, source).catch(() => null);
-        if (!progress) {
-            progress = { slug, source, readChapterKeys: [], lastRead: null };
-        }
-        Object.assign(progress, data, { timestamp: Date.now() });
-        return privateClient.storeObject("series-progress", `${SERIES_PROGRESS_PATH}${progressKey}`, progress);
-    };
-    
-    const setLastReadPage = async (slug, source, chapterKey, page) => {
-        // Garante que 'progress' seja um objeto, mesmo que a busca falhe
-        const progress = await getSeriesProgress(slug, source).catch(() => ({}));
-        // Garante que 'readChapterKeys' seja um array
-        const readKeys = new Set(progress.readChapterKeys || []);
-        readKeys.add(chapterKey);
-        const newProgress = {
-            lastRead: { chapterKey, page },
-            readChapterKeys: [...readKeys]
-        };
-        return saveSeriesProgress(slug, source, newProgress);
-    };
-
+    // --- Métodos Exportados (API de Baixo Nível) ---
     return {
       exports: {
-        // "Exporta" as funções para serem usadas na aplicação
-        addHub,
-        removeHub,
-        getAllHubs,
-        getSeriesProgress,
-        setLastReadPage,
+        // --- Métodos de Séries ---
+        addSeries: (slug, coverUrl, source, url, title, pinned, chapters) => {
+          const seriesKey = getSeriesKey(slug, source);
+          const seriesData = {
+            slug,
+            coverUrl: coverUrl || "",
+            source,
+            url,
+            title,
+            timestamp: Date.now(),
+            chapters: chapters || [],
+            pinned: !!pinned,
+          };
+          return privateClient.storeObject(SERIES_TYPE, `${SERIES_PATH_BASE}${seriesKey}`, seriesData);
+        },
+
+        editSeries: async (slug, source, updates) => {
+          const seriesKey = getSeriesKey(slug, source);
+          const path = `${SERIES_PATH_BASE}${seriesKey}`;
+          const existing = await privateClient.getObject(path);
+          if (!existing) {
+            console.error(`[RS] Tentativa de editar série inexistente: ${seriesKey}`);
+            return;
+          }
+          // Atualiza o timestamp em qualquer edição
+          const updatedData = { ...existing, ...updates, timestamp: Date.now() };
+          return privateClient.storeObject(SERIES_TYPE, path, updatedData);
+        },
+
+        getSeries: (slug, source) => {
+          const seriesKey = getSeriesKey(slug, source);
+          return privateClient.getObject(`${SERIES_PATH_BASE}${seriesKey}`);
+        },
+
+        removeSeries: (slug, source) => {
+          const seriesKey = getSeriesKey(slug, source);
+          return privateClient.remove(`${SERIES_PATH_BASE}${seriesKey}`);
+        },
+
+        getAllSeries: () => {
+          // Cache de 60 segundos para leituras em massa quando conectado
+          const maxAge = privateClient.storage.connected ? 60000 : false;
+          return privateClient.getAll(SERIES_PATH_BASE, maxAge);
+        },
+
+        // --- Métodos de Hubs ---
+        addHub: (url, title, iconUrl) => {
+          const hubKey = getHubKey(url);
+          const hubData = { url, title, iconUrl: iconUrl || "", timestamp: Date.now() };
+          return privateClient.storeObject(HUB_TYPE, `${HUB_PATH_BASE}${hubKey}`, hubData);
+        },
+
+        removeHub: (url) => {
+          const hubKey = getHubKey(url);
+          return privateClient.remove(`${HUB_PATH_BASE}${hubKey}`);
+        },
+
+        getAllHubs: () => privateClient.getAll(HUB_PATH_BASE),
       },
     };
   },

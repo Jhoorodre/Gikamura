@@ -16,23 +16,33 @@ const ItemDetailView = () => {
         selectItem, 
         clearSelectedItem, 
         itemLoading, 
-        itemError 
+        itemError,
+        isOffline,
+        togglePinStatus
     } = useAppContext();
 
     // Adiciona o estado para controlar a ordem de ordenação
     const [sortOrder, setSortOrder] = useState('asc');
 
-    const itemFromHub = currentHubData?.series.find(i => i.slug === slug);
-
     useEffect(() => {
-        if (itemFromHub && (!selectedItemData || selectedItemData.slug !== slug)) {
-            selectItem(itemFromHub, currentHubData.hub.id);
+        // Se os dados do hub ainda não foram carregados, não podemos fazer nada.
+        if (!currentHubData) {
+            return;
         }
-        // Limpa os dados ao sair da página para forçar recarregamento
-        return () => {
-            clearSelectedItem();
-        };
-    }, [itemFromHub, slug, currentHubData?.hub?.id]);
+
+        const itemFromHub = currentHubData.series.find(i => i.slug === slug);
+
+        if (itemFromHub) {
+            // Apenas busca os dados se o item correto já não estiver carregado.
+            if (!selectedItemData || selectedItemData.slug !== slug) {
+                selectItem(itemFromHub, currentHubData.hub.id);
+            }
+        } else {
+            console.error(`Item com slug "${slug}" não encontrado no hub atual.`);
+            // Opcional: Redirecionar para a home se o slug for inválido.
+            // navigate('/');
+        }
+    }, [slug, currentHubData, selectItem, selectedItemData]);
 
     const handleGoBack = () => {
         clearSelectedItem();
@@ -44,7 +54,10 @@ const ItemDetailView = () => {
     }
     
     if (itemError) {
-        return <ErrorMessage message={itemError} onRetry={() => selectItem(itemFromHub, currentHubData.hub.id)} />;
+        // Garante que onRetry tenha os dados necessários para tentar novamente.
+        const itemToRetry = currentHubData?.series.find(i => i.slug === slug);
+        const hubIdToRetry = currentHubData?.hub?.id;
+        return <ErrorMessage message={itemError} onRetry={itemToRetry && hubIdToRetry ? () => selectItem(itemToRetry, hubIdToRetry) : undefined} />;
     }
 
     return (
@@ -55,7 +68,11 @@ const ItemDetailView = () => {
                 </Button>
             </div>
             {/* Este componente agora recebe os dados corretos e unificados */}
-            <ItemInfo itemData={selectedItemData} />
+            <ItemInfo
+                itemData={selectedItemData}
+                pinned={selectedItemData.pinned}
+                onPinToggle={() => togglePinStatus(selectedItemData)}
+            />
 
             {selectedItemData.entries && (
                 <EntryList
@@ -64,6 +81,7 @@ const ItemDetailView = () => {
                     readChapters={selectedItemData.readChapterKeys}
                     sortOrder={sortOrder}
                     setSortOrder={setSortOrder}
+                    isOnline={!isOffline}
                 />
             )}
         </div>

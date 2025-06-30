@@ -30,10 +30,14 @@ const HubHistory = ({ hubs, onSelectHub, onRemoveHub }) => {
                         <button 
                             onClick={(e) => {
                                 e.stopPropagation();
-                                onRemoveHub(hub.url);
+                                // Adiciona uma confirmação para evitar exclusões acidentais.
+                                if (window.confirm(`Tem certeza que deseja remover o hub "${hub.title}"?`)) {
+                                    onRemoveHub(hub.url);
+                                }
                             }}
                             className="text-red-400 hover:text-red-300 p-2 hover:bg-red-900/20 rounded-lg transition-colors"
                             title="Remover hub"
+                            aria-label={`Remover o hub ${hub.title}`}
                         >
                             <TrashIcon />
                         </button>

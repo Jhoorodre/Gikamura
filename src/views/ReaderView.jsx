@@ -8,10 +8,11 @@ const ItemViewer = React.lazy(() => import('../components/item/ItemViewer.jsx'))
 const ReaderView = () => {
     const { slug, entryKey } = useParams();
     const navigate = useNavigate();
-    const { selectedItemData, selectItem, itemLoading, itemError, currentHubData } = useAppContext();
+    const { selectedItemData, selectItem, itemLoading, itemError, currentHubData, setLastRead } = useAppContext();
     
-    // Adicione um estado local para a página atual
+    // Estados locais para controlar a UI do leitor
     const [page, setPage] = useState(0);
+    const [readingMode, setReadingMode] = useState('paginated');
 
     const itemFromHub = currentHubData?.series.find(i => i.slug === slug);
 
@@ -20,7 +21,12 @@ const ReaderView = () => {
         if (itemFromHub && (!selectedItemData || selectedItemData.slug !== slug)) {
             selectItem(itemFromHub, currentHubData.hub.id);
         }
-    }, [itemFromHub, selectedItemData, slug, selectItem, currentHubData?.hub?.id]);
+    }, [itemFromHub, selectedItemData, slug, selectItem, currentHubData]);
+
+    // Reseta a página para 0 sempre que o capítulo (entryKey) mudar
+    useEffect(() => {
+        setPage(0);
+    }, [entryKey]);
 
     // Exibe o spinner enquanto os dados do item estão sendo carregados
     if (itemLoading || !selectedItemData || selectedItemData.slug !== slug) {
@@ -28,7 +34,9 @@ const ReaderView = () => {
     }
     
     if (itemError) {
-        return <ErrorMessage message={itemError} onRetry={() => selectItem(itemFromHub, currentHubData.hub.id)} />;
+        // Garante que onRetry tenha os dados necessários para tentar novamente.
+        const hubIdToRetry = currentHubData?.hub?.id;
+        return <ErrorMessage message={itemError} onRetry={itemFromHub && hubIdToRetry ? () => selectItem(itemFromHub, hubIdToRetry) : undefined} />;
     }
 
     // Usa selectedItemData (que tem a lista completa) para encontrar a 'entry'
@@ -65,12 +73,13 @@ const ReaderView = () => {
                 page={page}
                 setPage={setPage}
                 onBack={() => navigate(`/series/${slug}`)}
-                readingMode={'paginated'} // Modo de leitura inicial
-                setReadingMode={() => {}} // A lógica para isso pode ser adicionada aqui se necessário
+                readingMode={readingMode}
+                setReadingMode={setReadingMode}
                 isFirstEntry={isFirstEntry}
                 isLastEntry={isLastEntry}
                 onNextEntry={onNextEntry}
                 onPrevEntry={onPrevEntry}
+                onSaveProgress={setLastRead} // Passa a função de salvamento da API
             />
         </Suspense>
     );

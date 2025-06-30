@@ -1,57 +1,135 @@
-// src/services/api.js
-import { CORS_PROXY_URL } from '../constants';
+import { remoteStorage } from "./remotestorage.js";
+import { RS_PATH } from "./rs/rs-config.js";
 
-const memoryCache = new Map();
-const storageCache = sessionStorage;
-const getCacheKey = (url) => `fetch-cache:${url}`;
+const MAX_HISTORY_ITEMS = 20;
+const SORT_KEY = "timestamp";
 
-export const fetchData = async (url) => {
-    // 1. Tenta o cache em memória
-    if (memoryCache.has(url)) {
-        console.log("Dados carregados do cache em memória!");
-        return memoryCache.get(url);
-    }
-    // 2. Tenta o sessionStorage
-    const cacheKey = getCacheKey(url);
-    const cachedData = storageCache.getItem(cacheKey);
-    if (cachedData) {
-        console.log("Dados carregados do sessionStorage!");
-        const data = JSON.parse(cachedData);
-        memoryCache.set(url, data);
-        return data;
-    }
-    // 3. Busca na rede
-    try {
-        const response = await fetch(`${CORS_PROXY_URL}${encodeURIComponent(url)}`);
-        if (!response.ok) {
-            let errorMessage;
-            switch (response.status) {
-                case 404:
-                    errorMessage = "O recurso solicitado não foi encontrado (Erro 404).";
-                    break;
-                case 500:
-                    errorMessage = "Ocorreu um erro no servidor (Erro 500). Tente novamente mais tarde.";
-                    break;
-                default:
-                    errorMessage = `Erro ao carregar os dados. Status: ${response.status}.`;
-            }
-            const error = new Error(errorMessage);
-            error.status = response.status;
-            throw error;
-        }
-        const data = await response.json();
-        memoryCache.set(url, data);
-        try {
-            storageCache.setItem(cacheKey, JSON.stringify(data));
-        } catch (e) {
-            console.warn("Não foi possível salvar no sessionStorage. O cache pode estar cheio.");
-        }
-        return data;
-    } catch (error) {
-        if (error instanceof SyntaxError) {
-            console.error("Falha ao analisar JSON:", error);
-            throw new Error("A resposta do servidor não é um JSON válido. Verifique a URL do hub.");
-        }
-        throw error;
-    }
+/**
+ * Helper para ordenar um objeto de objetos por uma chave interna.
+ * @returns {Array} Array ordenado.
+ */
+const getSortedArray = (obj) => {
+  if (!obj) return [];
+  return Object.values(obj).sort((a, b) => (b[SORT_KEY] || 0) - (a[SORT_KEY] || 0));
 };
+
+/**
+ * Garante que o cache local não tenha objetos inválidos.
+ */
+const sync = async () => {
+  const rs = remoteStorage[RS_PATH];
+  if (!rs) return;
+
+  const allSeries = await rs.getAllSeries();
+  if (!allSeries) return;
+
+  for (const item of Object.values(allSeries)) {
+    if (!item || !item[SORT_KEY]) {
+      console.warn(`[API Sync] Removendo série inválida: ${item.slug}`);
+      await rs.removeSeries(item.slug, item.source);
+    }
+  }
+};
+
+const api = {
+  // --- Métodos de Séries ---
+  maxHistory: MAX_HISTORY_ITEMS,
+
+  async pushSeries(slug, coverUrl, source, url, title) {
+    await sync();
+    const rs = remoteStorage[RS_PATH];
+    const allSeries = getSortedArray(await rs.getAllSeries());
+    const existingSeries = allSeries.find(e => e.slug === slug && e.source === source);
+
+    if (existingSeries) {
+      // Apenas atualiza o timestamp para movê-la para o topo do histórico
+      return rs.editSeries(slug, source, { title, url, coverUrl });
+    }
+
+    // Se não existe, adiciona e gerencia o limite do histórico
+    const unpinnedSeries = allSeries.filter(e => !e.pinned);
+    if (unpinnedSeries.length >= MAX_HISTORY_ITEMS) {
+      const oldest = unpinnedSeries[unpinnedSeries.length - 1];
+      await rs.removeSeries(oldest.slug, oldest.source);
+    }
+    return rs.addSeries(slug, coverUrl, source, url, title, false, []);
+  },
+
+  removeSeries: (slug, source) => remoteStorage[RS_PATH]?.removeSeries(slug, source),
+
+  async removeAllUnpinnedSeries() {
+    const series = await this.getAllUnpinnedSeries();
+    const promises = series.map(s => this.removeSeries(s.slug, s.source));
+    await Promise.all(promises);
+  },
+
+  addChapter: (slug, source, chapter) => api.addChapters(slug, source, [chapter]),
+
+  async addChapters(slug, source, chapters) {
+    const rs = remoteStorage[RS_PATH];
+    const series = await rs.getSeries(slug, source);
+    if (series) {
+      const updatedChapters = [...new Set([...(series.chapters || []), ...chapters])];
+      return rs.editSeries(slug, source, { chapters: updatedChapters });
+    }
+  },
+
+  async removeChapter(slug, source, chapter) {
+    const rs = remoteStorage[RS_PATH];
+    const series = await rs.getSeries(slug, source);
+    if (series?.chapters) {
+      const updatedChapters = series.chapters.filter(c => c !== chapter);
+      return rs.editSeries(slug, source, { chapters: updatedChapters });
+    }
+  },
+
+  removeAllChapters: (slug, source) => remoteStorage[RS_PATH]?.editSeries(slug, source, { chapters: [] }),
+
+  async getReadChapters(slug, source) {
+    const series = await remoteStorage[RS_PATH]?.getSeries(slug, source);
+    return series?.chapters || [];
+  },
+
+  async isSeriesPinned(slug, source) {
+    const series = await remoteStorage[RS_PATH]?.getSeries(slug, source);
+    return !!series?.pinned;
+  },
+
+  async pinSeries(slug, source) {
+    const series = await remoteStorage[RS_PATH]?.getSeries(slug, source);
+    if (series) {
+      return remoteStorage[RS_PATH]?.editSeries(slug, source, { pinned: true });
+    }
+    // Se não existe, cria e já fixa (opcional, mas parece útil)
+    // return this.pushSeries(slug, coverUrl, source, url, title).then(() => this.pinSeries(slug, source));
+  },
+
+  unpinSeries: (slug, source) => remoteStorage[RS_PATH]?.editSeries(slug, source, { pinned: false }),
+
+  async getAllPinnedSeries() {
+    await sync();
+    const all = getSortedArray(await remoteStorage[RS_PATH]?.getAllSeries());
+    return all.filter(e => e.pinned);
+  },
+
+  async getAllUnpinnedSeries() {
+    await sync();
+    const all = getSortedArray(await remoteStorage[RS_PATH]?.getAllSeries());
+    return all.filter(e => !e.pinned);
+  },
+
+  // --- Métodos de Hubs ---
+  addHub: (url, title, iconUrl) => remoteStorage[RS_PATH]?.addHub(url, title, iconUrl),
+
+  removeHub: (url) => remoteStorage[RS_PATH]?.removeHub(url),
+
+  async getAllHubs() {
+    return getSortedArray(await remoteStorage[RS_PATH]?.getAllHubs());
+  },
+};
+
+if (typeof window !== 'undefined') {
+  window.gikaApi = api; // Expondo a nova API para depuração
+}
+
+export default api;

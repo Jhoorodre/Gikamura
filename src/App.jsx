@@ -7,24 +7,10 @@ import HubView from './views/HubView';
 import ItemDetailView from './views/ItemDetailView';
 import ReaderView from './views/ReaderView';
 import Spinner from './components/common/Spinner';
+import ItemGridSkeleton from './components/item/ItemGridSkeleton';
 import ErrorMessage from './components/common/ErrorMessage';
-import { remoteStorage } from './services/remoteStorage';
-import './styles/index.css';
-
-const createParticles = () => {
-    const container = document.getElementById('particles-container');
-    if (!container || container.childElementCount > 0) return;
-    for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.width = `${Math.random() * 3 + 1}px`;
-        particle.style.height = particle.style.width;
-        particle.style.animationDelay = `${Math.random() * 25}s`;
-        particle.style.animationDuration = `${Math.random() * 15 + 10}s`;
-        container.appendChild(particle);
-    }
-};
+import { remoteStorage } from './services/remotestorage';
+import { createParticles } from './utils/particles.js';
 
 function App() {
     const {
@@ -67,11 +53,11 @@ function App() {
             )}
             <main className="flex-grow flex flex-col">
                 <div className="container mx-auto px-4 py-8 w-full">
-                    {hubLoading && <Spinner />}
+                    {hubLoading && <ItemGridSkeleton />}
                     {hubError && <ErrorMessage message={hubError} onRetry={() => currentHubData && loadHub(currentHubData.url)} />}
                     {!hubLoading && !hubError && (
                         !currentHubData
-                            ? <HubLoader onLoadHub={loadHub} />
+                            ? <HubLoader onLoadHub={loadHub} loading={hubLoading} />
                             : (
                                 <Routes>
                                     <Route path="/" element={<HubView />} />

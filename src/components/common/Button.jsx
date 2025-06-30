@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-const Button = ({ children, onClick, className = '', ...props }) => (
-  <button onClick={onClick} className={`btn ${className}`} {...props}>
-    {children}
-  </button>
-);
+const Button = forwardRef(({ children, onClick, className = '', ...props }, ref) => {
+  return (
+    <button ref={ref} onClick={onClick} className={`btn ${className}`} {...props}>
+      {children}
+    </button>
+  );
+});
 
 export default Button;

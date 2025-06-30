@@ -1,24 +1,33 @@
-// src/services/remoteStorage.js
 import RemoteStorage from "remotestoragejs";
 import { RS_PATH } from "./rs/rs-config.js";
 import { Model as CustomModule } from "./rs/rs-schemas.js";
 
-// 1. Cria a instância do RemoteStorage
 const remoteStorage = new RemoteStorage({
   cache: true,
-  modules: [CustomModule], // Carrega nosso módulo personalizado
+  modules: [CustomModule],
+  // Descoberta genial sua! Previne que falhas no IndexedDB causem lentidão
+  // na inicialização, um problema comum e pouco documentado.
+  disableFeatures: ["IndexedDB"],
 });
 
-// 2. Requisita acesso ao módulo "Gika" com permissão de leitura/escrita
 remoteStorage.access.claim(RS_PATH, "rw");
-
-// 3. Habilita o cache para nosso módulo
 remoteStorage.caching.enable(`/${RS_PATH}/`);
 
-// 4. Disponibiliza no escopo global para o Widget e para depuração
+/**
+ * Limpa o cache local de entradas órfãs ou corrompidas.
+ * Útil para resolver estados inconsistentes.
+ */
+const purgePreviousCache = () => {
+  remoteStorage.caching.reset();
+  for (const key of Object.keys(localStorage)) {
+    if (key.startsWith("remotestorage:") && localStorage.getItem(key) === "undefined") {
+      localStorage.removeItem(key);
+    }
+  }
+};
+
 if (typeof window !== 'undefined') {
   window.remoteStorage = remoteStorage;
 }
 
-// ... exporta a instância
-export { remoteStorage };
+export { remoteStorage, purgePreviousCache };

@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
-import { fetchData } from '../services/api';
-import { remoteStorage } from '../services/remotestorage';
-import { RS_PATH } from '../services/rs/rs-config';
+// Ferramenta para buscar dados de URLs (com cache)
+import { fetchData } from '../services/fetchWithCache.js';
+// Cérebro da aplicação, com a lógica de negócio (histórico, etc.)
+import api from '../services/api.js';
 
 export const useItem = () => {
     const [loading, setLoading] = useState(false);
@@ -22,24 +23,31 @@ export const useItem = () => {
         try {
             // Passo 1: Busca os dados detalhados da série (o "reader.json")
             const seriesDetails = await fetchData(itemFromHub.data.url);
-            // Passo 2: Em paralelo, busca o progresso de leitura, se conectado
-            const module = remoteStorage[RS_PATH];
-            const progress = (remoteStorage.connected && module)
-                ? await module.getSeriesProgress(itemFromHub.slug, hubId)
-                : null;
+
+            // Passo 2: Busca o progresso de leitura do usuário usando a API
+            const readChapters = await api.getReadChapters(itemFromHub.slug, hubId);
+
             // Passo 3: Unifica os dados de forma controlada e segura
-            setSelectedItemData({
-                // Começamos com os dados do hub, que tem a estrutura de 'cover' correta
+            const finalItemData = {
                 ...itemFromHub,
-                // Sobrescrevemos explicitamente apenas os campos detalhados
                 title: seriesDetails.title,
                 description: seriesDetails.description,
                 author: seriesDetails.author,
                 entries: seriesDetails.chapters,
                 sourceId: hubId,
-                readChapterKeys: progress?.readChapterKeys || [],
-                lastRead: progress?.lastRead || null,
-            });
+                readChapterKeys: readChapters || [],
+            };
+            setSelectedItemData(finalItemData);
+
+            // Passo 4: Atualiza o histórico do usuário em segundo plano.
+            api.pushSeries(
+                itemFromHub.slug,
+                itemFromHub.cover,
+                hubId,
+                itemFromHub.data.url,
+                seriesDetails.title
+            ).catch(err => console.warn("Falha ao atualizar o histórico da série:", err));
+
         } catch (err) {
             console.error("Erro detalhado ao carregar dados do item:", err);
             setError(`Não foi possível carregar os detalhes da série. Verifique a URL em hub.json. (Erro: ${err.message})`);

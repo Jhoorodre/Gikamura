@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from './Button';
 
 const ErrorMessage = ({ message, onRetry, title = 'Ops! Algo deu errado' }) => {
     return (
@@ -12,12 +13,12 @@ const ErrorMessage = ({ message, onRetry, title = 'Ops! Algo deu errado' }) => {
                 
                 <div className="text-center space-y-2">
                     <h3 className="text-lg font-semibold text-white">{title}</h3>
-                    <p className="text-slate-300 text-sm leading-relaxed">{message}</p>
+                    <p className="text-slate-300 text-sm leading-relaxed">{typeof message === 'string' ? message : 'Ocorreu um erro inesperado.'}</p>
                 </div>
                 
                 {onRetry && (
                     <div className="flex justify-center pt-2">
-                        <button 
+                        <Button
                             onClick={onRetry}
                             className="btn-primary inline-flex items-center space-x-2"
                         >
@@ -25,7 +26,7 @@ const ErrorMessage = ({ message, onRetry, title = 'Ops! Algo deu errado' }) => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
                             <span>Tentar novamente</span>
-                        </button>
+                        </Button>
                     </div>
                 )}
             </div>

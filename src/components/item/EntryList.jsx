@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
-import { remoteStorage } from '../../services/remotestorage';
 
-const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapters = [] }) => {
+const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapters = [], isOnline }) => {
     const entryKeys = useMemo(() => {
         if (!itemData?.entries) return [];
         const keys = Object.keys(itemData.entries);
@@ -14,9 +13,6 @@ const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapt
             return sortOrder === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
         });
     }, [itemData, sortOrder]);
-
-    // A verificação de "online" vem diretamente do objeto remoteStorage
-    const isOnline = remoteStorage.remote.online;
 
     return (
         <div className="panel">
@@ -38,7 +34,7 @@ const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapt
                             onClick={() => onSelectEntry(key)}
                             className={`entry-item ${isRead ? 'read' : ''}`}
                         >
-                            <span className="entry-item-title">Cap. {key}: {entry.title}</span>
+                            <span className="entry-item-title">Cap. {key}: {entry?.title}</span>
                             {isPending && <span className="text-xs text-yellow-400 ml-2">(Pendente)</span>}
                         </button>
                     );

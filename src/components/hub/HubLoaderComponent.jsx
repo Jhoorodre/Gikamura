@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useAppContext } from '../../context/AppContext';
 import '../../styles/hub-loader.css';
+import HubHistory from './HubHistory';
 
 // Definimos o componente como uma constante
 const HubLoaderComponent = ({ onLoadHub, loading }) => {
     const [url, setUrl] = useState("https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/main/hub_tog.json");
+    const { savedHubs, removeHub } = useAppContext();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -42,6 +45,12 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
                         </button>
                     </div>
                 </form>
+
+                <HubHistory
+                    hubs={savedHubs}
+                    onSelectHub={(hub) => onLoadHub(hub.url)}
+                    onRemoveHub={removeHub}
+                />
             </div>
         </div>
     );

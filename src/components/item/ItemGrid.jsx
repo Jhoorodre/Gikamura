@@ -10,6 +10,7 @@ const ItemGrid = ({ items, onSelectItem, onPinToggle }) => (
             >
                 <button
                     className={`absolute top-2 right-2 z-10 btn btn-xs btn-circle ${item.pinned ? 'btn-warning' : 'btn-ghost'}`}
+                    aria-label={item.pinned ? 'Desafixar dos favoritos' : 'Fixar nos favoritos'}
                     title={item.pinned ? 'Desafixar dos favoritos' : 'Fixar nos favoritos'}
                     onClick={e => {
                         e.stopPropagation();
@@ -20,8 +21,8 @@ const ItemGrid = ({ items, onSelectItem, onPinToggle }) => (
                 </button>
                 <div onClick={() => onSelectItem(item)}>
                     <Image
-                        src={item.cover.url}
-                        alt={item.cover.alt}
+                        src={item.cover?.url}
+                        alt={item.cover?.alt || item.title}
                         className="media-card-image"
                         errorSrc="https://placehold.co/300x450/1e293b/94a3b8?text=Capa"
                     />

@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Spinner from '../common/Spinner';
 import ErrorMessage from '../common/ErrorMessage';
 import Image from '../common/Image';
-import { remoteStorage } from '../../services/remotestorage.js';
-import { RS_PATH } from '../../services/rs/rs-config.js';
 
-const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode, onNextEntry, onPrevEntry, isFirstEntry, isLastEntry, itemData, entryKey }) => {
+const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode, onNextEntry, onPrevEntry, isFirstEntry, isLastEntry, itemData, entryKey, onSaveProgress }) => {
     const [showControls, setShowControls] = useState(true);
     const controlTimeout = useRef(null);
     const [lastSavedPage, setLastSavedPage] = useState(-1); // Estado para controlar a última página salva
@@ -30,12 +28,12 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
 
     // EFEITO DE SALVAMENTO OTIMIZADO
     useEffect(() => {
-        // Apenas continua se o utilizador estiver conectado e a página tiver realmente mudado
-        if (remoteStorage.connected && remoteStorage[RS_PATH] && itemData?.slug && itemData?.sourceId && entryKey && page !== lastSavedPage) {
+        // Apenas continua se a função de salvar existir e a página tiver realmente mudado
+        if (onSaveProgress && page !== lastSavedPage) {
             // Debounce: espera 1 segundo de inatividade antes de salvar
             const timeoutId = setTimeout(() => {
                 console.log(`Salvando progresso: Página ${page + 1} do capítulo ${entryKey}`);
-                remoteStorage[RS_PATH].setLastReadPage(
+                onSaveProgress(
                     itemData.slug,
                     itemData.sourceId,
                     entryKey,
@@ -45,41 +43,53 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
                 }).catch(console.error);
             }, 1000); // Atraso de 1 segundo
 
-            // Limpa o temporizador se a página mudar novamente antes do atraso
             return () => clearTimeout(timeoutId);
         }
-    }, [page, itemData, entryKey, lastSavedPage]); // Dependências do efeito
+    }, [page, itemData, entryKey, lastSavedPage, onSaveProgress]);
 
-    const pages = entry.groups[Object.keys(entry.groups)[0]] || [];
+    // Extração de páginas mais robusta
+    const groupKeys = Object.keys(entry.groups || {});
+    const pages = groupKeys.length > 0 ? entry.groups[groupKeys[0]] : [];
     const totalPages = pages.length;
 
-    if (!entry || pages.length === 0) {
+    if (!entry || totalPages === 0) {
         return <ErrorMessage message="Capítulo sem páginas ou com dados inválidos." onRetry={onBack} />;
     }
+
     if (readingMode === 'paginated' && (page >= totalPages || page < 0)) {
         setPage(0);
         return <Spinner />;
     }
 
-    const goToNextPage = () => {
+    // Otimização: Memoriza a função para evitar recriações
+    const goToNextPage = useCallback(() => {
         showControlsWithTimeout();
-        if (page < totalPages - 1) setPage(p => p + 1); else onNextEntry();
-    };
-    const goToPrevPage = () => {
+        if (page < totalPages - 1) {
+            setPage(p => p + 1);
+        } else {
+            onNextEntry();
+        }
+    }, [page, totalPages, onNextEntry]);
+
+    // Otimização: Memoriza a função para evitar recriações
+    const goToPrevPage = useCallback(() => {
         showControlsWithTimeout();
-        if (page > 0) setPage(p => p - 1); else onPrevEntry();
-    };
+        if (page > 0) {
+            setPage(p => p - 1);
+        } else {
+            onPrevEntry();
+        }
+    }, [page, onPrevEntry]);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (readingMode === 'paginated') {
-                if (e.key === 'ArrowRight') goToNextPage();
-                else if (e.key === 'ArrowLeft') goToPrevPage();
+                if (e.key === 'ArrowRight') goToNextPage(); else if (e.key === 'ArrowLeft') goToPrevPage();
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [page, totalPages, readingMode, onNextEntry, onPrevEntry]);
+    }, [readingMode, goToNextPage, goToPrevPage]);
 
     return (
         <div className="relative">
@@ -104,6 +114,7 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
                             type="button"
                             onClick={goToPrevPage}
                             className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10"
+                            // Botão invisível para navegação por clique na metade esquerda da tela
                             aria-label="Página Anterior"
                             tabIndex={0}
                             style={{ background: 'transparent', border: 'none' }}
@@ -118,6 +129,7 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
                             type="button"
                             onClick={goToNextPage}
                             className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10"
+                            // Botão invisível para navegação por clique na metade direita da tela
                             aria-label="Próxima Página"
                             tabIndex={0}
                             style={{ background: 'transparent', border: 'none' }}

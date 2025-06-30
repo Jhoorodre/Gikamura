@@ -43,6 +43,11 @@
   animation: slideInRight var(--transition-base) ease-out forwards;
 }
 
+/* Transição suave entre telas principais */
+.view-container {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
 
 /* ========================================================================== */
 /* == 2. ANIMAÇÃO ESCALONADA (STAGGER)                                   == */
@@ -51,25 +56,17 @@
  * Aplica uma animação de entrada em uma lista de elementos com um pequeno
  * atraso (delay) entre cada item, criando um efeito cascata.
  *
- * Uso: Adicione a classe `.stagger-animation` ao container pai.
+ * Uso: Adicione a classe `.stagger-animation` ao container pai e um
+ * estilo inline `--stagger-index: N` em cada filho, onde N é o índice.
+ * Ex: <div style="--stagger-index: 1;">...</div>
 */
 .stagger-animation > * {
   opacity: 0;
   transform: translateY(20px);
   animation: slideInUp var(--transition-base) ease-out forwards;
+  /* Calcula o delay baseado no índice do elemento. 50ms por item. */
+  animation-delay: calc(var(--stagger-index, 0) * 50ms);
 }
-
-/* Atrasos incrementais para os primeiros 10 itens da lista */
-.stagger-animation > *:nth-child(1) { animation-delay: 0.05s; }
-.stagger-animation > *:nth-child(2) { animation-delay: 0.10s; }
-.stagger-animation > *:nth-child(3) { animation-delay: 0.15s; }
-.stagger-animation > *:nth-child(4) { animation-delay: 0.20s; }
-.stagger-animation > *:nth-child(5) { animation-delay: 0.25s; }
-.stagger-animation > *:nth-child(6) { animation-delay: 0.30s; }
-.stagger-animation > *:nth-child(7) { animation-delay: 0.35s; }
-.stagger-animation > *:nth-child(8) { animation-delay: 0.40s; }
-.stagger-animation > *:nth-child(9) { animation-delay: 0.45s; }
-.stagger-animation > *:nth-child(10) { animation-delay: 0.50s; }
 
 
 /* ========================================================================== */
@@ -155,14 +152,4 @@
     to {
         transform: rotate(360deg);
     }
-}
-
-/* Transição suave entre telas principais */
-.view-container {
-    animation: fadeIn 0.5s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
