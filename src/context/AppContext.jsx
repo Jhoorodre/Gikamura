@@ -113,8 +113,10 @@ export const AppProvider = ({ children }) => {
                 // O evento 'change' do remoteStorage irá atualizar a lista de hubs automaticamente.
                 api.addHub(url, data.hub.title, data.hub.icon?.url);
             }
+            return true; // <-- ADICIONADO: sucesso
         } catch (err) {
             setHubError(err.message);
+            return false; // <-- ADICIONADO: erro
         } finally {
             setHubLoading(false);
         }

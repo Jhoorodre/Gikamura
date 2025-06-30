@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import React, { useRef, useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
 import HubLoader from './components/hub/HubLoaderComponent.jsx';
 import Widget from 'remotestorage-widget';
@@ -10,52 +10,19 @@ import Spinner from './components/common/Spinner';
 import ErrorMessage from './components/common/ErrorMessage';
 import { remoteStorage } from './services/remotestorage';
 import RedirectPage from './pages/RedirectPage';
+import HubLoaderPage from './pages/HubLoaderPage';
 import { createParticles } from './utils/particles.js';
 import MainContent from './components/common/MainContent';
+import HubRouteHandler from './views/HubRouteHandler';
 
 function App() {
     const {
-        currentHubData,
-        hubLoading,
-        hubError,
-        loadHub,
         isSyncing,
         conflictMessage,
-        isOffline,
-        isConnected
+        isOffline
     } = useAppContext();
     const location = useLocation();
-    const navigate = useNavigate();
     const widgetRef = useRef(null);
-    const processedUrl = useRef(false);
-
-    // Efeito para carregar hub.json a partir do parâmetro base64 no hash
-    useEffect(() => {
-        if (processedUrl.current) return;
-
-        const hash = window.location.hash;
-        const urlParams = new URLSearchParams(hash.substring(hash.indexOf('?')));
-        const hubFromUrl = urlParams.get('hub');
-
-        if (hubFromUrl) {
-            processedUrl.current = true;
-            const loadHubFromUrl = async () => {
-                try {
-                    const decodedUrl = atob(hubFromUrl);
-                    // 1. Espera a função 'loadHub' terminar completamente.
-                    //    Isto é crucial. 'loadHub' deve ser uma função 'async'.
-                    await loadHub(decodedUrl);
-                } catch (e) {
-                    console.error("Falha ao carregar o hub a partir da URL:", e);
-                } finally {
-                    // 2. APÓS o sucesso (ou falha) do carregamento, limpamos a URL.
-                    //    O 'finally' garante que isto acontece sempre.
-                    navigate('/', { replace: true });
-                }
-            };
-            loadHubFromUrl();
-        }
-    }, [location, loadHub, navigate]);
 
     useEffect(() => {
         createParticles();
@@ -64,10 +31,8 @@ function App() {
             widget.attach('remotestorage-widget');
             widgetRef.current = widget;
         }
-        // Recria as partículas ao mudar de rota para garantir que a animação
-        // não seja interrompida por renderizações de componentes.
-        createParticles();
-    }, [location.pathname]);
+    }, []);
+
     return (
         <div className="min-h-screen flex flex-col">
             {isOffline && (
@@ -90,13 +55,15 @@ function App() {
             <main className="flex-grow flex flex-col">
                 <div className="container mx-auto px-4 py-8 w-full">
                     <Routes>
-                        {/* Rota de redirecionamento sempre disponível */}
-                        <Route path="/redirect/:base64Url" element={<RedirectPage />} />
-
-                        {/* Rotas principais da aplicação */}
+                        {/* Rota principal que exibe o conteúdo ou o formulário */}
                         <Route path="/" element={<MainContent />} />
-                        <Route path="/series/:slug" element={<ItemDetailView />} />
-                        <Route path="/series/:slug/read/:entryKey" element={<ReaderView />} />
+                        {/* Nova rota para carregar o Hub */}
+                        <Route path="/hub/:encodedUrl" element={<HubRouteHandler />} />
+                        {/* ROTA DA SÉRIE ATUALIZADA */}
+                        <Route path="/series/:encodedId" element={<ItemDetailView />} />
+                        {/* ROTA DO LEITOR ATUALIZADA */}
+                        <Route path="/read/:encodedSeriesId/:encodedEntryKey" element={<ReaderView />} />
+                        <Route path="/redirect/:base64Url" element={<RedirectPage />} />
                     </Routes>
                 </div>
             </main>

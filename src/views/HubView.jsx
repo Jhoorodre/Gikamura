@@ -22,10 +22,11 @@ const HubView = () => {
 
     // Otimização: A função não é recriada em cada renderização.
     const handleSelectItem = useCallback(async (item) => {
-        // A ação de selecionar o item é disparada, mas não precisamos esperar (await).
-        // A ItemDetailView já gerencia o seu próprio estado de carregamento.
+        // Cria identificador único combinando o ID do hub e o slug da série
+        const uniqueId = `${currentHubData.hub.id}:${item.slug}`;
+        const encodedId = btoa(uniqueId);
         selectItem(item, currentHubData.hub.id);
-        navigate(`/series/${item.slug}`);
+        navigate(`/series/${encodedId}`);
     }, [selectItem, currentHubData?.hub?.id, navigate]);
 
     return (

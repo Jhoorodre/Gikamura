@@ -6,45 +6,43 @@ import ErrorMessage from '../components/common/ErrorMessage';
 const ItemViewer = React.lazy(() => import('../components/item/ItemViewer.jsx'));
 
 const ReaderView = () => {
-    const { slug, entryKey } = useParams();
+    // Recebe os parâmetros codificados da URL
+    const { encodedSeriesId, encodedEntryKey } = useParams();
     const navigate = useNavigate();
     const { selectedItemData, selectItem, itemLoading, itemError, currentHubData, setLastRead } = useAppContext();
     
-    // Estados locais para controlar a UI do leitor
     const [page, setPage] = useState(0);
     const [readingMode, setReadingMode] = useState('paginated');
 
+    // Decodifica os parâmetros
+    const entryKey = atob(encodedEntryKey);
+    const [hubId, slug] = atob(encodedSeriesId).split(':');
     const itemFromHub = currentHubData?.series.find(i => i.slug === slug);
 
     useEffect(() => {
-        // Se não temos o item selecionado ou é o item errado, busca os dados corretos
         if (itemFromHub && (!selectedItemData || selectedItemData.slug !== slug)) {
-            selectItem(itemFromHub, currentHubData.hub.id);
+            selectItem(itemFromHub, hubId);
         }
-    }, [itemFromHub, selectedItemData, slug, selectItem, currentHubData]);
+    }, [itemFromHub, selectedItemData, slug, selectItem, hubId]);
 
-    // Reseta a página para 0 sempre que o capítulo (entryKey) mudar
     useEffect(() => {
         setPage(0);
     }, [entryKey]);
 
-    // Exibe o spinner enquanto os dados do item estão sendo carregados
     if (itemLoading || !selectedItemData || selectedItemData.slug !== slug) {
         return <Spinner text="Carregando dados da série..." />;
     }
     
     if (itemError) {
-        // Garante que onRetry tenha os dados necessários para tentar novamente.
-        const hubIdToRetry = currentHubData?.hub?.id;
-        return <ErrorMessage message={itemError} onRetry={itemFromHub && hubIdToRetry ? () => selectItem(itemFromHub, hubIdToRetry) : undefined} />;
+        return <ErrorMessage message={itemError} onRetry={() => {
+            if (itemFromHub && hubId) selectItem(itemFromHub, hubId);
+        }} />;
     }
 
-    // Usa selectedItemData (que tem a lista completa) para encontrar a 'entry'
     const entry = selectedItemData.entries?.[entryKey];
 
     if (!entry) {
-        console.error("Capítulo não encontrado para a chave:", entryKey, "em", selectedItemData.entries);
-        return <ErrorMessage message={`O capítulo com a chave "${entryKey}" não foi encontrado.`} onRetry={() => navigate(`/series/${slug}`)} />;
+        return <ErrorMessage message={`O capítulo com a chave "${entryKey}" não foi encontrado.`} onRetry={() => navigate(`/series/${encodedSeriesId}`)} />;
     }
 
     const entryKeys = Object.keys(selectedItemData.entries || {});
@@ -54,13 +52,15 @@ const ReaderView = () => {
 
     const onNextEntry = () => {
         if (!isLastEntry) {
-            navigate(`/series/${slug}/read/${entryKeys[currentIndex + 1]}`);
+            const nextEntryKey = entryKeys[currentIndex + 1];
+            navigate(`/read/${encodedSeriesId}/${btoa(nextEntryKey)}`);
         }
     };
 
     const onPrevEntry = () => {
         if (!isFirstEntry) {
-            navigate(`/series/${slug}/read/${entryKeys[currentIndex - 1]}`);
+            const prevEntryKey = entryKeys[currentIndex - 1];
+            navigate(`/read/${encodedSeriesId}/${btoa(prevEntryKey)}`);
         }
     };
     
@@ -72,14 +72,14 @@ const ReaderView = () => {
                 entry={entry}
                 page={page}
                 setPage={setPage}
-                onBack={() => navigate(`/series/${slug}`)}
+                onBack={() => navigate(`/series/${encodedSeriesId}`)}
                 readingMode={readingMode}
                 setReadingMode={setReadingMode}
                 isFirstEntry={isFirstEntry}
                 isLastEntry={isLastEntry}
                 onNextEntry={onNextEntry}
                 onPrevEntry={onPrevEntry}
-                onSaveProgress={setLastRead} // Passa a função de salvamento da API
+                onSaveProgress={setLastRead}
             />
         </Suspense>
     );

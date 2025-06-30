@@ -10,7 +10,7 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
     const { savedHubs, removeHub } = useAppContext();
 
     /**
-     * Constrói uma URL para a própria aplicação com a URL do hub
+     * Constrói uma URL para a nova rota com a URL do hub
      * codificada em base64 e a abre numa nova guia.
      */
     const handleSubmit = (e) => {
@@ -21,8 +21,8 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
         if (targetUrl) {
             try {
                 const encodedHubUrl = btoa(targetUrl);
-                // Exemplo: http://localhost:5173/#/?hub=BASE64_STRING
-                const newAppUrl = `${window.location.origin}/#/?hub=${encodedHubUrl}`;
+                // Constrói a URL para a nova rota, ex: http://localhost:5173/hub/aHR0c...
+                const newAppUrl = `${window.location.origin}/hub/${encodedHubUrl}`;
                 window.open(newAppUrl, '_blank', 'noopener,noreferrer');
             } catch (error) {
                 console.error("Falha ao codificar a URL do hub:", error);
@@ -71,6 +71,7 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
                             {loading ? <div className="hub-loader-spinner" /> : 'Carregar Hub'}
                         </button>
                     </div>
+                    
                     {/* Exibe a mensagem de erro logo abaixo do input */}
                     {error && (
                         <p className="text-red-400 text-sm mt-2 text-center">{error}</p>
