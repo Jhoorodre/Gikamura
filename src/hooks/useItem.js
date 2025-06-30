@@ -11,7 +11,7 @@ export const useItem = () => {
     const fetchItemData = useCallback(async (itemFromHub, hubId) => {
         setLoading(true);
         setError(null);
-        setSelectedItemData(null); // Limpa dados anteriores
+        setSelectedItemData(null);
 
         if (!hubId || !itemFromHub?.data?.url) {
             setError("Ficheiro do Hub (hub.json) está mal configurado. Falta a 'data.url' da série.");
@@ -25,14 +25,18 @@ export const useItem = () => {
             // Passo 2: Em paralelo, busca o progresso de leitura, se conectado
             const module = remoteStorage[RS_PATH];
             const progress = (remoteStorage.connected && module)
-                ? await module.getSeriesProgress(itemFromHub.slug, hubId).catch(() => null)
+                ? await module.getSeriesProgress(itemFromHub.slug, hubId)
                 : null;
-            // Passo 3: Unifica todos os dados num único objeto
+            // Passo 3: Unifica os dados de forma controlada e segura
             setSelectedItemData({
-                ...itemFromHub,          // Dados básicos do hub.json (id, slug, etc.)
-                ...seriesDetails,        // Dados detalhados (title, description, author do reader.json)
-                entries: seriesDetails.chapters, // Renomeia para 'entries' para uso interno
-                sourceId: hubId,         // ID do Hub para salvar o progresso
+                // Começamos com os dados do hub, que tem a estrutura de 'cover' correta
+                ...itemFromHub,
+                // Sobrescrevemos explicitamente apenas os campos detalhados
+                title: seriesDetails.title,
+                description: seriesDetails.description,
+                author: seriesDetails.author,
+                entries: seriesDetails.chapters,
+                sourceId: hubId,
                 readChapterKeys: progress?.readChapterKeys || [],
                 lastRead: progress?.lastRead || null,
             });
