@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import '../../styles/hub-loader.css';
 import HubHistory from './HubHistory';
@@ -10,6 +10,7 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
     const [url, setUrl] = useState("https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/main/hub_tog.json");
     const [error, setError] = useState('');
     const { savedHubs, removeHub, isConnected } = useAppContext();
+    const navigate = useNavigate();
 
     /**
      * Constrói uma URL para a nova rota com a URL do hub
@@ -23,9 +24,7 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
         if (targetUrl) {
             try {
                 const encodedHubUrl = btoa(targetUrl);
-                // Constrói a URL para a nova rota, ex: http://localhost:5173/hub/aHR0c...
-                const newAppUrl = `${window.location.origin}/hub/${encodedHubUrl}`;
-                window.open(newAppUrl, '_blank', 'noopener,noreferrer');
+                navigate(`/hub/${encodedHubUrl}`);
             } catch (error) {
                 console.error("Falha ao codificar a URL do hub:", error);
                 setError("URL inválida ou erro ao processar. Verifique o formato da URL e tente novamente.");
