@@ -26,8 +26,16 @@ const purgePreviousCache = () => {
   }
 };
 
+// Garantir que o RemoteStorage esteja disponível globalmente
 if (typeof window !== 'undefined') {
   window.remoteStorage = remoteStorage;
+  
+  // Log de debug para verificar se está funcionando
+  console.log('RemoteStorage inicializado:', {
+    connected: remoteStorage.connected,
+    access: remoteStorage.access.scopes,
+    backend: remoteStorage.backend
+  });
 }
 
 export { remoteStorage, purgePreviousCache };

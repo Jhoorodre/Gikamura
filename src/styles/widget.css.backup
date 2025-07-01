@@ -1,0 +1,510 @@
+/* ========================================================================== */
+/* ==           WIDGET REMOTESTORAGE REFINADO - PALETA ROADMAP           == */
+/* ========================================================================== */
+/*
+ * Widget RemoteStorage baseado na paleta do roadmap:
+ * 70% #141414 (fundo principal)
+ * 20% #341111 (destaques e bordas)
+ * 10% #a4a4a4 (texto e acentos)
+ */
+
+/* ========================================================================== */
+/* == 1. CONTAINER GLOBAL REFINADO                                       == */
+/* ========================================================================== */
+
+.rs-widget-global-container {
+    position: fixed !important;
+    top: var(--space-6) !important;
+    right: var(--space-6) !important;
+    z-index: var(--z-fixed) !important;
+    pointer-events: auto !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
+}
+
+#rs-widget-global,
+#remotestorage-widget,
+#remotestorage-widget-main {
+    position: fixed !important;
+    top: var(--space-6) !important;
+    right: var(--space-6) !important;
+    z-index: var(--z-fixed) !important;
+    font-family: var(--font-family-sans) !important;
+    pointer-events: auto !important;
+}
+
+/* ========================================================================== */
+/* == 2. ESTADO FECHADO (BUBBLE ELEGANTE)                                == */
+/* ========================================================================== */
+
+#rs-widget-global .rs-widget.rs-closed,
+#remotestorage-widget .rs-widget.rs-closed {
+    /* Tamanho e forma elegante */
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-radius: var(--radius-full) !important;
+    overflow: hidden !important;
+
+    /* Design glassmorphism baseado na paleta do roadmap */
+    background: linear-gradient(135deg, 
+        rgba(var(--surface-primary-rgb), 0.95) 0%, 
+        rgba(var(--surface-secondary-rgb), 0.3) 100%
+    ) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 2px solid rgba(var(--surface-secondary-rgb), 0.4) !important;
+    box-shadow: 
+        var(--shadow-xl),
+        inset 0 1px 0 rgba(var(--accent-rgb), 0.1) !important;
+    cursor: pointer !important;
+    transition: all var(--transition-base) !important;
+
+    /* Centralização do conteúdo */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Hover effect elegante */
+#rs-widget-global .rs-widget.rs-closed:hover,
+#remotestorage-widget .rs-widget.rs-closed:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 
+        var(--shadow-2xl),
+        var(--shadow-primary),
+        inset 0 1px 0 rgba(var(--accent-rgb), 0.2) !important;
+    background: linear-gradient(135deg, 
+        rgba(var(--surface-primary-rgb), 0.98) 0%, 
+        rgba(var(--surface-secondary-rgb), 0.4) 100%
+    ) !important;
+    border-color: rgba(var(--surface-secondary-rgb), 0.6) !important;
+}
+
+/* Esconder painéis internos quando fechado */
+#rs-widget-global .rs-widget.rs-closed > div[class*="rs-box"],
+#remotestorage-widget .rs-widget.rs-closed > div[class*="rs-box"] {
+    display: none !important;
+}
+
+/* Container do ícone */
+#rs-widget-global .rs-widget.rs-closed .rs-widget-icon,
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+}
+
+/* Esconder ícone SVG padrão */
+#rs-widget-global .rs-widget.rs-closed .rs-widget-icon > svg,
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon > svg {
+    display: none !important;
+}
+
+/* ========================================================================== */
+/* == 3. ÍCONES CUSTOMIZADOS BASEADOS NA PALETA                         == */
+/* ========================================================================== */
+
+/* Base para ícones customizados */
+#rs-widget-global .rs-widget.rs-closed .rs-widget-icon::after,
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon::after {
+    content: '' !important;
+    display: block !important;
+    width: 28px !important;
+    height: 28px !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: contain !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)) !important;
+    transition: all var(--transition-base) !important;
+}
+
+/* Estado inicial - Ícone de nuvem com cadeado (cor accent) */
+#rs-widget-global .rs-widget.rs-closed.rs-state-initial .rs-widget-icon::after,
+#remotestorage-widget .rs-widget.rs-closed.rs-state-initial .rs-widget-icon::after {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23a4a4a4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><rect x="10" y="11" width="8" height="7" rx="1" ry="1"/><path d="M12 11V9a2 2 0 0 1 4 0v2"/></svg>') !important;
+    opacity: 0.9 !important;
+}
+
+/* Estado não conectado - Ícone de nuvem com aviso (cor secundária) */
+#rs-widget-global .rs-widget.rs-closed:not(.rs-state-connected):not(.rs-state-initial) .rs-widget-icon::after,
+#remotestorage-widget .rs-widget.rs-closed:not(.rs-state-connected):not(.rs-state-initial) .rs-widget-icon::after {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23341111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 8v4"/><circle cx="12" cy="16" r="1"/></svg>') !important;
+    opacity: 0.9 !important;
+}
+
+/* Estado conectado - Design especial */
+#rs-widget-global .rs-widget.rs-closed.rs-state-connected,
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected {
+    background: linear-gradient(135deg, 
+        rgba(var(--surface-primary-rgb), 0.95) 0%, 
+        rgba(var(--accent-rgb), 0.2) 100%
+    ) !important;
+    border-color: rgba(var(--accent-rgb), 0.5) !important;
+    box-shadow: 
+        var(--shadow-xl),
+        var(--shadow-accent),
+        inset 0 1px 0 rgba(var(--accent-rgb), 0.2) !important;
+}
+
+#rs-widget-global .rs-widget.rs-closed.rs-state-connected .rs-widget-icon::after,
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected .rs-widget-icon::after {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23a4a4a4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="m9 12 2 2 4-4"/></svg>') !important;
+    opacity: 1 !important;
+}
+
+/* Hover para estado conectado */
+#rs-widget-global .rs-widget.rs-closed.rs-state-connected:hover,
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected:hover {
+    background: linear-gradient(135deg, 
+        rgba(var(--surface-primary-rgb), 0.98) 0%, 
+        rgba(var(--accent-rgb), 0.3) 100%
+    ) !important;
+    box-shadow: 
+        var(--shadow-2xl),
+        var(--shadow-accent),
+        inset 0 1px 0 rgba(var(--accent-rgb), 0.3) !important;
+}
+
+/* Animação sutil para estado conectado */
+#rs-widget-global .rs-widget.rs-closed.rs-state-connected,
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected {
+    animation: connectedPulse 3s ease-in-out infinite !important;
+}
+
+@keyframes connectedPulse {
+    0%, 100% { 
+        box-shadow: 
+            var(--shadow-xl),
+            var(--shadow-accent),
+            inset 0 1px 0 rgba(var(--accent-rgb), 0.2);
+    }
+    50% { 
+        box-shadow: 
+            var(--shadow-xl),
+            0 0 20px rgba(var(--accent-rgb), 0.4),
+            inset 0 1px 0 rgba(var(--accent-rgb), 0.3);
+    }
+}
+
+/* Hover effect for closed widget */
+#rs-widget-global .rs-widget.rs-closed:hover,
+#remotestorage-widget .rs-widget.rs-closed:hover {
+    box-shadow: 
+        0 12px 48px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.15), 
+        rgba(255, 255, 255, 0.08)
+    ) !important;
+}
+
+/* --- Hide internal panels when the widget is closed --- */
+#rs-widget-global .rs-widget.rs-closed > div[class*="rs-box"],
+#remotestorage-widget .rs-widget.rs-closed > div[class*="rs-box"] {
+    display: none !important;
+}
+
+/* --- Icon container within the bubble --- */
+#rs-widget-global .rs-widget.rs-closed .rs-widget-icon,
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon {
+    /* Ensures the icon container is visible and fills the bubble */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+}
+
+/* --- Hide the default SVG icon provided by the widget --- */
+#rs-widget-global .rs-widget.rs-closed .rs-widget-icon > svg,
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon > svg {
+    display: none !important;
+}
+
+/* --- Custom Icons using the ::after pseudo-element --- */
+
+/* Base for all our custom icons */
+#rs-widget-global .rs-widget.rs-closed .rs-widget-icon::after,
+#remotestorage-widget .rs-widget.rs-closed .rs-widget-icon::after {
+    content: '' !important;
+    display: block !important;
+    width: 24px !important;
+    height: 24px !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: contain !important;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1)) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Icon for "Initial" state (needs login) - ícone de nuvem com cadeado */
+#rs-widget-global .rs-widget.rs-closed.rs-state-initial .rs-widget-icon::after,
+#remotestorage-widget .rs-widget.rs-closed.rs-state-initial .rs-widget-icon::after {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><rect x="10" y="11" width="8" height="7" rx="1" ry="1"/><path d="M12 11V9a2 2 0 0 1 4 0v2"/></svg>') !important;
+    opacity: 0.9 !important;
+}
+
+/* Icon for "Not Connected" state - ícone de nuvem com aviso */
+#rs-widget-global .rs-widget.rs-closed:not(.rs-state-connected):not(.rs-state-initial) .rs-widget-icon::after,
+#remotestorage-widget .rs-widget.rs-closed:not(.rs-state-connected):not(.rs-state-initial) .rs-widget-icon::after {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 8v4"/><circle cx="12" cy="16" r="1"/></svg>') !important;
+    opacity: 0.9 !important;
+}
+
+/* Style and Icon for "Connected" state (synced) */
+#rs-widget-global .rs-widget.rs-closed.rs-state-connected,
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected {
+    background: linear-gradient(135deg, 
+        rgba(16, 185, 129, 0.2), 
+        rgba(16, 185, 129, 0.1)
+    ) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    box-shadow: 
+        0 8px 32px rgba(16, 185, 129, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+#rs-widget-global .rs-widget.rs-closed.rs-state-connected .rs-widget-icon::after,
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected .rs-widget-icon::after {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2310b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="m9 12 2 2 4-4"/></svg>') !important;
+    opacity: 1 !important;
+}
+
+/* Hover effect for connected state */
+#rs-widget-global .rs-widget.rs-closed.rs-state-connected:hover,
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected:hover {
+    box-shadow: 
+        0 12px 48px rgba(16, 185, 129, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected .rs-widget-icon::after {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2310b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>') !important;
+    opacity: 1 !important;
+}
+
+/* Animação de conexão */
+#rs-widget-global .rs-widget.rs-closed.rs-state-connected,
+#remotestorage-widget .rs-widget.rs-closed.rs-state-connected {
+    animation: connectionPulse 3s ease-in-out infinite !important;
+}
+
+@keyframes connectionPulse {
+    0%, 100% {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+    50% {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(16, 185, 129, 0);
+    }
+}
+
+
+/* ========================================================================== */
+/* == 3. OPEN STATE (THE PANEL) - FORMULÁRIO CORRIGIDO                   == */
+/* ========================================================================== */
+
+/* --- Base style for the open panel --- */
+#rs-widget-global .rs-widget:not(.rs-closed),
+#remotestorage-widget .rs-widget:not(.rs-closed) {
+    /* Shape and size */
+    min-width: 340px !important;
+    width: 360px !important;
+    max-width: 90vw !important;
+    border-radius: 16px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    /* Appearance - glassmorphism moderno */
+    background: linear-gradient(135deg, 
+        rgba(15, 15, 35, 0.95), 
+        rgba(15, 15, 35, 0.9)
+    ) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    display: block !important;
+    overflow: hidden !important;
+
+    /* Animation */
+    animation: rsWidgetSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important;
+}
+
+@keyframes rsWidgetSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* --- Content area within the panel --- */
+#rs-widget-global .rs-content,
+#remotestorage-widget .rs-content {
+    padding: 24px !important;
+    margin: 0 !important;
+}
+
+/* --- Text elements inside the panel --- */
+#rs-widget-global .rs-big-headline,
+#remotestorage-widget .rs-big-headline {
+    font-family: system-ui, -apple-system, sans-serif !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    margin-bottom: 8px !important;
+    text-align: center !important;
+    letter-spacing: -0.025em !important;
+}
+
+#rs-widget-global .rs-short-desc,
+#remotestorage-widget .rs-short-desc {
+    font-size: 14px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-align: center !important;
+    margin-bottom: 20px !important;
+    line-height: 1.5 !important;
+}
+
+/* --- FORMULÁRIO MODERNO --- */
+#rs-widget-global .rs-sign-in-form,
+#remotestorage-widget .rs-sign-in-form {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+
+#rs-widget-global .rs-sign-in-form input[type="text"],
+#remotestorage-widget .rs-sign-in-form input[type="text"] {
+    width: 100% !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+    box-sizing: border-box !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+#rs-widget-global .rs-sign-in-form input[type="text"]:focus,
+#remotestorage-widget .rs-sign-in-form input[type="text"]:focus {
+    outline: none !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+#rs-widget-global .rs-sign-in-form input[type="text"]::placeholder,
+#remotestorage-widget .rs-sign-in-form input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+#rs-widget-global .rs-connect,
+#remotestorage-widget .rs-connect {
+    width: 100% !important;
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    padding: 12px 16px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+#rs-widget-global .rs-connect:hover,
+#remotestorage-widget .rs-connect:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4) !important;
+}
+
+#rs-widget-global .rs-connect:active,
+#remotestorage-widget .rs-connect:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+
+/* --- Specific styles for the "Connected" open panel --- */
+#rs-widget-global .rs-widget.rs-state-connected:not(.rs-closed),
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-color: #10b981 !important;
+}
+
+#rs-widget-global .rs-widget.rs-state-connected:not(.rs-closed) .rs-box-connected,
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-box-connected {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+}
+
+#rs-widget-global .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons,
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons {
+    display: flex !important;
+    gap: 0.75rem !important;
+}
+
+/* Buttons for "Sync" and "Disconnect" */
+#rs-widget-global .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons button,
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 0.5rem !important;
+    background: var(--color-surface-secondary, #27272a) !important;
+    border: 1px solid var(--color-border, #3f3f46) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: var(--color-text-secondary, #a1a1aa) !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+#rs-widget-global .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons button:hover,
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons button:hover {
+    border-color: var(--color-accent, #3b82f6) !important;
+    color: var(--color-accent, #3b82f6) !important;
+    background: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Hides the text inside the sync/disconnect buttons to show only the icons */
+#rs-widget-global .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons button span,
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons button span {
+    display: none !important;
+}
+
+/* Status text quando conectado */
+#rs-widget-global .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-text,
+#remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-text {
+    color: #10b981 !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+}

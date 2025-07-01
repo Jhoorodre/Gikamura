@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from                     onSelectEntry={entryKey => navigate(`/read/${encodedId}/${encodeUrl(entryKey)}`)}
+                    readChapters={selectedItemData.readChapterKeys}
+                    sortOrder={sortOrder}
+                    setSortOrder={setSortOrder}
+                    // Remove isOnline - será gerenciado internamente pelo hook de rede
+                />)-router-dom';
 import { useAppContext } from '../context/AppContext';
 import ItemInfo from '../components/item/ItemInfo';
 import EntryList from '../components/item/EntryList';
@@ -87,7 +92,7 @@ const ItemDetailView = () => {
                     readChapters={selectedItemData.readChapterKeys}
                     sortOrder={sortOrder}
                     setSortOrder={setSortOrder}
-                    // Remove isOnline - será gerenciado internamente pelo hook de rede
+                    isOnline={!isOffline}
                 />
             )}
         </div>

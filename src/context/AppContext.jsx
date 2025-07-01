@@ -4,7 +4,7 @@ import { useItem } from '../hooks/useItem';
 import { remoteStorage } from '../services/remotestorage';
 import { RS_PATH } from '../services/rs/rs-config.js';
 import api from '../services/api.js';
-import { CORS_PROXY_URL } from '../constants';
+import { fetchJSONWithCache } from '../services/networkService.js';
 
 const AppContext = createContext();
 
@@ -21,27 +21,44 @@ export const AppProvider = ({ children }) => {
     const [historyItems, setHistoryItems] = useState([]);
     const [savedHubs, setSavedHubs] = useState([]);
 
-    // Carregamento do Hub com useQuery
+    // Carregamento do Hub com useQuery e novo serviço de rede
     const {
         data: currentHubData,
         isLoading: hubLoading,
-        error: hubError
+        error: hubError,
+        refetch: refetchHub
     } = useQuery({
         queryKey: ['hub', hubUrlToLoad],
         queryFn: async () => {
             if (!hubUrlToLoad) return null;
-            const response = await fetch(`${CORS_PROXY_URL}${encodeURIComponent(hubUrlToLoad)}`);
-            if (!response.ok) {
-                throw new Error(`Erro ao carregar o hub. Status: ${response.status}`);
+            
+            try {
+                const data = await fetchJSONWithCache(hubUrlToLoad);
+                
+                if (data?.hub) {
+                    api.addHub(hubUrlToLoad, data.hub.title, data.hub.icon?.url);
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('[AppContext] Erro ao carregar hub:', error);
+                throw new Error(`Falha ao carregar o hub: ${error.message}`);
             }
-            const data = await response.json();
-            if (data?.hub) {
-                api.addHub(hubUrlToLoad, data.hub.title, data.hub.icon?.url);
-            }
-            return data;
         },
         enabled: !!hubUrlToLoad,
-        retry: false,
+        retry: (failureCount, error) => {
+            // Retry automático até 3 vezes para erros recuperáveis
+            if (failureCount < 3) {
+                const retryableErrors = ['network', 'timeout', 'fetch'];
+                return retryableErrors.some(keyword => 
+                    error.message.toLowerCase().includes(keyword)
+                );
+            }
+            return false;
+        },
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Backoff exponencial
+        staleTime: 5 * 60 * 1000, // 5 minutos
+        cacheTime: 10 * 60 * 1000, // 10 minutos
     });
 
     const {
@@ -107,11 +124,19 @@ export const AppProvider = ({ children }) => {
         }
     }, [isConnected, refreshUserData, handleChange]);
 
-    // loadHub agora só define a URL
+    // loadHub agora só define a URL com recuperação de erro
     const loadHub = useCallback((url) => {
         setLastAttemptedUrl(url);
         setHubUrlToLoad(url);
     }, []);
+
+    // Função para tentar recarregar hub em caso de erro
+    const retryLoadHub = useCallback(() => {
+        if (lastAttemptedUrl) {
+            console.log('[AppContext] Tentando recarregar hub:', lastAttemptedUrl);
+            refetchHub();
+        }
+    }, [lastAttemptedUrl, refetchHub]);
 
     const togglePinStatus = useCallback(async (item) => {
         if (!item || !item.slug || !item.sourceId) return;
@@ -136,6 +161,7 @@ export const AppProvider = ({ children }) => {
         lastAttemptedUrl,
         isConnected,
         loadHub,
+        retryLoadHub, // Nova função para retry
         itemLoading,
         pinnedItems,
         historyItems,

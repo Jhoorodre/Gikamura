@@ -1,0 +1,958 @@
+/* ========================================================================== */
+/* ==                    CORREÇÕES DO HUB - DESIGN LIMPO                 == */
+/* ========================================================================== */
+
+/* === HUB CONTAINER PRINCIPAL === */
+.hub-connected-container {
+    min-height: 100vh;
+    background: var(--color-background);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* === LAYOUT CENTRAL COM CARDS === */
+.hub-central-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-8);
+    position: relative;
+    min-height: 80vh;
+}
+
+@media (min-width: 1024px) {
+    .hub-central-layout {
+        grid-template-columns: 300px 1fr 300px;
+        grid-template-rows: auto 1fr auto;
+        gap: var(--space-8);
+        align-items: center;
+    }
+}
+
+/* === CARDS DE NAVEGAÇÃO MELHORADOS === */
+.nav-card {
+    background: linear-gradient(135deg, 
+        rgba(var(--surface-primary-rgb), 0.9) 0%, 
+        rgba(var(--surface-secondary-rgb), 0.4) 100%
+    );
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-6);
+    backdrop-filter: blur(12px);
+    transition: all var(--transition-base);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: 140px;
+}
+
+.nav-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(var(--accent-rgb), 0.5) 50%, 
+        transparent 100%
+    );
+}
+
+.nav-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    border-color: var(--color-accent);
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.4),
+        0 0 25px rgba(var(--accent-rgb), 0.3);
+}
+
+.nav-card:hover::before {
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--color-accent) 50%, 
+        transparent 100%
+    );
+}
+
+/* === ÍCONES DOS CARDS === */
+.nav-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-3);
+    opacity: 0.9;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transition: all var(--transition-base);
+}
+
+.nav-card:hover .nav-card-icon {
+    transform: scale(1.15) rotate(5deg);
+    filter: brightness(1.2);
+}
+
+/* === CONTEÚDO DOS CARDS === */
+.nav-card-content h3 {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+    transition: color var(--transition-base);
+}
+
+.nav-card-content p {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+    margin: 0;
+    transition: color var(--transition-base);
+}
+
+.nav-card:hover .nav-card-content h3 {
+    color: var(--color-accent);
+}
+
+.nav-card:hover .nav-card-content p {
+    color: var(--color-text-primary);
+}
+
+/* === POSICIONAMENTO DOS CARDS (DESKTOP) === */
+@media (min-width: 1024px) {
+    .hub-card-top-left {
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: end;
+        align-self: end;
+    }
+
+    .hub-card-top-right {
+        grid-column: 3;
+        grid-row: 1;
+        justify-self: start;
+        align-self: end;
+    }
+
+    .hub-card-bottom-left {
+        grid-column: 1;
+        grid-row: 3;
+        justify-self: end;
+        align-self: start;
+    }
+
+    .hub-card-bottom-right {
+        grid-column: 3;
+        grid-row: 3;
+        justify-self: start;
+        align-self: start;
+    }
+}
+
+/* === HUB CENTRAL === */
+.hub-central-card {
+    background: linear-gradient(135deg, 
+        rgba(var(--surface-primary-rgb), 0.95) 0%, 
+        rgba(var(--surface-secondary-rgb), 0.6) 100%
+    );
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-3xl);
+    padding: var(--space-8);
+    backdrop-filter: blur(16px);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(var(--accent-rgb), 0.1);
+}
+
+@media (min-width: 1024px) {
+    .hub-central-card {
+        grid-column: 2;
+        grid-row: 1 / 4;
+        justify-self: center;
+        align-self: center;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+.hub-central-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--color-accent) 50%, 
+        transparent 100%
+    );
+}
+
+/* === CABEÇALHO DO HUB === */
+.hub-loader-header {
+    margin-bottom: var(--space-8);
+}
+
+.hub-loader-header h1 {
+    font-size: 3rem;
+    margin-bottom: var(--space-4);
+    text-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3);
+    letter-spacing: 0.1em;
+}
+
+.hub-loader-header p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* === FORMULÁRIO DO HUB === */
+.hub-loader-form {
+    margin-bottom: var(--space-8);
+}
+
+.hub-loader-form input {
+    width: 100%;
+    padding: var(--space-4) var(--space-5);
+    background: rgba(var(--surface-primary-rgb), 0.8);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    transition: all var(--transition-base);
+    margin-bottom: var(--space-4);
+}
+
+.hub-loader-form input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 
+        0 0 0 3px rgba(var(--accent-rgb), 0.2),
+        0 4px 12px rgba(0, 0, 0, 0.1);
+    background: rgba(var(--surface-primary-rgb), 1);
+}
+
+.hub-loader-form input::placeholder {
+    color: var(--color-text-tertiary);
+}
+
+.hub-loader-form button {
+    width: 100%;
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-accent);
+    color: var(--color-text-inverse);
+    border: none;
+    border-radius: var(--radius-xl);
+    font-size: 1rem;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.hub-loader-form button:hover:not(:disabled) {
+    background: var(--color-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.3);
+}
+
+.hub-loader-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* === HISTÓRICO COMPACTO === */
+.hub-history-compact {
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(var(--surface-secondary-rgb), 0.3);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+}
+
+/* === STATUS DE CONEXÃO === */
+.connection-status {
+    position: fixed;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: 1000;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-full);
+    backdrop-filter: blur(8px);
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    border: 1px solid var(--color-border);
+}
+
+.connection-status.connected {
+    background: rgba(var(--success-rgb), 0.1);
+    border-color: var(--color-success);
+    color: var(--color-success);
+}
+
+.connection-status.disconnected {
+    background: rgba(var(--warning-rgb), 0.1);
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+}
+
+.connection-status .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.connection-status.connected .status-dot {
+    background: var(--color-success);
+}
+
+.connection-status.disconnected .status-dot {
+    background: var(--color-warning);
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 1023px) {
+    .hub-central-layout {
+        grid-template-columns: 1fr;
+        padding: var(--space-4);
+    }
+
+    .nav-card {
+        min-height: 120px;
+        padding: var(--space-4);
+    }
+
+    .nav-card-icon {
+        font-size: 2rem;
+        margin-bottom: var(--space-2);
+    }
+
+    .nav-card-content h3 {
+        font-size: 1.1rem;
+    }
+
+    .nav-card-content p {
+        font-size: 0.8rem;
+    }
+
+    .hub-central-card {
+        padding: var(--space-6);
+        min-height: auto;
+    }
+
+    .hub-loader-header h1 {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .hub-central-layout {
+        padding: var(--space-3);
+        gap: var(--space-4);
+    }
+
+    .nav-card {
+        min-height: 100px;
+        padding: var(--space-3);
+        flex-direction: row;
+        text-align: left;
+    }
+
+    .nav-card-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0;
+        margin-right: var(--space-3);
+    }
+
+    .hub-loader-header h1 {
+        font-size: 2rem;
+    }
+
+    .hub-loader-header p {
+        font-size: 1rem;
+    }
+}
+
+/* ========================================================================== */
+/* ==                    HUBVIEW CSS - DESIGN LIMPO                       == */
+/* ========================================================================== */
+
+/* === CONNECTION STATUS === */
+.connection-status {
+    text-align: center;
+    margin-bottom: var(--space-8);
+    padding: var(--space-4);
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-xl);
+    backdrop-filter: blur(12px);
+    border: 1px solid;
+    transition: all var(--transition-base);
+}
+
+.status-indicator.status-warning {
+    background: rgba(var(--warning-rgb), 0.1);
+    border-color: rgba(var(--warning-rgb), 0.3);
+    color: var(--color-warning);
+}
+
+.status-indicator.status-success {
+    background: rgba(var(--success-rgb), 0.1);
+    border-color: rgba(var(--success-rgb), 0.3);
+    color: var(--color-success);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-warning .status-dot {
+    background: var(--color-warning);
+}
+
+.status-success .status-dot {
+    background: var(--color-success);
+}
+
+.status-content {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.status-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.status-subtitle {
+    font-size: var(--font-size-xs);
+    opacity: 0.8;
+    margin-top: 2px;
+}
+
+/* === HUB NAVIGATION SECTION === */
+.hub-nav-section {
+    margin-bottom: var(--space-12);
+    padding: var(--space-8) var(--space-4);
+}
+
+.nav-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .nav-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .nav-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-8);
+    }
+}
+
+/* Nav cards já estão definidos anteriormente, mantendo compatibilidade */
+
+/* === HUB HEADER === */
+.hub-header {
+    margin-bottom: var(--space-12);
+    padding: var(--space-6);
+    border-radius: var(--radius-2xl);
+    background: rgba(var(--surface-primary-rgb), 0.6);
+    border: 1px solid var(--color-border);
+    backdrop-filter: blur(12px);
+}
+
+.hub-header-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.hub-icon-wrapper,
+.hub-icon-container {
+    flex-shrink: 0;
+}
+
+.hub-icon {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-accent);
+    box-shadow: var(--shadow-lg);
+    transition: transform var(--transition-base);
+}
+
+.hub-icon:hover {
+    transform: scale(1.05);
+}
+
+.hub-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.hub-title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+    line-height: var(--line-height-tight);
+    font-family: 'Orbitron', sans-serif;
+}
+
+.hub-description {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+}
+
+/* === RESPONSIVIDADE DO HEADER === */
+@media (max-width: 768px) {
+    .hub-header {
+        padding: var(--space-4);
+        margin-bottom: var(--space-8);
+    }
+    
+    .hub-header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--space-6);
+    }
+    
+    .hub-icon {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .hub-title {
+        font-size: 1.75rem;
+    }
+    
+    .hub-description {
+        font-size: var(--font-size-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .hub-header {
+        padding: var(--space-3);
+        margin-bottom: var(--space-6);
+    }
+    
+    .hub-header-content {
+        gap: var(--space-4);
+    }
+    
+    .hub-icon {
+        width: 64px;
+        height: 64px;
+    }
+    
+    .hub-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* === SEARCH SECTION === */
+.search-section {
+    margin-bottom: var(--space-8);
+}
+
+.search-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-input {
+    width: 100%;
+    font-size: var(--font-size-lg);
+    padding: var(--space-4) var(--space-6);
+}
+
+.search-results-info {
+    margin-top: var(--space-3);
+    text-align: center;
+}
+
+/* === SERIES SECTION === */
+.series-section {
+    margin-top: var(--space-8);
+}
+
+/* Melhorias para o grid de itens */
+.grid-auto-fill {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-6);
+}
+
+@media (max-width: 640px) {
+    .grid-auto-fill {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: var(--space-4);
+    }
+}
+
+@media (min-width: 1200px) {
+    .grid-auto-fill {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: var(--space-8);
+    }
+}
+
+/* === ANIMATION IMPROVEMENTS === */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hub-nav-section {
+    animation: slideInUp 0.6s ease-out;
+}
+
+.page-section {
+    animation: slideInUp 0.8s ease-out;
+}
+
+/* === CORREÇÕES PARA NAV-CARDS EXISTENTES === */
+.nav-card-collection {
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.15) 0%, 
+        rgba(37, 99, 235, 0.05) 100%
+    );
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.nav-card-works {
+    background: linear-gradient(135deg, 
+        rgba(245, 158, 11, 0.15) 0%, 
+        rgba(217, 119, 6, 0.05) 100%
+    );
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.nav-card-upload {
+    background: linear-gradient(135deg, 
+        rgba(34, 197, 94, 0.15) 0%, 
+        rgba(21, 128, 61, 0.05) 100%
+    );
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.nav-card-placeholder {
+    background: linear-gradient(135deg, 
+        rgba(156, 163, 175, 0.1) 0%, 
+        rgba(107, 114, 128, 0.05) 100%
+    );
+    border-color: rgba(156, 163, 175, 0.2);
+}
+
+/* ========================================================================== */
+/* ==                    HUB VIEW REFINADO - LAYOUT LIMPO                == */
+/* ========================================================================== */
+
+/* === STATUS DE CONEXÃO === */
+.connection-status {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-8);
+    padding: var(--space-4);
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-xl);
+    backdrop-filter: blur(12px);
+    border: 1px solid;
+    transition: all var(--transition-base);
+}
+
+.status-indicator.status-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: rgb(252, 211, 77);
+}
+
+.status-indicator.status-success {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.3);
+    color: rgb(134, 239, 172);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-warning .status-dot {
+    background: rgb(251, 191, 36);
+}
+
+.status-success .status-dot {
+    background: rgb(34, 197, 94);
+}
+
+.status-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.status-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.status-subtitle {
+    font-size: var(--font-size-xs);
+    opacity: 0.8;
+}
+
+/* === NAVEGAÇÃO DO HUB === */
+.hub-nav-section {
+    margin-bottom: var(--space-12);
+    padding: 0 var(--space-4);
+}
+
+.nav-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .nav-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .nav-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* === ÁREA DE PESQUISA === */
+.search-section {
+    margin-bottom: var(--space-8);
+}
+
+.search-container {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--font-size-base);
+    border-radius: var(--radius-xl);
+    background: rgba(var(--surface-primary-rgb), 0.8);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    backdrop-filter: blur(8px);
+    transition: all var(--transition-base);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+    background: rgba(var(--surface-primary-rgb), 0.95);
+}
+
+.search-input::placeholder {
+    color: var(--color-text-secondary);
+}
+
+.search-results-info {
+    margin-top: var(--space-3);
+    display: flex;
+    justify-content: center;
+}
+
+/* === SEÇÃO DE SÉRIES === */
+.series-section {
+    padding: 0 var(--space-4);
+}
+
+/* === RESPONSIVIDADE APRIMORADA === */
+@media (max-width: 640px) {
+    .connection-status {
+        padding: var(--space-2);
+        margin-bottom: var(--space-6);
+    }
+    
+    .status-indicator {
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--font-size-sm);
+    }
+    
+    .nav-cards-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+    
+    .search-container {
+        padding: 0 var(--space-2);
+    }
+    
+    .series-section {
+        padding: 0 var(--space-2);
+    }
+}
+
+/* === MELHORIAS FINAIS DO HUB === */
+
+/* Layout melhorado para o page-container */
+.page-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, 
+        var(--color-background) 0%, 
+        rgba(var(--surface-primary-rgb), 0.3) 100%
+    );
+    padding: var(--space-6) var(--space-4);
+}
+
+/* Melhorias no grid de items */
+.grid-auto-fill {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-6);
+    padding: var(--space-4) 0;
+}
+
+/* Efeitos de glassmorphism aprimorados */
+.hub-header,
+.nav-card,
+.status-indicator {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+/* Responsividade aprimorada */
+@media (max-width: 1024px) {
+    .nav-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4);
+    }
+}
+
+@media (max-width: 640px) {
+    .page-container {
+        padding: var(--space-4) var(--space-2);
+    }
+    
+    .nav-cards-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+    
+    .grid-auto-fill {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: var(--space-4);
+    }
+}
+
+/* Melhorias nas animações */
+.nav-card,
+.media-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.status-dot {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Melhorias de acessibilidade */
+.nav-card:focus,
+.search-input:focus,
+.btn:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* Melhorias no contraste */
+.nav-card-content h3 {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.nav-card-content p {
+    color: var(--color-text-secondary);
+    opacity: 0.9;
+}
+
+/* Otimizações de performance */
+.nav-card,
+.media-card,
+.hub-header {
+    will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

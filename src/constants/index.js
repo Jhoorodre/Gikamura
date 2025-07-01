@@ -1,1 +1,2 @@
-export const CORS_PROXY_URL = "https://corsproxy.io/?";
+// CORS proxy removido - fazendo requests diretos
+// export const CORS_PROXY_URL = "https://corsproxy.io/?";

@@ -1,17 +1,9 @@
-// Service Worker para Gikamoe
-// Implementa estratégias de cache para melhor performance offline
+// Service Worker para Gikamoe - Versão melhorada
+// Implementa estratégias de cache inteligentes sem causar erros
 
-const CACHE_NAME = 'gikamoe-v1';
-const STATIC_CACHE = 'gikamoe-static-v1';
-const DYNAMIC_CACHE = 'gikamoe-dynamic-v1';
-
-// URLs que devem ser cached estaticamente
-const STATIC_URLS = [
-  '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json'
-];
+const CACHE_NAME = 'gikamoe-v2';
+const STATIC_CACHE = 'gikamoe-static-v2';
+const DYNAMIC_CACHE = 'gikamoe-dynamic-v2';
 
 // URLs de API que devem ser cached dinamicamente
 const API_CACHE_PATTERNS = [
@@ -20,14 +12,26 @@ const API_CACHE_PATTERNS = [
   /\/hub\//
 ];
 
+// Recursos que devem ser ignorados (Vite dev server)
+const IGNORE_PATTERNS = [
+  /@vite/,
+  /@react-refresh/,
+  /\.jsx\?/,
+  /\.ts\?/,
+  /\.tsx\?/,
+  /hot-update/,
+  /sockjs-node/,
+  /webpack-dev-server/
+];
+
 // Instalar o Service Worker
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing Service Worker');
+  console.log('[SW] Installing Service Worker v2');
   
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
-      console.log('[SW] Caching static assets');
-      return cache.addAll(STATIC_URLS);
+      console.log('[SW] Static cache ready');
+      return Promise.resolve();
     })
   );
   
@@ -37,14 +41,14 @@ self.addEventListener('install', (event) => {
 
 // Ativar o Service Worker
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating Service Worker');
+  console.log('[SW] Activating Service Worker v2');
   
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           // Remove caches antigos
-          if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+          if (!cacheName.includes('v2')) {
             console.log('[SW] Removing old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -57,22 +61,22 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Interceptar requests
+// Interceptar requests de forma inteligente
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   
-  // Estratégia Cache First para assets estáticos
-  if (STATIC_URLS.some(staticUrl => url.pathname.includes(staticUrl))) {
-    event.respondWith(
-      caches.match(request).then((response) => {
-        return response || fetch(request);
-      })
-    );
-    return;
+  // Ignorar recursos de desenvolvimento do Vite
+  if (IGNORE_PATTERNS.some(pattern => pattern.test(url.pathname))) {
+    return; // Deixa o Vite lidar com esses recursos
   }
   
-  // Estratégia Network First para APIs
+  // Ignorar requests para localhost com porta diferente da atual
+  if (url.hostname === 'localhost' && url.port !== location.port) {
+    return; // Evita erros de CORS e requests para portas incorretas
+  }
+  
+  // Estratégia Network First para APIs - apenas para recursos válidos
   if (API_CACHE_PATTERNS.some(pattern => pattern.test(url.pathname))) {
     event.respondWith(
       fetch(request)
@@ -82,11 +86,12 @@ self.addEventListener('fetch', (event) => {
             const responseClone = response.clone();
             caches.open(DYNAMIC_CACHE).then((cache) => {
               cache.put(request, responseClone);
-            });
+            }).catch(err => console.log('[SW] Cache error:', err));
           }
           return response;
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log('[SW] Network error for API request:', error);
           // Se falhar, tenta buscar no cache
           return caches.match(request);
         })
@@ -94,22 +99,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Estratégia Stale While Revalidate para outros recursos
+  // Para outros recursos, apenas passa adiante sem cachear
+  // (evita problemas com hot-reload do Vite)
   event.respondWith(
-    caches.match(request).then((response) => {
-      const fetchPromise = fetch(request).then((networkResponse) => {
-        // Cache a nova resposta
-        if (networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(DYNAMIC_CACHE).then((cache) => {
-            cache.put(request, responseClone);
-          });
-        }
-        return networkResponse;
-      });
-      
-      // Retorna cache se disponível, senão espera a rede
-      return response || fetchPromise;
+    fetch(request).catch((error) => {
+      console.log('[SW] Network error:', error);
+      return caches.match(request);
     })
   );
 });

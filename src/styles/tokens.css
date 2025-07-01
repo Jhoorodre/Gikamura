@@ -2,97 +2,188 @@
 /* ==                      DESIGN TOKENS OTIMIZADOS                       == */
 /* ========================================================================== */
 :root {
-  /* Cores principais */
-  --color-background: #0f0f0f;
-  --color-surface: #1a1a1a;
-  --color-surface-elevated: #252525;
-  --color-border: #333;
+  /* === PALETA BASE DO ROADMAP === */
+  /* 70% - Cor principal de fundo */
+  --color-primary-base: #141414;
+  /* 20% - Cor secundária de destaque */
+  --color-secondary-base: #341111;
+  /* 10% - Cor de acento e texto */
+  --color-accent-base: #a4a4a4;
 
-  /* Texto */
-  --color-text-primary: #e5e5e5;
-  --color-text-secondary: #b0b0b0; /* Melhor contraste */
-  --color-text-muted: #666;
+  /* === SISTEMA DE CORES APRIMORADO === */
+  --color-background: var(--color-primary-base);
+  --color-surface: rgba(20, 20, 20, 0.8);
+  --color-surface-primary: #1a1a1a;
+  --color-surface-secondary: var(--color-secondary-base);
+  --color-surface-tertiary: #2a2a2a;
+  --color-surface-elevated: rgba(26, 26, 26, 0.95);
+  --color-border: rgba(52, 17, 17, 0.3);
+  --color-border-hover: var(--color-secondary-base);
 
-  /* Primária (vermelho) */
-  --color-primary: #dc2626;
-  --color-primary-hover: #b91c1c;
-  --color-primary-alpha: rgba(220, 38, 38, 0.15);
+  /* === TEXTO OTIMIZADO === */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: var(--color-accent-base);
+  --color-text-tertiary: rgba(164, 164, 164, 0.7);
+  --color-text-muted: rgba(164, 164, 164, 0.5);
+  --color-text-inverse: #141414;
 
-  /* Feedback */
-  --color-success: #10b981;
+  /* === CORES PRIMÁRIAS === */
+  --color-primary: var(--color-secondary-base);
+  --color-primary-hover: #4a1a1a;
+  --color-primary-active: #5e1e1e;
+  --color-primary-alpha: rgba(52, 17, 17, 0.2);
+  --color-primary-light: rgba(52, 17, 17, 0.1);
+
+  /* === CORES DE ACENTO === */
+  --color-accent: var(--color-accent-base);
+  --color-accent-hover: #b8b8b8;
+  --color-accent-alpha: rgba(164, 164, 164, 0.15);
+
+  /* === FEEDBACK E ESTADO === */
+  --color-success: #22c55e;
+  --color-success-hover: #16a34a;
+  --color-success-alpha: rgba(34, 197, 94, 0.15);
+  
   --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --color-danger: #dc2626;
-  --color-success-alpha: rgba(16, 185, 129, 0.15);
-  --color-danger-alpha: rgba(220, 38, 38, 0.15);
+  --color-warning-hover: #d97706;
   --color-warning-alpha: rgba(245, 158, 11, 0.15);
+  
+  --color-error: #ef4444;
+  --color-error-hover: #dc2626;
+  --color-danger: #dc2626;
+  --color-danger-alpha: rgba(220, 38, 38, 0.15);
 
-  /* Espaçamento */
+  /* === ESPAÇAMENTO HARMONIOSO === */
   --space-0: 0;
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
 
-  /* Tamanhos padronizados */
-  --size-sm: 0.875rem;
-  --size-base: 1rem;
-  --size-lg: 1.125rem;
-  --size-xl: 1.25rem;
+  /* === TIPOGRAFIA ELEGANTE === */
+  --font-family-sans: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'Fira Code', 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
+  --font-family-display: 'Inter Display', var(--font-family-sans);
 
-  /* Tipografia */
-  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-family-mono: 'Fira Code', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+  --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+
   --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
   --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 2rem;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
 
-  /* Bordas e sombras */
-  --radius-sm: 0.125rem;
-  --radius-base: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-2xl: 1rem;
+  /* === BORDAS E SOMBRAS SOFISTICADAS === */
+  --radius-none: 0;
+  --radius-sm: 0.125rem;    /* 2px */
+  --radius-base: 0.25rem;   /* 4px */
+  --radius-md: 0.375rem;    /* 6px */
+  --radius-lg: 0.5rem;      /* 8px */
+  --radius-xl: 0.75rem;     /* 12px */
+  --radius-2xl: 1rem;       /* 16px */
+  --radius-3xl: 1.5rem;     /* 24px */
   --radius-full: 9999px;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.15);
-  --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.2);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
 
-  /* Transições e z-index */
+  /* Sombras elegantes com cores do roadmap */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.45), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  
+  /* Sombras coloridas baseadas na paleta */
+  --shadow-primary: 0 4px 14px 0 rgba(52, 17, 17, 0.3);
+  --shadow-accent: 0 4px 14px 0 rgba(164, 164, 164, 0.2);
+
+  /* === TRANSIÇÕES SUAVES === */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* === Z-INDEX ORGANIZADOS === */
+  --z-base: 1;
+  --z-elevated: 10;
+  --z-sticky: 20;
+  --z-fixed: 30;
+  --z-overlay: 40;
   --z-dropdown: 1000;
   --z-modal: 1050;
+  --z-popover: 1060;
   --z-tooltip: 1070;
+  --z-toast: 1080;
 
-  /* Cores auxiliares */
-  --color-light-gray: #94a3b8;
+  /* === VARIÁVEIS RGB PARA TRANSPARÊNCIAS === */
+  --background-rgb: 20, 20, 20;
+  --surface-primary-rgb: 26, 26, 26;
+  --surface-secondary-rgb: 52, 17, 17;
+  --accent-rgb: 164, 164, 164;
 }
+
+/* === CLASSES UTILITÁRIAS PARA CORES === */
+.bg-primary { background-color: var(--color-background); }
+.bg-surface { background-color: var(--color-surface); }
+.bg-surface-primary { background-color: var(--color-surface-primary); }
+.bg-surface-secondary { background-color: var(--color-surface-secondary); }
+.bg-surface-tertiary { background-color: var(--color-surface-tertiary); }
+.bg-surface-elevated { background-color: var(--color-surface-elevated); }
+.bg-accent { background-color: var(--color-accent); }
+
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-tertiary { color: var(--color-text-tertiary); }
+.text-muted { color: var(--color-text-muted); }
+.text-accent { color: var(--color-accent); }
+
+.border-primary { border-color: var(--color-border); }
+.border-hover { border-color: var(--color-border-hover); }
+.border-accent { border-color: var(--color-accent); }
+
+/* === MODO ESCURO APRIMORADO === */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-text-primary: #ffffff;
+    --color-surface-elevated: rgba(26, 26, 26, 0.98);
+  }
+}
+
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-tertiary { color: var(--color-text-tertiary); }
+.text-accent { color: var(--color-accent); }
+
+.border-primary { border-color: var(--color-border); }
+.border-accent { border-color: var(--color-accent); }
 
 @media (prefers-color-scheme: light) {
   :root {
-    --color-background: #ffffff;
-    --color-surface: #f8f9fa;
-    --color-text-primary: #1a1a1a;
+    /* Mantem as cores escuras mesmo em modo claro para seguir o roadmap */
+    --color-background: #141414;
+    --color-surface-primary: #141414;
+    --color-text-primary: #a4a4a4;
   }
 }
 

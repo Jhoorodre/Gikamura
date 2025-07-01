@@ -9,18 +9,20 @@ const HubHeader = React.memo(({ hub }) => {
     }
 
     return (
-        <div className="flex items-center gap-8 p-8 mb-16 card">
-            <Image
-                // Usa o encadeamento opcional para acessar as propriedades de forma segura.
-                src={hub.icon?.url}
-                alt={hub.icon?.alt || hub.title}
-                className="w-32 h-32 rounded-full object-cover"
-                style={{ border: '4px solid var(--color-primary-hover)'}}
-                errorSrc="https://placehold.co/128x128/1e293b/94a3b8?text=Icon"
-            />
-            <div>
-                <h1 className="orbitron">{hub.title}</h1>
-                <p className="mt-2">{hub.description}</p>
+        <div className="hub-header">
+            <div className="hub-header-content">
+                <div className="hub-icon-container">
+                    <Image
+                        src={hub.icon?.url}
+                        alt={hub.icon?.alt || hub.title}
+                        className="hub-icon"
+                        errorSrc="https://placehold.co/128x128/1e293b/94a3b8?text=Hub"
+                    />
+                </div>
+                <div className="hub-info">
+                    <h1 className="hub-title">{hub.title}</h1>
+                    <p className="hub-description">{hub.description}</p>
+                </div>
             </div>
         </div>
     );

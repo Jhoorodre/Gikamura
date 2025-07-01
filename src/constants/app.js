@@ -1,7 +1,7 @@
 // App Configuration Constants
 export const APP_CONFIG = {
-  // URLs e proxies
-  CORS_PROXY_URL: 'https://api.allorigins.win/get?url=',
+  // URLs e proxies - CORS proxy removido para requests diretos
+  // CORS_PROXY_URL: 'https://api.allorigins.win/get?url=',
   DEFAULT_HUB_URL: 'https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/refs/heads/main/hub_tog.json',
   
   // Timeouts e delays

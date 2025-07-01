@@ -387,21 +387,6 @@
   line-height: var(--line-height-tight);
   display: -webkit-box;
   -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Alias para compatibilidade */
-.media-card-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-2);
-  line-height: var(--line-height-tight);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -412,7 +397,6 @@
   line-height: var(--line-height-normal);
   display: -webkit-box;
   -webkit-line-clamp: 1;
-  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -814,42 +798,4 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* ========================================================================== */
-/* == MELHORIAS NO BOTÃO DE NAVEGAÇÃO                                     == */
-/* ========================================================================== */
-
-/* Botão hamburguer sempre visível com indicadores de estado */
-.nav-hamburger-button {
-    position: relative !important;
-}
-
-.nav-hamburger-button.disconnected::after {
-    content: '!' !important;
-    position: absolute !important;
-    top: -2px !important;
-    right: -2px !important;
-    width: 12px !important;
-    height: 12px !important;
-    background: #ef4444 !important;
-    color: white !important;
-    border-radius: 50% !important;
-    font-size: 8px !important;
-    font-weight: bold !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    animation: alertPulse 2s ease-in-out infinite !important;
-}
-
-@keyframes alertPulse {
-    0%, 100% { 
-        transform: scale(1); 
-        opacity: 1; 
-    }
-    50% { 
-        transform: scale(1.1); 
-        opacity: 0.8; 
-    }
 }

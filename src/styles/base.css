@@ -1,11 +1,20 @@
 /* ========================================================================== */
-/* ==                  ESTILOS BASE OTIMIZADOS DA APLICAÇÃO               == */
+/* ==                  ESTILOS BASE ELEGANTES DA APLICAÇÃO                == */
 /* ========================================================================== */
 
-/* == 1. RESET E CONFIGURAÇÕES GLOBAIS == */
-*, *::before, *::after { box-sizing: border-box; }
-* { margin: 0; padding: 0; }
-html { font-size: 16px; scroll-behavior: smooth; }
+/* === 1. RESET MODERNO E CONFIGURAÇÕES GLOBAIS === */
+*, *::before, *::after { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+}
+
+html { 
+  font-size: 16px; 
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-base);
@@ -15,64 +24,215 @@ body {
   background-color: var(--color-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
-/* == 2. TIPOGRAFIA == */
+/* === 2. TIPOGRAFIA SOFISTICADA === */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
   color: var(--color-text-primary);
+  letter-spacing: -0.025em;
+  margin-bottom: var(--space-2);
 }
-h1 { font-size: var(--font-size-xl); }
-h2 { font-size: var(--font-size-lg); }
-h3 { font-size: var(--font-size-base); }
-h4, h5, h6 { font-size: var(--font-size-sm); }
+
+h1 { 
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-extrabold);
+  background: linear-gradient(135deg, var(--color-text-primary), var(--color-accent));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h2 { 
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+h3 { 
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+h4 { 
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+}
+
+h5, h6 { 
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+}
+
 p {
   color: var(--color-text-secondary);
   line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-4);
 }
 
-/* Micro-interações e feedback visual */
+/* === 3. LINKS E INTERAÇÕES APRIMORADAS === */
 a {
-  color: var(--color-primary);
+  color: var(--color-accent);
   text-decoration: none;
-  transition: color var(--transition-fast);
-}
-a:hover, button:hover {
-  color: var(--color-primary-hover);
-  opacity: 0.85;
+  transition: all var(--transition-base);
+  position: relative;
 }
 
-button:active {
-  transform: scale(0.98);
+a:hover {
+  color: var(--color-accent-hover);
+  transform: translateY(-1px);
 }
 
-/* Foco visível consistente */
-*:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
+a:active {
+  transform: translateY(0);
 }
 
-/* == 3. ELEMENTOS COMUNS == */
-ul, ol { list-style: none; }
-img { max-width: 100%; height: auto; display: block; }
-button, input, textarea, select { font: inherit; color: inherit; }
-button { cursor: pointer; border: none; background: none; }
-
-/* == 4. ACESSIBILIDADE == */
-.sr-only {
+/* Efeito underline suave para links */
+a:not(.btn):not(.card):hover::after {
+  content: '';
   position: absolute;
-  width: 1px;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
   height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+  background: linear-gradient(90deg, var(--color-accent), transparent);
+  animation: underlineSlide var(--transition-base) ease-out;
 }
 
-/* == 5. COMPONENTES ESPECÍFICOS (EXEMPLO) == */
-/* Adicione estilos específicos de componentes aqui, se necessário. */
+@keyframes underlineSlide {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* === 4. BOTÕES E INTERATIVIDADE === */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  transition: all var(--transition-base);
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* === 5. FOCO VISÍVEL MODERNO === */
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.2);
+}
+
+/* === 6. ELEMENTOS DE FORMULÁRIO === */
+input, textarea, select {
+  font: inherit;
+  color: inherit;
+  background: var(--color-surface-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  transition: all var(--transition-base);
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
+  background: var(--color-surface-elevated);
+}
+
+/* === 7. ELEMENTOS VISUAIS === */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+ul, ol { 
+  list-style: none; 
+}
+
+/* === 8. SCROLLBAR PERSONALIZADA === */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-primary);
+  border-radius: var(--radius-lg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-accent), var(--color-secondary-base));
+  border-radius: var(--radius-lg);
+  transition: background var(--transition-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--color-accent-hover), var(--color-primary-hover));
+}
+
+/* === 9. SELEÇÃO DE TEXTO === */
+::selection {
+  background: rgba(var(--accent-rgb), 0.3);
+  color: var(--color-text-primary);
+}
+
+::-moz-selection {
+  background: rgba(var(--accent-rgb), 0.3);
+  color: var(--color-text-primary);
+}
+
+/* === 10. ACESSIBILIDADE === */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* === 11. PREFERÊNCIAS DE MOVIMENTO === */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* === 12. MODO ALTO CONTRASTE === */
+@media (prefers-contrast: high) {
+  :root {
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #ffffff;
+    --color-border: #ffffff;
+    --shadow-sm: none;
+    --shadow-base: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+  }
+}
