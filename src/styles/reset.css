@@ -1,0 +1,31 @@
+/* ========================================================================== */
+/* ==                RESET CSS MODERNO E ACESSÍVEL                        == */
+/* ========================================================================== */
+
+/* Box sizing universal */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Remove margens e paddings padrão */
+* { margin: 0; padding: 0; }
+
+/* Remove decoração de links e herda cor */
+a { text-decoration: none; color: inherit; }
+
+/* Remove bullets de listas */
+ul, ol { list-style: none; }
+
+/* Imagens responsivas */
+img { max-width: 100%; height: auto; display: block; }
+
+/* Botões e inputs herdam fonte */
+button, input, textarea, select { font: inherit; color: inherit; }
+
+/* Remove borda e fundo padrão de botões */
+button { border: none; background: none; cursor: pointer; }
+
+/* Remove outline padrão e aplica foco visível universal */
+*:focus-visible {
+  outline: 2px solid var(--color-primary, #dc2626);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm, 2px);
+}

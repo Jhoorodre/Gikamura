@@ -1,5 +1,5 @@
 /* ========================================================================== */
-/* ==                      ANIMAÇÕES GLOBAIS DA APLICAÇÃO                  == */
+/* ==                      ANIMAÇÕES OTIMIZADAS DA APLICAÇÃO              == */
 /* ========================================================================== */
 /*
  * Este arquivo define um conjunto de animações reutilizáveis para a interface.
@@ -45,7 +45,7 @@
 
 /* Transição suave entre telas principais */
 .view-container {
-    animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
 
@@ -74,30 +74,19 @@
 /* ========================================================================== */
 
 @keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
+  to { opacity: 1; }
 }
 
 @keyframes slideInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideInLeft {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes slideInRight {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 
@@ -132,24 +121,54 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* Animação de rotação para ícones de spinner */
 .spin {
-    animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================================================== */
+/* == 6. ACESSIBILIDADE: REDUZIR MOVIMENTO                               == */
+/* ========================================================================== */
+/*
+ * Respeita a preferência do usuário para reduzir ou desativar animações.
+ * Remove animações e transições em elementos críticos para a interação.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .fade-in,
+  .slide-in-up,
+  .slide-in-left,
+  .slide-in-right,
+  .stagger-animation > *,
+  .pulse,
+  .spin {
+    animation: none !important;
+    transition: none !important;
+  }
+  /* Otimização: desativa animações de fundo e partículas para acessibilidade */
+  .animated-bg,
+  .particle {
+    animation: none;
+  }
+}
+
+/* ========================================================================== */
+/* == SEPARAÇÃO DE ANIMAÇÕES CRÍTICAS E NÃO-CRÍTICAS                      == */
+/* ========================================================================== */
+/*
+ * Animações não essenciais podem ser carregadas sob demanda via JS
+ * para otimizar o desempenho inicial da aplicação.
+*/
+
+.media-card {
+  will-change: transform;
+  transition: transform 200ms ease;
 }

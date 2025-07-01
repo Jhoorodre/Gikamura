@@ -1,0 +1,53 @@
+/* ========================================================================== */
+/* ==                CONTAINERS E UTILITÁRIOS DE LAYOUT                   == */
+/* ========================================================================== */
+
+/* Container centralizado e responsivo */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+/* Container fluido ocupa toda a largura */
+.container-fluid {
+  width: 100%;
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+/* Container com largura menor para formulários ou painéis */
+.container-narrow {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container, .container-fluid {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  .container-narrow {
+    max-width: 100%;
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+}
+
+/* Alinhamento vertical e horizontal */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flex-col-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

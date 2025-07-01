@@ -1,155 +1,93 @@
 /* ========================================================================== */
-/* ==                      DESIGN TOKENS DA APLICAÇÃO                      == */
+/* ==                      DESIGN TOKENS OTIMIZADOS                       == */
 /* ========================================================================== */
-/*
- * Este arquivo centraliza todas as variáveis de design (tokens) da aplicação.
- * Usar tokens garante consistência visual e facilita a manutenção e o
- * theming do projeto. Todas as cores, espaçamentos, fontes, etc., devem
- * ser definidos aqui.
-*/
-
 :root {
+  /* Cores principais */
+  --color-background: #0f0f0f;
+  --color-surface: #1a1a1a;
+  --color-surface-elevated: #252525;
+  --color-border: #333;
 
-  /* ======================================================================== */
-  /* == 1. PALETA DE CORES                                                 == */
-  /* ======================================================================== */
+  /* Texto */
+  --color-text-primary: #e5e5e5;
+  --color-text-secondary: #b0b0b0; /* Melhor contraste */
+  --color-text-muted: #666;
 
-  /* --- Cores Base da Paleta --- */
-  /* Estas são as cores primárias que definem a identidade visual. */
-  --color-dark-bg:    #141414; /* Fundo principal escuro */
-  --color-accent-red: #341111; /* Vermelho escuro para áreas de destaque */
-  --color-light-gray: #a4a4a4; /* Cinza claro para textos principais */
+  /* Primária (vermelho) */
+  --color-primary: #dc2626;
+  --color-primary-hover: #b91c1c;
+  --color-primary-alpha: rgba(220, 38, 38, 0.15);
 
-  /* --- Cores Semânticas --- */
-  /* Mapeamento da paleta para usos específicos na UI. */
-  --color-background:         var(--color-dark-bg);      /* Cor de fundo global */
-  --color-surface:            #1f1f1f;                  /* Superfícies de componentes (cards, painéis) */
-  --color-surface-elevated:   var(--color-accent-red);   /* Superfícies com maior destaque */
-  --color-border:             #4a4a4a;                  /* Bordas sutis de componentes */
+  /* Feedback */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-danger: #dc2626;
+  --color-success-alpha: rgba(16, 185, 129, 0.15);
+  --color-danger-alpha: rgba(220, 38, 38, 0.15);
+  --color-warning-alpha: rgba(245, 158, 11, 0.15);
 
-  /* --- Cores de Texto --- */
-  --color-text-primary:       var(--color-light-gray);   /* Cor principal para textos e títulos */
-  --color-text-secondary:     #8b8b8b;                  /* Cor para textos secundários e descrições */
-  --color-text-muted:         #6c6c6c;                  /* Cor para textos com menos destaque (hints, etc.) */
+  /* Espaçamento */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
 
-  /* --- Escala de Cores Primárias (Vermelho) --- */
-  /* Uma escala de tons baseada na cor de destaque para criar variações. */
-  --color-primary-50:   #fcebeb;
-  --color-primary-100:  #f6d0d0;
-  --color-primary-200:  #f0b5b5;
-  --color-primary-300:  #ea9a9a;
-  --color-primary-400:  #e37f7f;
-  --color-primary-500:  #dc6464;
-  --color-primary-600:  #8B0000; /* Vermelho principal para ações (botões, links) */
-  --color-primary-700:  var(--color-accent-red);
-  --color-primary-800:  #2c0f0f;
-  --color-primary-900:  #1f0a0a;
-  --color-primary-500-alpha: rgba(220, 100, 100, 0.15); /* Variação com transparência */
+  /* Tamanhos padronizados */
+  --size-sm: 0.875rem;
+  --size-base: 1rem;
+  --size-lg: 1.125rem;
+  --size-xl: 1.25rem;
 
-  /* --- Cores de Feedback de Status --- */
-  --color-success:        #10b981;
-  --color-warning:        #f59e0b;
-  --color-error:          #ef4444;
-  --color-danger:         #dc2626; /* Alias para 'error', mais comum em componentes */
-  --color-success-bg:     rgba(16, 185, 129, 0.1);
-  --color-success-500-alpha: rgba(16, 185, 129, 0.15);
-  --color-danger-500-alpha:  rgba(220, 38, 38, 0.15);
-  --color-warning-500-alpha: rgba(245, 158, 11, 0.15);
-
-
-  /* ======================================================================== */
-  /* == 2. ESPAÇAMENTO                                                     == */
-  /* ======================================================================== */
-  /* Escala de espaçamento consistente para margens, paddings e gaps. */
-  --space-0:    0;
-  --space-1:    0.25rem;  /* 4px */
-  --space-2:    0.5rem;   /* 8px */
-  --space-3:    0.75rem;  /* 12px */
-  --space-4:    1rem;     /* 16px */
-  --space-5:    1.25rem;  /* 20px */
-  --space-6:    1.5rem;   /* 24px */
-  --space-8:    2rem;     /* 32px */
-  --space-10:   2.5rem;   /* 40px */
-  --space-12:   3rem;     /* 48px */
-  --space-16:   4rem;     /* 64px */
-  --space-20:   5rem;     /* 80px */
-  --space-24:   6rem;     /* 96px */
-
-
-  /* ======================================================================== */
-  /* == 3. TIPOGRAFIA                                                      == */
-  /* ======================================================================== */
-
-  /* --- Famílias de Fonte --- */
+  /* Tipografia */
   --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-
-  /* --- Tamanhos de Fonte (Fluid Typography) --- */
-  /* Usam clamp() para escalar suavemente entre tamanhos mínimo e máximo. */
-  --font-size-xs:    clamp(0.75rem, 0.5vw + 0.5rem, 0.875rem);
-  --font-size-sm:    clamp(0.875rem, 0.5vw + 0.6rem, 1rem);
-  --font-size-base:  clamp(1rem, 1vw + 0.5rem, 1.125rem);
-  --font-size-lg:    clamp(1.125rem, 1vw + 0.7rem, 1.25rem);
-  --font-size-xl:    clamp(1.25rem, 1.5vw + 0.7rem, 1.5rem);
-  --font-size-2xl:   clamp(1.5rem, 2vw + 0.8rem, 1.875rem);
-  --font-size-3xl:   clamp(1.875rem, 2.5vw + 1rem, 2.25rem);
-  --font-size-4xl:   clamp(2.25rem, 3vw + 1.2rem, 3rem);
-
-  /* --- Pesos de Fonte --- */
-  --font-weight-normal:   400;
-  --font-weight-medium:   500;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
   --font-weight-semibold: 600;
-  --font-weight-bold:     700;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
 
-  /* --- Alturas de Linha --- */
-  --line-height-tight:    1.25;
-  --line-height-normal:   1.5;
-  --line-height-relaxed:  1.75;
+  /* Bordas e sombras */
+  --radius-sm: 0.125rem;
+  --radius-base: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.15);
+  --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
 
-
-  /* ======================================================================== */
-  /* == 4. BORDAS E SOMBRAS                                                == */
-  /* ======================================================================== */
-
-  /* --- Raios de Borda (Border Radius) --- */
-  --radius-sm:    0.125rem; /* 2px */
-  --radius-base:  0.25rem;  /* 4px */
-  --radius-md:    0.375rem; /* 6px */
-  --radius-lg:    0.5rem;   /* 8px */
-  --radius-xl:    0.75rem;  /* 12px */
-  --radius-2xl:   1rem;     /* 16px */
-  --radius-full:  9999px;   /* Para criar círculos e pílulas */
-
-  /* --- Sombras (Ajustadas para o tema escuro) --- */
-  --shadow-sm:    0 1px 2px 0 rgb(0 0 0 / 0.15);
-  --shadow-base:  0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.2);
-  --shadow-md:    0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-  --shadow-lg:    0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
-  --shadow-xl:    0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
-
-
-  /* ======================================================================== */
-  /* == 5. TRANSIÇÕES E Z-INDEX                                            == */
-  /* ======================================================================== */
-
-  /* --- Duração de Transições --- */
-  --transition-fast:  150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base:  200ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow:  300ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* --- Empilhamento de Camadas (Z-index) --- */
-  --z-dropdown:       1000;
-  --z-sticky:         1020;
-  --z-fixed:          1030;
-  --z-modal-backdrop: 1040;
-  --z-modal:          1050;
-  --z-popover:        1060;
-  --z-tooltip:        1070;
+  /* Transições e z-index */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --z-dropdown: 1000;
+  --z-modal: 1050;
+  --z-tooltip: 1070;
 }
 
-/* Dark theme adjustments */
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    color-scheme: dark;
+    --color-background: #ffffff;
+    --color-surface: #f8f9fa;
+    --color-text-primary: #1a1a1a;
   }
+}
+
+/* Acessibilidade: foco visível */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }

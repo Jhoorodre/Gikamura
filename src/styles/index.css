@@ -2,7 +2,6 @@
 @import './base.css';
 @import './layout.css';
 @import './components.css';
-@import './animations.css';
 @import './hub-loader.css';
 @import './widget.css'; /* Estilos do Widget RemoteStorage */
 
@@ -112,4 +111,19 @@
 .conflict-indicator {
     background-color: var(--color-warning-bg, #fffbe6);
     color: var(--color-warning-dark, #b45309);
+}
+
+/* Lazy loading de animações: exemplo de importação condicional (JS pode ser usado para carregar animations.css apenas quando necessário) */
+/* Exemplo: import('./animations.css'); */
+
+/* Micro-interações e feedback visual */
+.btn:active, .card:active, .media-card:active {
+  filter: brightness(0.95);
+}
+
+/* Foco visível reforçado para acessibilidade */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }

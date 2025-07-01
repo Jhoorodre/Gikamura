@@ -1,41 +1,11 @@
 /* ========================================================================== */
-/* ==                  ESTILOS BASE E RESET DA APLICAÇÃO                   == */
-/* ========================================================================== */
-/*
- * Este arquivo define os estilos fundamentais e realiza um "reset" para
- * garantir consistência visual em diferentes navegadores.
- *
- * Inclui:
- * - Reset de margens e paddings.
- * - Definição da tipografia base (corpo, títulos, links).
- * - Estilos padrão para elementos comuns como imagens e formulários.
-*/
-
-
-/* ========================================================================== */
-/* == 1. RESET E CONFIGURAÇÕES GLOBAIS                                   == */
+/* ==                  ESTILOS BASE OTIMIZADOS DA APLICAÇÃO               == */
 /* ========================================================================== */
 
-/* Garante que o modelo de caixa (box model) seja consistente. */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* Remove margens e paddings padrão de todos os elementos. */
-* {
-  margin: 0;
-  padding: 0;
-}
-
-/* Configurações globais para o HTML. */
-html {
-  font-size: 16px; /* Define a base para unidades 'rem' */
-  scroll-behavior: smooth; /* Rolagem suave para âncoras */
-}
-
-/* Estilos padrão para o corpo da página. */
+/* == 1. RESET E CONFIGURAÇÕES GLOBAIS == */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
 body {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-base);
@@ -43,86 +13,55 @@ body {
   line-height: var(--line-height-normal);
   color: var(--color-text-primary);
   background-color: var(--color-background);
-  -webkit-font-smoothing: antialiased; /* Melhora a renderização de fontes */
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden; /* Previne scroll horizontal indesejado */
+  overflow-x: hidden;
 }
 
-
-/* ========================================================================== */
-/* == 2. TIPOGRAFIA                                                      == */
-/* ========================================================================== */
-
-/* Estilos base para todos os títulos. */
+/* == 2. TIPOGRAFIA == */
 h1, h2, h3, h4, h5, h6 {
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
   color: var(--color-text-primary);
 }
-
-/* Tamanhos de fonte para cada nível de título. */
-h1 { font-size: var(--font-size-4xl); }
-h2 { font-size: var(--font-size-3xl); }
-h3 { font-size: var(--font-size-2xl); }
-h4 { font-size: var(--font-size-xl); }
-h5 { font-size: var(--font-size-lg); }
-h6 { font-size: var(--font-size-base); }
-
-/* Estilo padrão para parágrafos. */
+h1 { font-size: var(--font-size-xl); }
+h2 { font-size: var(--font-size-lg); }
+h3 { font-size: var(--font-size-base); }
+h4, h5, h6 { font-size: var(--font-size-sm); }
 p {
   color: var(--color-text-secondary);
   line-height: var(--line-height-relaxed);
 }
 
-/* Estilo padrão para links. */
+/* Micro-interações e feedback visual */
 a {
-  color: var(--color-primary-400);
+  color: var(--color-primary);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
-a:hover {
-  color: var(--color-primary-300);
+a:hover, button:hover {
+  color: var(--color-primary-hover);
+  opacity: 0.85;
 }
 
-
-/* ========================================================================== */
-/* == 3. ELEMENTOS COMUNS                                                == */
-/* ========================================================================== */
-
-/* Remove os marcadores padrão de listas. */
-ul, ol {
-  list-style: none;
+button:active {
+  transform: scale(0.98);
 }
 
-/* Garante que imagens sejam responsivas. */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+/* Foco visível consistente */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
-/* Garante que elementos de formulário herdem a fonte do corpo. */
-button, input, textarea, select {
-  font: inherit;
-  color: inherit;
-}
+/* == 3. ELEMENTOS COMUNS == */
+ul, ol { list-style: none; }
+img { max-width: 100%; height: auto; display: block; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; border: none; background: none; }
 
-/* Remove estilos padrão de botões. */
-button {
-  cursor: pointer;
-  border: none;
-  background: none;
-}
-
-
-/* ========================================================================== */
-/* == 4. UTILITÁRIOS DE ACESSIBILIDADE                                   == */
-/* ========================================================================== */
-
-/*
- * Classe para esconder visualmente um elemento, mas mantê-lo acessível
- * para leitores de tela.
-*/
+/* == 4. ACESSIBILIDADE == */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -135,35 +74,5 @@ button {
   border: 0;
 }
 
-/*
- * Estilo de foco visível e consistente para navegação via teclado.
- * A classe `.focus-visible` é geralmente adicionada via JavaScript.
-*/
-.focus-visible:focus-visible {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
-
-/* ========================================================================== */
-/* == 5. ESTILOS PARA COMPONENTES ESPECÍFICOS                              == */
-/* ========================================================================== */
-
-/*
- * Aqui você pode adicionar estilos específicos para componentes da sua
- * aplicação, como botões, cartões, modais, etc.
- *
- * Exemplo:
- *
- * .btn {
- *   background-color: var(--color-primary);
- *   color: white;
- *   padding: 0.5rem 1rem;
- *   border-radius: var(--radius-md);
- *   transition: background-color var(--transition-fast);
- * }
- *
- * .btn:hover {
- *   background-color: var(--color-primary-dark);
- * }
-*/
+/* == 5. COMPONENTES ESPECÍFICOS (EXEMPLO) == */
+/* Adicione estilos específicos de componentes aqui, se necessário. */

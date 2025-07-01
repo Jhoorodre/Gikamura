@@ -1,5 +1,5 @@
 /* ========================================================================== */
-/* ==                CLASSES UTILITÁRIAS DE LAYOUT E GRID                == */
+/* ==                CLASSES UTILITÁRIAS DE LAYOUT OTIMIZADAS             == */
 /* ========================================================================== */
 /*
  * Este arquivo fornece um conjunto de classes utilitárias para a construção
@@ -17,18 +17,37 @@
 /* == 1. CONTAINERS                                                      == */
 /* ========================================================================== */
 
-/* Container com largura máxima, centrado na página. */
+/* Container responsivo */
 .container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--space-6);
+  box-sizing: border-box;
+}
+
+@container (max-width: 900px) {
+  .container {
+    padding: 0 var(--space-3);
+  }
 }
 
 /* Container que ocupa 100% da largura, com padding lateral. */
 .container-fluid {
   width: 100%;
   padding: 0 var(--space-6);
+}
+
+@media (max-width: 768px) {
+  .container, .container-fluid {
+    padding: 0 var(--space-4);
+  }
+  .grid-auto-fill, .grid-auto-fit {
+    grid-template-columns: 1fr;
+  }
+  .hub-loader-input-group {
+    flex-direction: column;
+  }
 }
 
 
@@ -43,10 +62,10 @@
 }
 
 /* Variações de colunas fixas. */
-.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-cols-1 { grid-template-columns: 1fr; }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
 /* Adicione mais conforme necessário (ex: .grid-cols-5) */
 
 /*
@@ -54,7 +73,9 @@
  * criando novas linhas se não houver espaço.
 */
 .grid-auto-fill {
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4);
 }
 
 /*
@@ -65,9 +86,15 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
+@media (max-width: 768px) {
+  .grid-auto-fill, .grid-auto-fit {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 /* ========================================================================== */
-/* == 3. UTILITÁRIOS DE FLEXBOX                                          == */
+/* == 3. FLEXBOX                                          == */
 /* ========================================================================== */
 
 .flex { display: flex; }
@@ -78,17 +105,10 @@
 .flex-grow { flex-grow: 1; }
 
 /* Alinhamento de Itens (vertical em flex-row, horizontal em flex-col) */
-.items-start { align-items: flex-start; }
 .items-center { align-items: center; }
-.items-end { align-items: flex-end; }
-.items-stretch { align-items: stretch; }
 
 /* Justificação de Conteúdo (horizontal em flex-row, vertical em flex-col) */
-.justify-start { justify-content: flex-start; }
 .justify-center { justify-content: center; }
-.justify-end { justify-content: flex-end; }
-.justify-between { justify-content: space-between; }
-.justify-around { justify-content: space-around; }
 
 /* Espaçamento entre elementos (Gap) */
 .gap-1 { gap: var(--space-1); }
@@ -98,29 +118,29 @@
 .gap-5 { gap: var(--space-5); }
 .gap-6 { gap: var(--space-6); }
 .gap-8 { gap: var(--space-8); }
-.gap-10 { gap: var(--space-10); }
-.gap-12 { gap: var(--space-12); }
 
 
 /* ========================================================================== */
-/* == 4. POSICIONAMENTO E ESPAÇAMENTO                                    == */
+/* == 4. POSICIONAMENTO                                    == */
 /* ========================================================================== */
 
 /* Posicionamento */
 .relative { position: relative; }
 .absolute { position: absolute; }
-.fixed { position: fixed; }
 .sticky { position: sticky; top: 0; } /* 'top: 0' é um padrão comum */
 
 /* Display */
 .block { display: block; }
-.inline-block { display: inline-block; }
 .hidden { display: none; }
+
+
+/* ========================================================================== */
+/* == 5. ESPAÇAMENTO                                                  == */
+/* ========================================================================== */
 
 /* Margens e Paddings (exemplo, pode ser expandido) */
 .m-auto { margin: auto; }
 .mx-auto { margin-left: auto; margin-right: auto; }
-.my-auto { margin-top: auto; margin-bottom: auto; }
 
 .p-4 { padding: var(--space-4); }
 .px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
@@ -129,28 +149,32 @@
 
 
 /* ========================================================================== */
-/* == 5. CORES DE FUNDO                                                  == */
+/* == 6. CORES DE FUNDO                                                  == */
 /* ========================================================================== */
 
 .bg-background { background-color: var(--color-background); }
 .bg-surface { background-color: var(--color-surface); }
-.bg-primary { background-color: var(--color-primary-500); }
+.bg-primary { background-color: var(--color-primary); }
 .bg-transparent { background-color: transparent; }
 
 
 /* ========================================================================== */
-/* == 6. BORDAS                                                          == */
+/* == 7. BORDAS                                                          == */
 /* ========================================================================== */
 
 .border { border: 1px solid var(--color-border); }
-.border-t { border-top: 1px solid var(--color-border); }
-.border-b { border-bottom: 1px solid var(--color-border); }
-.border-l { border-left: 1px solid var(--color-border); }
-.border-r { border-right: 1px solid var(--color-border); }
-.border-none { border: none; }
-
 .rounded-sm { border-radius: var(--radius-sm); }
 .rounded-md { border-radius: var(--radius-md); }
 .rounded-lg { border-radius: var(--radius-lg); }
 .rounded-xl { border-radius: var(--radius-xl); }
-.rounded-full { border-radius: 9999px; }
+.rounded-full { border-radius: var(--radius-full); }
+
+
+/* ========================================================================== */
+/* == 8. CONTAINER QUERIES (EXPERIMENTAL) == */
+/* ========================================================================== */
+@container (max-width: 600px) {
+  .grid, .container {
+    gap: var(--space-3);
+  }
+}

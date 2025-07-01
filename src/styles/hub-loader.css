@@ -78,8 +78,13 @@
 /* Agrupa o campo de input e o botão. */
 .hub-loader-input-group {
   display: flex;
-  gap: var(--space-3);
-  align-items: stretch; /* Garante que o input e o botão tenham a mesma altura */
+  gap: var(--space-2);
+}
+@media (max-width: 768px) {
+  .hub-loader-input-group {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
 }
 
 /* Campo de texto para URL ou ID do hub. */
@@ -191,10 +196,18 @@
 /* Removendo estilo para o contêiner específico */
 /* #remotestorage-widget-container { ... } */
 
-/* Força o widget do RemoteStorage a ficar fixo no canto, como no HTML */
-#remotestorage-widget {
-    position: fixed !important;
-    bottom: 1rem;
-    left: 1rem;
-    z-index: 9999;
+/* Widget sem position fixed desnecessário */
+.hub-loader-widget {
+  position: relative;
+  /* Removido: position: fixed; */
+  box-shadow: var(--shadow-base);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-elevated);
+  animation: fadeIn 300ms var(--transition-fast);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-loader-content,
+  .hub-loader-widget {
+    animation: none !important;
+  }
 }
