@@ -36,6 +36,7 @@ const HubView = () => {
 
     return (
         <div className="page-container">
+            {/* Status de Conexão */}
             <div className="connection-status">
                 {!isConnected ? (
                     <div className="status-indicator status-warning">
@@ -53,6 +54,7 @@ const HubView = () => {
                 )}
             </div>
 
+            {/* Cards de Navegação - só quando conectado */}
             {isConnected && (
                 <div className="hub-nav-section">
                     <div className="nav-cards-grid">
@@ -99,11 +101,13 @@ const HubView = () => {
                 </div>
             )}
 
+            {/* Conteúdo Principal do Hub */}
             <div className="page-section">
                 {currentHubData?.hub ? (
                     <>
                         <HubHeader hub={currentHubData.hub} />
                         
+                        {/* Área de Pesquisa */}
                         <div className="search-section">
                             <div className="search-container">
                                 <input
@@ -123,6 +127,7 @@ const HubView = () => {
                             </div>
                         </div>
 
+                        {/* Grid de Séries */}
                         <div className="series-section">
                             {filteredSeries.length > 0 ? (
                                 <ItemGrid
