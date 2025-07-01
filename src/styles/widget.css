@@ -168,7 +168,7 @@
 
 #remotestorage-widget .rs-connect {
     width: 100% !important;
-    background-color: var(--color-primary-600) !important;
+    background-color: var(--color-primary) !important;
     color: var(--color-light-gray) !important;
     border: none !important;
     border-radius: var(--radius-md) !important;
@@ -214,8 +214,8 @@
 }
 
 #remotestorage-widget .rs-widget.rs-state-connected:not(.rs-closed) .rs-connected-buttons button:hover {
-    border-color: var(--color-primary-600) !important;
-    color: var(--color-primary-600) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary) !important;
 }
 
 /* Hides the text inside the sync/disconnect buttons to show only the icons */

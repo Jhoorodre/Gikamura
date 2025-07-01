@@ -1,175 +1,332 @@
 /* ========================================================================== */
-/* ==                  ESTILOS DO COMPONENTE HUB LOADER                    == */
-/* ========================================================================== */
-/*
- * Este arquivo define os estilos para o componente "Hub Loader", que é
- * usado para carregar e interagir com "hubs" (provavelmente fontes de dados
- * ou configurações).
- *
- * O design é minimalista e centrado, focado na usabilidade.
-*/
-
-
-/* ========================================================================== */
-/* == 1. CONTAINER PRINCIPAL                                             == */
+/* ==                  ESTILOS DO HUB LOADER REDESENHADO                   == */
 /* ========================================================================== */
 
-/*
- * Este container ocupa todo o espaço disponível (altura e largura)
- * e usa flexbox para centralizar o painel de conteúdo.
-*/
+/* ========================================================================== */
+/* == 1. CONTAINER PRINCIPAL                                               == */
+/* ========================================================================== */
+
 .hub-loader-container {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-4);
-}
-
-/* ========================================================================== */
-/* == 2. PAINEL DE CONTEÚDO                                              == */
-/* ========================================================================== */
-
-/* O painel principal que contém todos os elementos. */
-.hub-loader-content {
-  width: 100%;
-  max-width: 640px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
   padding: var(--space-8);
   position: relative;
-  animation: slideInUp var(--transition-base) ease-out; /* Animação de entrada */
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.97) 0%, rgba(30, 41, 59, 0.95) 100%);
 }
 
+/* Layout principal responsivo - Melhor hierarquia visual */
+.hub-loader-main {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .hub-loader-main {
+    grid-template-columns: 2fr 350px;
+    gap: var(--space-12);
+    align-items: start;
+  }
+}
 
 /* ========================================================================== */
-/* == 3. CABEÇALHO                                                       == */
+/* == 2. PAINEL PRINCIPAL                                                 == */
+/* ========================================================================== */
+
+.hub-loader-content {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(148, 163, 184, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.hub-loader-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+}
+
+/* ========================================================================== */
+/* == 3. CABEÇALHO MELHORADO                                              == */
 /* ========================================================================== */
 
 .hub-loader-header {
   text-align: center;
   margin-bottom: var(--space-8);
+  position: relative;
 }
 
 .hub-loader-title {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--space-2) 0;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--space-6);
+  font-family: var(--font-family-mono);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .hub-loader-subtitle {
-  font-size: var(--font-size-sm);
+  font-size: 1rem;
   color: var(--color-text-secondary);
-  margin: 0;
+  max-width: 500px;
+  margin: 0 auto var(--space-8);
+  line-height: 1.5;
+  opacity: 0.85;
 }
 
+/* ========================================================================== */
+/* == 4. FORMULÁRIO OTIMIZADO                                             == */
+/* ========================================================================== */
 
 /* ========================================================================== */
-/* == 4. FORMULÁRIO DE ENTRADA                                           == */
+/* == 4. FORMULÁRIO OTIMIZADO                                             == */
 /* ========================================================================== */
 
 .hub-loader-form {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
-/* Agrupa o campo de input e o botão. */
 .hub-loader-input-group {
   display: flex;
-  gap: var(--space-2);
-}
-@media (max-width: 768px) {
-  .hub-loader-input-group {
-    flex-direction: column;
-    gap: var(--space-1);
-  }
+  gap: var(--space-3);
+  align-items: stretch;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2);
+  transition: all 0.3s ease;
 }
 
-/* Campo de texto para URL ou ID do hub. */
+.hub-loader-input-group:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
 .hub-loader-input {
-  flex: 1; /* Ocupa o espaço restante */
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: var(--space-4) var(--space-5);
   color: var(--color-text-primary);
-  transition: all var(--transition-fast);
-}
-.hub-loader-input:focus {
+  font-size: 1rem;
+  border-radius: var(--radius-lg);
   outline: none;
-  border-color: var(--color-primary-600);
-  box-shadow: 0 0 0 2px var(--color-primary-500-alpha);
+  transition: all 0.2s ease;
 }
 
-/* Botão para submeter o formulário. */
+.hub-loader-input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
 .hub-loader-button {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  border: none;
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-lg);
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  min-width: 120px;
+}
+
+.hub-loader-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -4px rgba(59, 130, 246, 0.4);
+}
+
+.hub-loader-button:active {
+  transform: translateY(0);
+}
+
+.hub-loader-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========================================================================== */
+/* == 5. SIDEBAR DA BIBLIOTECA - SEMPRE VISÍVEL E ELEGANTE                == */
+/* ========================================================================== */
+
+.hub-loader-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  position: sticky;
+  top: var(--space-8);
+}
+
+/* Card da Biblioteca - Sempre visível e elegante */
+.library-card {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.12));
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+.library-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  transition: left 0.4s ease;
+}
+
+.library-card:hover::before {
+  left: 100%;
+}
+
+.library-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 
+    0 15px 30px -8px rgba(59, 130, 246, 0.25),
+    0 0 0 1px rgba(59, 130, 246, 0.15);
+}
+
+.library-card-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  position: relative;
+  z-index: 1;
+}
+
+.library-card-icon {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-5);
-  background: var(--color-primary-600);
-  color: white;
-  border: none;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
-.hub-loader-button:hover:not(:disabled) {
-  background: var(--color-primary-700);
-}
-.hub-loader-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.3);
 }
 
-
-/* ========================================================================== */
-/* == 5. INDICADOR DE LOADING (SPINNER)                                  == */
-/* ========================================================================== */
-
-/* Spinner exibido dentro do botão durante o carregamento. */
-.hub-loader-spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.library-card-text h3 {
+  color: var(--color-text-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+  font-family: var(--font-family-mono);
 }
 
+.library-card-text p {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
 
 /* ========================================================================== */
-/* == 6. HISTÓRICO E OUTRAS SEÇÕES                                       == */
+/* == 6. SEÇÃO DE HISTÓRICO                                               == */
 /* ========================================================================== */
+
+.hub-history-section {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  backdrop-filter: blur(10px);
+}
+
+.hub-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
 
 .hub-history-title {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
-    margin-bottom: var(--space-4);
-    text-align: center;
-}
-
-.hub-history-list {
-    display: grid;
-    gap: var(--space-3);
+  color: var(--color-text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-family: var(--font-family-mono);
 }
 
 .hub-history-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-3) var(--space-4);
-    background-color: var(--color-surface-elevated);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: rgba(30, 41, 59, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: var(--space-2);
+}
+
+.hub-history-item:hover {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: var(--color-primary);
+  transform: translateX(4px);
 }
 
 /* ========================================================================== */
-/* == 7. ANIMAÇÕES                                                        == */
+/* == 7. RESPONSIVIDADE                                                   == */
+/* ========================================================================== */
+
+@media (max-width: 768px) {
+  .hub-loader-container {
+    padding: var(--space-4);
+  }
+  
+  .hub-loader-content {
+    padding: var(--space-6);
+  }
+  
+  .hub-loader-input-group {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .hub-loader-main {
+    gap: var(--space-6);
+  }
+  
+  .library-card-content {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-3);
+  }
+}
+
+/* ========================================================================== */
+/* == 8. ANIMAÇÕES                                                        == */
 /* ========================================================================== */
 
 @keyframes slideInUp {
@@ -189,25 +346,11 @@
   }
 }
 
-/* ========================================================================== */
-/* == 8. ESTILIZAÇÃO DO WIDGET DO REMOTESTORAGE                           == */
-/* ========================================================================== */
-
-/* Removendo estilo para o contêiner específico */
-/* #remotestorage-widget-container { ... } */
-
-/* Widget sem position fixed desnecessário */
-.hub-loader-widget {
-  position: relative;
-  /* Removido: position: fixed; */
-  box-shadow: var(--shadow-base);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-elevated);
-  animation: fadeIn 300ms var(--transition-fast);
-}
-@media (prefers-reduced-motion: reduce) {
-  .hub-loader-content,
-  .hub-loader-widget {
-    animation: none !important;
-  }
+.hub-loader-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }

@@ -15,7 +15,7 @@ const HubHeader = React.memo(({ hub }) => {
                 src={hub.icon?.url}
                 alt={hub.icon?.alt || hub.title}
                 className="w-32 h-32 rounded-full object-cover"
-                style={{ border: '4px solid var(--color-primary-700)'}}
+                style={{ border: '4px solid var(--color-primary-hover)'}}
                 errorSrc="https://placehold.co/128x128/1e293b/94a3b8?text=Icon"
             />
             <div>

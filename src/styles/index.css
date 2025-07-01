@@ -20,7 +20,7 @@
     font-weight: var(--font-weight-bold);
 }
 
-/* --- FUNDO ANIMADO --- */
+/* --- FUNDO ESTÁTICO ELEGANTE --- */
 .animated-bg {
     position: fixed;
     top: 0;
@@ -30,22 +30,12 @@
     z-index: -2;
     background-color: var(--color-background);
     background-image:
-        radial-gradient(ellipse at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 30%, rgba(139, 0, 0, 0.2) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 90%, rgba(59, 130, 246, 0.12) 0%, transparent 50%);
-    animation: move-aurora 30s ease-in-out infinite alternate;
+        radial-gradient(ellipse at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(139, 0, 0, 0.1) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 80%, rgba(59, 130, 246, 0.06) 0%, transparent 60%);
 }
 
-@keyframes move-aurora {
-    from {
-        transform: scale(1) rotate(0deg);
-    }
-    to {
-        transform: scale(1.2) rotate(20deg);
-    }
-}
-
-/* --- ESTILOS DAS PARTÍCULAS --- */
+/* --- SISTEMA DE PARTÍCULAS SIMPLIFICADO --- */
 #particles-container {
     position: fixed;
     top: 0;
@@ -55,6 +45,7 @@
     z-index: -1;
     pointer-events: none;
     overflow: hidden;
+    opacity: 0.3;
 }
 
 .particle {
@@ -63,32 +54,33 @@
     background-color: var(--color-light-gray);
     border-radius: 50%;
     opacity: 0;
-    animation-name: rise;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+    animation: rise-gentle 60s linear infinite;
 }
 
-@keyframes rise {
+@keyframes rise-gentle {
     0% {
-        transform: translateY(0) scale(0.5);
-        opacity: 0.5;
+        transform: translateY(0) scale(0.3);
+        opacity: 0.2;
     }
-    50% {
-        opacity: 0.8;
+    10% {
+        opacity: 0.4;
+    }
+    90% {
+        opacity: 0.2;
     }
     100% {
-        transform: translateY(-110vh) scale(1);
+        transform: translateY(-110vh) scale(0.8);
         opacity: 0;
     }
 }
 
-/* Animações */
+/* Animações sutis */
 .fade-in {
-    animation: fadeInUp var(--transition-slow) forwards;
+    animation: fadeInUp var(--transition-base) forwards;
 }
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(var(--space-4)); }
+    from { opacity: 0; transform: translateY(var(--space-2)); }
     to { opacity: 1; transform: translateY(0); }
 }
 
@@ -116,9 +108,9 @@
 /* Lazy loading de animações: exemplo de importação condicional (JS pode ser usado para carregar animations.css apenas quando necessário) */
 /* Exemplo: import('./animations.css'); */
 
-/* Micro-interações e feedback visual */
+/* Micro-interações sutis */
 .btn:active, .card:active, .media-card:active {
-  filter: brightness(0.95);
+  transform: scale(0.98);
 }
 
 /* Foco visível reforçado para acessibilidade */

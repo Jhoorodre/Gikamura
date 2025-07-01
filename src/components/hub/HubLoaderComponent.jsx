@@ -42,64 +42,97 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
 
     return (
         <div className="hub-loader-container">
-            <div className="hub-loader-content">
-                <div className="hub-loader-header">
-                    <h1 className="hub-loader-title">Leitor de Mangá</h1>
-                    <p className="hub-loader-subtitle">
-                        Cole a URL de um `hub.json` para carregar a aplicação numa nova guia.
-                    </p>
-                </div>
-                <form className="hub-loader-form" onSubmit={handleSubmit}>
-                    <div className="hub-loader-input-group">
-                        <input
-                            id="hub-url"
-                            type="url"
-                            value={url}
-                            onChange={(e) => {
-                                setUrl(e.target.value);
-                                // Limpa a mensagem de erro assim que o usuário começa a corrigir
-                                if (error) setError('');
-                            }}
-                            className="hub-loader-input"
-                            placeholder="https://exemplo.com/hub.json"
-                            required
-                            disabled={loading}
-                        />
-                        <button
-                            type="submit"
-                            disabled={loading || !url.trim()}
-                            className="hub-loader-button"
-                        >
-                            {loading ? <div className="hub-loader-spinner" /> : 'Carregar Hub'}
-                        </button>
+            <div className="hub-loader-main">
+                {/* Painel Principal */}
+                <div className="hub-loader-content">
+                    <div className="hub-loader-header">
+                        <h1 className="hub-loader-title">Leitor de Mangá</h1>
+                        <p className="hub-loader-subtitle">
+                            Cole a URL de um hub.json para carregar a aplicação numa nova guia e explorar sua biblioteca de mangás.
+                        </p>
                     </div>
-                    
-                    {/* Exibe a mensagem de erro logo abaixo do input */}
-                    {error && (
-                        <p className="text-red-400 text-sm mt-2 text-center">{error}</p>
-                    )}
-                </form>
 
-                {/* Card da Biblioteca - Aparece apenas se conectado */}
-                {isConnected && (
-                    <Link to="/library" className="card-elevated block p-6 rounded-xl mb-6 hover:border-primary-600 border border-transparent transition-all duration-300 group">
-                        <div className="flex items-center gap-4">
-                            <div className="bg-primary-600 p-3 rounded-lg">
+                    <form className="hub-loader-form" onSubmit={handleSubmit}>
+                        <div className="hub-loader-input-group">
+                            <input
+                                id="hub-url"
+                                type="url"
+                                value={url}
+                                onChange={(e) => {
+                                    setUrl(e.target.value);
+                                    // Limpa a mensagem de erro assim que o usuário começa a corrigir
+                                    if (error) setError('');
+                                }}
+                                className="hub-loader-input"
+                                placeholder="https://exemplo.com/hub.json"
+                                required
+                                disabled={loading}
+                                aria-label="URL do hub JSON"
+                            />
+                            <button
+                                type="submit"
+                                disabled={loading || !url.trim()}
+                                className="hub-loader-button"
+                                aria-label={loading ? "Carregando..." : "Carregar hub"}
+                            >
+                                {loading ? 'Carregando...' : 'Carregar Hub'}
+                            </button>
+                        </div>
+                        
+                        {/* Exibe a mensagem de erro */}
+                        {error && (
+                            <p className="text-red-400 text-sm mt-4 text-center bg-red-900/20 p-3 rounded-lg border border-red-800/30">{error}</p>
+                        )}
+                    </form>
+
+                    {/* Histórico de Hubs */}
+                    <HubHistory
+                        hubs={savedHubs}
+                        onSelectHub={(hub) => handleLoadDirectly(hub.url)}
+                        onRemoveHub={removeHub}
+                    />
+                </div>
+
+                {/* Sidebar */}
+                <div className="hub-loader-sidebar">
+                    {/* Card da Biblioteca - Sempre visível */}
+                    <Link to="/library" className="library-card">
+                        <div className="library-card-content">
+                            <div className="library-card-icon">
                                 <BookOpenIcon />
                             </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-white orbitron group-hover:text-primary-300 transition-colors">Acessar Biblioteca</h3>
-                                <p className="text-slate-400 text-sm">Veja suas séries fixadas e histórico de leitura.</p>
+                            <div className="library-card-text">
+                                <h3>Acessar Biblioteca</h3>
+                                <p>
+                                    {isConnected 
+                                        ? "Veja suas séries fixadas e histórico de leitura sincronizados."
+                                        : "Explore funcionalidades básicas da biblioteca. Conecte-se para sync completo."
+                                    }
+                                </p>
                             </div>
                         </div>
                     </Link>
-                )}
 
-                <HubHistory
-                    hubs={savedHubs}
-                    onSelectHub={(hub) => handleLoadDirectly(hub.url)}
-                    onRemoveHub={removeHub}
-                />
+                    {/* Status de Conexão */}
+                    <div className="hub-history-section">
+                        <div className="hub-history-header">
+                            <h3 className="hub-history-title">Status RemoteStorage</h3>
+                        </div>
+                        <div className="text-center">
+                            {isConnected ? (
+                                <div className="text-green-400 text-sm flex items-center justify-center gap-2">
+                                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                                    Conectado e sincronizado
+                                </div>
+                            ) : (
+                                <div className="text-yellow-400 text-sm flex items-center justify-center gap-2">
+                                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                                    Desconectado - Funcionalidade limitada
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
