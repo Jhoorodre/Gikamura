@@ -1,4 +1,3 @@
-import React from 'react';
 
 const Spinner = ({ size = 'md', text = 'Carregando...' }) => {
     const sizeClasses = {

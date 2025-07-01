@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Spinner from '../common/Spinner';
 import ErrorMessage from '../common/ErrorMessage';
 import Image from '../common/Image';
@@ -6,60 +6,19 @@ import Image from '../common/Image';
 const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode, onNextEntry, onPrevEntry, isFirstEntry, isLastEntry, itemData, entryKey, onSaveProgress }) => {
     const [showControls, setShowControls] = useState(true);
     const controlTimeout = useRef(null);
-    const [lastSavedPage, setLastSavedPage] = useState(-1); // Estado para controlar a última página salva
+    const [lastSavedPage, setLastSavedPage] = useState(-1);
 
     // Função para mostrar controles e reiniciar timer
-    const showControlsWithTimeout = () => {
+    const showControlsWithTimeout = useCallback(() => {
         setShowControls(true);
         clearTimeout(controlTimeout.current);
         controlTimeout.current = setTimeout(() => setShowControls(false), 3000);
-    };
-
-    useEffect(() => {
-        const handleMouseMove = () => {
-            showControlsWithTimeout();
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            clearTimeout(controlTimeout.current);
-        };
     }, []);
 
-    // EFEITO DE SALVAMENTO OTIMIZADO
-    useEffect(() => {
-        // Apenas continua se a função de salvar existir e a página tiver realmente mudado
-        if (onSaveProgress && page !== lastSavedPage) {
-            // Debounce: espera 1 segundo de inatividade antes de salvar
-            const timeoutId = setTimeout(() => {
-                console.log(`Salvando progresso: Página ${page + 1} do capítulo ${entryKey}`);
-                onSaveProgress(
-                    itemData.slug,
-                    itemData.sourceId,
-                    entryKey,
-                    page
-                ).then(() => {
-                    setLastSavedPage(page); // Atualiza o estado para evitar salvamentos repetidos
-                }).catch(console.error);
-            }, 1000); // Atraso de 1 segundo
-
-            return () => clearTimeout(timeoutId);
-        }
-    }, [page, itemData, entryKey, lastSavedPage, onSaveProgress]);
-
     // Extração de páginas mais robusta
-    const groupKeys = Object.keys(entry.groups || {});
+    const groupKeys = Object.keys(entry?.groups || {});
     const pages = groupKeys.length > 0 ? entry.groups[groupKeys[0]] : [];
     const totalPages = pages.length;
-
-    if (!entry || totalPages === 0) {
-        return <ErrorMessage message="Capítulo sem páginas ou com dados inválidos." onRetry={onBack} />;
-    }
-
-    if (readingMode === 'paginated' && (page >= totalPages || page < 0)) {
-        setPage(0);
-        return <Spinner />;
-    }
 
     // Otimização: Memoriza a função para evitar recriações
     const goToNextPage = useCallback(() => {
@@ -69,7 +28,7 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
         } else {
             onNextEntry();
         }
-    }, [page, totalPages, onNextEntry]);
+    }, [page, totalPages, onNextEntry, showControlsWithTimeout, setPage]);
 
     // Otimização: Memoriza a função para evitar recriações
     const goToPrevPage = useCallback(() => {
@@ -79,17 +38,60 @@ const ItemViewer = ({ entry, page, setPage, onBack, readingMode, setReadingMode,
         } else {
             onPrevEntry();
         }
-    }, [page, onPrevEntry]);
+    }, [page, onPrevEntry, showControlsWithTimeout, setPage]);
 
+    // Mouse event handler
+    useEffect(() => {
+        const handleMouseMove = () => {
+            showControlsWithTimeout();
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            clearTimeout(controlTimeout.current);
+        };
+    }, [showControlsWithTimeout]);
+
+    // EFEITO DE SALVAMENTO OTIMIZADO
+    useEffect(() => {
+        if (onSaveProgress && page !== lastSavedPage) {
+            const timeoutId = setTimeout(() => {
+                console.warn(`Salvando progresso: Página ${page + 1} do capítulo ${entryKey}`);
+                onSaveProgress(
+                    itemData.slug,
+                    itemData.sourceId,
+                    entryKey,
+                    page
+                ).then(() => {
+                    setLastSavedPage(page);
+                }).catch(console.error);
+            }, 1000);
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [page, itemData, entryKey, lastSavedPage, onSaveProgress]);
+
+    // Keyboard event handler
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (readingMode === 'paginated') {
-                if (e.key === 'ArrowRight') goToNextPage(); else if (e.key === 'ArrowLeft') goToPrevPage();
+                if (e.key === 'ArrowRight') goToNextPage(); 
+                else if (e.key === 'ArrowLeft') goToPrevPage();
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [readingMode, goToNextPage, goToPrevPage]);
+
+    // Early returns após todos os hooks
+    if (!entry || totalPages === 0) {
+        return <ErrorMessage message="Capítulo sem páginas ou com dados inválidos." onRetry={onBack} />;
+    }
+
+    if (readingMode === 'paginated' && (page >= totalPages || page < 0)) {
+        setPage(0);
+        return <Spinner />;
+    }
 
     return (
         <div className="relative">

@@ -1,7 +1,8 @@
+
 import React from 'react';
 import Image from '../common/Image';
 
-const HubHeader = ({ hub }) => {
+const HubHeader = React.memo(({ hub }) => {
     // Adiciona uma guarda de segurança para evitar erros se o hub não for fornecido.
     if (!hub) {
         return null;
@@ -23,6 +24,8 @@ const HubHeader = ({ hub }) => {
             </div>
         </div>
     );
-};
+});
+
+HubHeader.displayName = 'HubHeader';
 
 export default HubHeader;

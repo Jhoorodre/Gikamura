@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useAppContext } from '../../context/AppContext';
 import ItemGridSkeleton from '../item/ItemGridSkeleton';
 import ErrorMessage from './ErrorMessage';

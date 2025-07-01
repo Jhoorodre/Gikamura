@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Button from './Button';
 
 const ErrorMessage = ({ message, onRetry, title = 'Ops! Algo deu errado' }) => {

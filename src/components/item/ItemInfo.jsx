@@ -1,7 +1,8 @@
+
 import React from 'react';
 import Image from '../common/Image';
 
-const ItemInfo = ({ itemData, pinned, onPinToggle }) => {
+const ItemInfo = React.memo(({ itemData, pinned, onPinToggle }) => {
     if (!itemData) return null;
     const coverUrl = itemData.cover?.url;
     const coverAlt = itemData.cover?.alt || itemData.title;
@@ -45,6 +46,8 @@ const ItemInfo = ({ itemData, pinned, onPinToggle }) => {
             </div>
         </div>
     );
-};
+});
+
+ItemInfo.displayName = 'ItemInfo';
 
 export default ItemInfo;

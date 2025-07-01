@@ -1,4 +1,3 @@
-import React from 'react';
 
 const SkeletonCard = () => (
     <div className="media-card animate-pulse">

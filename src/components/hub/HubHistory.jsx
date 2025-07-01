@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { HistoryIcon, TrashIcon } from '../common/Icones';
 import Image from '../common/Image';
 import ConfirmModal from '../common/ConfirmModal';

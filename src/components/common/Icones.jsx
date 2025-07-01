@@ -1,4 +1,3 @@
-import React from 'react';
 
 export const BookOpenIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C12 6.253 11.213 6 10.188 6c-1.25 0-2.475.253-3.375.575C5.75 7.125 5 8.15 5 9.292v11.918c0 .75.5 1.375 1.125 1.375.75 0 1.5-.125 2.25-.375C9.75 21.875 10.875 21.625 12 21.625m0-13C12 6.253 12.787 6 13.812 6c1.25 0 2.475.253 3.375.575C18.25 7.125 19 8.15 19 9.292v11.918c0 .75-.5 1.375-1.125 1.375-.75 0-1.5-.125-2.25-.375C14.25 21.875 13.125 21.625 12 21.625" /></svg>);
 export const ChevronLeftIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>);

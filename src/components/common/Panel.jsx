@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 // O componente principal agora é renomeado para Panel e usa forwardRef para flexibilidade.
 const Panel = forwardRef(({ children, className = '', solid = true, ...props }, ref) => {

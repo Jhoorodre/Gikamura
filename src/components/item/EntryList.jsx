@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 const EntryList = ({ itemData, onSelectEntry, sortOrder, setSortOrder, readChapters = [], isOnline }) => {
     const entryKeys = useMemo(() => {

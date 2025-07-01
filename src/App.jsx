@@ -1,16 +1,14 @@
-import React, { useRef, useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { useRef, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
-import HubLoader from './components/hub/HubLoaderComponent.jsx';
+import { useServiceWorker } from './hooks/useServiceWorker';
 import Widget from 'remotestorage-widget';
-import HubView from './views/HubView';
 import ItemDetailView from './views/ItemDetailView';
 import ReaderView from './views/ReaderView';
 import Spinner from './components/common/Spinner';
 import ErrorMessage from './components/common/ErrorMessage';
 import { remoteStorage } from './services/remotestorage';
 import RedirectPage from './pages/RedirectPage';
-import HubLoaderPage from './pages/HubLoaderPage';
 import { createParticles } from './utils/particles.js';
 import MainContent from './components/common/MainContent';
 import HubRouteHandler from './views/HubRouteHandler';
@@ -22,7 +20,8 @@ function App() {
         conflictMessage,
         isOffline
     } = useAppContext();
-    const location = useLocation();
+    
+    const { isOnline, updateAvailable, applyUpdate } = useServiceWorker();
     const widgetRef = useRef(null);
 
     useEffect(() => {
@@ -36,9 +35,20 @@ function App() {
 
     return (
         <div className="min-h-screen flex flex-col">
-            {isOffline && (
+            {(!isOnline || isOffline) && (
                 <div className="bg-yellow-200 text-yellow-900 text-center py-2 font-semibold z-50">
                     Você está offline. Apenas conteúdo já carregado estará disponível.
+                </div>
+            )}
+            {updateAvailable && (
+                <div className="bg-blue-200 text-blue-900 text-center py-2 font-semibold z-50">
+                    <span>Nova versão disponível! </span>
+                    <button 
+                        onClick={applyUpdate}
+                        className="underline hover:no-underline"
+                    >
+                        Clique para atualizar
+                    </button>
                 </div>
             )}
             <div className="animated-bg"></div>

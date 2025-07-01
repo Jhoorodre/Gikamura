@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback, useState, useEffect } from 'react';
+import { createContext, useContext, useCallback, useState, useEffect } from 'react';
 import api from '../services/api';
 import { useRemoteStorageContext } from './RemoteStorageContext';
 

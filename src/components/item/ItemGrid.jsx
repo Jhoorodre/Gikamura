@@ -1,7 +1,7 @@
-import React from 'react';
+import { memo, createElement } from 'react';
 import Image from '../common/Image';
 
-const ItemGrid = ({ items, onSelectItem, onPinToggle }) => (
+const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
     <div className="grid grid-auto-fill gap-8">
         {items.map((item) => (
             <div 
@@ -26,7 +26,7 @@ const ItemGrid = ({ items, onSelectItem, onPinToggle }) => (
                     {/* Renderiza ícone se existir, senão imagem */}
                     {item.iconComponent ? (
                         <div className="media-card-image flex items-center justify-center bg-slate-800/50">
-                            {React.createElement(item.iconComponent)}
+                            {createElement(item.iconComponent)}
                         </div>
                     ) : (
                         <Image
@@ -44,6 +44,8 @@ const ItemGrid = ({ items, onSelectItem, onPinToggle }) => (
             </div>
         ))}
     </div>
-);
+));
+
+ItemGrid.displayName = 'ItemGrid';
 
 export default ItemGrid;
