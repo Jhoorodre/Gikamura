@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CORS_PROXY_URL } from '../../constants';
 
 const Image = ({ src, alt, className, errorSrc, ...props }) => {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -40,9 +39,8 @@ const Image = ({ src, alt, className, errorSrc, ...props }) => {
     const handleLoad = () => setIsLoaded(true);
     const handleError = () => setHasError(true);
 
-    // Decide qual URL usar e se deve aplicar o proxy
-    const sourceToRender = hasError && errorSrc ? errorSrc : src;
-    const finalSrc = !hasError && src ? `${CORS_PROXY_URL}${encodeURIComponent(src)}` : sourceToRender;
+    // Usa o src original diretamente, sem proxy
+    const finalSrc = hasError && errorSrc ? errorSrc : src;
 
     // Se não houver src, renderiza um placeholder
     if (!src) {

@@ -13,10 +13,13 @@ const getSortedArray = (obj) => {
   return Object.values(obj).sort((a, b) => (b[SORT_KEY] || 0) - (a[SORT_KEY] || 0));
 };
 
+let syncExecuted = false;
+
 /**
  * Garante que o cache local não tenha objetos inválidos.
  */
 const sync = async () => {
+  if (syncExecuted) return;
   const rs = remoteStorage[RS_PATH];
   if (!rs) return;
 
@@ -25,10 +28,11 @@ const sync = async () => {
 
   for (const item of Object.values(allSeries)) {
     if (!item || !item[SORT_KEY]) {
-      console.warn(`[API Sync] Removendo série inválida: ${item.slug}`);
-      await rs.removeSeries(item.slug, item.source);
+      console.warn(`[API Sync] Removendo série inválida: ${item?.slug}`);
+      await rs.removeSeries(item?.slug, item?.source);
     }
   }
+  syncExecuted = true;
 };
 
 const api = {
@@ -36,7 +40,6 @@ const api = {
   maxHistory: MAX_HISTORY_ITEMS,
 
   async pushSeries(slug, coverUrl, source, url, title) {
-    await sync();
     const rs = remoteStorage[RS_PATH];
     const allSeries = getSortedArray(await rs.getAllSeries());
     const existingSeries = allSeries.find(e => e.slug === slug && e.source === source);
@@ -107,13 +110,11 @@ const api = {
   unpinSeries: (slug, source) => remoteStorage[RS_PATH]?.editSeries(slug, source, { pinned: false }),
 
   async getAllPinnedSeries() {
-    await sync();
     const all = getSortedArray(await remoteStorage[RS_PATH]?.getAllSeries());
     return all.filter(e => e.pinned);
   },
 
   async getAllUnpinnedSeries() {
-    await sync();
     const all = getSortedArray(await remoteStorage[RS_PATH]?.getAllSeries());
     return all.filter(e => !e.pinned);
   },
@@ -131,5 +132,8 @@ const api = {
 if (typeof window !== 'undefined') {
   window.gikaApi = api; // Expondo a nova API para depuração
 }
+
+// Executa sync uma vez ao carregar a aplicação
+sync();
 
 export default api;

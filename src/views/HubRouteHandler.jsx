@@ -5,6 +5,7 @@ import HubView from './HubView';
 import ItemGridSkeleton from '../components/item/ItemGridSkeleton';
 import ErrorMessage from '../components/common/ErrorMessage';
 import HubLoader from '../components/hub/HubLoaderComponent';
+import { decodeUrl } from '../utils/encoding';
 
 function HubRouteHandler() {
     const { encodedUrl } = useParams();
@@ -13,7 +14,7 @@ function HubRouteHandler() {
     useEffect(() => {
         if (encodedUrl) {
             try {
-                const decodedUrl = atob(encodedUrl);
+                const decodedUrl = decodeUrl(encodedUrl);
                 loadHub(decodedUrl);
             } catch (e) {
                 console.error("Erro ao decodificar a URL do hub:", e);
@@ -26,7 +27,7 @@ function HubRouteHandler() {
     }
 
     if (hubError) {
-        return <ErrorMessage message={hubError} onRetry={() => loadHub(atob(encodedUrl))} />;
+        return <ErrorMessage message={hubError} onRetry={() => loadHub(decodeUrl(encodedUrl))} />;
     }
 
     if (currentHubData) {

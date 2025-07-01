@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import ItemGrid from '../components/item/ItemGrid';
 import { BookOpenIcon } from '../components/common/Icones';
+import { encodeUrl } from '../utils/encoding';
 
 const LibraryPage = () => {
     const { 
@@ -22,7 +23,7 @@ const LibraryPage = () => {
             return;
         }
         const uniqueId = `${item.sourceId}:${item.slug}`;
-        const encodedId = btoa(uniqueId);
+        const encodedId = encodeUrl(uniqueId);
         selectItem(item, item.sourceId);
         navigate(`/series/${encodedId}`);
     };

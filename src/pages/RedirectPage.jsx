@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { decodeUrl } from '../utils/encoding';
 
 /**
  * Esta página recebe uma URL codificada em Base64 como parâmetro,
@@ -14,7 +15,7 @@ function RedirectPage() {
     if (base64Url) {
       try {
         // Decodifica a string Base64 para a URL original
-        const decodedUrl = atob(base64Url);
+        const decodedUrl = decodeUrl(base64Url);
 
         // Validação básica para garantir que é uma URL segura antes de redirecionar
         if (decodedUrl.startsWith('http://') || decodedUrl.startsWith('https://')) {

@@ -1,4 +1,5 @@
 import { RS_PATH } from "./rs-config.js";
+import { encodeUrl } from '../../utils/encoding';
 
 const SERIES_TYPE = "series";
 const HUB_TYPE = "hub";
@@ -38,7 +39,7 @@ export const Model = {
 
     // --- Funções Auxiliares ---
     const getSeriesKey = (slug, source) => `${source}-${slug}`;
-    const getHubKey = (url) => btoa(url);
+    const getHubKey = (url) => encodeUrl(url);
 
     // --- Métodos Exportados (API de Baixo Nível) ---
     return {

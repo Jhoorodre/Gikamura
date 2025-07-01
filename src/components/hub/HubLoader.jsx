@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import '../../styles/hub-loader.css';
 import HubHistory from './HubHistory';
+import { encodeUrl } from '../../utils/encoding';
 
 const HubLoader = ({ onLoadHub, loading }) => {
     const [url, setUrl] = useState("https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/main/hub_tog.json");
@@ -19,7 +20,7 @@ const HubLoader = ({ onLoadHub, loading }) => {
 
         if (targetUrl) {
             try {
-                const encodedHubUrl = btoa(targetUrl);
+                const encodedHubUrl = encodeUrl(targetUrl);
                 // Exemplo: http://localhost:5173/#/?hub=BASE64_STRING
                 const newAppUrl = `${window.location.origin}/#/?hub=${encodedHubUrl}`;
                 window.open(newAppUrl, '_blank', 'noopener,noreferrer');

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
+import { encodeUrl, decodeUrl } from '../utils/encoding';
 const ItemViewer = React.lazy(() => import('../components/item/ItemViewer.jsx'));
 
 const ReaderView = () => {
@@ -15,8 +16,8 @@ const ReaderView = () => {
     const [readingMode, setReadingMode] = useState('paginated');
 
     // Decodifica os parâmetros
-    const entryKey = atob(encodedEntryKey);
-    const [hubId, slug] = atob(encodedSeriesId).split(':');
+    const entryKey = decodeUrl(encodedEntryKey);
+    const [hubId, slug] = decodeUrl(encodedSeriesId).split(':');
     const itemFromHub = currentHubData?.series.find(i => i.slug === slug);
 
     useEffect(() => {
@@ -53,14 +54,14 @@ const ReaderView = () => {
     const onNextEntry = () => {
         if (!isLastEntry) {
             const nextEntryKey = entryKeys[currentIndex + 1];
-            navigate(`/read/${encodedSeriesId}/${btoa(nextEntryKey)}`);
+            navigate(`/read/${encodedSeriesId}/${encodeUrl(nextEntryKey)}`);
         }
     };
 
     const onPrevEntry = () => {
         if (!isFirstEntry) {
             const prevEntryKey = entryKeys[currentIndex - 1];
-            navigate(`/read/${encodedSeriesId}/${btoa(prevEntryKey)}`);
+            navigate(`/read/${encodedSeriesId}/${encodeUrl(prevEntryKey)}`);
         }
     };
     

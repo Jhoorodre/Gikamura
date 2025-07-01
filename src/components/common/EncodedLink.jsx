@@ -1,4 +1,5 @@
 import React from 'react';
+import { encodeUrl } from '../../utils/encoding';
 
 /**
  * Um componente de link que abre uma nova aba usando uma URL de destino
@@ -11,13 +12,10 @@ import React from 'react';
  */
 function EncodedLink({ href, className, children }) {
   // Codifica a URL de destino para Base64
-  const encodedUrl = btoa(href);
-
-  // Monta a URL interna que aponta para o componente de redirecionamento
-  const internalRedirectUrl = `/redirect/${encodedUrl}`;
+  const encodedUrl = encodeUrl(href);
 
   return (
-    <a href={internalRedirectUrl} target="_blank" rel="noopener noreferrer" className={className}>
+    <a href={encodedUrl} target="_blank" rel="noopener noreferrer" className={className}>
       {children}
     </a>
   );

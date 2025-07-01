@@ -6,6 +6,7 @@ import EntryList from '../components/item/EntryList';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Button from '../components/common/Button';
+import { decodeUrl, encodeUrl } from '../utils/encoding';
 
 const ItemDetailView = () => {
     // Recebe o ID codificado da URL
@@ -27,7 +28,7 @@ const ItemDetailView = () => {
     useEffect(() => {
         if (!currentHubData) return;
         // Decodifica o ID para obter o hubId e o slug
-        const decodedId = atob(encodedId);
+        const decodedId = decodeUrl(encodedId);
         const [hubId, slug] = decodedId.split(':');
         const itemFromHub = currentHubData.series.find(i => i.slug === slug);
         if (itemFromHub) {
@@ -50,7 +51,7 @@ const ItemDetailView = () => {
     
     if (itemError) {
         return <ErrorMessage message={itemError} onRetry={() => {
-            const [hubId, slug] = atob(encodedId).split(':');
+            const [hubId, slug] = decodeUrl(encodedId).split(':');
             const itemToRetry = currentHubData?.series.find(i => i.slug === slug);
             if (itemToRetry && hubId) selectItem(itemToRetry, hubId);
         }} />;
@@ -73,7 +74,7 @@ const ItemDetailView = () => {
                 <EntryList
                     itemData={selectedItemData}
                     // Ao selecionar um capítulo, cria a nova URL codificada para o leitor
-                    onSelectEntry={entryKey => navigate(`/read/${encodedId}/${btoa(entryKey)}`)}
+                    onSelectEntry={entryKey => navigate(`/read/${encodedId}/${encodeUrl(entryKey)}`)}
                     readChapters={selectedItemData.readChapterKeys}
                     sortOrder={sortOrder}
                     setSortOrder={setSortOrder}

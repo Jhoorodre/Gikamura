@@ -4,10 +4,11 @@ import { useAppContext } from '../../context/AppContext';
 import '../../styles/hub-loader.css';
 import HubHistory from './HubHistory';
 import { BookOpenIcon } from '../common/Icones';
+import { encodeUrl } from '../../utils/encoding';
 
 // Definimos o componente como uma constante
 const HubLoaderComponent = ({ onLoadHub, loading }) => {
-    const [url, setUrl] = useState("https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/main/hub_tog.json");
+    const [url, setUrl] = useState("https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/refs/heads/main/hub_tog.json");
     const [error, setError] = useState('');
     const { savedHubs, removeHub, isConnected } = useAppContext();
     const navigate = useNavigate();
@@ -23,7 +24,7 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
 
         if (targetUrl) {
             try {
-                const encodedHubUrl = btoa(targetUrl);
+                const encodedHubUrl = encodeUrl(targetUrl);
                 navigate(`/hub/${encodedHubUrl}`);
             } catch (error) {
                 console.error("Falha ao codificar a URL do hub:", error);

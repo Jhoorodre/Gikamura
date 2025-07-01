@@ -11,7 +11,7 @@ const ItemGrid = ({ items, onSelectItem, onPinToggle }) => (
                 {/* O botão de fixar não deve aparecer no card estático */}
                 {onPinToggle && !item.isStatic && (
                     <button
-                        className={`absolute top-2 right-2 z-10 btn btn-xs btn-circle ${item.pinned ? 'btn-warning' : 'btn-ghost'}`}
+                        className={`absolute top-2 right-2 z-10 btn btn-sm btn-circle ${item.pinned ? 'btn-warning' : 'btn-ghost'}`}
                         aria-label={item.pinned ? 'Desafixar dos favoritos' : 'Fixar nos favoritos'}
                         title={item.pinned ? 'Desafixar dos favoritos' : 'Fixar nos favoritos'}
                         onClick={e => {

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import Spinner from '../components/common/Spinner';
+import { decodeUrl } from '../utils/encoding';
 
 function HubLoaderPage() {
     const { encodedUrl } = useParams();
@@ -12,7 +13,7 @@ function HubLoaderPage() {
         const processUrl = async () => {
             if (encodedUrl) {
                 try {
-                    const decodedUrl = atob(encodedUrl);
+                    const decodedUrl = decodeUrl(encodedUrl);
                     await loadHub(decodedUrl);
                     navigate('/', { replace: true });
                 } catch (error) {
