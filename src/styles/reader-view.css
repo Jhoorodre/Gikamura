@@ -1,0 +1,222 @@
+/* ========================================
+   READER VIEW - ESTILOS LIMPOS E OTIMIZADOS
+   ======================================== */
+
+/* Scrollbar customizada */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thumb-gray-600 {
+  scrollbar-color: #4b5563 transparent;
+}
+
+.scrollbar-track-gray-800 {
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+/* Webkit scrollbar para navegadores baseados em Chromium */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Animações customizadas */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Gradientes e efeitos visuais */
+.bg-gradient-mesh {
+  background: 
+    radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at top right, rgba(239, 68, 68, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom left, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+    linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+}
+
+/* Otimizações de performance */
+.chapter-card {
+  will-change: transform, box-shadow;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.chapter-card:hover {
+  transform: translateY(-2px) scale(1.005);
+}
+
+/* Estados de focus para acessibilidade */
+.focus-ring:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Melhorias de contraste */
+.text-contrast-high {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.text-contrast-medium {
+  color: #e5e7eb;
+}
+
+.text-contrast-low {
+  color: #9ca3af;
+}
+
+/* Sombras customizadas */
+.shadow-glow {
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.shadow-glow-blue {
+  box-shadow: 
+    0 4px 6px -1px rgba(59, 130, 246, 0.2),
+    0 2px 4px -1px rgba(59, 130, 246, 0.1),
+    0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+.shadow-glow-red {
+  box-shadow: 
+    0 4px 6px -1px rgba(239, 68, 68, 0.2),
+    0 2px 4px -1px rgba(239, 68, 68, 0.1),
+    0 0 0 1px rgba(239, 68, 68, 0.1);
+}
+
+/* Backdrop blur otimizado */
+.backdrop-blur-optimized {
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+}
+
+/* Estados de loading para imagens */
+.image-loading {
+  background: linear-gradient(
+    90deg,
+    rgba(31, 31, 31, 0.8) 0%,
+    rgba(55, 55, 55, 0.8) 50%,
+    rgba(31, 31, 31, 0.8) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Responsividade aprimorada */
+@media (max-width: 640px) {
+  .chapter-card:hover {
+    transform: none;
+  }
+  
+  .shadow-glow {
+    box-shadow: 
+      0 2px 4px -1px rgba(0, 0, 0, 0.2),
+      0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Print styles */
+@media print {
+  .bg-gradient-mesh,
+  .backdrop-blur-optimized {
+    background: white !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  .text-contrast-high,
+  .text-contrast-medium {
+    color: black !important;
+    text-shadow: none !important;
+  }
+  
+  .shadow-glow,
+  .shadow-glow-blue,
+  .shadow-glow-red {
+    box-shadow: none !important;
+  }
+}
+
+/* Modo de alto contraste */
+@media (prefers-contrast: high) {
+  .text-contrast-medium {
+    color: #ffffff;
+  }
+  
+  .text-contrast-low {
+    color: #d1d5db;
+  }
+  
+  .border-gray-700\/50 {
+    border-color: #6b7280 !important;
+  }
+}
+
+/* Redução de movimento para acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .animate-scale-in,
+  .chapter-card,
+  .image-loading {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .chapter-card:hover {
+    transform: none !important;
+  }
+}

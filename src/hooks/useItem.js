@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchJSONWithCache } from '../services/networkService.js';
 import api from '../services/api.js';
+import { remoteStorage } from '../services/remotestorage.js';
 
 export const useItem = () => {
     const [selection, setSelection] = useState(null);
@@ -24,14 +25,18 @@ export const useItem = () => {
                 const seriesDetails = await fetchJSONWithCache(itemFromHub.data.url);
                 const readChapters = await api.getReadChapters(itemFromHub.slug, hubId);
                 
-                // Atualiza histórico em background
-                api.pushSeries(
-                    itemFromHub.slug,
-                    itemFromHub.cover,
-                    hubId,
-                    itemFromHub.data.url,
-                    seriesDetails.title
-                ).catch(err => console.warn("Falha ao atualizar o histórico da série:", err));
+                // Atualiza histórico em background (somente se conectado)
+                if (remoteStorage.connected) {
+                    api.pushSeries(
+                        itemFromHub.slug,
+                        typeof itemFromHub.cover === 'string' ? itemFromHub.cover : itemFromHub.cover?.url || '',
+                        hubId,
+                        itemFromHub.data.url,
+                        seriesDetails.title
+                    ).catch(err => console.warn("Falha ao atualizar o histórico da série:", err));
+                } else {
+                    console.log('📚 [useItem] RemoteStorage não conectado - não salvando histórico');
+                }
                 
                 return {
                     ...itemFromHub,
@@ -61,7 +66,7 @@ export const useItem = () => {
         },
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
         staleTime: 2 * 60 * 1000, // 2 minutos
-        cacheTime: 5 * 60 * 1000, // 5 minutos
+        gcTime: 5 * 60 * 1000, // 5 minutos
     });
 
     const selectItem = useCallback((itemFromHub, hubId) => {

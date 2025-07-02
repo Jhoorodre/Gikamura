@@ -74,7 +74,7 @@ export const AppProvider = ({ children }) => {
         retry: false, // TEMPORÁRIO: Desabilitar retry para evitar loop infinito
         retryDelay: false,
         staleTime: 5 * 60 * 1000, // 5 minutos
-        cacheTime: 10 * 60 * 1000, // 10 minutos
+        gcTime: 10 * 60 * 1000, // 10 minutos
         refetchOnWindowFocus: false, // Evitar refetch automático
         refetchOnMount: false, // Evitar refetch no mount
         refetchOnReconnect: false, // Evitar refetch na reconexão

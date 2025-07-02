@@ -10,8 +10,8 @@ const remoteStorage = new RemoteStorage({
   disableFeatures: ["IndexedDB"],
 });
 
-remoteStorage.access.claim(RS_PATH, "rw");
-remoteStorage.caching.enable(`/${RS_PATH}/`);
+remoteStorage.access.claim(RS_PATH.BASE, "rw");
+remoteStorage.caching.enable(`/${RS_PATH.BASE}/`);
 
 /**
  * Limpa o cache local de entradas órfãs ou corrompidas.

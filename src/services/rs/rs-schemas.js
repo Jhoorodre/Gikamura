@@ -3,12 +3,13 @@ import { encodeUrl } from '../../utils/encoding';
 
 const SERIES_TYPE = "series";
 const HUB_TYPE = "hub";
+const PROGRESS_TYPE = "progress";
 
 const SERIES_PATH_BASE = "series/";
 const HUB_PATH_BASE = "hubs/";
 
 export const Model = {
-  name: RS_PATH,
+  name: RS_PATH.BASE,
   builder: (privateClient) => {
     // --- Definição dos Schemas ---
     privateClient.declareType(SERIES_TYPE, {
@@ -35,6 +36,25 @@ export const Model = {
         timestamp: { type: "number" },
       },
       required: ["url", "title", "timestamp"],
+    });
+
+    privateClient.declareType(PROGRESS_TYPE, {
+      type: "object",
+      properties: {
+        lastChapter: { type: "string" },
+        lastUpdated: { type: "number" },
+      },
+      required: ["lastChapter", "lastUpdated"],
+      additionalProperties: {
+        type: "object",
+        properties: {
+          pageIndex: { type: "number" },
+          totalPages: { type: "number" },
+          lastRead: { type: "number" },
+          completed: { type: "boolean" }
+        },
+        required: ["pageIndex", "totalPages", "lastRead", "completed"]
+      }
     });
 
     // --- Funções Auxiliares ---
@@ -84,9 +104,8 @@ export const Model = {
         },
 
         getAllSeries: () => {
-          // Cache de 60 segundos para leituras em massa quando conectado
-          const maxAge = privateClient.storage.connected ? 60000 : false;
-          return privateClient.getAll(SERIES_PATH_BASE, maxAge);
+          // Não usar maxAge por incompatibilidade com versão atual do RemoteStorage
+          return privateClient.getAll(SERIES_PATH_BASE);
         },
 
         // --- Métodos de Hubs ---

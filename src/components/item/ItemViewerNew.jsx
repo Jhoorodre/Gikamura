@@ -130,8 +130,12 @@ const ItemViewer = ({
             const timeoutId = setTimeout(() => {
                 console.log(`💾 Salvando progresso: Página ${page + 1} do capítulo ${entryKey}`);
                 try {
-                    // Passa apenas a página atual - o ChapterReaderView cuidará dos outros parâmetros
-                    const result = onSaveProgress(page);
+                    const result = onSaveProgress(
+                        itemData?.slug || 'manga',
+                        itemData?.sourceId || 'reader',
+                        entryKey,
+                        page
+                    );
                     
                     if (result && typeof result.then === 'function') {
                         result.then(() => {
@@ -167,39 +171,61 @@ const ItemViewer = ({
     }
 
     return (
-        <div className={`${isFullscreen ? 'fixed inset-0 z-50' : ''} bg-black min-h-screen`}>
-            {/* Header minimalista */}
-            <div className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                <div className="flex items-center justify-between p-3 bg-black/80 backdrop-blur-sm">
-                    {onBack && (
-                        <Button
-                            onClick={onBack}
-                            variant="ghost"
-                            className="text-gray-400 hover:text-white px-2 py-1 text-sm"
-                        >
-                            <ChevronLeftIcon className="w-4 h-4 mr-1" />
-                            Voltar
-                        </Button>
-                    )}
-                    
-                    <div className="flex items-center gap-4 text-sm text-white">
-                        <span>{page + 1} / {totalPages}</span>
+        <div className={`reader-container ${isFullscreen ? 'fullscreen' : ''}`}>
+            {/* Controles superiores */}
+            <div className={`reader-header ${showControls ? 'visible' : 'hidden'}`}>
+                <div className="flex items-center justify-between p-4 bg-gray-900/90 backdrop-blur-sm">
+                    <div className="flex items-center gap-4">
+                        {onBack && (
+                            <Button
+                                onClick={onBack}
+                                variant="ghost"
+                                size="sm"
+                                className="text-gray-400 hover:text-white"
+                            >
+                                <ChevronLeftIcon className="w-5 h-5 mr-2" />
+                                Voltar
+                            </Button>
+                        )}
+                        
+                        <div className="text-white">
+                            <h1 className="font-semibold">
+                                {entry?.title || 'Lendo capítulo'}
+                            </h1>
+                            <p className="text-sm text-gray-400">
+                                Página {page + 1} de {totalPages}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
                         <Button
                             onClick={() => setReadingMode(readingMode === 'paginated' ? 'scroll' : 'paginated')}
                             variant="ghost"
-                            className="text-gray-400 hover:text-white px-2 py-1 text-xs"
+                            size="sm"
+                            className="text-gray-400 hover:text-white"
                         >
                             {readingMode === 'paginated' ? 'Scroll' : 'Páginas'}
                         </Button>
+                        
+                        <Button
+                            onClick={() => setReadingDirection(readingDirection === 'ltr' ? 'rtl' : 'ltr')}
+                            variant="ghost"
+                            size="sm"
+                            className="text-gray-400 hover:text-white"
+                        >
+                            {readingDirection === 'ltr' ? 'LTR' : 'RTL'}
+                        </Button>
+                        
+                        <Button
+                            onClick={toggleFullscreen}
+                            variant="ghost"
+                            size="sm"
+                            className="text-gray-400 hover:text-white"
+                        >
+                            {isFullscreen ? <ShrinkIcon className="w-5 h-5" /> : <ExpandIcon className="w-5 h-5" />}
+                        </Button>
                     </div>
-                    
-                    <Button
-                        onClick={toggleFullscreen}
-                        variant="ghost"
-                        className="text-gray-400 hover:text-white px-2 py-1"
-                    >
-                        {isFullscreen ? <ShrinkIcon className="w-4 h-4" /> : <ExpandIcon className="w-4 h-4" />}
-                    </Button>
                 </div>
             </div>
 
@@ -207,22 +233,21 @@ const ItemViewer = ({
             <div className="reader-content">
                 {readingMode === 'paginated' ? (
                     // Modo paginado
-                    <div className="relative flex items-center justify-center min-h-screen">
+                    <div className="paginated-reader">
                         {/* Área de navegação esquerda */}
                         <button
                             type="button"
                             onClick={readingDirection === 'rtl' ? goToNextPage : goToPrevPage}
-                            className="absolute left-0 top-0 w-1/3 h-full bg-transparent hover:bg-white/5 transition-colors z-20 cursor-w-resize"
+                            className="reader-nav-area reader-nav-left"
                             aria-label="Página Anterior"
-                            disabled={page === 0 && isFirstEntry}
                         />
 
                         {/* Imagem principal */}
-                        <div className="flex items-center justify-center p-4 max-w-full max-h-screen">
+                        <div className="reader-page-container">
                             <Image
                                 src={pages[page]}
                                 alt={`Página ${page + 1}`}
-                                className="max-w-full max-h-[calc(100vh-2rem)] object-contain"
+                                className="reader-page-image"
                                 loading="eager"
                                 errorSrc="https://placehold.co/800x1200/1e293b/94a3b8?text=Erro+ao+Carregar"
                             />
@@ -232,22 +257,21 @@ const ItemViewer = ({
                         <button
                             type="button"
                             onClick={readingDirection === 'rtl' ? goToPrevPage : goToNextPage}
-                            className="absolute right-0 top-0 w-1/3 h-full bg-transparent hover:bg-white/5 transition-colors z-20 cursor-e-resize"
+                            className="reader-nav-area reader-nav-right"
                             aria-label="Próxima Página"
-                            disabled={page === totalPages - 1 && isLastEntry}
                         />
                     </div>
                 ) : (
                     // Modo scroll
-                    <div className="pt-16 pb-4">
-                        <div className="max-w-4xl mx-auto px-4">
+                    <div className="scrolling-reader">
+                        <div className="max-w-4xl mx-auto space-y-1">
                             {pages.map((url, index) => (
-                                <div key={index} className="mb-2">
+                                <div key={index} className="scroll-page-container">
                                     <Image 
                                         src={url} 
                                         alt={`Página ${index + 1}`} 
-                                        className="w-full max-w-full"
-                                        loading={Math.abs(index - page) <= 3 ? "eager" : "lazy"}
+                                        className="w-full"
+                                        loading={index <= page + 2 ? "eager" : "lazy"}
                                     />
                                 </div>
                             ))}
@@ -255,6 +279,45 @@ const ItemViewer = ({
                     </div>
                 )}
             </div>
+
+            {/* Controles inferiores */}
+            {readingMode === 'paginated' && (
+                <div className={`reader-footer ${showControls ? 'visible' : 'hidden'}`}>
+                    <div className="flex items-center justify-between p-4 bg-gray-900/90 backdrop-blur-sm">
+                        <div className="flex items-center gap-4">
+                            <Button
+                                onClick={goToPrevPage}
+                                disabled={page === 0 && isFirstEntry}
+                                variant="ghost"
+                                size="sm"
+                                className="text-gray-400 hover:text-white disabled:opacity-50"
+                            >
+                                <ChevronLeftIcon className="w-5 h-5 mr-2" />
+                                Anterior
+                            </Button>
+                        </div>
+
+                        <div className="text-center text-gray-400">
+                            <span className="text-sm">
+                                {page + 1} / {totalPages}
+                            </span>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <Button
+                                onClick={goToNextPage}
+                                disabled={page === totalPages - 1 && isLastEntry}
+                                variant="ghost"
+                                size="sm"
+                                className="text-gray-400 hover:text-white disabled:opacity-50"
+                            >
+                                Próxima
+                                <ChevronRightIcon className="w-5 h-5 ml-2" />
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

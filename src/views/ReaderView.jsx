@@ -1,18 +1,21 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useReader } from '../hooks/useReader';
 import { useAppContext } from '../context/AppContext';
 import { decodeUrl, encodeUrl } from '../utils/encoding';
-import { BookOpenIcon, PlayIcon, ClockIcon, CheckIcon, ChevronLeftIcon } from '../components/common/Icones';
+import { BookOpenIcon, PlayIcon, ClockIcon, ChevronLeftIcon, EyeIcon, SortAscendingIcon, SortDescendingIcon } from '../components/common/Icones';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Button from '../components/common/Button';
 import Image from '../components/common/Image';
 
+const INITIAL_CHAPTERS_DISPLAY_COUNT = 20;
+
 const ReaderView = () => {
     const { encodedUrl } = useParams();
     const navigate = useNavigate();
     const [showAllChapters, setShowAllChapters] = useState(false);
+    const [sortOrder, setSortOrder] = useState('desc'); // 'asc' ou 'desc'
     
     const { clearSelectedItem } = useAppContext();
     
@@ -44,26 +47,36 @@ const ReaderView = () => {
         }
     }, [encodedUrl, loadReader]);
 
-    // Lista de capítulos com limite
+    // Lista de capítulos com limite e ordenação
     const displayedChapters = useMemo(() => {
         if (!readerData?.chapters) return [];
         
-        const chapterKeys = Object.keys(readerData.chapters).sort();
+        const chapterKeys = Object.keys(readerData.chapters).sort((a, b) => {
+            // Ordena numericamente quando possível
+            const numA = parseInt(a);
+            const numB = parseInt(b);
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return sortOrder === 'asc' ? numA - numB : numB - numA;
+            }
+            // Fallback para ordenação alfabética
+            return sortOrder === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
+        });
+        
         const chapters = chapterKeys.map(key => ({
             id: key,
             ...readerData.chapters[key],
             isRead: false, // TODO: implementar sistema de progresso
-        })).reverse(); // Mais recentes primeiro
+        }));
         
-        return showAllChapters ? chapters : chapters.slice(0, 20);
-    }, [readerData?.chapters, showAllChapters]);
+        return showAllChapters ? chapters : chapters.slice(0, INITIAL_CHAPTERS_DISPLAY_COUNT);
+    }, [readerData?.chapters, showAllChapters, sortOrder]);
 
-    const handleReadChapter = (chapterId) => {
+    const handleReadChapter = useCallback((chapterId) => {
         console.log('🎯 Iniciando leitura do capítulo:', chapterId);
         selectChapter(chapterId);
         // Navega para visualização do capítulo específico
         navigate(`/read/${encodedUrl}/${encodeUrl(chapterId)}`);
-    };
+    }, [navigate, encodedUrl, selectChapter]);
 
     const handleMarkAsRead = async (chapterId) => {
         await markChapterAsRead(chapterId);
@@ -84,23 +97,70 @@ const ReaderView = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-                <Spinner size="lg" text="Carregando manga..." />
+            <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center p-4">
+                <div className="text-center max-w-md w-full">
+                    <div className="mb-6">
+                        <Spinner size="lg" />
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">Carregando manga...</h2>
+                    <p className="text-gray-400 text-sm sm:text-base">Aguarde enquanto buscamos as informações da obra</p>
+                </div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
-                <div className="max-w-md w-full">
-                    <ErrorMessage 
-                        message={`Erro ao carregar manga: ${error.message}`}
-                    />
-                    <div className="mt-4 text-center">
+            <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center p-6">
+                <div className="max-w-lg w-full text-center">
+                    <div className="bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6 sm:p-8">
+                        <div className="mb-6">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg className="w-8 h-8 sm:w-10 sm:h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Erro ao carregar</h2>
+                            <ErrorMessage 
+                                message={`Não foi possível carregar o manga: ${error.message}`}
+                            />
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                            <Button
+                                onClick={() => window.location.reload()}
+                                variant="primary"
+                                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3"
+                            >
+                                Tentar novamente
+                            </Button>
+                            <Button
+                                onClick={() => navigate(-1)}
+                                variant="secondary"
+                                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3"
+                            >
+                                Voltar
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!readerData) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center p-6">
+                <div className="text-center max-w-md w-full">
+                    <div className="bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6 sm:p-8">
+                        <div className="mb-6">
+                            <BookOpenIcon className="w-16 h-16 sm:w-20 sm:h-20 text-gray-600 opacity-50 mx-auto mb-4" />
+                            <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">Manga não encontrado</h2>
+                            <p className="text-gray-400 text-sm sm:text-base">Não foi possível encontrar os dados desta obra.</p>
+                        </div>
                         <Button
                             onClick={() => navigate(-1)}
-                            variant="outline"
+                            variant="secondary"
+                            className="w-full bg-gray-700 hover:bg-gray-600 text-white py-3"
                         >
                             Voltar
                         </Button>
@@ -110,186 +170,154 @@ const ReaderView = () => {
         );
     }
 
-    if (!readerData) {
-        return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-                <div className="text-center text-gray-400">
-                    <BookOpenIcon className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p>Nenhum manga carregado</p>
+    return (
+        <div className="min-h-screen bg-gray-950">
+            {/* Header minimalista */}
+            <div className="border-b border-gray-800 sticky top-0 z-20 bg-gray-950/95 backdrop-blur-sm">
+                <div className="max-w-4xl mx-auto px-4 py-3">
+                    <Button
+                        onClick={() => navigate('/')}
+                        variant="ghost"
+                        className="text-gray-400 hover:text-white px-2 py-1"
+                    >
+                        <ChevronLeftIcon className="w-4 h-4 mr-1" />
+                        Hub
+                    </Button>
                 </div>
             </div>
-        );
-    }
 
-    return (
-        <div className="min-h-screen bg-gray-900 text-white">
-            {/* Header da obra */}
-            <div className="relative">
-                {/* Background com capa */}
-                {readerData.cover && (
-                    <div className="absolute inset-0 h-96">
-                        <Image
-                            src={readerData.cover}
-                            alt={readerData.title}
-                            className="w-full h-full object-cover opacity-20"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent" />
-                    </div>
-                )}
-
-                <div className="relative z-10 container mx-auto px-6 pt-8 pb-12">
-                    {/* Botão voltar */}
-                    <Button
-                        onClick={() => navigate(-1)}
-                        variant="ghost"
-                        size="sm"
-                        className="mb-6 flex items-center gap-2 text-gray-300 hover:text-white"
-                    >
-                        <ChevronLeftIcon className="w-4 h-4" />
-                        Voltar ao Hub
-                    </Button>
-
-                    <div className="flex flex-col lg:flex-row gap-8">
+            <div className="max-w-4xl mx-auto px-4 py-6">
+                {/* Seção principal */}
+                <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-6 mb-6">
+                    <div className="flex gap-6">
                         {/* Capa da obra */}
                         <div className="flex-shrink-0">
-                            <div className="w-48 h-72 mx-auto lg:mx-0">
+                            <div className="w-32 h-48 relative">
                                 <Image
                                     src={readerData.cover}
                                     alt={readerData.title}
-                                    className="w-full h-full object-cover rounded-lg shadow-2xl"
+                                    className="w-full h-full object-cover rounded-lg"
                                 />
                             </div>
                         </div>
 
                         {/* Informações da obra */}
-                        <div className="flex-1 space-y-4">
+                        <div className="flex-1 space-y-3">
                             <div>
-                                <h1 className="text-3xl lg:text-4xl font-bold mb-2">
+                                <h1 className="text-2xl font-bold text-white mb-2">
                                     {readerData.title}
                                 </h1>
                                 
-                                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
-                                    {readerData.author && (
-                                        <span>Por: {readerData.author}</span>
-                                    )}
-                                    {readerData.artist && readerData.artist !== readerData.author && (
-                                        <span>Arte: {readerData.artist}</span>
-                                    )}
-                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                        readerData.status === 'Em Andamento' ? 'bg-green-900 text-green-300' :
-                                        readerData.status === 'Completo' ? 'bg-blue-900 text-blue-300' :
-                                        'bg-gray-700 text-gray-300'
-                                    }`}>
-                                        {readerData.status}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Estatísticas */}
-                            <div className="flex flex-wrap gap-6 text-sm">
-                                <div className="flex items-center gap-2">
-                                    <BookOpenIcon className="w-4 h-4" />
-                                    <span>{displayedChapters.length} capítulos</span>
-                                </div>
-                            </div>
-
-                            {/* Botão principal de leitura */}
-                            <div className="flex gap-4">
-                                {displayedChapters.length > 0 && (
-                                    <Button
-                                        onClick={() => handleReadChapter(displayedChapters[displayedChapters.length - 1].id)}
-                                        size="lg"
-                                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-                                    >
-                                        <PlayIcon className="w-5 h-5" />
-                                        Começar a Ler
-                                    </Button>
+                                {readerData.author && (
+                                    <p className="text-gray-400 text-sm">
+                                        por {readerData.author}
+                                    </p>
                                 )}
                             </div>
 
                             {/* Descrição */}
                             {readerData.description && (
-                                <div className="prose prose-invert max-w-none">
-                                    <p className="text-gray-300 leading-relaxed whitespace-pre-line">
-                                        {readerData.description}
-                                    </p>
+                                <div className="bg-gray-800/30 rounded-lg p-3 border border-gray-700/30">
+                                    <div className="text-gray-300 text-sm leading-relaxed max-h-24 overflow-y-auto">
+                                        {readerData.description.split('\n').map((paragraph, index) => (
+                                            paragraph.trim() && (
+                                                <p key={index} className="mb-2 last:mb-0">
+                                                    {paragraph.trim()}
+                                                </p>
+                                            )
+                                        ))}
+                                    </div>
                                 </div>
+                            )}
+
+                            <div className="flex items-center gap-4">
+                                <span className="text-gray-300 text-sm">
+                                    {Object.keys(readerData.chapters || {}).length} capítulos
+                                </span>
+                                <span className={`px-2 py-1 rounded text-xs ${
+                                    readerData.status === 'Em Andamento' ? 'bg-green-900/50 text-green-300' :
+                                    readerData.status === 'Completo' ? 'bg-blue-900/50 text-blue-300' :
+                                    'bg-gray-700/50 text-gray-300'
+                                }`}>
+                                    {readerData.status}
+                                </span>
+                            </div>
+
+                            {displayedChapters.length > 0 && (
+                                <Button
+                                    onClick={() => handleReadChapter(displayedChapters[0].id)}
+                                    variant="primary"
+                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2"
+                                >
+                                    <PlayIcon className="w-4 h-4 mr-2" />
+                                    {sortOrder === 'asc' ? 'Começar' : 'Último'}
+                                </Button>
                             )}
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Lista de Capítulos */}
-            <div className="container mx-auto px-6 pb-12">
-                <div className="bg-gray-800 rounded-lg p-6">
+                {/* Lista de capítulos */}
+                <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-semibold">Capítulos</h2>
-                        {displayedChapters.length > 20 && (
+                        <h2 className="text-xl font-semibold text-white">Capítulos</h2>
+                        
+                        <div className="flex items-center gap-3">
                             <Button
-                                onClick={() => setShowAllChapters(!showAllChapters)}
-                                variant="outline"
-                                size="sm"
+                                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                                variant="ghost"
+                                className="text-gray-400 hover:text-white px-3 py-1 text-sm"
                             >
-                                {showAllChapters ? 'Mostrar Menos' : `Ver Todos (${Object.keys(readerData.chapters).length})`}
+                                {sortOrder === 'asc' ? 'Mais antigos' : 'Mais recentes'}
                             </Button>
-                        )}
+                            
+                            {displayedChapters.length < Object.keys(readerData.chapters || {}).length && (
+                                <Button
+                                    onClick={() => setShowAllChapters(true)}
+                                    variant="ghost"
+                                    className="text-blue-400 hover:text-blue-300 px-3 py-1 text-sm"
+                                >
+                                    Ver todos
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
-                    {displayedChapters.length > 0 ? (
-                        <div className="space-y-2">
-                            {displayedChapters.map((chapter) => (
-                                <div
-                                    key={chapter.id}
-                                    className="flex items-center justify-between p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
-                                >
-                                    <div className="flex-1">
-                                        <h3 className="font-medium text-white">
-                                            {chapter.title}
-                                        </h3>
-                                        <div className="flex items-center gap-4 text-sm text-gray-400 mt-1">
-                                            {chapter.volume && (
-                                                <span>Vol. {chapter.volume}</span>
-                                            )}
-                                            <span>{formatDate(chapter.last_updated)}</span>
-                                            <span>{getPageCount(chapter)} páginas</span>
-                                            {chapter.groups && Object.keys(chapter.groups).length > 0 && (
-                                                <span>Por: {Object.keys(chapter.groups).join(', ')}</span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        {chapter.isRead && (
-                                            <CheckIcon className="w-5 h-5 text-green-400" />
-                                        )}
-                                        
-                                        <Button
-                                            onClick={() => handleReadChapter(chapter.id)}
-                                            size="sm"
-                                            className="flex items-center gap-2"
-                                        >
-                                            <PlayIcon className="w-4 h-4" />
-                                            {chapter.isRead ? 'Reler' : 'Ler'}
-                                        </Button>
-
-                                        {!chapter.isRead && (
-                                            <Button
-                                                onClick={() => handleMarkAsRead(chapter.id)}
-                                                variant="outline"
-                                                size="sm"
-                                            >
-                                                Marcar como Lido
-                                            </Button>
-                                        )}
+                    <div className="space-y-2">
+                        {displayedChapters.map((chapter) => (
+                            <div
+                                key={chapter.id}
+                                className="flex items-center justify-between p-4 bg-gray-800/30 hover:bg-gray-800/50 rounded-lg border border-gray-700/30 hover:border-gray-600/50 cursor-pointer transition-colors"
+                                onClick={() => handleReadChapter(chapter.id)}
+                            >
+                                <div className="flex-1">
+                                    <h3 className="font-medium text-white mb-1">
+                                        {chapter.title || `Capítulo ${chapter.id}`}
+                                    </h3>
+                                    
+                                    <div className="flex items-center gap-4 text-xs text-gray-400">
+                                        <span>{getPageCount(chapter)} páginas</span>
+                                        <span>{formatDate(chapter.last_updated)}</span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-12 text-gray-400">
-                            <BookOpenIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                            <p>Nenhum capítulo disponível</p>
+
+                                <Button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleReadChapter(chapter.id);
+                                    }}
+                                    variant="ghost"
+                                    className="text-blue-400 hover:text-blue-300 p-2"
+                                >
+                                    <PlayIcon className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+
+                    {displayedChapters.length === 0 && (
+                        <div className="text-center py-12">
+                            <p className="text-gray-400">Nenhum capítulo disponível</p>
                         </div>
                     )}
                 </div>

@@ -16,9 +16,9 @@ const RETRY_CONFIG = {
 // Lista de fallback URLs para casos críticos
 const FALLBACK_PROXIES = [
   '', // Request direto primeiro
-  'https://cors-anywhere.herokuapp.com/',
+  'https://corsproxy.io/?', // Proxy principal recomendado
   'https://api.allorigins.win/get?url=',
-  'https://corsproxy.io/?'
+  'https://cors-anywhere.herokuapp.com/'
 ];
 
 /**
@@ -64,15 +64,22 @@ const attemptFetch = async (url, options = {}) => {
   const timeoutId = setTimeout(() => controller.abort(), options.timeout || 15000);
   
   try {
-    const response = await fetch(url, {
+    // Para requests GET simples, não enviar cabeçalhos desnecessários que causam CORS
+    const fetchOptions = {
       ...options,
-      signal: controller.signal,
-      headers: {
+      signal: controller.signal
+    };
+    
+    // Só adicionar cabeçalhos se realmente necessário
+    if (options.headers || (options.method && options.method !== 'GET')) {
+      fetchOptions.headers = {
         'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        ...(options.method && options.method !== 'GET' ? { 'Content-Type': 'application/json' } : {}),
         ...options.headers
-      }
-    });
+      };
+    }
+    
+    const response = await fetch(url, fetchOptions);
     
     clearTimeout(timeoutId);
     
@@ -162,12 +169,40 @@ export const robustFetch = async (url, options = {}) => {
 };
 
 /**
+ * Processa resposta de diferentes tipos de proxy
+ */
+const processProxyResponse = async (response, proxyUrl) => {
+  const data = await response.json();
+  
+  // Para allorigins.win, os dados vêm dentro de data.contents
+  if (proxyUrl.includes('allorigins.win')) {
+    if (data.contents) {
+      return JSON.parse(data.contents);
+    }
+  }
+  
+  // Para outros proxies e requests diretos, retorna os dados como estão
+  return data;
+};
+
+/**
  * Função específica para carregar JSON com validação
  */
 export const fetchJSON = async (url, options = {}) => {
   try {
     const response = await robustFetch(url, options);
-    const data = await response.json();
+    
+    // Detecta qual proxy foi usado baseado na URL final
+    const finalUrl = response.url || url;
+    let data;
+    
+    if (finalUrl.includes('allorigins.win') || 
+        finalUrl.includes('corsproxy.io') || 
+        finalUrl.includes('cors-anywhere')) {
+      data = await processProxyResponse(response, finalUrl);
+    } else {
+      data = await response.json();
+    }
     
     // Validação básica do JSON
     if (!data || typeof data !== 'object') {
@@ -176,6 +211,19 @@ export const fetchJSON = async (url, options = {}) => {
     
     return data;
   } catch (error) {
+    // Fallback para dados locais se for uma URL externa que falha por CORS
+    if (url.includes('cdn.jsdelivr.net') && url.includes('Tower_of_God')) {
+      console.warn('🔄 [NetworkService] Usando dados locais devido a erro CORS:', error.message);
+      try {
+        const localResponse = await fetch('/raw/reader.json');
+        if (localResponse.ok) {
+          return await localResponse.json();
+        }
+      } catch (localError) {
+        console.error('❌ [NetworkService] Falha ao carregar dados locais:', localError);
+      }
+    }
+    
     if (error.message.includes('JSON')) {
       throw new Error(`Erro ao processar JSON de ${url}: ${error.message}`);
     }

@@ -8,9 +8,9 @@ export const useHistory = () => {
     const [isConnected, setIsConnected] = useState(remoteStorage.connected);
 
     const loadSavedHubs = useCallback(async () => {
-        if (remoteStorage.connected && remoteStorage[RS_PATH]) {
+        if (remoteStorage.connected && remoteStorage[RS_PATH.BASE]) {
             try {
-                const hubs = await remoteStorage[RS_PATH].getAllHubs();
+                const hubs = await remoteStorage[RS_PATH.BASE].getAllHubs();
                 setSavedHubs(hubs || []);
             } catch (error) {
                 console.error("Erro ao carregar hubs salvos:", error);
@@ -50,14 +50,14 @@ export const useHistory = () => {
     }, [loadSavedHubs]);
 
     const addHub = (url, title, iconUrl) => {
-        if (remoteStorage.connected && remoteStorage[RS_PATH]) {
-            return remoteStorage[RS_PATH].addHub(url, title, iconUrl);
+        if (remoteStorage.connected && remoteStorage[RS_PATH.BASE]) {
+            return remoteStorage[RS_PATH.BASE].addHub(url, title, iconUrl);
         }
     };
     
     const removeHub = (url) => {
-        if (remoteStorage.connected && remoteStorage[RS_PATH]) {
-            return remoteStorage[RS_PATH].removeHub(url);
+        if (remoteStorage.connected && remoteStorage[RS_PATH.BASE]) {
+            return remoteStorage[RS_PATH.BASE].removeHub(url);
         }
     };
 

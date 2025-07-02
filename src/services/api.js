@@ -20,7 +20,7 @@ let syncExecuted = false;
  */
 const sync = async () => {
   if (syncExecuted) return;
-  const rs = remoteStorage[RS_PATH];
+  const rs = remoteStorage[RS_PATH.BASE];
   if (!rs) return;
 
   const allSeries = await rs.getAllSeries();
@@ -40,15 +40,19 @@ const api = {
   maxHistory: MAX_HISTORY_ITEMS,
 
   async pushSeries(slug, coverUrl, source, url, title) {
-    const rs = remoteStorage[RS_PATH];
+    console.log('📊 [API] pushSeries called with:', { slug, coverUrl, source, url, title });
+    
+    const rs = remoteStorage[RS_PATH.BASE];
     const allSeries = getSortedArray(await rs.getAllSeries());
     const existingSeries = allSeries.find(e => e.slug === slug && e.source === source);
 
     if (existingSeries) {
       // Apenas atualiza o timestamp para movê-la para o topo do histórico
+      console.log('📊 [API] Updating existing series');
       return rs.editSeries(slug, source, { title, url, coverUrl });
     }
 
+    console.log('📊 [API] Adding new series');
     // Se não existe, adiciona e gerencia o limite do histórico
     const unpinnedSeries = allSeries.filter(e => !e.pinned);
     if (unpinnedSeries.length >= MAX_HISTORY_ITEMS) {
@@ -58,7 +62,7 @@ const api = {
     return rs.addSeries(slug, coverUrl, source, url, title, false, []);
   },
 
-  removeSeries: (slug, source) => remoteStorage[RS_PATH]?.removeSeries(slug, source),
+  removeSeries: (slug, source) => remoteStorage[RS_PATH.BASE]?.removeSeries(slug, source),
 
   async removeAllUnpinnedSeries() {
     const series = await this.getAllUnpinnedSeries();
@@ -69,7 +73,7 @@ const api = {
   addChapter: (slug, source, chapter) => api.addChapters(slug, source, [chapter]),
 
   async addChapters(slug, source, chapters) {
-    const rs = remoteStorage[RS_PATH];
+    const rs = remoteStorage[RS_PATH.BASE];
     const series = await rs.getSeries(slug, source);
     if (series) {
       const updatedChapters = [...new Set([...(series.chapters || []), ...chapters])];
@@ -78,7 +82,7 @@ const api = {
   },
 
   async removeChapter(slug, source, chapter) {
-    const rs = remoteStorage[RS_PATH];
+    const rs = remoteStorage[RS_PATH.BASE];
     const series = await rs.getSeries(slug, source);
     if (series?.chapters) {
       const updatedChapters = series.chapters.filter(c => c !== chapter);
@@ -86,46 +90,46 @@ const api = {
     }
   },
 
-  removeAllChapters: (slug, source) => remoteStorage[RS_PATH]?.editSeries(slug, source, { chapters: [] }),
+  removeAllChapters: (slug, source) => remoteStorage[RS_PATH.BASE]?.editSeries(slug, source, { chapters: [] }),
 
   async getReadChapters(slug, source) {
-    const series = await remoteStorage[RS_PATH]?.getSeries(slug, source);
+    const series = await remoteStorage[RS_PATH.BASE]?.getSeries(slug, source);
     return series?.chapters || [];
   },
 
   async isSeriesPinned(slug, source) {
-    const series = await remoteStorage[RS_PATH]?.getSeries(slug, source);
+    const series = await remoteStorage[RS_PATH.BASE]?.getSeries(slug, source);
     return !!series?.pinned;
   },
 
   async pinSeries(slug, source) {
-    const series = await remoteStorage[RS_PATH]?.getSeries(slug, source);
+    const series = await remoteStorage[RS_PATH.BASE]?.getSeries(slug, source);
     if (series) {
-      return remoteStorage[RS_PATH]?.editSeries(slug, source, { pinned: true });
+      return remoteStorage[RS_PATH.BASE]?.editSeries(slug, source, { pinned: true });
     }
     // Se não existe, cria e já fixa (opcional, mas parece útil)
     // return this.pushSeries(slug, coverUrl, source, url, title).then(() => this.pinSeries(slug, source));
   },
 
-  unpinSeries: (slug, source) => remoteStorage[RS_PATH]?.editSeries(slug, source, { pinned: false }),
+  unpinSeries: (slug, source) => remoteStorage[RS_PATH.BASE]?.editSeries(slug, source, { pinned: false }),
 
   async getAllPinnedSeries() {
-    const all = getSortedArray(await remoteStorage[RS_PATH]?.getAllSeries());
+    const all = getSortedArray(await remoteStorage[RS_PATH.BASE]?.getAllSeries());
     return all.filter(e => e.pinned);
   },
 
   async getAllUnpinnedSeries() {
-    const all = getSortedArray(await remoteStorage[RS_PATH]?.getAllSeries());
+    const all = getSortedArray(await remoteStorage[RS_PATH.BASE]?.getAllSeries());
     return all.filter(e => !e.pinned);
   },
 
   // --- Métodos de Hubs ---
-  addHub: (url, title, iconUrl) => remoteStorage[RS_PATH]?.addHub(url, title, iconUrl),
+  addHub: (url, title, iconUrl) => remoteStorage[RS_PATH.BASE]?.addHub(url, title, iconUrl),
 
-  removeHub: (url) => remoteStorage[RS_PATH]?.removeHub(url),
+  removeHub: (url) => remoteStorage[RS_PATH.BASE]?.removeHub(url),
 
   async getAllHubs() {
-    return getSortedArray(await remoteStorage[RS_PATH]?.getAllHubs());
+    return getSortedArray(await remoteStorage[RS_PATH.BASE]?.getAllHubs());
   },
 };
 

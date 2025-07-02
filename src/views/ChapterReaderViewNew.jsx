@@ -20,9 +20,6 @@ const ChapterReaderView = () => {
     const readerUrl = decodeUrl(encodedUrl);
     const decodedChapterId = decodeUrl(chapterId);
     
-    console.log('🔍 [ChapterReaderView] chapterId original:', chapterId);
-    console.log('🔍 [ChapterReaderView] decodedChapterId:', decodedChapterId);
-    
     // Usa o hook useReader para carregar os dados
     const {
         readerData,
@@ -36,7 +33,6 @@ const ChapterReaderView = () => {
 
     // Carrega o reader.json
     useEffect(() => {
-        console.log('🎯 [ChapterReaderView] readerUrl:', readerUrl);
         if (readerUrl) {
             console.log('🎯 Carregando reader para capítulo:', readerUrl);
             loadReader(readerUrl);
@@ -47,9 +43,6 @@ const ChapterReaderView = () => {
     useEffect(() => {
         if (readerData && decodedChapterId) {
             console.log('📖 Selecionando capítulo:', decodedChapterId);
-            console.log('📊 [Debug] readerData disponível:', !!readerData);
-            console.log('📊 [Debug] capítulos disponíveis:', readerData.chapters ? Object.keys(readerData.chapters) : 'undefined');
-            console.log('📊 [Debug] capítulo específico:', readerData.chapters?.[decodedChapterId]);
             selectChapter(decodedChapterId);
         }
     }, [readerData, decodedChapterId, selectChapter]);
@@ -61,42 +54,23 @@ const ChapterReaderView = () => {
 
     // Função para salvar progresso
     const handleSaveProgress = async (slug, sourceId, chapterId, currentPage) => {
-        console.log('🔄 [handleSaveProgress] Chamado com:', { slug, sourceId, chapterId, currentPage });
-        console.log('🔄 [handleSaveProgress] selectedChapter existe?', !!selectedChapter);
-        console.log('🔄 [handleSaveProgress] selectedChapter.pages:', selectedChapter?.pages?.length || 'undefined');
-        
         try {
             if (saveReadingProgress && selectedChapter && selectedChapter.pages) {
                 // Garantir que currentPage seja um número
                 const pageIndex = parseInt(currentPage, 10);
                 const totalPages = selectedChapter.pages.length;
                 
-                console.log(`💾 Salvando progresso - Capítulo: ${decodedChapterId}, Página: ${pageIndex + 1}/${totalPages}`);
+                console.log(`💾 Salvando progresso - Capítulo: ${chapterId}, Página: ${pageIndex + 1}/${totalPages}`);
                 
-                // Só salvar se o capítulo tem páginas 
                 if (totalPages > 0) {
-                    await saveReadingProgress(decodedChapterId, pageIndex, totalPages);
-                    console.log('✅ [handleSaveProgress] Progresso salvo com sucesso');
+                    await saveReadingProgress(chapterId, pageIndex, totalPages);
                 } else {
                     console.warn('⚠️ Capítulo sem páginas, não salvando progresso');
                 }
-            } else {
-                console.warn('⚠️ [handleSaveProgress] Condições não atendidas:', {
-                    saveReadingProgress: !!saveReadingProgress,
-                    selectedChapter: !!selectedChapter,
-                    hasPages: !!selectedChapter?.pages
-                });
             }
         } catch (error) {
-            console.error('❌ [handleSaveProgress] Erro ao salvar progresso:', error);
+            console.error('Erro ao salvar progresso:', error);
         }
-    };
-
-    // Wrapper para o ItemViewer - recebe apenas a página atual
-    const handleItemViewerSaveProgress = async (currentPage) => {
-        const slug = readerData?.title || 'manga';
-        const sourceId = 'reader';
-        return handleSaveProgress(slug, sourceId, decodedChapterId, currentPage);
     };
 
     // Navegação entre capítulos
@@ -265,7 +239,7 @@ const ChapterReaderView = () => {
                             sourceId: 'reader'
                         }}
                         entryKey={decodedChapterId}
-                        onSaveProgress={handleItemViewerSaveProgress}
+                        onSaveProgress={handleSaveProgress}
                     />
                 </Suspense>
             </div>

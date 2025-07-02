@@ -3,7 +3,7 @@
  * Integra com o serviço jsonReader e fornece estado reativo
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { loadReaderJSON, JSONUtils } from '../services/jsonReader.js';
 import { remoteStorage } from '../services/remotestorage';
@@ -23,27 +23,38 @@ export const useReader = () => {
     } = useQuery({
         queryKey: ['reader', currentReaderUrl],
         queryFn: async () => {
-            if (!currentReaderUrl) return null;
-            
-            console.log('📖 [useReader] Carregando obra:', currentReaderUrl);
-            const data = await loadReaderJSON(currentReaderUrl);
-            
-            // Carrega progresso de leitura se conectado
-            if (remoteStorage.connected) {
-                await loadReadingProgress(data);
+            if (!currentReaderUrl) {
+                console.log('📖 [useReader] Não há URL para carregar');
+                return null;
             }
             
-            return data;
+            console.log('📖 [useReader] Carregando obra:', currentReaderUrl);
+            try {
+                const data = await loadReaderJSON(currentReaderUrl);
+                console.log('📖 [useReader] Dados carregados:', data ? 'sucesso' : 'null');
+                console.log('📖 [useReader] Capítulos encontrados:', data?.chapters ? Object.keys(data.chapters).length : 0);
+                
+                // Carrega progresso de leitura se conectado
+                if (remoteStorage.connected) {
+                    await loadReadingProgress(data);
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('❌ [useReader] Erro ao carregar dados:', error);
+                throw error;
+            }
         },
         enabled: !!currentReaderUrl,
         retry: 3,
         staleTime: 5 * 60 * 1000, // 5 minutos
-        cacheTime: 30 * 60 * 1000, // 30 minutos
+        gcTime: 30 * 60 * 1000, // 30 minutos
     });
 
     // Função para carregar uma obra
     const loadReader = useCallback((url) => {
         console.log('🎯 [useReader] Definindo URL da obra:', url);
+        console.log('🎯 [useReader] URL é válida?', !!url);
         setCurrentReaderUrl(url);
         setSelectedChapter(null);
     }, []);
@@ -60,7 +71,8 @@ export const useReader = () => {
 
         try {
             const workId = generateWorkId(currentReaderUrl);
-            const progressData = await remoteStorage.scope(RS_PATH.READING_PROGRESS).getObject(workId);
+            // Usar false como maxAge para evitar cache
+            const progressData = await remoteStorage.scope(RS_PATH.READING_PROGRESS).getObject('progress', workId, false);
             
             if (progressData) {
                 setReadingProgress(progressData);
@@ -80,22 +92,37 @@ export const useReader = () => {
 
         try {
             const workId = generateWorkId(currentReaderUrl);
+            
+            // Criar o objeto de progresso conforme o schema
             const progressData = {
-                ...readingProgress,
+                // Campos obrigatórios do schema principal
+                lastChapter: chapterId,
+                lastUpdated: Date.now(),
+                // Adicionar dados do capítulo atual
                 [chapterId]: {
-                    pageIndex,
-                    totalPages,
+                    pageIndex: Number(pageIndex), // Garantir que seja número
+                    totalPages: Number(totalPages), // Garantir que seja número
                     lastRead: Date.now(),
                     completed: pageIndex >= totalPages - 1
-                },
-                lastChapter: chapterId,
-                lastUpdated: Date.now()
+                }
             };
 
-            await remoteStorage.scope(RS_PATH.READING_PROGRESS).storeObject('reading-progress', workId, progressData);
+            // Se já existir progresso, mesclar com os dados existentes
+            if (readingProgress && typeof readingProgress === 'object') {
+                // Preservar dados de outros capítulos
+                Object.keys(readingProgress).forEach(key => {
+                    if (key !== 'lastChapter' && key !== 'lastUpdated' && key !== chapterId) {
+                        progressData[key] = readingProgress[key];
+                    }
+                });
+            }
+
+            console.log('💾 [useReader] Objeto de progresso a ser salvo:', progressData);
+
+            await remoteStorage.scope(RS_PATH.READING_PROGRESS).storeObject('progress', workId, progressData);
             setReadingProgress(progressData);
             
-            console.log('💾 [useReader] Progresso salvo:', { chapterId, pageIndex, totalPages });
+            console.log('✅ [useReader] Progresso salvo com sucesso:', { chapterId, pageIndex, totalPages });
         } catch (error) {
             console.error('❌ [useReader] Erro ao salvar progresso:', error);
             throw error; // Re-throw para manter comportamento de erro
@@ -139,12 +166,32 @@ export const useReader = () => {
         }
     } : null;
 
+    // Dados do capítulo selecionado
+    const selectedChapterData = useMemo(() => {
+        if (!selectedChapter || !readerData?.chapters?.[selectedChapter]) {
+            console.log('🔍 [useReader] Debug - selectedChapter:', selectedChapter);
+            console.log('🔍 [useReader] Debug - readerData?.chapters:', readerData?.chapters ? Object.keys(readerData.chapters) : 'undefined');
+            return null;
+        }
+        
+        const chapterData = { id: selectedChapter, ...readerData.chapters[selectedChapter] };
+        
+        // Extrai páginas do primeiro grupo disponível
+        const groupKeys = Object.keys(chapterData.groups || {});
+        const pages = groupKeys.length > 0 ? chapterData.groups[groupKeys[0]] : [];
+        chapterData.pages = pages;
+        
+        console.log('🔍 [useReader] Debug - selectedChapterData:', chapterData);
+        console.log('🔍 [useReader] Debug - páginas adicionadas:', pages.length);
+        return chapterData;
+    }, [selectedChapter, readerData]);
+
     return {
         // Estados
         readerData: processedData,
         isLoading: readerLoading,
         error: readerError,
-        selectedChapter,
+        selectedChapter: selectedChapterData,
         readingProgress,
 
         // Ações

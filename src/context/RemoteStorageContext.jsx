@@ -51,10 +51,19 @@ export const RemoteStorageProvider = ({ children }) => {
         lastSyncAttemptRef.current = Date.now();
         
         try {
-            // Usar sync() ao invés da função inexistente
-            await remoteStorage.sync();
-            console.log('✅ Sincronização manual concluída');
-            return true;
+            if (remoteStorage.connected) {
+                // RemoteStorage sincroniza automaticamente, mas podemos forçar um "flush"
+                // através de uma operação pequena que força a sincronização
+                const testKey = `sync-test-${Date.now()}`;
+                await remoteStorage.scope('/').storeObject('sync-test', `test-${testKey}`, { timestamp: Date.now() });
+                await remoteStorage.scope('/').remove(`sync-test`);
+                
+                console.log('✅ Sincronização forçada concluída');
+                return true;
+            } else {
+                console.warn('⚠️ RemoteStorage não conectado');
+                return false;
+            }
         } catch (error) {
             console.error('❌ Erro ao forçar sincronização:', error);
             setSyncStats(prev => ({ ...prev, errors: prev.errors + 1 }));
