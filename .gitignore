@@ -7,38 +7,111 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
 # Dependencies
-node_modules
+node_modules/
+jspm_packages/
 
 # Build output
-dist
-dist-ssr
+dist/
+dist-ssr/
+build/
+.next/
+out/
+
+# Production
+/build
+/dist
+
+# Generated files
+.docusaurus
+.cache
+.parcel-cache
+
+# Test coverage
+coverage/
+.nyc_output
+.coverage
+*.lcov
 
 # Test reports
-coverage
-.nyc_output
+test-results/
+playwright-report/
+test-results.xml
 
 # Environment variables
-*.local
 .env
-.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
 !/.env.example
+
+# Cache directories
+.npm
+.eslintcache
+.stylelintcache
+.cache/
+.parcel-cache/
+.vite/
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
 
-# Workspace file (geralmente específico do utilizador)
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Windows
+*.exe
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Temporary files
+*.tmp
+*.temp
+.temp/
+tmp/
+
+# Workspace files
 gikamoe.code-workspace
 
-# Ficheiros de exemplo locais
+# Debug files
+*.tsbuildinfo
+debug.log
 
-# Vite cache
-.vite/
+# Storybook build outputs
+storybook-static
+
+# Local development files
+test-*.js
+test-*.html
+*.test.local.*
+dev-*.js
+
+# Package manager lock files (uncomment if needed)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
