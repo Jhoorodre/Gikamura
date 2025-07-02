@@ -1,16 +1,20 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { useItem } from '../hooks/useItem';
 import { remoteStorage } from '../services/remotestorage';
 import { RS_PATH } from '../services/rs/rs-config.js';
 import api from '../services/api.js';
-import { fetchJSONWithCache } from '../services/networkService.js';
+import { loadHubJSON } from '../services/jsonReader.js';
+import { encodeUrl } from '../utils/encoding';
 
 const AppContext = createContext();
 
 export const useAppContext = () => useContext(AppContext);
 
 export const AppProvider = ({ children }) => {
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [hubUrlToLoad, setHubUrlToLoad] = useState(null);
     const [isConnected, setIsConnected] = useState(remoteStorage.connected);
     const [isSyncing, setIsSyncing] = useState(false);
@@ -20,6 +24,15 @@ export const AppProvider = ({ children }) => {
     const [pinnedItems, setPinnedItems] = useState([]);
     const [historyItems, setHistoryItems] = useState([]);
     const [savedHubs, setSavedHubs] = useState([]);
+    const [hasRedirectedToHub, setHasRedirectedToHub] = useState(false); // Controla redirecionamento único
+
+    // Debug: Log quando hubUrlToLoad muda
+    // Log controlado apenas em desenvolvimento
+    useEffect(() => {
+        if (process.env.NODE_ENV === 'development') {
+            console.log('🎯 [AppContext] hubUrlToLoad mudou para:', hubUrlToLoad);
+        }
+    }, [hubUrlToLoad]);
 
     // Carregamento do Hub com useQuery e novo serviço de rede
     const {
@@ -30,36 +43,45 @@ export const AppProvider = ({ children }) => {
     } = useQuery({
         queryKey: ['hub', hubUrlToLoad],
         queryFn: async () => {
-            if (!hubUrlToLoad) return null;
+            if (!hubUrlToLoad) {
+                if (process.env.NODE_ENV === 'development') {
+                    console.log('⚠️ [AppContext] useQuery: hubUrlToLoad é null/undefined');
+                }
+                return null;
+            }
             
             try {
-                const data = await fetchJSONWithCache(hubUrlToLoad);
+                if (process.env.NODE_ENV === 'development') {
+                    console.log('🎯 [AppContext] useQuery: Carregando hub:', hubUrlToLoad);
+                }
+                const data = await loadHubJSON(hubUrlToLoad);
                 
-                if (data?.hub) {
+                // Salva o hub nos dados do usuário se conectado
+                if (data?.hub && remoteStorage.connected) {
                     api.addHub(hubUrlToLoad, data.hub.title, data.hub.icon?.url);
                 }
                 
+                if (process.env.NODE_ENV === 'development') {
+                    console.log('✅ [AppContext] useQuery: Hub carregado com sucesso:', data.hub?.title);
+                }
                 return data;
             } catch (error) {
-                console.error('[AppContext] Erro ao carregar hub:', error);
+                console.error('❌ [AppContext] useQuery: Erro ao carregar hub:', error);
                 throw new Error(`Falha ao carregar o hub: ${error.message}`);
             }
         },
         enabled: !!hubUrlToLoad,
-        retry: (failureCount, error) => {
-            // Retry automático até 3 vezes para erros recuperáveis
-            if (failureCount < 3) {
-                const retryableErrors = ['network', 'timeout', 'fetch'];
-                return retryableErrors.some(keyword => 
-                    error.message.toLowerCase().includes(keyword)
-                );
-            }
-            return false;
-        },
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Backoff exponencial
+        retry: false, // TEMPORÁRIO: Desabilitar retry para evitar loop infinito
+        retryDelay: false,
         staleTime: 5 * 60 * 1000, // 5 minutos
         cacheTime: 10 * 60 * 1000, // 10 minutos
+        refetchOnWindowFocus: false, // Evitar refetch automático
+        refetchOnMount: false, // Evitar refetch no mount
+        refetchOnReconnect: false, // Evitar refetch na reconexão
     });
+
+    // REMOVIDO: Redirecionamento automático que causava problemas de navegação
+    // O redirecionamento agora é responsabilidade do useHubLoader
 
     const {
         loading: itemLoading,
@@ -126,17 +148,48 @@ export const AppProvider = ({ children }) => {
 
     // loadHub agora só define a URL com recuperação de erro
     const loadHub = useCallback((url) => {
+        if (process.env.NODE_ENV === 'development') {
+            console.log('🚀 [AppContext] loadHub chamado com URL:', url);
+        }
+        
+        // Evitar carregar a mesma URL várias vezes
+        if (hubUrlToLoad === url) {
+            if (process.env.NODE_ENV === 'development') {
+                console.log('⚠️ [AppContext] URL já está sendo carregada, ignorando...');
+            }
+            return Promise.resolve(true);
+        }
+        
         setLastAttemptedUrl(url);
         setHubUrlToLoad(url);
-    }, []);
+        return Promise.resolve(true);
+    }, [hubUrlToLoad]);
 
     // Função para tentar recarregar hub em caso de erro
     const retryLoadHub = useCallback(() => {
         if (lastAttemptedUrl) {
-            console.log('[AppContext] Tentando recarregar hub:', lastAttemptedUrl);
+            if (process.env.NODE_ENV === 'development') {
+                console.log('[AppContext] Tentando recarregar hub:', lastAttemptedUrl);
+            }
             refetchHub();
         }
     }, [lastAttemptedUrl, refetchHub]);
+
+    // Função para limpar o estado do hub e voltar ao placeholder inicial
+    const clearHubData = useCallback(() => {
+        if (process.env.NODE_ENV === 'development') {
+            console.log('🧹 [AppContext] Limpando dados do hub para voltar ao placeholder');
+        }
+        
+        setHubUrlToLoad(null);
+        setLastAttemptedUrl("");
+        setHasRedirectedToHub(false);
+        
+        // Limpa também o cache do React Query para este hub
+        if (hubUrlToLoad) {
+            queryClient.invalidateQueries(['hub', hubUrlToLoad]);
+        }
+    }, [hubUrlToLoad, queryClient]);
 
     const togglePinStatus = useCallback(async (item) => {
         if (!item || !item.slug || !item.sourceId) return;
@@ -162,6 +215,7 @@ export const AppProvider = ({ children }) => {
         isConnected,
         loadHub,
         retryLoadHub, // Nova função para retry
+        clearHubData, // Função para limpar dados do hub
         itemLoading,
         pinnedItems,
         historyItems,

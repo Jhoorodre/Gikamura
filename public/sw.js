@@ -66,6 +66,13 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   
+  // Durante desenvolvimento, não interceptar NENHUM request
+  // Detecta se está em modo de desenvolvimento
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname.includes('dev')) {
+    console.log('[SW] Development mode detected, bypassing request:', url.href);
+    return; // Deixa o navegador lidar com todos os requests
+  }
+  
   // Ignorar recursos de desenvolvimento do Vite
   if (IGNORE_PATTERNS.some(pattern => pattern.test(url.pathname))) {
     return; // Deixa o Vite lidar com esses recursos
@@ -76,7 +83,7 @@ self.addEventListener('fetch', (event) => {
     return; // Evita erros de CORS e requests para portas incorretas
   }
   
-  // Estratégia Network First para APIs - apenas para recursos válidos
+  // Apenas em produção, usar cache para APIs
   if (API_CACHE_PATTERNS.some(pattern => pattern.test(url.pathname))) {
     event.respondWith(
       fetch(request)

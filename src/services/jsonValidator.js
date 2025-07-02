@@ -34,12 +34,18 @@ const HUB_SCHEMA = {
     type: 'array',
     minLength: 1,
     items: {
-      required: ['id', 'title', 'slug', 'status'],
+      required: ['id', 'title', 'slug'],
       properties: {
         id: { type: 'string', minLength: 1 },
         title: { type: 'string', minLength: 1 },
         slug: { type: 'string', pattern: /^[a-z0-9-]+$/ },
-        status: { type: 'string', enum: ['active', 'completed', 'hiatus', 'cancelled'] }
+        status: { 
+          type: 'object',
+          properties: {
+            translation: { type: 'string', enum: ['ongoing', 'completed', 'hiatus', 'cancelled'] },
+            original: { type: 'string', enum: ['ongoing', 'completed', 'hiatus', 'cancelled'] }
+          }
+        }
       }
     }
   }
@@ -244,8 +250,24 @@ export const validateHubJSON = (data) => {
         errors.push('Hub deve conter pelo menos uma série');
       } else {
         data.series.forEach((series, index) => {
-          const seriesErrors = validateSection(series, HUB_SCHEMA.series.items, `series[${index}]`);
-          errors.push(...seriesErrors);
+          // Validar campos obrigatórios da série
+          for (const requiredField of HUB_SCHEMA.series.items.required) {
+            if (!(requiredField in series)) {
+              errors.push(`series[${index}].${requiredField}: Campo obrigatório não encontrado`);
+            }
+          }
+          
+          // Validar propriedades específicas da série
+          for (const [property, propertySchema] of Object.entries(HUB_SCHEMA.series.items.properties)) {
+            if (series[property] !== undefined) {
+              const propertyErrors = validateProperty(
+                series[property], 
+                propertySchema, 
+                `series[${index}].${property}`
+              );
+              errors.push(...propertyErrors);
+            }
+          }
         });
       }
     } else {

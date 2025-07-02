@@ -1,41 +1,33 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
+import { useHubLoader } from '../../hooks/useHubLoader';
 import '../../styles/hub-loader.css';
 import HubHistory from './HubHistory';
 import { BookOpenIcon } from '../common/Icones';
-import { encodeUrl } from '../../utils/encoding';
+import { Link } from 'react-router-dom';
 
-const HubLoaderComponent = ({ onLoadHub, loading }) => {
-    const [url, setUrl] = useState("https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/refs/heads/main/hub_tog.json");
-    const [error, setError] = useState('');
+const HubLoaderComponent = () => {
     const { savedHubs, removeHub } = useAppContext();
     const { isConnected } = useRemoteStorageContext() || { isConnected: false };
-    const navigate = useNavigate();
-
-    /**
-     * Constrói uma URL para a nova rota com a URL do hub
-     * codificada em base64 e a abre numa nova guia.
-     */
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setError(''); // Limpa erros anteriores ao submeter
-        const targetUrl = url.trim();
-
-        if (targetUrl) {
-            try {
-                const encodedHubUrl = encodeUrl(targetUrl);
-                navigate(`/hub/${encodedHubUrl}`);
-            } catch (error) {
-                console.error("Falha ao codificar a URL do hub:", error);
-                setError("URL inválida ou erro ao processar. Verifique o formato da URL e tente novamente.");
-            }
-        }
-    };
+    
+    // Debug log para verificar o estado de conexão
+    if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 [HubLoaderComponent] Estado de conexão:', { isConnected });
+    }
+    
+    // Hook centralizado para carregamento de hubs
+    const { 
+        url, 
+        setUrl, 
+        loading, 
+        error, 
+        handleSubmit, 
+        loadHub, 
+        resetError 
+    } = useHubLoader(); // Removido URL padrão para evitar loop infinito
 
     const handleLoadDirectly = (hubUrl) => {
-        onLoadHub(hubUrl);
+        loadHub(hubUrl);
     };
 
     // Versão anônima quando não conectado - APENAS JSON placeholder
@@ -65,7 +57,10 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
                                     <input
                                         type="text"
                                         value={url}
-                                        onChange={(e) => setUrl(e.target.value)}
+                                        onChange={(e) => {
+                                            setUrl(e.target.value);
+                                            resetError();
+                                        }}
                                         placeholder="https://raw.githubusercontent.com/.../hub.json"
                                         className="w-full p-4 bg-surface-secondary rounded-lg border border-surface-tertiary focus:border-accent transition-all duration-300 text-text-primary placeholder-text-tertiary text-base focus:ring-2 focus:ring-accent/20"
                                         disabled={loading}
@@ -94,6 +89,12 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
     }
 
     // Versão completa quando conectado - Layout central sem widget duplicado
+    // VERIFICAÇÃO EXTRA: Só mostra cards se realmente conectado
+    if (!isConnected) {
+        console.warn('🚨 [HubLoaderComponent] Tentativa de mostrar versão conectada sem estar conectado!');
+        return null; // Fail-safe
+    }
+    
     return (
         <div className="hub-connected-container">
             {/* Status de Conexão */}
@@ -142,7 +143,7 @@ const HubLoaderComponent = ({ onLoadHub, loading }) => {
                             value={url}
                             onChange={(e) => {
                                 setUrl(e.target.value);
-                                if (error) setError('');
+                                resetError();
                             }}
                             placeholder="https://exemplo.com/hub.json"
                             required

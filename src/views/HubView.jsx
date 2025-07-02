@@ -1,151 +1,261 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { useRemoteStorageContext } from '../context/RemoteStorageContext';
-import HubHeader from '../components/hub/HubHeader';
 import ItemGrid from '../components/item/ItemGrid';
 import { BookOpenIcon } from '../components/common/Icones';
 import { encodeUrl } from '../utils/encoding';
+import { JSONUtils } from '../services/jsonReader.js';
+import '../styles/hub-minimal.css';
 
 const HubView = () => {
     const { currentHubData, selectItem, togglePinStatus } = useAppContext();
-    const { isConnected } = useRemoteStorageContext() || { isConnected: false };
+    const { isConnected, isSyncing, forceSync, canSync } = useRemoteStorageContext() || { 
+        isConnected: false, 
+        isSyncing: false, 
+        forceSync: () => {}, 
+        canSync: () => false 
+    };
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedGenres, setSelectedGenres] = useState([]);
+    const [sortBy, setSortBy] = useState('title');
+    const [showDisconnectedStatus, setShowDisconnectedStatus] = useState(true);
     const navigate = useNavigate();
+    
+    // Ref para controlar logs excessivos
+    const lastLogRef = useRef(null);
+    const renderCountRef = useRef(0);
 
-    const allItems = useMemo(() => {
+    // Timer para auto-fechar o popup de desconectado
+    useEffect(() => {
+        if (!isConnected && showDisconnectedStatus) {
+            const timer = setTimeout(() => {
+                setShowDisconnectedStatus(false);
+            }, 5000); // 5 segundos
+            
+            return () => clearTimeout(timer);
+        }
+    }, [isConnected, showDisconnectedStatus]);
+
+    // Log controlado para debug (apenas quando há mudanças significativas)
+    const currentDataSignature = currentHubData ? `${currentHubData.hub?.title}-${currentHubData.series?.length}` : 'no-data';
+    if (lastLogRef.current !== currentDataSignature) {
+        renderCountRef.current += 1;
+        console.log(`🎯 [HubView] Render #${renderCountRef.current} - Data:`, { 
+            hasData: !!currentHubData, 
+            title: currentHubData?.hub?.title,
+            seriesCount: currentHubData?.series?.length,
+            isConnected: isConnected // Adicionar log do isConnected
+        });
+        lastLogRef.current = currentDataSignature;
+    }
+
+    // Extrai metadados do hub
+    const hubInfo = useMemo(() => {
+        if (!currentHubData) return null;
+        
+        return {
+            ...currentHubData.hub,
+            meta: currentHubData.meta,
+            stats: {
+                seriesCount: currentHubData._metadata?.seriesCount || 0,
+                lastUpdated: JSONUtils.formatTimestamp(currentHubData.meta?.lastUpdated),
+                loadedAt: currentHubData._metadata?.loadedAt
+            }
+        };
+    }, [currentHubData]);
+
+    // Lista todas as séries com filtragem inteligente
+    const allSeries = useMemo(() => {
         return currentHubData?.series || [];
     }, [currentHubData?.series]);
 
+    // Extrai gêneros únicos para filtros
+    const availableGenres = useMemo(() => {
+        const genres = new Set();
+        allSeries.forEach(series => {
+            series.genres?.forEach(genre => genres.add(genre));
+        });
+        return Array.from(genres).sort();
+    }, [allSeries]);
+
+    // Aplica filtros usando o utilitário do jsonReader
     const filteredSeries = useMemo(() => {
-        if (!allItems) {
-            return [];
-        }
-        const lowerCaseSearchTerm = searchTerm.toLowerCase();
-        return allItems.filter(item =>
-            item.title.toLowerCase().includes(lowerCaseSearchTerm)
-        );
-    }, [allItems, searchTerm]);
+        return JSONUtils.filterSeries(allSeries, {
+            search: searchTerm,
+            genres: selectedGenres,
+            sortBy
+        });
+    }, [allSeries, searchTerm, selectedGenres, sortBy]);
+
+    // Séries em destaque (featured)
+    const featuredSeries = useMemo(() => {
+        return allSeries.filter(series => series.featured === true);
+    }, [allSeries]);
 
     const handleSelectItem = useCallback(async (item) => {
-        const uniqueId = `${currentHubData.hub.id}:${item.slug}`;
-        const encodedId = encodeUrl(uniqueId);
+        if (!item.data?.url) {
+            console.error('❌ Série não possui URL de dados válida:', item);
+            return;
+        }
+
+        if (process.env.NODE_ENV === 'development') {
+            console.log('🎯 Selecionando série:', item.title);
+        }
+        
+        // Codifica URL do reader.json para navegação
+        const encodedReaderUrl = encodeUrl(item.data.url);
         selectItem(item, currentHubData.hub.id);
-        navigate(`/series/${encodedId}`);
+        navigate(`/series/${encodedReaderUrl}`);
     }, [selectItem, currentHubData?.hub?.id, navigate]);
 
+    const handleSyncClick = useCallback(async () => {
+        if (process.env.NODE_ENV === 'development') {
+            console.log('🔄 Botão de sync clicado');
+        }
+        
+        if (!canSync()) {
+            console.warn('⚠️ Sincronização não pode ser executada no momento');
+            return;
+        }
+        
+        const success = await forceSync();
+        if (process.env.NODE_ENV === 'development') {
+            if (success) {
+                console.log('✅ Sincronização iniciada com sucesso');
+            } else {
+                console.error('❌ Falha ao iniciar sincronização');
+            }
+        }
+    }, [forceSync, canSync]);
+
     return (
-        <div className="page-container">
-            {/* Status de Conexão */}
-            <div className="connection-status">
-                {!isConnected ? (
-                    <div className="status-indicator status-warning">
-                        <div className="status-dot"></div>
-                        <div className="status-content">
-                            <span className="status-title">Remote Storage Desconectado</span>
-                            <span className="status-subtitle">Conecte-se para acessar todas as funcionalidades</span>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="status-indicator status-success">
-                        <div className="status-dot"></div>
-                        <span className="status-title">Remote Storage Conectado</span>
-                    </div>
-                )}
-            </div>
-
-            {/* Cards de Navegação - só quando conectado */}
-            {isConnected && (
-                <div className="hub-nav-section">
-                    <div className="nav-cards-grid">
-                        <Link to="/collection" className="nav-card nav-card-collection">
-                            <div className="nav-card-icon">
-                                <BookOpenIcon />
-                            </div>
-                            <div className="nav-card-content">
-                                <h3>Coleção</h3>
-                                <p>Itens favoritados</p>
-                            </div>
-                        </Link>
-
-                        <Link to="/works" className="nav-card nav-card-works">
-                            <div className="nav-card-icon">
-                                <span className="text-2xl">⭐</span>
-                            </div>
-                            <div className="nav-card-content">
-                                <h3>Obras</h3>
-                                <p>Obras pinadas</p>
-                            </div>
-                        </Link>
-
-                        <Link to="/upload" className="nav-card nav-card-upload">
-                            <div className="nav-card-icon">
-                                <span className="text-2xl">📤</span>
-                            </div>
-                            <div className="nav-card-content">
-                                <h3>Upload</h3>
-                                <p>Enviar conteúdo</p>
-                            </div>
-                        </Link>
-
-                        <div className="nav-card nav-card-placeholder">
-                            <div className="nav-card-icon">
-                                <span className="text-2xl opacity-50">✨</span>
-                            </div>
-                            <div className="nav-card-content">
-                                <h3 className="opacity-50">Em breve</h3>
-                                <p className="opacity-50">Novidades...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Conteúdo Principal do Hub */}
-            <div className="page-section">
+        <div className="hub-view">
+            <div className="hub-container">
                 {currentHubData?.hub ? (
                     <>
-                        <HubHeader hub={currentHubData.hub} />
-                        
-                        {/* Área de Pesquisa */}
-                        <div className="search-section">
-                            <div className="search-container">
-                                <input
-                                    type="text"
-                                    placeholder="Pesquisar séries por título..."
-                                    className="form-input search-input"
-                                    value={searchTerm}
-                                    onChange={e => setSearchTerm(e.target.value)}
-                                />
-                                {searchTerm && (
-                                    <div className="search-results-info">
-                                        <span className="badge badge-info">
-                                            {filteredSeries.length} {filteredSeries.length === 1 ? 'resultado' : 'resultados'}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
+                        {/* Header Principal */}
+                        <div className="hub-minimal-header">
+                            <h1 className="hub-title">{currentHubData.hub.title}</h1>
+                            {currentHubData.hub.subtitle && (
+                                <p className="hub-subtitle">{currentHubData.hub.subtitle}</p>
+                            )}
+                            {currentHubData.hub.description && (
+                                <p className="hub-description">{currentHubData.hub.description}</p>
+                            )}
                         </div>
 
-                        {/* Grid de Séries */}
-                        <div className="series-section">
-                            {filteredSeries.length > 0 ? (
-                                <ItemGrid
-                                    items={filteredSeries}
-                                    onSelectItem={handleSelectItem}
-                                    onPinToggle={togglePinStatus}
-                                />
+                        {/* Status de Conexão */}
+                        <div className="hub-connection-status">
+                            {isConnected ? (
+                                <div className="status-card connected">
+                                    <div className="status-dot"></div>
+                                    <span className="status-text">
+                                        {isSyncing ? "🔄 Sincronizando..." : "✅ Remote Storage Conectado"}
+                                    </span>
+                                    {!isSyncing && (
+                                        <button 
+                                            className="hub-btn"
+                                            onClick={handleSyncClick}
+                                            disabled={!canSync()}
+                                            title="Forçar sincronização"
+                                        >
+                                            🔄 Sync
+                                        </button>
+                                    )}
+                                </div>
                             ) : (
-                                <div className="empty-state">
+                                showDisconnectedStatus && (
+                                    <div className="status-card disconnected">
+                                        <div className="status-dot"></div>
+                                        <span className="status-text">⚠️ Remote Storage Desconectado</span>
+                                        <button 
+                                            className="hub-btn"
+                                            onClick={() => setShowDisconnectedStatus(false)}
+                                            title="Fechar notificação"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                )
+                            )}
+                        </div>
+
+                        {/* Cards de Navegação - apenas quando conectado */}
+                        {isConnected && (
+                            <div className="hub-nav-grid">
+                                <Link to="/collection" className="hub-nav-card">
+                                    <div className="hub-nav-icon">
+                                        <BookOpenIcon />
+                                    </div>
+                                    <div className="hub-nav-content">
+                                        <h3>Coleção</h3>
+                                        <p>Itens favoritados</p>
+                                    </div>
+                                </Link>
+
+                                <Link to="/works" className="hub-nav-card">
+                                    <div className="hub-nav-icon">
+                                        ⭐
+                                    </div>
+                                    <div className="hub-nav-content">
+                                        <h3>Obras</h3>
+                                        <p>Conteúdo especial</p>
+                                    </div>
+                                </Link>
+
+                                <Link to="/upload" className="hub-nav-card">
+                                    <div className="hub-nav-icon">
+                                        📤
+                                    </div>
+                                    <div className="hub-nav-content">
+                                        <h3>Upload</h3>
+                                        <p>Enviar conteúdo</p>
+                                    </div>
+                                </Link>
+                            </div>
+                        )}
+
+                        {/* Seção de Séries */}
+                        <div className="hub-series-section">
+                            <div className="hub-series-header">
+                                <h2 className="hub-series-title">Séries Disponíveis</h2>
+                                <div className="hub-series-count">
+                                    {filteredSeries.length} {filteredSeries.length === 1 ? 'série' : 'séries'}
+                                </div>
+                            </div>
+
+                            {/* Controles de Busca e Filtro */}
+                            <div className="hub-filters">
+                                <input
+                                    type="text"
+                                    placeholder="Buscar séries..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="hub-search-box"
+                                />
+                            </div>
+
+                            {/* Grid de Séries */}
+                            {filteredSeries.length > 0 ? (
+                                <div className="hub-series-grid">
+                                    <ItemGrid
+                                        items={filteredSeries}
+                                        onSelectItem={handleSelectItem}
+                                        onPinToggle={togglePinStatus}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="hub-empty-state">
                                     {searchTerm ? (
                                         <>
-                                            <span className="empty-state-icon">🔍</span>
-                                            <h3 className="empty-state-title">Nenhum resultado encontrado</h3>
-                                            <p className="empty-state-description">
+                                            <div className="hub-empty-state-icon">🔍</div>
+                                            <h3 className="hub-empty-state-title">Nenhum resultado encontrado</h3>
+                                            <p className="hub-empty-state-description">
                                                 Não encontramos séries com o termo "{searchTerm}".
                                             </p>
                                             <button 
-                                                className="btn btn-ghost"
+                                                className="hub-btn hub-btn-primary"
                                                 onClick={() => setSearchTerm("")}
                                             >
                                                 Limpar pesquisa
@@ -153,9 +263,9 @@ const HubView = () => {
                                         </>
                                     ) : (
                                         <>
-                                            <span className="empty-state-icon">📚</span>
-                                            <h3 className="empty-state-title">Nenhuma série disponível</h3>
-                                            <p className="empty-state-description">
+                                            <div className="hub-empty-state-icon">📚</div>
+                                            <h3 className="hub-empty-state-title">Nenhuma série disponível</h3>
+                                            <p className="hub-empty-state-description">
                                                 Este hub ainda não possui séries cadastradas.
                                             </p>
                                         </>
@@ -165,14 +275,14 @@ const HubView = () => {
                         </div>
                     </>
                 ) : (
-                    <div className="empty-state">
-                        <span className="empty-state-icon">🌐</span>
-                        <h2 className="empty-state-title">Hub não encontrado</h2>
-                        <p className="empty-state-description">
+                    <div className="hub-empty-state">
+                        <div className="hub-empty-state-icon">🌐</div>
+                        <h2 className="hub-empty-state-title">Hub não encontrado</h2>
+                        <p className="hub-empty-state-description">
                             Não foi possível carregar os dados do hub.
                         </p>
-                        <Link to="/hub-loader" className="btn btn-primary">
-                            Voltar para conexão
+                        <Link to="/" className="hub-btn hub-btn-primary">
+                            Voltar ao início
                         </Link>
                     </div>
                 )}

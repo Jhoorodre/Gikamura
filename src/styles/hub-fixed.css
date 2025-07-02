@@ -956,3 +956,51 @@
         transition-duration: 0.01ms !important;
     }
 }
+
+/* === CONTROLES DE SINCRONIZAÇÃO === */
+.sync-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+}
+
+.sync-btn {
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--font-size-xs);
+    border-radius: var(--radius-md);
+    background: rgba(var(--accent-rgb), 0.1);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
+    color: var(--color-accent);
+    transition: all var(--transition-base);
+}
+
+.sync-btn:hover:not(:disabled) {
+    background: rgba(var(--accent-rgb), 0.2);
+    transform: scale(1.05);
+}
+
+.sync-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    animation: pulse 1s infinite;
+}
+
+.status-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+@media (max-width: 640px) {
+    .sync-controls {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-2);
+    }
+    
+    .sync-btn {
+        padding: var(--space-2) var(--space-4);
+        font-size: var(--font-size-sm);
+    }
+}

@@ -6,7 +6,68 @@ export const useServiceWorker = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
-    // Registrar Service Worker
+    // Forçar desregistro completo do Service Worker para resolver problemas de CORS
+    const forceUnregisterSW = async () => {
+      // Verificar se já foi executado para evitar loop infinito
+      const swCleanupKey = 'gikamoe-sw-cleanup-done';
+      if (sessionStorage.getItem(swCleanupKey)) {
+        console.log('✅ [SW] Limpeza já foi executada nesta sessão');
+        return;
+      }
+
+      console.log('🚫 [DEV] Forçando desregistro COMPLETO de todos os Service Workers...');
+      
+      if ('serviceWorker' in navigator) {
+        try {
+          // 1. Desregistrar todas as registrations
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          
+          if (registrations.length === 0) {
+            console.log('✅ [SW] Nenhum Service Worker encontrado');
+            sessionStorage.setItem(swCleanupKey, 'true');
+            return;
+          }
+          
+          for (const registration of registrations) {
+            console.log('🗑️ Desregistrando Service Worker:', registration.scope);
+            await registration.unregister();
+          }
+          
+          // 2. Limpar todos os caches
+          if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            for (const cacheName of cacheNames) {
+              console.log('🗑️ Removendo cache:', cacheName);
+              await caches.delete(cacheName);
+            }
+          }
+          
+          console.log('✅ Service Workers e caches completamente removidos');
+          
+          // Marcar como concluído ANTES de recarregar
+          sessionStorage.setItem(swCleanupKey, 'true');
+          
+          // 3. Recarregar APENAS uma vez
+          console.log('🔄 Recarregando página para aplicar mudanças...');
+          window.location.reload(true);
+          
+        } catch (error) {
+          console.error('❌ Erro ao desregistrar Service Workers:', error);
+          sessionStorage.setItem(swCleanupKey, 'error');
+        }
+      }
+    };
+
+    // Em desenvolvimento, tentar desregistrar (mas apenas uma vez por sessão)
+    const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
+    
+    if (isDevelopment) {
+      forceUnregisterSW();
+      return;
+    }
+
+    /*
+    // Código original comentado
     const registerSW = async () => {
       if ('serviceWorker' in navigator) {
         try {
@@ -37,9 +98,10 @@ export const useServiceWorker = () => {
           console.error('Erro ao registrar Service Worker:', error);
         }
       }
-    };
-
-    registerSW();
+      */
+    
+    // Chama a função de desregistro em vez de registro
+    // registerSW();
 
     // Monitorar status de conectividade
     const handleOnline = () => setIsOnline(true);

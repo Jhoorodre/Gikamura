@@ -1,9 +1,10 @@
-import { useRef, useEffect, useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useRef, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
 import { useRemoteStorageContext } from './context/RemoteStorageContext';
 import { useServiceWorker } from './hooks/useServiceWorker';
 import { useNetworkNotifications } from './hooks/useNetworkMonitor';
+import { useHubLoader } from './hooks/useHubLoader';
 import ItemDetailView from './views/ItemDetailView';
 import ReaderView from './views/ReaderView';
 import Spinner from './components/common/Spinner';
@@ -15,101 +16,45 @@ import HubRouteHandler from './views/HubRouteHandler';
 import CollectionPage from './pages/CollectionPage';
 import WorksPage from './pages/WorksPage';
 import UploadPage from './pages/UploadPage';
+import SeriesDetailPage from './pages/SeriesDetailPage';
 import ArrowNavigation from './components/common/ArrowNavigation';
 import GlobalRemoteStorageWidget from './components/common/SimpleRemoteStorageWidgetNew';
 import RemoteStorageDebug from './components/common/RemoteStorageDebug';
-import { encodeUrl } from './utils/encoding';
+import { runFullDiagnostic } from './utils/networkDebug';
 
 function App() {
-    const {
-        isSyncing,
-        conflictMessage
-    } = useAppContext();
-    
-    const { isConnected } = useRemoteStorageContext();
+    const { conflictMessage: appConflictMessage } = useAppContext();
+    const { isConnected: remoteStorageConnected, isSyncing, conflictMessage } = useRemoteStorageContext();
     const { isOnline, updateAvailable, applyUpdate } = useServiceWorker();
     const { networkMessage, dismissSlowMessage } = useNetworkNotifications();
-    const navigate = useNavigate();
-    const [hubUrl, setHubUrl] = useState("https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/refs/heads/main/hub_tog.json");
-    const [loading, setLoading] = useState(false);
+    
+    // Hook centralizado para carregamento de hubs (SEM URL padrão para evitar carregamento automático)
+    const { url: hubUrl, setUrl: setHubUrl, loading, handleSubmit: handleLoadHub } = useHubLoader();
 
     useEffect(() => {
         createParticles();
-    }, []);
+        console.log('🚀 [App] Aplicação iniciada - Remote Storage conectado:', remoteStorageConnected);
+    }, []); // FIXO: Removendo dependência que pode causar loop
 
-    const handleLoadHub = (e) => {
-        e.preventDefault();
-        if (!hubUrl.trim()) return;
-        
-        setLoading(true);
-        try {
-            const encodedHubUrl = encodeUrl(hubUrl.trim());
-            navigate(`/hub/${encodedHubUrl}`);
-        } catch (error) {
-            console.error("Falha ao codificar a URL do hub:", error);
-            setLoading(false);
+    // Diagnóstico uma única vez na inicialização
+    useEffect(() => {
+        const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
+        if (isDevelopment) {
+            console.log('🩺 [App] Executando diagnóstico de rede uma única vez...');
+            runFullDiagnostic().then(() => {
+                console.log('✅ [App] Diagnóstico completo finalizado');
+            }).catch(error => {
+                console.error('❌ [App] Erro no diagnóstico:', error);
+            });
         }
-    };
-
-    // Mostrar apenas placeholder e widget se não estiver conectado
-    if (!isConnected) {
-        return (
-            <div className="min-h-screen flex flex-col bg-gray-900 text-white">
-                <GlobalRemoteStorageWidget />
-                
-                <div className="flex-1 flex items-center justify-center">
-                    <div className="text-center space-y-6 max-w-md mx-auto px-6">
-                        <h1 className="text-4xl font-bold text-white mb-4">
-                            Gikamoe
-                        </h1>
-                        
-                        <div className="space-y-3">
-                            <p className="text-gray-300 text-lg">
-                                Conecte-se ao Remote Storage ou cole um link JSON
-                            </p>
-                            <p className="text-gray-400 text-sm">
-                                Cole o link direto do arquivo JSON
-                            </p>
-                        </div>
-
-                        {/* Formulário para carregar hub via JSON */}
-                        <form onSubmit={handleLoadHub} className="w-full space-y-4">
-                            <input
-                                type="text"
-                                value={hubUrl}
-                                onChange={(e) => setHubUrl(e.target.value)}
-                                placeholder="https://raw.githubusercontent.com/..."
-                                className="w-full p-3 bg-gray-800 rounded-lg border border-gray-600 focus:border-blue-500 transition-all duration-300 text-white placeholder-gray-400"
-                                disabled={loading}
-                            />
-                            <button
-                                type="submit"
-                                disabled={loading || !hubUrl.trim()}
-                                className="w-full p-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {loading ? 'Carregando...' : 'Acessar Hub'}
-                            </button>
-                        </form>
-
-                        <div className="mt-8 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-                            <p className="text-gray-400 text-xs">
-                                Remote Storage permite sincronizar seus dados entre dispositivos de forma segura e privada.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                
-                {/* Debug do RemoteStorage - apenas em desenvolvimento */}
-                {process.env.NODE_ENV === 'development' && <RemoteStorageDebug />}
-            </div>
-        );
-    }
+    }, []); // Executa apenas uma vez
 
     return (
         <div className="min-h-screen flex flex-col">
+            {/* Componentes globais sempre presentes */}
             <ArrowNavigation />
             <GlobalRemoteStorageWidget />
-            <RemoteStorageDebug />
+            {process.env.NODE_ENV === 'development' && <RemoteStorageDebug />}
             
             {/* Notificações de Rede Inteligentes */}
             {networkMessage && (
@@ -158,28 +103,78 @@ function App() {
                     <ErrorMessage message={conflictMessage} />
                 </div>
             )}
-            
-            <main className="flex-grow flex flex-col">
-                <div className="container mx-auto px-4 py-8 w-full">
-                    <Routes>
-                        {/* Rota principal que exibe o conteúdo ou o formulário */}
-                        <Route path="/" element={<MainContent />} />
-                        {/* Nova rota para carregar o Hub */}
-                        <Route path="/hub/:encodedUrl" element={<HubRouteHandler />} />
-                        {/* ROTA DA SÉRIE ATUALIZADA */}
-                        <Route path="/series/:encodedId" element={<ItemDetailView />} />
-                        {/* ROTA DO LEITOR ATUALIZADA */}
-                        <Route path="/read/:encodedSeriesId/:encodedEntryKey" element={<ReaderView />} />
-                        <Route path="/redirect/:base64Url" element={<RedirectPage />} />
-                        {/* ROTA DA COLEÇÃO */}
-                        <Route path="/collection" element={<CollectionPage />} />
-                        {/* ROTA DAS OBRAS */}
-                        <Route path="/works" element={<WorksPage />} />
-                        {/* ROTA DO UPLOAD */}
-                        <Route path="/upload" element={<UploadPage />} />
-                    </Routes>
+            {appConflictMessage && (
+                <div className="conflict-indicator">
+                    <ErrorMessage message={appConflictMessage} />
                 </div>
-            </main>
+            )}
+
+            {/* Sistema de Rotas Unificado */}
+            <Routes>
+                {/* Rota principal condicional */}
+                <Route path="/" element={
+                    !remoteStorageConnected ? (
+                        /* Modo 1: Sem Remote Storage - Sempre usa MainContent */
+                        <main className="flex-grow flex flex-col">
+                            <div className="container mx-auto px-4 py-8 w-full">
+                                <MainContent />
+                            </div>
+                        </main>
+                    ) : (
+                        /* Modo 2: Com Remote Storage */
+                        <main className="flex-grow flex flex-col">
+                            <div className="container mx-auto px-4 py-8 w-full">
+                                <MainContent />
+                            </div>
+                        </main>
+                    )
+                } />
+                
+                {/* Rotas sempre disponíveis com condicionais internas */}
+                <Route path="/collection" element={
+                    remoteStorageConnected ? <CollectionPage /> : 
+                    <div className="page-container">
+                        <div className="empty-state">
+                            <span className="empty-state-icon">🔐</span>
+                            <h2 className="empty-state-title">Remote Storage Necessário</h2>
+                            <p className="empty-state-description">
+                                Para acessar sua coleção, conecte-se ao Remote Storage.
+                            </p>
+                        </div>
+                    </div>
+                } />
+                <Route path="/works" element={
+                    remoteStorageConnected ? <WorksPage /> : 
+                    <div className="page-container">
+                        <div className="empty-state">
+                            <span className="empty-state-icon">🔐</span>
+                            <h2 className="empty-state-title">Remote Storage Necessário</h2>
+                            <p className="empty-state-description">
+                                Para acessar suas obras, conecte-se ao Remote Storage.
+                            </p>
+                        </div>
+                    </div>
+                } />
+                <Route path="/upload" element={
+                    remoteStorageConnected ? <UploadPage /> : 
+                    <div className="page-container">
+                        <div className="empty-state">
+                            <span className="empty-state-icon">🔐</span>
+                            <h2 className="empty-state-title">Remote Storage Necessário</h2>
+                            <p className="empty-state-description">
+                                Para fazer upload de conteúdo, conecte-se ao Remote Storage.
+                            </p>
+                        </div>
+                    </div>
+                } />
+
+                {/* Rotas globais sempre disponíveis */}
+                <Route path="/hub/:encodedUrl" element={<HubRouteHandler />} />
+                <Route path="/series/:encodedUrl" element={<SeriesDetailPage />} />
+                <Route path="/series/:encodedId" element={<ItemDetailView />} />
+                <Route path="/read/:encodedSeriesId/:encodedEntryKey" element={<ReaderView />} />
+                <Route path="/redirect/:base64Url" element={<RedirectPage />} />
+            </Routes>
         </div>
     );
 }
