@@ -73,7 +73,10 @@ export const useReader = () => {
 
     // Salva progresso de leitura
     const saveReadingProgress = useCallback(async (chapterId, pageIndex, totalPages) => {
-        if (!remoteStorage.connected || !currentReaderUrl) return;
+        if (!remoteStorage.connected || !currentReaderUrl) {
+            console.log('📚 [useReader] Progresso não salvo - RemoteStorage desconectado');
+            return Promise.resolve(); // Retorna Promise resolvida quando não há conexão
+        }
 
         try {
             const workId = generateWorkId(currentReaderUrl);
@@ -95,6 +98,7 @@ export const useReader = () => {
             console.log('💾 [useReader] Progresso salvo:', { chapterId, pageIndex, totalPages });
         } catch (error) {
             console.error('❌ [useReader] Erro ao salvar progresso:', error);
+            throw error; // Re-throw para manter comportamento de erro
         }
     }, [currentReaderUrl, readingProgress]);
 

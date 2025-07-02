@@ -52,31 +52,25 @@ const HUB_SCHEMA = {
 };
 
 const READER_SCHEMA = {
-  required: ['title', 'description', 'status', 'chapters'],
+  required: ['title', 'chapters'],
   properties: {
-    title: { type: 'string', minLength: 1, maxLength: 200 },
-    description: { type: 'string', minLength: 10 },
-    status: { type: 'string', enum: ['Em Andamento', 'Completo', 'Hiato', 'Cancelado'] },
-    cover: { type: 'string', pattern: /^https?:\/\/.+/ },
+    title: { type: 'string', minLength: 1, maxLength: 500 },
+    description: { type: 'string' }, // Opcional e sem restrição mínima
+    status: { type: 'string' }, // Aceita qualquer string
+    cover: { type: 'string' }, // URL opcional sem validação rígida
+    author: { type: 'string' }, // Autor opcional
+    artist: { type: 'string' }, // Artista opcional
     chapters: { type: 'object', minProperties: 1 }
   },
   chapters: {
-    keyPattern: /^\d{3}$/,
+    keyPattern: /^.+$/, // Aceita qualquer chave não vazia (001, 002, Cap-1, etc.)
     value: {
       required: ['title', 'groups'],
       properties: {
         title: { type: 'string', minLength: 1 },
-        volume: { type: 'string' },
-        last_updated: { type: 'string', pattern: /^\d+$/ },
-        groups: { type: 'object', minProperties: 1 }
-      },
-      groups: {
-        keyPattern: /.+/,
-        value: {
-          type: 'array',
-          minLength: 1,
-          items: { type: 'string', pattern: /^https?:\/\/.+/ }
-        }
+        volume: { type: 'string' }, // Volume opcional
+        last_updated: { type: 'string' }, // Timestamp opcional
+        groups: { type: 'object', minProperties: 1, flexibleStructure: true }
       }
     }
   }
@@ -166,13 +160,13 @@ const validateProperty = (value, schema, path = '') => {
 };
 
 /**
- * Valida uma seção do objeto
+ * Valida uma seção do objeto com flexibilidade para estruturas dinâmicas
  */
 const validateSection = (data, schema, sectionName = '') => {
   const errors = [];
   const section = sectionName ? data[sectionName] : data;
   
-  if (!section) {
+  if (!section && sectionName) {
     errors.push(`Seção obrigatória '${sectionName}' não encontrada`);
     return errors;
   }
@@ -190,26 +184,26 @@ const validateSection = (data, schema, sectionName = '') => {
   if (schema.properties) {
     for (const [property, propertySchema] of Object.entries(schema.properties)) {
       if (section[property] !== undefined) {
-        const propertyErrors = validateProperty(
-          section[property], 
-          propertySchema, 
-          `${sectionName}.${property}`
-        );
-        errors.push(...propertyErrors);
+        // Para propriedades com flexibleStructure, apenas validar o tipo
+        if (propertySchema.flexibleStructure && propertySchema.type === 'object') {
+          if (typeof section[property] !== 'object' || section[property] === null || Array.isArray(section[property])) {
+            errors.push(`${sectionName}.${property}: Deve ser um objeto`);
+          } else if (propertySchema.minProperties) {
+            const keys = Object.keys(section[property]);
+            if (keys.length < propertySchema.minProperties) {
+              errors.push(`${sectionName}.${property}: Deve ter pelo menos ${propertySchema.minProperties} propriedades`);
+            }
+          }
+        } else {
+          // Validação normal para outras propriedades
+          const propertyErrors = validateProperty(
+            section[property], 
+            propertySchema, 
+            `${sectionName}.${property}`
+          );
+          errors.push(...propertyErrors);
+        }
       }
-    }
-  }
-  
-  // Validações especiais para estruturas dinâmicas
-  if (schema.keyPattern && schema.value) {
-    for (const [key, value] of Object.entries(section)) {
-      if (!validatePattern(key, schema.keyPattern)) {
-        errors.push(`${sectionName}.${key}: Chave com formato inválido`);
-        continue;
-      }
-      
-      const keyErrors = validateSection(value, schema.value, `${sectionName}.${key}`);
-      errors.push(...keyErrors);
     }
   }
   
@@ -327,22 +321,56 @@ export const validateReaderJSON = (data) => {
     // Validar estrutura de capítulos
     if (typeof data.chapters === 'object' && data.chapters !== null) {
       for (const [chapterKey, chapter] of Object.entries(data.chapters)) {
-        // Validar formato da chave do capítulo
-        if (!validatePattern(chapterKey, READER_SCHEMA.chapters.keyPattern)) {
-          errors.push(`Capítulo '${chapterKey}': Chave deve ter formato '001', '002', etc.`);
+        // Validar que a chave não é vazia
+        if (!chapterKey || chapterKey.trim() === '') {
+          errors.push(`Capítulo com chave vazia encontrado`);
           continue;
         }
         
-        // Validar estrutura do capítulo
-        const chapterErrors = validateSection(chapter, READER_SCHEMA.chapters.value, `chapters.${chapterKey}`);
-        errors.push(...chapterErrors);
+        // Validar estrutura básica do capítulo
+        if (typeof chapter !== 'object' || chapter === null) {
+          errors.push(`chapters.${chapterKey}: Deve ser um objeto`);
+          continue;
+        }
         
-        // Validar grupos dentro do capítulo
-        if (chapter.groups && typeof chapter.groups === 'object') {
-          for (const [groupName, pages] of Object.entries(chapter.groups)) {
-            const groupErrors = validateProperty(pages, READER_SCHEMA.chapters.value.groups.value, `chapters.${chapterKey}.groups.${groupName}`);
-            errors.push(...groupErrors);
+        // Validar campos obrigatórios do capítulo
+        if (!chapter.title || typeof chapter.title !== 'string' || chapter.title.trim() === '') {
+          errors.push(`chapters.${chapterKey}.title: Título obrigatório e deve ser uma string não vazia`);
+        }
+        
+        if (!chapter.groups || typeof chapter.groups !== 'object' || chapter.groups === null) {
+          errors.push(`chapters.${chapterKey}.groups: Grupos obrigatórios e devem ser um objeto`);
+        } else {
+          // Validar que tem pelo menos um grupo
+          const groupKeys = Object.keys(chapter.groups);
+          if (groupKeys.length === 0) {
+            errors.push(`chapters.${chapterKey}.groups: Deve ter pelo menos um grupo`);
+          } else {
+            // Validar cada grupo
+            for (const [groupName, pages] of Object.entries(chapter.groups)) {
+              if (!Array.isArray(pages)) {
+                errors.push(`chapters.${chapterKey}.groups.${groupName}: Deve ser um array de páginas`);
+              } else if (pages.length === 0) {
+                errors.push(`chapters.${chapterKey}.groups.${groupName}: Deve ter pelo menos uma página`);
+              } else {
+                // Validar que todas as páginas são strings
+                pages.forEach((page, index) => {
+                  if (typeof page !== 'string') {
+                    errors.push(`chapters.${chapterKey}.groups.${groupName}[${index}]: Página deve ser uma string (URL)`);
+                  }
+                });
+              }
+            }
           }
+        }
+        
+        // Validar campos opcionais se presentes
+        if (chapter.volume !== undefined && typeof chapter.volume !== 'string') {
+          errors.push(`chapters.${chapterKey}.volume: Se presente, deve ser uma string`);
+        }
+        
+        if (chapter.last_updated !== undefined && typeof chapter.last_updated !== 'string') {
+          errors.push(`chapters.${chapterKey}.last_updated: Se presente, deve ser uma string`);
         }
       }
     }

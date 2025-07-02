@@ -47,8 +47,8 @@ const SeriesDetailPage = () => {
     const handleReadChapter = (chapterId) => {
         console.log('🎯 Iniciando leitura do capítulo:', chapterId);
         selectChapter(chapterId);
-        // Aqui você pode navegar para a página de leitura
-        // navigate(`/read/${encodedUrl}/${chapterId}`);
+        // Navega para a página de leitura com o capítulo selecionado
+        navigate(`/read/${encodedUrl}/${encodeURIComponent(chapterId)}`);
     };
 
     const handleMarkAsRead = async (chapterId) => {
@@ -166,6 +166,32 @@ const SeriesDetailPage = () => {
                                         <span>Atualizado em {readerData.stats.lastUpdated}</span>
                                     </div>
                                 )}
+                            </div>
+
+                            {/* Botão principal de leitura */}
+                            <div className="flex gap-4">
+                                {readerData.chapterList && readerData.chapterList.length > 0 && (
+                                    <Button
+                                        onClick={() => {
+                                            // Se há progresso, continua do próximo não lido, senão começa do primeiro
+                                            const nextChapter = readerData.chapterList.find(ch => !ch.isRead) || readerData.chapterList[0];
+                                            handleReadChapter(nextChapter.id);
+                                        }}
+                                        size="lg"
+                                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                                    >
+                                        <PlayIcon className="w-5 h-5" />
+                                        {readerData.stats.readChapters > 0 ? 'Continuar Leitura' : 'Começar a Ler'}
+                                    </Button>
+                                )}
+                                
+                                <Button
+                                    onClick={() => navigate(-1)}
+                                    variant="outline"
+                                    size="lg"
+                                >
+                                    Voltar ao Hub
+                                </Button>
                             </div>
 
                             {/* Descrição */}

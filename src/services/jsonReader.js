@@ -265,7 +265,7 @@ export async function loadReaderJSON(url) {
         console.log('🔍 Validando estrutura do Reader JSON...');
         const validation = validateReaderJSON(data);
         
-        if (!validation.isValid) {
+        if (!validation.valid) {
             throw new Error(`Reader JSON inválido: ${validation.errors.join(', ')}`);
         }
 

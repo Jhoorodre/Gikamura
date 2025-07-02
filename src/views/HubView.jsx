@@ -103,10 +103,10 @@ const HubView = () => {
             console.log('🎯 Selecionando série:', item.title);
         }
         
-        // Codifica URL do reader.json para navegação
+        // Codifica URL do reader.json para navegação direta ao leitor
         const encodedReaderUrl = encodeUrl(item.data.url);
         selectItem(item, currentHubData.hub.id);
-        navigate(`/series/${encodedReaderUrl}`);
+        navigate(`/reader/${encodedReaderUrl}`);
     }, [selectItem, currentHubData?.hub?.id, navigate]);
 
     const handleSyncClick = useCallback(async () => {

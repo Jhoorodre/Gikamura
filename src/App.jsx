@@ -7,6 +7,7 @@ import { useNetworkNotifications } from './hooks/useNetworkMonitor';
 import { useHubLoader } from './hooks/useHubLoader';
 import ItemDetailView from './views/ItemDetailView';
 import ReaderView from './views/ReaderView';
+import ChapterReaderView from './views/ChapterReaderView';
 import Spinner from './components/common/Spinner';
 import ErrorMessage from './components/common/ErrorMessage';
 import RedirectPage from './pages/RedirectPage';
@@ -170,6 +171,8 @@ function App() {
 
                 {/* Rotas globais sempre disponíveis */}
                 <Route path="/hub/:encodedUrl" element={<HubRouteHandler />} />
+                <Route path="/reader/:encodedUrl" element={<ReaderView />} />
+                <Route path="/read/:encodedUrl/:chapterId" element={<ChapterReaderView />} />
                 <Route path="/series/:encodedUrl" element={<SeriesDetailPage />} />
                 <Route path="/series/:encodedId" element={<ItemDetailView />} />
                 <Route path="/read/:encodedSeriesId/:encodedEntryKey" element={<ReaderView />} />
