@@ -169,8 +169,8 @@ const ItemViewer = ({
     return (
         <div className={`${isFullscreen ? 'fixed inset-0 z-50' : ''} bg-black min-h-screen`}>
             {/* Header minimalista */}
-            <div className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                <div className="flex items-center justify-between p-3 bg-black/80 backdrop-blur-sm">
+            <div className={`fixed top-0 left-0 right-0 z-30 ${showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div className="flex items-center justify-between p-3 bg-black/80">
                     {onBack && (
                         <Button
                             onClick={onBack}
@@ -212,7 +212,7 @@ const ItemViewer = ({
                         <button
                             type="button"
                             onClick={readingDirection === 'rtl' ? goToNextPage : goToPrevPage}
-                            className="absolute left-0 top-0 w-1/3 h-full bg-transparent hover:bg-white/5 transition-colors z-20 cursor-w-resize"
+                            className="absolute left-0 top-0 w-1/3 h-full bg-transparent hover:opacity-80 z-20 cursor-w-resize"
                             aria-label="Página Anterior"
                             disabled={page === 0 && isFirstEntry}
                         />
@@ -232,7 +232,7 @@ const ItemViewer = ({
                         <button
                             type="button"
                             onClick={readingDirection === 'rtl' ? goToPrevPage : goToNextPage}
-                            className="absolute right-0 top-0 w-1/3 h-full bg-transparent hover:bg-white/5 transition-colors z-20 cursor-e-resize"
+                            className="absolute right-0 top-0 w-1/3 h-full bg-transparent hover:opacity-80 z-20 cursor-e-resize"
                             aria-label="Próxima Página"
                             disabled={page === totalPages - 1 && isLastEntry}
                         />

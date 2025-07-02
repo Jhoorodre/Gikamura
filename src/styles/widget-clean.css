@@ -11,7 +11,7 @@
     left: 20px !important;
     z-index: 9999 !important;
     pointer-events: none !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: var(--font-family-sans) !important;
 }
 
 #rs-widget-global *,
@@ -23,18 +23,16 @@
 #rs-widget-global .rs-widget,
 #remotestorage-widget .rs-widget {
     all: unset !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: var(--font-family-sans) !important;
     font-size: 12px !important;
     line-height: 1.2 !important;
-    color: #ffffff !important;
+    color: var(--color-accent-base) !important;
     border-radius: 50% !important;
     overflow: hidden !important;
-    box-shadow: 
-        0 6px 20px rgba(0, 0, 0, 0.25),
-        0 2px 8px rgba(0, 0, 0, 0.15) !important;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    box-shadow: none !important;
+    transition: background var(--transition-fast) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 /* === CLOSED STATE - SMALL ELEGANT BUBBLE === */
@@ -42,8 +40,8 @@
 #remotestorage-widget .rs-widget.rs-closed {
     width: 56px !important;
     height: 56px !important;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    background: var(--color-secondary-base) !important;
+    border: 2px solid var(--color-accent-base) !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
@@ -51,16 +49,13 @@
     position: relative !important;
 }
 
-/* Hover effect premium */
 #rs-widget-global .rs-widget.rs-closed:hover,
 #remotestorage-widget .rs-widget.rs-closed:hover {
-    transform: scale(1.05) translateY(-1px) !important;
-    box-shadow: 
-        0 8px 25px rgba(0, 0, 0, 0.3),
-        0 4px 15px rgba(99, 102, 241, 0.4) !important;
+    transform: none !important;
+    box-shadow: none !important;
+    background: var(--color-primary-hover) !important;
 }
 
-/* Icon in closed state */
 #rs-widget-global .rs-widget.rs-closed .rs-widget-icon,
 #remotestorage-widget .rs-widget.rs-closed .rs-widget-icon {
     display: flex !important;
@@ -74,22 +69,20 @@
     z-index: 2 !important;
 }
 
-/* Custom icon content */
 #rs-widget-global .rs-widget.rs-closed .rs-widget-icon::before,
 #remotestorage-widget .rs-widget.rs-closed .rs-widget-icon::before {
     content: '☁' !important;
     font-size: 20px !important;
-    color: #ffffff !important;
+    color: var(--color-accent-base) !important;
     display: block !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+    text-shadow: none !important;
 }
 
-/* Estado conectado */
 #rs-widget-global .rs-widget.rs-closed.rs-state-connected,
 #remotestorage-widget .rs-widget.rs-closed.rs-state-connected {
-    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
-    border-color: rgba(34, 197, 94, 0.5) !important;
-    animation: connectedPulse 4s ease-in-out infinite !important;
+    background: var(--color-success) !important;
+    border-color: var(--color-success) !important;
+    animation: none !important;
 }
 
 #rs-widget-global .rs-widget.rs-closed.rs-state-connected .rs-widget-icon::before,
@@ -105,59 +98,55 @@
     width: 280px !important;
     height: auto !important;
     max-height: 200px !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    background: var(--color-surface-primary) !important;
+    border: 1px solid var(--color-secondary-base) !important;
     border-radius: 12px !important;
     padding: 16px !important;
-    color: #1f2937 !important;
-    box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.15),
-        0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    color: var(--color-accent-base) !important;
+    box-shadow: none !important;
 }
 
-/* Input field styling */
 #rs-widget-global .rs-widget input,
 #remotestorage-widget .rs-widget input {
     width: 100% !important;
     padding: 8px 12px !important;
-    border: 2px solid #e5e7eb !important;
+    border: 2px solid var(--color-secondary-base) !important;
     border-radius: 6px !important;
     font-size: 14px !important;
     margin: 8px 0 !important;
-    background: #ffffff !important;
-    color: #1f2937 !important;
-    transition: border-color 0.2s ease !important;
+    background: var(--color-background) !important;
+    color: var(--color-accent-base) !important;
+    transition: border-color var(--transition-fast) !important;
 }
 
 #rs-widget-global .rs-widget input:focus,
 #remotestorage-widget .rs-widget input:focus {
     outline: none !important;
-    border-color: #6366f1 !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+    border-color: var(--color-accent-base) !important;
+    box-shadow: none !important;
 }
 
-/* Button styling */
 #rs-widget-global .rs-widget button,
 #remotestorage-widget .rs-widget button {
-    background: #6366f1 !important;
-    color: #ffffff !important;
+    background: var(--color-secondary-base) !important;
+    color: var(--color-accent-base) !important;
     border: none !important;
     padding: 8px 16px !important;
     border-radius: 6px !important;
     font-size: 12px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
+    transition: background var(--transition-fast) !important;
     margin: 4px 2px !important;
 }
 
 #rs-widget-global .rs-widget button:hover,
 #remotestorage-widget .rs-widget button:hover {
-    background: #4f46e5 !important;
-    transform: translateY(-1px) !important;
+    background: var(--color-primary-hover) !important;
+    color: var(--color-accent-hover) !important;
+    transform: none !important;
 }
 
-/* Close button */
 #rs-widget-global .rs-widget .rs-widget-close,
 #remotestorage-widget .rs-widget .rs-widget-close {
     position: absolute !important;
@@ -165,7 +154,7 @@
     right: 8px !important;
     width: 20px !important;
     height: 20px !important;
-    background: rgba(0, 0, 0, 0.1) !important;
+    background: var(--color-background) !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
@@ -174,27 +163,7 @@
     cursor: pointer !important;
 }
 
-/* Animation for state changes */
-@keyframes connectedPulse {
-    0%, 100% { 
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 0 rgba(34, 197, 94, 0.3);
-    }
-    50% { 
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 20px rgba(34, 197, 94, 0.6);
-    }
-}
-
-/* Animation for pulse effect */
-@keyframes pulse {
-    0%, 100% { 
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% { 
-        opacity: 0.8;
-        transform: scale(1.05);
-    }
-}
+/* Removidas animações e efeitos decorativos para o minimalismo */
 
 /* Responsive adjustments */
 @media (max-width: 480px) {

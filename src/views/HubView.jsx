@@ -20,6 +20,7 @@ const HubView = () => {
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [sortBy, setSortBy] = useState('title');
     const [showDisconnectedStatus, setShowDisconnectedStatus] = useState(true);
+    const [showConnectedStatus, setShowConnectedStatus] = useState(false);
     const navigate = useNavigate();
     
     // Ref para controlar logs excessivos
@@ -36,6 +37,19 @@ const HubView = () => {
             return () => clearTimeout(timer);
         }
     }, [isConnected, showDisconnectedStatus]);
+
+    // Exibe status conectado por 5 segundos apenas quando conecta
+    const prevIsConnectedRef = useRef(isConnected);
+    useEffect(() => {
+        if (!prevIsConnectedRef.current && isConnected) {
+            setShowConnectedStatus(true);
+            const timer = setTimeout(() => {
+                setShowConnectedStatus(false);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+        prevIsConnectedRef.current = isConnected;
+    }, [isConnected]);
 
     // Log controlado para debug (apenas quando há mudanças significativas)
     const currentDataSignature = currentHubData ? `${currentHubData.hub?.title}-${currentHubData.series?.length}` : 'no-data';
@@ -158,13 +172,15 @@ const HubView = () => {
 
                         {/* Status de Conexão */}
                         <div className="hub-connection-status">
-                            {isConnected ? (
+                            {isConnected && (isSyncing || showConnectedStatus) ? (
                                 <div className="status-card connected">
                                     <div className="status-dot"></div>
                                     <span className="status-text">
-                                        {isSyncing ? "🔄 Sincronizando..." : "✅ Remote Storage Conectado"}
+                                        {isSyncing
+                                            ? "🔄 Sincronizando..."
+                                            : (showConnectedStatus && "✅ Remote Storage Conectado")}
                                     </span>
-                                    {!isSyncing && (
+                                    {!isSyncing && showConnectedStatus && (
                                         <button 
                                             className="hub-btn"
                                             onClick={handleSyncClick}
@@ -176,7 +192,7 @@ const HubView = () => {
                                     )}
                                 </div>
                             ) : (
-                                showDisconnectedStatus && (
+                                !isConnected && showDisconnectedStatus && (
                                     <div className="status-card disconnected">
                                         <div className="status-dot"></div>
                                         <span className="status-text">⚠️ Remote Storage Desconectado</span>
@@ -195,33 +211,25 @@ const HubView = () => {
                         {/* Cards de Navegação - apenas quando conectado */}
                         {isConnected && (
                             <div className="hub-nav-grid">
-                                <Link to="/collection" className="hub-nav-card">
-                                    <div className="hub-nav-icon">
-                                        <BookOpenIcon />
-                                    </div>
+                                <Link to="/collection" className="hub-nav-card" aria-label="Ir para coleção">
+                                    <div className="hub-nav-icon" aria-hidden="true">📚</div>
                                     <div className="hub-nav-content">
-                                        <h3>Coleção</h3>
-                                        <p>Itens favoritados</p>
+                                        <h3 className="hub-nav-title">Coleção</h3>
+                                        <p className="hub-nav-desc">Itens favoritados</p>
                                     </div>
                                 </Link>
-
-                                <Link to="/works" className="hub-nav-card">
-                                    <div className="hub-nav-icon">
-                                        ⭐
-                                    </div>
+                                <Link to="/works" className="hub-nav-card" aria-label="Ir para obras">
+                                    <div className="hub-nav-icon" aria-hidden="true">★</div>
                                     <div className="hub-nav-content">
-                                        <h3>Obras</h3>
-                                        <p>Conteúdo especial</p>
+                                        <h3 className="hub-nav-title">Obras</h3>
+                                        <p className="hub-nav-desc">Conteúdo especial</p>
                                     </div>
                                 </Link>
-
-                                <Link to="/upload" className="hub-nav-card">
-                                    <div className="hub-nav-icon">
-                                        📤
-                                    </div>
+                                <Link to="/upload" className="hub-nav-card" aria-label="Ir para upload">
+                                    <div className="hub-nav-icon" aria-hidden="true">⇧</div>
                                     <div className="hub-nav-content">
-                                        <h3>Upload</h3>
-                                        <p>Enviar conteúdo</p>
+                                        <h3 className="hub-nav-title">Upload</h3>
+                                        <p className="hub-nav-desc">Enviar conteúdo</p>
                                     </div>
                                 </Link>
                             </div>

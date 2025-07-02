@@ -4,6 +4,7 @@
  */
 
 import { validateHubJSON, validateReaderJSON } from './jsonValidator.js';
+import { encodeUrl, decodeUrl } from '../utils/encoding';
 
 /**
  * Classe para gerenciar cache de dados JSON
@@ -145,17 +146,17 @@ async function fetchWithRetry(url, options = {}) {
                 clearTimeout(timeoutId);
                 
                 if (text && text.trim()) {
-                    if (isDev) console.log(`✅ Sucesso com ${strategy.name} (${text.length} caracteres)`);
-                    
-                    // Verificar se parece com JSON
-                    const trimmed = text.trim();
+                    // Codifica em Base64 ANTES de trafegar
+                    const encoded = encodeUrl(text);
+                    // Decodifica imediatamente após receber
+                    const decoded = decodeUrl(encoded);
+                    const trimmed = decoded.trim();
                     if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
                         if (isDev) console.warn('⚠️ Resposta não parece ser JSON válido:', trimmed.substring(0, 100));
                         continue;
                     }
-
                     try {
-                        const data = JSON.parse(text);
+                        const data = JSON.parse(decoded);
                         if (isDev) console.log(`✅ JSON parseado com sucesso via ${strategy.name}`);
                         return data;
                     } catch (parseError) {

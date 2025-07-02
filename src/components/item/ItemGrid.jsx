@@ -6,7 +6,7 @@ const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
         {items.map((item) => (
             <div 
                 key={item.id} 
-                className="media-card cursor-pointer group relative"
+                className="media-card cursor-pointer relative"
             >
                 {/* O botão de fixar não deve aparecer no card estático */}
                 {onPinToggle && !item.isStatic && (

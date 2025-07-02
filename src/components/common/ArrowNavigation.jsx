@@ -1,150 +1,105 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
-import { useAppContext } from '../../context/AppContext';
 
 const ArrowNavigation = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { isConnected } = useRemoteStorageContext() || { isConnected: false };
-    const { clearHubData } = useAppContext();
-    
-    // Definir as rotas disponíveis baseado na conexão
+    const { isConnected } = useRemoteStorageContext() || {};
+
     const routes = [
-        { path: '/', label: 'Hub', icon: '🏠', requiresConnection: false },
-        { path: '/collection', label: 'Coleção', icon: '📚', requiresConnection: true },
-        { path: '/works', label: 'Obras', icon: '⭐', requiresConnection: true },
-        { path: '/upload', label: 'Upload', icon: '📤', requiresConnection: true },
+        { path: '/', requiresConnection: false },
+        { path: '/collection', requiresConnection: true },
+        { path: '/works', requiresConnection: true },
+        { path: '/upload', requiresConnection: true },
     ];
 
-    // Filtrar rotas baseado na conexão
-    const availableRoutes = routes.filter(route => !route.requiresConnection || isConnected);
+    const availableRoutes = routes.filter(route => 
+        !route.requiresConnection || isConnected
+    );
     
-    // Debug log para verificar rotas disponíveis
-    if (process.env.NODE_ENV === 'development') {
-        console.log('🧭 [ArrowNavigation] Estado:', { 
-            isConnected, 
-            availableRoutes: availableRoutes.map(r => r.label),
-            currentPath: location.pathname 
-        });
-    }
-    
-    // Encontrar índice da rota atual
-    const currentIndex = availableRoutes.findIndex(route => route.path === location.pathname);
-    
-    // Função para navegar para a próxima página
-    const navigateNext = () => {
-        const nextIndex = (currentIndex + 1) % availableRoutes.length;
+    const currentIndex = availableRoutes.findIndex(route => 
+        route.path === location.pathname
+    );
+
+    if (availableRoutes.length <= 1) return null;
+
+    const handleNavigation = (direction) => {
+        const nextIndex = direction === 'next' 
+            ? (currentIndex + 1) % availableRoutes.length
+            : currentIndex === 0 
+                ? availableRoutes.length - 1 
+                : currentIndex - 1;
+        
         navigate(availableRoutes[nextIndex].path);
     };
-    
-    // Função para navegar para a página anterior
-    const navigatePrev = () => {
-        const prevIndex = currentIndex - 1 < 0 ? availableRoutes.length - 1 : currentIndex - 1;
-        navigate(availableRoutes[prevIndex].path);
-    };
 
-    // Não mostrar navegação em rotas específicas ou quando há apenas uma rota disponível
-    const shouldShowNavigation = availableRoutes.length > 1 && 
-        !location.pathname.startsWith('/hub/') &&
-        !location.pathname.startsWith('/series/') &&
-        !location.pathname.startsWith('/read/');
+    const NavButton = ({ direction, icon, label }) => (
+        <button
+            onClick={() => handleNavigation(direction)}
+            className="group relative p-3 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 focus:from-blue-600 focus:to-purple-700 focus:outline-none transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg hover:shadow-xl"
+            aria-label={label}
+        >
+            <svg 
+                className="w-5 h-5 text-white transition-transform duration-300 group-hover:scale-110" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+                strokeWidth={2.5}
+            >
+                <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
+            </svg>
+            
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-30 transition-opacity duration-300 blur-md -z-10 scale-150"></div>
+        </button>
+    );
 
-    if (!shouldShowNavigation) {
-        return (
-            <>
-                {/* Botão de retorno para rotas internas */}
-                {(location.pathname.startsWith('/hub/') || 
-                  location.pathname.startsWith('/series/') || 
-                  location.pathname.startsWith('/read/')) && (
-                    <div className="fixed top-4 left-4 z-50">
-                        <button
-                            onClick={() => {
-                                if (!isConnected && location.pathname.startsWith('/hub/')) {
-                                    // Modo desconectado: limpa dados do hub e volta ao placeholder
-                                    clearHubData();
-                                    navigate('/');
-                                } else {
-                                    // Modo conectado ou outras rotas: volta uma página
-                                    navigate(-1);
-                                }
-                            }}
-                            className="bg-surface-secondary/90 backdrop-blur-sm p-3 rounded-xl shadow-lg hover:bg-accent hover:text-black transition-all duration-300 border border-surface-tertiary"
-                            title={!isConnected && location.pathname.startsWith('/hub/') ? "Voltar ao Hub Loader" : "Voltar"}
-                            aria-label={!isConnected && location.pathname.startsWith('/hub/') ? "Voltar ao Hub Loader" : "Voltar à página anterior"}
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                        </button>
-                    </div>
-                )}
-            </>
-        );
-    }
-
-    const currentRoute = availableRoutes[currentIndex];
-    const nextRoute = availableRoutes[(currentIndex + 1) % availableRoutes.length];
-    const prevRoute = availableRoutes[currentIndex - 1 < 0 ? availableRoutes.length - 1 : currentIndex - 1];
+    const ProgressDots = () => (
+        <div className="flex items-center gap-2">
+            {availableRoutes.map((_, index) => (
+                <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        index === currentIndex 
+                            ? 'bg-blue-500 scale-125 shadow-lg shadow-blue-500/50' 
+                            : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                />
+            ))}
+        </div>
+    );
 
     return (
-        <>
-            {/* Navegação por setas */}
-            <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40">
-                <div className="flex items-center gap-4 bg-surface-primary/90 backdrop-blur-sm p-3 rounded-2xl shadow-xl border border-surface-tertiary">
-                    {/* Seta Esquerda */}
-                    <button
-                        onClick={navigatePrev}
-                        className="p-3 bg-surface-secondary rounded-xl hover:bg-accent hover:text-black transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg"
-                        title={`Ir para ${prevRoute.label}`}
-                        aria-label={`Navegar para ${prevRoute.label}`}
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-
-                    {/* Indicador da página atual */}
-                    <div className="flex items-center gap-3 px-4">
-                        <span className="text-2xl">{currentRoute?.icon}</span>
-                        <div className="text-center">
-                            <div className="text-sm font-semibold text-accent">{currentRoute?.label}</div>
-                            <div className="text-xs text-text-secondary">
-                                {currentIndex + 1} de {availableRoutes.length}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Seta Direita */}
-                    <button
-                        onClick={navigateNext}
-                        className="p-3 bg-surface-secondary rounded-xl hover:bg-accent hover:text-black transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg"
-                        title={`Ir para ${nextRoute.label}`}
-                        aria-label={`Navegar para ${nextRoute.label}`}
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
+        <nav 
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50" 
+            role="navigation"
+        >
+            {/* Main container with glassmorphism */}
+            <div className="flex items-center gap-6 px-6 py-4 rounded-2xl backdrop-blur-xl bg-white/90 border border-gray-200/50 shadow-2xl shadow-black/10">
+                
+                {/* Left arrow */}
+                <NavButton 
+                    direction="prev" 
+                    icon="M15 19l-7-7 7-7" 
+                    label="Página anterior" 
+                />
+                
+                {/* Progress indicator */}
+                <div className="px-4">
+                    <ProgressDots />
                 </div>
-
-                {/* Navegação rápida por pontos (opcional) */}
-                <div className="flex justify-center mt-3 gap-2">
-                    {availableRoutes.map((route, index) => (
-                        <button
-                            key={route.path}
-                            onClick={() => navigate(route.path)}
-                            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                index === currentIndex 
-                                    ? 'bg-accent scale-125' 
-                                    : 'bg-surface-tertiary hover:bg-accent/50'
-                            }`}
-                            title={route.label}
-                            aria-label={`Ir para ${route.label}`}
-                        />
-                    ))}
-                </div>
+                
+                {/* Right arrow */}
+                <NavButton 
+                    direction="next" 
+                    icon="M9 5l7 7-7 7" 
+                    label="Próxima página" 
+                />
             </div>
-        </>
+            
+            {/* Subtle bottom glow */}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-32 h-4 bg-gradient-to-r from-transparent via-blue-400/30 to-transparent blur-xl"></div>
+        </nav>
     );
 };
 

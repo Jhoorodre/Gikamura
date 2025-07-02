@@ -118,7 +118,7 @@ const SeriesDetailPage = () => {
                                 <Image
                                     src={readerData.cover}
                                     alt={readerData.title}
-                                    className="w-full h-full object-cover rounded-lg shadow-2xl"
+                                    className="w-full h-full object-cover rounded-lg"
                                     fallback="/placeholder-cover.jpg"
                                 />
                             </div>

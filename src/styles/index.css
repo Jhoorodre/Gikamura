@@ -29,356 +29,102 @@
     font-family: var(--font-family-mono); 
     font-weight: var(--font-weight-bold);
     letter-spacing: 0.05em;
-    background: linear-gradient(135deg, 
-        var(--color-text-primary) 0%, 
-        var(--color-accent) 100%
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 30px rgba(var(--accent-rgb), 0.3);
+    color: var(--color-accent);
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: unset;
+    text-shadow: none;
 }
 
 /* ========================================================================== */
-/* ==                    FUNDO ANIMADO SOFISTICADO                        == */
-/* ========================================================================== */
-
-.animated-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: -10;
-    background: var(--color-background);
-    background-image:
-        /* Gradientes principais baseados na paleta do roadmap */
-        radial-gradient(ellipse 800px 600px at 20% 30%, 
-            rgba(var(--surface-secondary-rgb), 0.12) 0%, 
-            transparent 50%
-        ),
-        radial-gradient(ellipse 600px 800px at 80% 20%, 
-            rgba(var(--accent-rgb), 0.08) 0%, 
-            transparent 50%
-        ),
-        radial-gradient(ellipse 1000px 400px at 50% 80%, 
-            rgba(var(--surface-secondary-rgb), 0.06) 0%, 
-            transparent 60%
-        ),
-        /* Textura sutil */
-        radial-gradient(circle at 25% 25%, 
-            rgba(var(--accent-rgb), 0.02) 0%, 
-            transparent 50%
-        ),
-        radial-gradient(circle at 75% 75%, 
-            rgba(var(--surface-secondary-rgb), 0.03) 0%, 
-            transparent 50%
-        );
-    /* Animação sutil de respiração */
-    animation: breathe 20s ease-in-out infinite;
-}
-
-@keyframes breathe {
-    0%, 100% { 
-        opacity: 1; 
-        transform: scale(1);
-    }
-    50% { 
-        opacity: 0.8; 
-        transform: scale(1.02);
-    }
-}
-
-/* ========================================================================== */
-/* ==                  SISTEMA DE PARTÍCULAS REFINADO                     == */
-/* ========================================================================== */
-
-#particles-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: -5;
-    pointer-events: none;
-    overflow: hidden;
-    opacity: 0.4;
-}
-
-.particle {
-    position: absolute;
-    bottom: -10px;
-    border-radius: 50%;
-    pointer-events: none;
-    animation: float-elegant 45s linear infinite;
-    opacity: 0;
-}
-
-/* Partículas baseadas na paleta do roadmap */
-.particle:nth-child(odd) {
-    background: linear-gradient(135deg, 
-        rgba(var(--accent-rgb), 0.6) 0%, 
-        rgba(var(--accent-rgb), 0.2) 100%
-    );
-    box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.3);
-}
-
-.particle:nth-child(even) {
-    background: linear-gradient(135deg, 
-        rgba(var(--surface-secondary-rgb), 0.4) 0%, 
-        rgba(var(--surface-secondary-rgb), 0.1) 100%
-    );
-    box-shadow: 0 0 8px rgba(var(--surface-secondary-rgb), 0.2);
-}
-
-@keyframes float-elegant {
-    0% {
-        transform: translateY(0) translateX(0) rotate(0deg) scale(0.2);
-        opacity: 0;
-    }
-    10% {
-        opacity: 0.6;
-    }
-    20% {
-        transform: translateY(-20vh) translateX(10px) rotate(45deg) scale(0.4);
-    }
-    40% {
-        transform: translateY(-40vh) translateX(-15px) rotate(90deg) scale(0.6);
-    }
-    60% {
-        transform: translateY(-60vh) translateX(20px) rotate(180deg) scale(0.8);
-    }
-    80% {
-        transform: translateY(-80vh) translateX(-10px) rotate(270deg) scale(1);
-        opacity: 0.4;
-    }
-    100% {
-        transform: translateY(-110vh) translateX(0px) rotate(360deg) scale(0.2);
-        opacity: 0;
-    }
-}
-
-/* ========================================================================== */
-/* ==                         ANIMAÇÕES GLOBAIS                           == */
-/* ========================================================================== */
-
-.fade-in {
-    animation: fadeInSmooth var(--transition-slow) ease-out forwards;
-}
-
-@keyframes fadeInSmooth {
-    from { 
-        opacity: 0; 
-        transform: translateY(var(--space-4)) scale(0.95);
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0) scale(1);
-    }
-}
-
-.scale-in {
-    animation: scaleIn var(--transition-base) ease-out forwards;
-}
-
-@keyframes scaleIn {
-    from { 
-        opacity: 0; 
-        transform: scale(0.9);
-    }
-    to { 
-        opacity: 1; 
-        transform: scale(1);
-    }
-}
-
-.slide-up {
-    animation: slideUp var(--transition-slow) ease-out forwards;
-}
-
-@keyframes slideUp {
-    from { 
-        opacity: 0; 
-        transform: translateY(var(--space-8));
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0);
-    }
-}
-
-/* ========================================================================== */
-/* ==                    PÁGINA MINIMALISTA MELHORADA                     == */
+/* ==                  LAYOUT MINIMALISTA                                 == */
 /* ========================================================================== */
 
 .minimal-page {
     background: var(--color-background);
+    color: var(--color-text-primary);
     min-height: 100vh;
-    position: relative;
+    padding: var(--space-8) var(--space-4);
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
-    align-items: center;
 }
 
-.minimal-page::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, 
-        rgba(var(--surface-secondary-rgb), 0.05) 0%,
-        transparent 50%,
-        rgba(var(--accent-rgb), 0.03) 100%
-    );
-    z-index: -1;
+/* Remove gradientes, partículas, animações e efeitos decorativos */
+.animated-bg, #particles-container, .glow-effect, .glass-morphism {
+    display: none !important;
 }
 
 /* ========================================================================== */
-/* ==               EFEITOS ESPECIAIS E MICRO-INTERAÇÕES                  == */
+/* ==                  ANIMAÇÕES GLOBAIS SIMPLIFICADAS                    == */
 /* ========================================================================== */
 
-.glow-effect {
-    box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3);
-    transition: box-shadow var(--transition-base);
-}
-
-.glow-effect:hover {
-    box-shadow: 0 0 30px rgba(var(--accent-rgb), 0.5);
-}
-
-.glass-morphism {
-    background: rgba(var(--surface-primary-rgb), 0.1);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(var(--accent-rgb), 0.2);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+.fade-in, .scale-in, .slide-up, .fade-in-minimal {
+    animation: none !important;
 }
 
 /* ========================================================================== */
-/* ==                      RESPONSIVIDADE GLOBAL                          == */
+/* ==                  BOTÕES E INPUTS MINIMALISTAS                       == */
 /* ========================================================================== */
 
-@media (max-width: 768px) {
-    .animated-bg {
-        background-image:
-            radial-gradient(ellipse 400px 300px at 20% 30%, 
-                rgba(var(--surface-secondary-rgb), 0.08) 0%, 
-                transparent 50%
-            ),
-            radial-gradient(ellipse 300px 400px at 80% 70%, 
-                rgba(var(--accent-rgb), 0.06) 0%, 
-                transparent 50%
-            );
-    }
-    
-    #particles-container {
-        opacity: 0.2;
-    }
+button, .btn {
+    background: var(--color-secondary-base);
+    color: var(--color-accent-base);
+    border: none;
+    border-radius: var(--radius-base);
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-sans);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    box-shadow: none;
+}
+button:hover, .btn:hover {
+    background: var(--color-primary-hover);
+}
+button:active, .btn:active {
+    background: var(--color-primary-active);
+}
+button:disabled, .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .animated-bg,
-    .particle,
-    .fade-in,
-    .scale-in,
-    .slide-up {
-        animation: none !important;
-    }
-    
-    #particles-container {
-        display: none;
-    }
+input, textarea, select {
+    background: var(--color-surface-primary);
+    color: var(--color-accent-base);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-sans);
+    box-shadow: none;
+    outline: none;
+    transition: border var(--transition-fast);
 }
-
-/* ========================================================================== */
-/* ==                    MODO ALTO CONTRASTE                              == */
-/* ========================================================================== */
-
-@media (prefers-contrast: high) {
-    .animated-bg {
-        background: var(--color-background);
-        background-image: none;
-    }
-    
-    #particles-container {
-        display: none;
-    }
-    
-    .orbitron {
-        background: none;
-        -webkit-text-fill-color: var(--color-text-primary);
-        text-shadow: none;
-    }
+input:focus, textarea:focus, select:focus {
+    border-color: var(--color-secondary-base);
 }
 
 /* ========================================================================== */
-/* ==                     UTILITÁRIOS DE PERFORMANCE                      == */
+/* ==                  UTILITÁRIOS DE TEXTO E BORDAS                      == */
 /* ========================================================================== */
 
-.will-change-transform {
-    will-change: transform;
-}
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-accent { color: var(--color-accent-base); }
 
-.will-change-opacity {
-    will-change: opacity;
-}
+.border-primary { border-color: var(--color-border); }
+.border-accent { border-color: var(--color-secondary-base); }
 
-.hardware-accelerated {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-}
+/* ========================================================================== */
+/* ==                  ACESSIBILIDADE                                     == */
+/* ========================================================================== */
 
-/* Animações suaves */
-.fade-in-minimal {
-  animation: fadeInMinimal 0.8s ease-out;
-}
-
-@keyframes fadeInMinimal {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Indicadores de Sincronização e Conflito */
-.sync-indicator, .conflict-indicator {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    background-color: var(--color-surface-elevated, #fff);
-    color: var(--color-text-primary, #222);
-    padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
-    border-radius: var(--radius-lg, 0.5rem);
-    z-index: var(--z-popover, 1000);
-    box-shadow: var(--shadow-lg, 0 2px 8px rgba(0,0,0,0.15));
-    display: flex;
-    align-items: center;
-    gap: var(--space-3, 0.75rem);
-}
-
-.conflict-indicator {
-    background-color: var(--color-warning-bg, #fffbe6);
-    color: var(--color-warning-dark, #b45309);
-}
-
-/* Lazy loading de animações: exemplo de importação condicional (JS pode ser usado para carregar animations.css apenas quando necessário) */
-/* Exemplo: import('./animations.css'); */
-
-/* Micro-interações sutis */
-.btn:active, .card:active, .media-card:active {
-  transform: scale(0.98);
-}
-
-/* Foco visível reforçado para acessibilidade */
 *:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-secondary-base);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }

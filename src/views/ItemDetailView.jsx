@@ -69,7 +69,7 @@ const ItemDetailView = () => {
     return (
         <div className="fade-in">
              <div className="mb-4">
-                <Button onClick={handleGoBack} className="btn-secondary">
+                <Button onClick={handleGoBack} className="btn-secondary" variant="secondary" size="normal" aria-label="Voltar para a lista">
                     &larr; Voltar para a lista
                 </Button>
             </div>

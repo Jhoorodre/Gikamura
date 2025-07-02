@@ -147,7 +147,7 @@ const ItemViewer = ({
         <div className={`reader-container ${isFullscreen ? 'fullscreen' : ''}`} style={{ backgroundColor: '#141414' }}>
             {/* Barra de controles superior */}
             <div 
-                className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-in-out"
+                className="fixed left-1/2 z-50"
                 style={{ 
                     top: showControls ? '1rem' : '-4rem',
                     transform: `translateX(-50%)`,
@@ -285,7 +285,7 @@ const ItemViewer = ({
             {/* Indicador de página no modo paginado */}
             {effectiveReadingMode === 'paginated' && (
                 <div 
-                    className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40 transition-opacity duration-300"
+                    className="fixed bottom-4 left-1/2 z-40"
                     style={{ 
                         opacity: showControls ? 1 : 0.3,
                         background: 'rgba(20, 20, 20, 0.8)',

@@ -20,7 +20,6 @@ import UploadPage from './pages/UploadPage';
 import SeriesDetailPage from './pages/SeriesDetailPage';
 import ArrowNavigation from './components/common/ArrowNavigation';
 import GlobalRemoteStorageWidget from './components/common/SimpleRemoteStorageWidgetNew';
-import RemoteStorageDebug from './components/common/RemoteStorageDebug';
 import { runFullDiagnostic } from './utils/networkDebug';
 
 function App() {
@@ -55,7 +54,6 @@ function App() {
             {/* Componentes globais sempre presentes */}
             <ArrowNavigation />
             <GlobalRemoteStorageWidget />
-            {process.env.NODE_ENV === 'development' && <RemoteStorageDebug />}
             
             {/* Notificações de Rede Inteligentes */}
             {networkMessage && (

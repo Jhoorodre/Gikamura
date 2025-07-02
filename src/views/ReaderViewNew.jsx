@@ -84,10 +84,10 @@ const ReaderView = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+            <div className="min-h-screen bg-primary flex items-center justify-center">
                 <div className="text-center">
                     <Spinner size="lg" />
-                    <p className="mt-4 text-gray-400">Carregando manga...</p>
+                    <p className="mt-4 text-secondary">Carregando manga...</p>
                 </div>
             </div>
         );
@@ -95,7 +95,7 @@ const ReaderView = () => {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+            <div className="min-h-screen bg-primary flex items-center justify-center p-6">
                 <div className="max-w-md w-full text-center">
                     <ErrorMessage 
                         message={`Erro ao carregar manga: ${error.message}`}
@@ -123,8 +123,8 @@ const ReaderView = () => {
 
     if (!readerData) {
         return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-                <div className="text-center text-gray-400">
+            <div className="min-h-screen bg-primary flex items-center justify-center">
+                <div className="text-center text-secondary">
                     <p>Nenhum dado encontrado.</p>
                 </div>
             </div>
@@ -132,14 +132,14 @@ const ReaderView = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
+        <div className="min-h-screen bg-gradient-to-br from-primary via-primary to-primary">
             {/* Header */}
-            <div className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-10">
+            <div className="bg-primary border-b border-secondary sticky top-0 z-10">
                 <div className="max-w-7xl mx-auto px-4 py-4">
                     <Button
                         onClick={() => navigate(-1)}
                         variant="ghost"
-                        className="text-gray-400 hover:text-white"
+                        className="text-secondary hover:text-white"
                     >
                         <ChevronLeftIcon className="w-5 h-5 mr-2" />
                         Voltar
@@ -149,7 +149,7 @@ const ReaderView = () => {
 
             <div className="max-w-7xl mx-auto px-4 py-8">
                 {/* Hero Section */}
-                <div className="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 mb-8">
+                <div className="bg-primary rounded-lg border border-secondary p-8 mb-8">
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Capa da obra */}
                         <div className="flex-shrink-0">
@@ -157,7 +157,7 @@ const ReaderView = () => {
                                 <Image
                                     src={readerData.cover}
                                     alt={readerData.title}
-                                    className="w-full h-full object-cover rounded-xl shadow-2xl border border-gray-700"
+                                    className="w-full h-full object-cover rounded-lg border border-secondary"
                                 />
                             </div>
                         </div>
@@ -169,16 +169,16 @@ const ReaderView = () => {
                                     {readerData.title}
                                 </h1>
                                 
-                                <div className="flex flex-wrap items-center gap-4 text-gray-300 mb-4">
+                                <div className="flex flex-wrap items-center gap-4 text-tertiary mb-4">
                                     {readerData.author && (
                                         <div className="flex items-center gap-2">
-                                            <span className="text-sm text-gray-500">Autor:</span>
+                                            <span className="text-sm text-primary">Autor:</span>
                                             <span className="font-medium">{readerData.author}</span>
                                         </div>
                                     )}
                                     {readerData.artist && readerData.artist !== readerData.author && (
                                         <div className="flex items-center gap-2">
-                                            <span className="text-sm text-gray-500">Arte:</span>
+                                            <span className="text-sm text-primary">Arte:</span>
                                             <span className="font-medium">{readerData.artist}</span>
                                         </div>
                                     )}
@@ -199,7 +199,7 @@ const ReaderView = () => {
                             <div className="flex flex-wrap gap-8 text-sm">
                                 <div className="flex items-center gap-3 bg-gray-800/50 px-4 py-2 rounded-lg">
                                     <BookOpenIcon className="w-5 h-5 text-blue-400" />
-                                    <span className="text-gray-300">{displayedChapters.length} capítulos</span>
+                                    <span className="text-tertiary">{displayedChapters.length} capítulos</span>
                                 </div>
                             </div>
 
@@ -234,7 +234,7 @@ const ReaderView = () => {
                 </div>
 
                 {/* Lista de capítulos */}
-                <div className="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8">
+                <div className="bg-primary rounded-lg border border-secondary p-8">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-2xl font-bold text-white">Capítulos</h2>
                         {displayedChapters.length < Object.keys(readerData.chapters || {}).length && (

@@ -101,10 +101,10 @@ const ChapterReaderView = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+            <div className="min-h-screen bg-primary flex items-center justify-center">
                 <div className="text-center">
                     <Spinner size="lg" />
-                    <p className="mt-4 text-gray-400">Carregando capítulo...</p>
+                    <p className="mt-4 text-secondary">Carregando capítulo...</p>
                 </div>
             </div>
         );
@@ -112,7 +112,7 @@ const ChapterReaderView = () => {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+            <div className="min-h-screen bg-primary flex items-center justify-center p-6">
                 <div className="max-w-md w-full text-center">
                     <ErrorMessage 
                         message={`Erro ao carregar capítulo: ${error.message}`}
@@ -140,8 +140,8 @@ const ChapterReaderView = () => {
 
     if (!selectedChapter) {
         return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-                <div className="text-center text-gray-400">
+            <div className="min-h-screen bg-primary flex items-center justify-center">
+                <div className="text-center text-secondary">
                     <BookOpenIcon className="w-16 h-16 mx-auto mb-4 opacity-50" />
                     <p className="text-lg mb-4">Capítulo não encontrado</p>
                     <Button
@@ -166,9 +166,9 @@ const ChapterReaderView = () => {
     console.log('🔍 Imagens encontradas:', pages.length, 'URLs:', pages.slice(0, 3));
 
     return (
-        <div className="min-h-screen bg-gray-900">
+        <div className="min-h-screen bg-primary">
             {/* Header com navegação */}
-            <div className="bg-gray-900/90 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-20">
+            <div className="bg-primary/90 backdrop-blur-sm border-b border-secondary sticky top-0 z-20">
                 <div className="max-w-7xl mx-auto px-4 py-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -176,7 +176,7 @@ const ChapterReaderView = () => {
                                 onClick={handleBackToChapterList}
                                 variant="ghost"
                                 size="sm"
-                                className="text-gray-400 hover:text-white"
+                                className="text-secondary hover:text-white"
                             >
                                 <ChevronLeftIcon className="w-5 h-5 mr-2" />
                                 Capítulos
@@ -186,7 +186,7 @@ const ChapterReaderView = () => {
                                 <h1 className="font-semibold">
                                     {selectedChapter.title || `Capítulo ${decodedChapterId}`}
                                 </h1>
-                                <p className="text-sm text-gray-400">
+                                <p className="text-sm text-secondary">
                                     {readerData?.title}
                                 </p>
                             </div>
@@ -198,7 +198,7 @@ const ChapterReaderView = () => {
                                 disabled={!prevChapter}
                                 variant="ghost"
                                 size="sm"
-                                className="text-gray-400 hover:text-white disabled:opacity-50"
+                                className="text-secondary hover:text-white disabled:opacity-50"
                             >
                                 Anterior
                             </Button>
@@ -207,7 +207,7 @@ const ChapterReaderView = () => {
                                 disabled={!nextChapter}
                                 variant="ghost"
                                 size="sm"
-                                className="text-gray-400 hover:text-white disabled:opacity-50"
+                                className="text-secondary hover:text-white disabled:opacity-50"
                             >
                                 Próximo
                             </Button>

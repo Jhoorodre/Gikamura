@@ -1,11 +1,11 @@
-/* Hub Minimal Design - CSS Limpo e Funcional */
+/* Hub Minimal Design - CSS Minimalista e Funcional */
 
 /* Container Principal */
 .hub-view {
     min-height: 100vh;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-    color: #ffffff;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-sans);
     padding: 0;
     margin: 0;
 }
@@ -41,9 +41,9 @@
     height: 80px;
     border-radius: 16px;
     object-fit: cover;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--color-secondary-base);
     flex-shrink: 0;
+    box-shadow: none;
 }
 
 .hub-title-text {
@@ -54,14 +54,14 @@
 .hub-title {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--color-accent-base);
     margin: 0;
     line-height: 1.2;
 }
 
 .hub-subtitle {
     font-size: 1.1rem;
-    color: #a0a0a0;
+    color: var(--color-text-secondary);
     margin: 0.5rem 0 0 0;
     font-weight: 400;
 }
@@ -71,7 +71,7 @@
     margin: 0;
     font-size: 1rem;
     line-height: 1.6;
-    color: #cccccc;
+    color: var(--color-text-tertiary);
     text-align: left;
     padding-left: 0;
 }
@@ -92,18 +92,21 @@
     font-weight: 500;
     max-width: 400px;
     margin: 0 auto;
+    background: var(--color-background);
+    border: 1px solid var(--color-secondary-base);
+    color: var(--color-accent-base);
 }
 
 .status-card.connected {
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    color: #22c55e;
+    background: var(--color-background);
+    border: 1px solid var(--color-success);
+    color: var(--color-success);
 }
 
 .status-card.disconnected {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #ef4444;
+    background: var(--color-background);
+    border: 1px solid var(--color-error);
+    color: var(--color-error);
 }
 
 .status-dot {
@@ -111,12 +114,7 @@
     height: 8px;
     border-radius: 50%;
     background: currentColor;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    animation: none;
 }
 
 /* Cards de Navegação */
@@ -135,18 +133,18 @@
     align-items: center;
     gap: 1rem;
     padding: 1rem 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-surface-primary);
+    border: 1px solid var(--color-secondary-base);
     border-radius: 12px;
     text-decoration: none;
-    color: #ffffff;
-    transition: all 0.2s ease;
+    color: var(--color-accent-base);
+    transition: background var(--transition-fast), border var(--transition-fast);
 }
 
 .hub-nav-card:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+    background: var(--color-surface-secondary);
+    border-color: var(--color-secondary-base);
+    transform: none;
 }
 
 .hub-nav-icon {
@@ -156,7 +154,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--color-background);
     border-radius: 8px;
     flex-shrink: 0;
 }
@@ -165,13 +163,13 @@
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--color-accent-base);
 }
 
 .hub-nav-content p {
     margin: 0.25rem 0 0;
     font-size: 0.85rem;
-    color: #a0a0a0;
+    color: var(--color-text-tertiary);
 }
 
 /* Seção de Séries */
@@ -191,17 +189,17 @@
 .hub-series-title {
     font-size: 1.8rem;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--color-accent-base);
     margin: 0;
 }
 
 .hub-series-count {
     font-size: 0.9rem;
-    color: #a0a0a0;
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-tertiary);
+    background: var(--color-background);
     padding: 0.5rem 1rem;
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-secondary-base);
 }
 
 /* Filtros */
@@ -213,22 +211,22 @@
     width: 100%;
     max-width: 400px;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-background);
+    border: 1px solid var(--color-secondary-base);
     border-radius: 8px;
-    color: #ffffff;
+    color: var(--color-accent-base);
     font-size: 1rem;
     transition: all 0.2s ease;
 }
 
 .hub-search-box:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-secondary-base);
+    background: var(--color-surface-secondary);
 }
 
 .hub-search-box::placeholder {
-    color: #a0a0a0;
+    color: var(--color-text-tertiary);
 }
 
 /* Grid de Séries */
@@ -427,10 +425,9 @@
         min-height: 250px !important;
     }
 }
-    
-    .hub-series-grid .item-image {
-        height: 160px !important;
-    }
+
+.hub-series-grid .item-image {
+    height: 160px !important;
 }
 
 /* Fim do arquivo CSS */

@@ -3,123 +3,129 @@
    Widget pequeno e discreto no canto inferior esquerdo
    ================================= */
 
+/*
+  Atenção: O uso de !important foi removido de todos os estilos próprios do projeto.
+  Só foi mantido em casos estritamente necessários para sobreposição de estilos externos (ex: widgets de terceiros).
+  Se necessário, ajuste a especificidade dos seletores para evitar conflitos.
+*/
+
 /* === GLOBAL POSITIONING === */
 #rs-widget-global,
 .rs-widget-global-container {
-    position: fixed !important;
-    bottom: 20px !important;
-    left: 20px !important;
-    z-index: 9999 !important;
-    pointer-events: none !important;
-    font-family: var(--font-sans) !important;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 9999;
+    pointer-events: none;
+    font-family: var(--font-sans);
 }
 
 #rs-widget-global *,
 .rs-widget-global-container * {
-    pointer-events: auto !important;
+    pointer-events: auto;
 }
 
 /* === BASIC WIDGET STRUCTURE === */
 #rs-widget-global .rs-widget,
 #remotestorage-widget .rs-widget {
-    all: unset !important;
-    font-family: var(--font-sans) !important;
-    font-size: 12px !important;
-    line-height: 1.2 !important;
-    color: #ffffff !important;
-    border-radius: 50% !important;
-    overflow: hidden !important;
+    all: unset;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 1.2;
+    color: #ffffff;
+    border-radius: 50%;
+    overflow: hidden;
     box-shadow: 
         0 6px 20px rgba(0, 0, 0, 0.25),
-        0 2px 8px rgba(0, 0, 0, 0.15) !important;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+        0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 /* === CLOSED STATE - SMALL ELEGANT BUBBLE === */
 #rs-widget-global .rs-widget.rs-closed,
 #remotestorage-widget .rs-widget.rs-closed {
-    width: 56px !important;
-    height: 56px !important;
+    width: 56px;
+    height: 56px;
     background: linear-gradient(135deg, 
         #6366f1, 
         #8b5cf6
-    ) !important;
-    border: 2px solid rgba(255, 255, 255, 0.2) !important;
-    cursor: pointer !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    position: relative !important;
+    );
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
 /* Glassmorphism effect avançado */
 #rs-widget-global .rs-widget.rs-closed::before,
 #remotestorage-widget .rs-widget.rs-closed::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: linear-gradient(135deg, 
         rgba(255, 255, 255, 0.25) 0%, 
         rgba(255, 255, 255, 0.1) 50%,
         rgba(255, 255, 255, 0.05) 100%
-    ) !important;
-    border-radius: inherit !important;
-    pointer-events: none !important;
+    );
+    border-radius: inherit;
+    pointer-events: none;
 }
 
 /* Hover effect premium */
 #rs-widget-global .rs-widget.rs-closed:hover,
 #remotestorage-widget .rs-widget.rs-closed:hover {
-    transform: scale(1.05) translateY(-1px) !important;
+    transform: scale(1.05) translateY(-1px);
     box-shadow: 
         0 8px 25px rgba(0, 0, 0, 0.3),
-        0 4px 15px rgba(99, 102, 241, 0.4) !important;
+        0 4px 15px rgba(99, 102, 241, 0.4);
 }
 
 /* Icon in closed state */
 #rs-widget-global .rs-widget.rs-closed .rs-widget-icon,
 #remotestorage-widget .rs-widget.rs-closed .rs-widget-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    position: relative !important;
-    z-index: 2 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    z-index: 2;
 }
 
 /* Custom icon content refinado */
 #rs-widget-global .rs-widget.rs-closed .rs-widget-icon::before,
 #remotestorage-widget .rs-widget.rs-closed .rs-widget-icon::before {
-    content: '☁' !important;
-    font-size: 20px !important;
-    color: #ffffff !important;
-    display: block !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+    content: '☁';
+    font-size: 20px;
+    color: #ffffff;
+    display: block;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Estado conectado refinado */
 #rs-widget-global .rs-widget.rs-closed.rs-state-connected,
 #remotestorage-widget .rs-widget.rs-closed.rs-state-connected {
-    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
-    border-color: rgba(34, 197, 94, 0.5) !important;
-    animation: connectedPulse 4s ease-in-out infinite !important;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: rgba(34, 197, 94, 0.5);
+    animation: connectedPulse 4s ease-in-out infinite;
 }
 
 #rs-widget-global .rs-widget.rs-closed.rs-state-connected .rs-widget-icon::before,
 #remotestorage-widget .rs-widget.rs-closed.rs-state-connected .rs-widget-icon::before {
-    content: '✓' !important;
-    font-size: 24px !important;
-    font-weight: bold !important;
-    color: white !important;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    content: '✓';
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* Estado desconectado refinado */
@@ -128,18 +134,18 @@
     background: linear-gradient(135deg, 
         rgba(239, 68, 68, 0.9), 
         rgba(220, 38, 38, 0.95)
-    ) !important;
-    border-color: rgba(239, 68, 68, 0.6) !important;
-    animation: disconnectedPulse 3s ease-in-out infinite !important;
+    );
+    border-color: rgba(239, 68, 68, 0.6);
+    animation: disconnectedPulse 3s ease-in-out infinite;
 }
 
 #rs-widget-global .rs-widget.rs-closed.rs-state-disconnected .rs-widget-icon::before,
 #remotestorage-widget .rs-widget.rs-closed.rs-state-disconnected .rs-widget-icon::before {
-    content: '⚠' !important;
-    color: white !important;
-    font-size: 24px !important;
-    animation: warningBlink 2s ease-in-out infinite !important;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    content: '⚠';
+    color: white;
+    font-size: 24px;
+    animation: warningBlink 2s ease-in-out infinite;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* Estado de sincronização refinado */
@@ -148,34 +154,34 @@
     background: linear-gradient(135deg, 
         rgba(59, 130, 246, 0.95), 
         rgba(37, 99, 235, 0.9)
-    ) !important;
-    border-color: rgba(59, 130, 246, 0.5) !important;
-    animation: syncingRotate 2s linear infinite !important;
+    );
+    border-color: rgba(59, 130, 246, 0.5);
+    animation: syncingRotate 2s linear infinite;
 }
 
 #rs-widget-global .rs-widget.rs-closed.rs-state-syncing .rs-widget-icon::before,
 #remotestorage-widget .rs-widget.rs-closed.rs-state-syncing .rs-widget-icon::before {
-    content: '⟳' !important;
-    color: white !important;
-    font-size: 24px !important;
-    animation: syncingSpin 1s linear infinite !important;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    content: '⟳';
+    color: white;
+    font-size: 24px;
+    animation: syncingSpin 1s linear infinite;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* === OPENED STATE - MODERN PANEL === */
 #rs-widget-global .rs-widget.rs-opened,
 #remotestorage-widget .rs-widget.rs-opened {
-    width: 340px !important;
-    min-height: 220px !important;
-    max-height: 450px !important;
-    background: rgba(var(--surface-primary-rgb), 0.98) !important;
-    border: 2px solid rgba(var(--accent-rgb), 0.4) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
+    width: 340px;
+    min-height: 220px;
+    max-height: 450px;
+    background: rgba(var(--surface-primary-rgb), 0.98);
+    border: 2px solid rgba(var(--accent-rgb), 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     box-shadow: 
         0 20px 50px rgba(0, 0, 0, 0.4),
         0 10px 25px rgba(0, 0, 0, 0.3),
-        0 0 50px rgba(var(--accent-rgb), 0.15) !important;
+        0 0 50px rgba(var(--accent-rgb), 0.15);
 }
 
 /* Header melhorado */
@@ -184,195 +190,195 @@
     background: linear-gradient(135deg, 
         rgba(var(--accent-rgb), 1), 
         rgba(var(--accent-rgb), 0.85)
-    ) !important;
-    color: var(--bg-primary) !important;
-    padding: 16px 20px !important;
-    font-weight: 700 !important;
-    font-size: 15px !important;
-    letter-spacing: 0.05em !important;
-    text-transform: uppercase !important;
-    position: relative !important;
-    overflow: hidden !important;
+    );
+    color: var(--bg-primary);
+    padding: 16px 20px;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
 }
 
 #rs-widget-global .rs-widget.rs-opened .rs-widget-header::before,
 #remotestorage-widget .rs-widget.rs-opened .rs-widget-header::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: linear-gradient(45deg, 
         transparent 0%, 
         rgba(255, 255, 255, 0.1) 50%, 
-        transparent 100%) !important;
-    animation: headerShimmer 3s ease-in-out infinite !important;
+        transparent 100%) ;
+    animation: headerShimmer 3s ease-in-out infinite;
 }
 
 /* Content area melhorada */
 #rs-widget-global .rs-widget.rs-opened .rs-widget-content,
 #remotestorage-widget .rs-widget.rs-opened .rs-widget-content {
-    padding: 20px !important;
-    background: transparent !important;
+    padding: 20px;
+    background: transparent;
 }
 
 /* Form elements refinados */
 #rs-widget-global .rs-widget.rs-opened input,
 #remotestorage-widget .rs-widget.rs-opened input {
-    width: 100% !important;
-    padding: 12px 16px !important;
-    background: rgba(var(--surface-secondary-rgb), 0.9) !important;
-    border: 2px solid rgba(var(--surface-tertiary-rgb), 0.5) !important;
-    border-radius: 10px !important;
-    color: var(--text-primary) !important;
-    font-size: 14px !important;
-    margin-bottom: 16px !important;
-    transition: all 0.3s ease !important;
-    font-family: var(--font-sans) !important;
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(var(--surface-secondary-rgb), 0.9);
+    border: 2px solid rgba(var(--surface-tertiary-rgb), 0.5);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 14px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    font-family: var(--font-sans);
 }
 
 #rs-widget-global .rs-widget.rs-opened input:focus,
 #remotestorage-widget .rs-widget.rs-opened input:focus {
-    outline: none !important;
-    border-color: rgba(var(--accent-rgb), 0.8) !important;
+    outline: none;
+    border-color: rgba(var(--accent-rgb), 0.8);
     box-shadow: 
         0 0 0 4px rgba(var(--accent-rgb), 0.15),
-        0 4px 12px rgba(var(--accent-rgb), 0.2) !important;
-    background: rgba(var(--surface-secondary-rgb), 1) !important;
+        0 4px 12px rgba(var(--accent-rgb), 0.2);
+    background: rgba(var(--surface-secondary-rgb), 1);
 }
 
 /* Buttons refinados */
 #rs-widget-global .rs-widget.rs-opened button,
 #remotestorage-widget .rs-widget.rs-opened button {
-    padding: 10px 20px !important;
+    padding: 10px 20px;
     background: linear-gradient(135deg, 
         rgba(var(--accent-rgb), 1), 
         rgba(var(--accent-rgb), 0.85)
-    ) !important;
-    color: var(--bg-primary) !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    margin-right: 10px !important;
-    margin-bottom: 10px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.025em !important;
+    );
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
 }
 
 #rs-widget-global .rs-widget.rs-opened button:hover,
 #remotestorage-widget .rs-widget.rs-opened button:hover {
-    transform: translateY(-2px) !important;
+    transform: translateY(-2px);
     box-shadow: 
         0 6px 16px rgba(var(--accent-rgb), 0.4),
-        0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        0 2px 8px rgba(0, 0, 0, 0.2);
     background: linear-gradient(135deg, 
         rgba(var(--accent-rgb), 1), 
         rgba(var(--accent-rgb), 0.9)
-    ) !important;
+    );
 }
 
 /* Status messages refinadas */
 #rs-widget-global .rs-widget.rs-opened .rs-status,
 #remotestorage-widget .rs-widget.rs-opened .rs-status {
-    padding: 12px 16px !important;
-    border-radius: 8px !important;
-    font-size: 13px !important;
-    margin-bottom: 12px !important;
-    font-weight: 500 !important;
-    border: 1px solid transparent !important;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    font-weight: 500;
+    border: 1px solid transparent;
 }
 
 #rs-widget-global .rs-widget.rs-opened .rs-status.rs-status-connected,
 #remotestorage-widget .rs-widget.rs-opened .rs-status.rs-status-connected {
-    background: rgba(34, 197, 94, 0.15) !important;
-    color: rgb(34, 197, 94) !important;
-    border-color: rgba(34, 197, 94, 0.3) !important;
+    background: rgba(34, 197, 94, 0.15);
+    color: rgb(34, 197, 94);
+    border-color: rgba(34, 197, 94, 0.3);
 }
 
 #rs-widget-global .rs-widget.rs-opened .rs-status.rs-status-error,
 #remotestorage-widget .rs-widget.rs-opened .rs-status.rs-status-error {
-    background: rgba(239, 68, 68, 0.15) !important;
-    color: rgb(239, 68, 68) !important;
-    border-color: rgba(239, 68, 68, 0.3) !important;
+    background: rgba(239, 68, 68, 0.15);
+    color: rgb(239, 68, 68);
+    border-color: rgba(239, 68, 68, 0.3);
 }
 
 /* === OPENED STATE - COMPACT FORM === */
 #rs-widget-global .rs-widget.rs-opened,
 #remotestorage-widget .rs-widget.rs-opened {
-    width: 280px !important;
-    height: auto !important;
-    max-height: 200px !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    border-radius: 12px !important;
-    padding: 16px !important;
-    color: #1f2937 !important;
+    width: 280px;
+    height: auto;
+    max-height: 200px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    color: #1f2937;
     box-shadow: 
         0 10px 30px rgba(0, 0, 0, 0.15),
-        0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Input field styling */
 #rs-widget-global .rs-widget input,
 #remotestorage-widget .rs-widget input {
-    width: 100% !important;
-    padding: 8px 12px !important;
-    border: 2px solid #e5e7eb !important;
-    border-radius: 6px !important;
-    font-size: 14px !important;
-    margin: 8px 0 !important;
-    background: #ffffff !important;
-    color: #1f2937 !important;
-    transition: border-color 0.2s ease !important;
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+    margin: 8px 0;
+    background: #ffffff;
+    color: #1f2937;
+    transition: border-color 0.2s ease;
 }
 
 #rs-widget-global .rs-widget input:focus,
 #remotestorage-widget .rs-widget input:focus {
-    outline: none !important;
-    border-color: #6366f1 !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 /* Button styling */
 #rs-widget-global .rs-widget button,
 #remotestorage-widget .rs-widget button {
-    background: #6366f1 !important;
-    color: #ffffff !important;
-    border: none !important;
-    padding: 8px 16px !important;
-    border-radius: 6px !important;
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    margin: 4px 2px !important;
+    background: #6366f1;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 4px 2px;
 }
 
 #rs-widget-global .rs-widget button:hover,
 #remotestorage-widget .rs-widget button:hover {
-    background: #4f46e5 !important;
-    transform: translateY(-1px) !important;
+    background: #4f46e5;
+    transform: translateY(-1px);
 }
 
 /* Close button */
 #rs-widget-global .rs-widget .rs-widget-close,
 #remotestorage-widget .rs-widget .rs-widget-close {
-    position: absolute !important;
-    top: 8px !important;
-    right: 8px !important;
-    width: 20px !important;
-    height: 20px !important;
-    background: rgba(0, 0, 0, 0.1) !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 12px !important;
-    cursor: pointer !important;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
 }
 
 /* Animation for state changes */
@@ -434,52 +440,52 @@
 /* Tooltip melhorado */
 #rs-widget-global .rs-widget.rs-closed::after,
 #remotestorage-widget .rs-widget.rs-closed::after {
-    content: attr(data-tooltip) !important;
-    position: absolute !important;
-    bottom: -40px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    background: rgba(0, 0, 0, 0.95) !important;
-    color: white !important;
-    padding: 6px 12px !important;
-    border-radius: 6px !important;
-    font-size: 12px !important;
-    white-space: nowrap !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transition: opacity 0.3s ease !important;
-    z-index: 10001 !important;
-    font-weight: 500 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.95);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10001;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 #rs-widget-global .rs-widget.rs-closed:hover::after,
 #remotestorage-widget .rs-widget.rs-closed:hover::after {
-    opacity: 1 !important;
+    opacity: 1;
 }
 
 /* Mobile responsiveness refinada */
 @media (max-width: 480px) {
     #rs-widget-global,
     .rs-widget-global-container {
-        bottom: 16px !important;
-        left: 16px !important;
+        bottom: 16px;
+        left: 16px;
     }
     
     #rs-widget-global .rs-widget.rs-closed,
     #remotestorage-widget .rs-widget.rs-closed {
-        width: 56px !important;
-        height: 56px !important;
+        width: 56px;
+        height: 56px;
     }
     
     #rs-widget-global .rs-widget.rs-closed .rs-widget-icon::before,
     #remotestorage-widget .rs-widget.rs-closed .rs-widget-icon::before {
-        font-size: 24px !important;
+        font-size: 24px;
     }
     
     #rs-widget-global .rs-widget.rs-opened,
     #remotestorage-widget .rs-widget.rs-opened {
-        width: calc(100vw - 32px) !important;
-        max-width: 320px !important;
+        width: calc(100vw - 32px);
+        max-width: 320px;
     }
 }

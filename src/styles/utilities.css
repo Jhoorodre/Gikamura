@@ -193,32 +193,14 @@
 .rounded-full { border-radius: var(--radius-full); }
 
 /* ========================================================================== */
-/* == 5. SOMBRAS E EFEITOS                                               == */
+/* == 5. SOMBRAS, BLUR E EFEITOS (MINIMALISTA)                           == */
 /* ========================================================================== */
 
 .shadow-none { box-shadow: none; }
-.shadow-sm { box-shadow: var(--shadow-sm); }
-.shadow { box-shadow: var(--shadow-base); }
-.shadow-md { box-shadow: var(--shadow-md); }
-.shadow-lg { box-shadow: var(--shadow-lg); }
-.shadow-xl { box-shadow: var(--shadow-xl); }
-.shadow-2xl { box-shadow: var(--shadow-2xl); }
-.shadow-primary { box-shadow: var(--shadow-primary); }
-.shadow-accent { box-shadow: var(--shadow-accent); }
+/* Removidas todas as outras shadows para visual minimalista */
 
-.blur-none { filter: blur(0); }
-.blur-sm { filter: blur(4px); }
-.blur { filter: blur(8px); }
-.blur-md { filter: blur(12px); }
-.blur-lg { filter: blur(16px); }
-.blur-xl { filter: blur(24px); }
-
-.backdrop-blur-none { backdrop-filter: blur(0); }
-.backdrop-blur-sm { backdrop-filter: blur(4px); }
-.backdrop-blur { backdrop-filter: blur(8px); }
-.backdrop-blur-md { backdrop-filter: blur(12px); }
-.backdrop-blur-lg { backdrop-filter: blur(16px); }
-.backdrop-blur-xl { backdrop-filter: blur(24px); }
+.blur-none { filter: none; }
+/* Removidos blur e backdrop-blur para visual minimalista */
 
 /* ========================================================================== */
 /* == 6. OPACIDADE E VISIBILIDADE                                        == */
@@ -239,60 +221,16 @@
 .hidden { display: none; }
 
 /* ========================================================================== */
-/* == 7. TRANSIÇÕES E ANIMAÇÕES                                          == */
+/* == 7. TRANSIÇÕES E ANIMAÇÕES (MINIMALISTA)                            == */
 /* ========================================================================== */
 
 .transition-none { transition: none; }
-.transition-all { transition: all var(--transition-base); }
-.transition-colors { transition: color var(--transition-base), background-color var(--transition-base), border-color var(--transition-base); }
-.transition-opacity { transition: opacity var(--transition-base); }
-.transition-shadow { transition: box-shadow var(--transition-base); }
-.transition-transform { transition: transform var(--transition-base); }
-
-.duration-75 { transition-duration: 75ms; }
-.duration-100 { transition-duration: 100ms; }
-.duration-150 { transition-duration: 150ms; }
-.duration-200 { transition-duration: 200ms; }
-.duration-300 { transition-duration: 300ms; }
-.duration-500 { transition-duration: 500ms; }
-.duration-700 { transition-duration: 700ms; }
-.duration-1000 { transition-duration: 1000ms; }
-
-.ease-linear { transition-timing-function: linear; }
-.ease-in { transition-timing-function: cubic-bezier(0.4, 0, 1, 1); }
-.ease-out { transition-timing-function: cubic-bezier(0, 0, 0.2, 1); }
-.ease-in-out { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+/* Removidas transições animadas, mantendo apenas o essencial */
 
 /* ========================================================================== */
-/* == 8. TRANSFORMAÇÕES                                                  == */
+/* == 8. TRANSFORMAÇÕES (MINIMALISTA)                                    == */
 /* ========================================================================== */
-
-.transform { transform: translateX(var(--tw-translate-x, 0)) translateY(var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1)); }
-
-.scale-0 { transform: scale(0); }
-.scale-50 { transform: scale(0.5); }
-.scale-75 { transform: scale(0.75); }
-.scale-90 { transform: scale(0.9); }
-.scale-95 { transform: scale(0.95); }
-.scale-100 { transform: scale(1); }
-.scale-105 { transform: scale(1.05); }
-.scale-110 { transform: scale(1.1); }
-.scale-125 { transform: scale(1.25); }
-.scale-150 { transform: scale(1.5); }
-
-.rotate-0 { transform: rotate(0deg); }
-.rotate-45 { transform: rotate(45deg); }
-.rotate-90 { transform: rotate(90deg); }
-.rotate-180 { transform: rotate(180deg); }
-
-.-rotate-45 { transform: rotate(-45deg); }
-.-rotate-90 { transform: rotate(-90deg); }
-.-rotate-180 { transform: rotate(-180deg); }
-
-.translate-x-0 { transform: translateX(0); }
-.translate-y-0 { transform: translateY(0); }
-.-translate-y-1 { transform: translateY(-0.25rem); }
-.-translate-y-2 { transform: translateY(-0.5rem); }
+/* Removidas transformações de scale, rotate, translate para evitar efeitos decorativos */
 
 /* ========================================================================== */
 /* == 9. CURSORES E INTERATIVIDADE                                       == */
@@ -334,23 +272,14 @@
 .overscroll-none { overscroll-behavior: none; }
 
 /* ========================================================================== */
-/* == 11. CLASSES DE ESTADO ESPECIAIS                                    == */
+/* == 11. CLASSES DE ESTADO ESPECIAIS (MINIMALISTA)                      == */
 /* ========================================================================== */
 
-.hover\:scale-105:hover { transform: scale(1.05); }
-.hover\:scale-110:hover { transform: scale(1.1); }
-.hover\:-translate-y-1:hover { transform: translateY(-0.25rem); }
-.hover\:-translate-y-2:hover { transform: translateY(-0.5rem); }
-.hover\:shadow-lg:hover { box-shadow: var(--shadow-lg); }
-.hover\:shadow-xl:hover { box-shadow: var(--shadow-xl); }
-
+/* Hover, focus e active: apenas mudança de cor/opacidade, sem animação/sombra */
+.hover\:opacity-80:hover { opacity: 0.8; }
+.hover\:opacity-60:hover { opacity: 0.6; }
 .focus\:outline-none:focus { outline: none; }
-.focus\:ring:focus { box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2); }
-.focus\:ring-accent:focus { box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2); }
-
-.active\:scale-95:active { transform: scale(0.95); }
-.active\:scale-98:active { transform: scale(0.98); }
-
+.active\:opacity-60:active { opacity: 0.6; }
 .disabled\:opacity-50:disabled { opacity: 0.5; }
 .disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
 
@@ -392,8 +321,8 @@
 
 /* Estados de foco */
 .focus\:border-accent:focus { border-color: var(--color-accent); }
-.focus\:ring-2:focus { box-shadow: 0 0 0 2px var(--color-accent); }
-.focus\:ring-accent\/20:focus { box-shadow: 0 0 0 2px rgba(164, 164, 164, 0.2); }
+.focus\:ring:focus { box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2); }
+.focus\:ring-accent:focus { box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2); }
 
 /* Transições */
 .transition-all { transition: all 0.3s ease; }

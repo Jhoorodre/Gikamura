@@ -214,12 +214,12 @@ const UploadPage = () => {
                                             Suporta hub.json e reader.json (máx. 10MB)
                                         </p>
                                     </div>
-                                    <div className="border-2 border-dashed border-surface-tertiary rounded-lg p-8 hover:border-accent/50 transition-all duration-300">
+                                    <div className="border-2 border-dashed border-secondary rounded-lg p-8 hover:opacity-80">
                                         <input
                                             type="file"
                                             accept=".json,application/json"
                                             onChange={handleFileUpload}
-                                            className="w-full max-w-sm mx-auto p-3 bg-surface border border-surface-tertiary rounded-lg text-text-primary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-accent file:text-text-inverse hover:file:bg-accent-hover transition-all"
+                                            className="w-full max-w-sm mx-auto p-3 bg-surface border border-surface-tertiary rounded-lg text-text-primary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-accent file:text-text-inverse hover:file:bg-accent-hover"
                                             disabled={uploadState === 'validating' || uploadState === 'uploading'}
                                         />
                                     </div>
@@ -238,7 +238,7 @@ const UploadPage = () => {
                                         value={manualJson}
                                         onChange={(e) => setManualJson(e.target.value)}
                                         placeholder='{\n  "hub": {\n    "title": "Meu Hub",\n    "sources": [...]\n  }\n}'
-                                        className="w-full min-h-[200px] p-4 bg-surface border border-surface-tertiary rounded-lg font-mono text-sm text-text-primary placeholder-text-tertiary focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                                        className="w-full min-h-[200px] p-4 bg-surface border border-surface-tertiary rounded-lg font-mono text-sm text-text-primary placeholder-text-tertiary focus:border-accent"
                                         disabled={uploadState === 'validating' || uploadState === 'uploading'}
                                     />
                                 </div>
