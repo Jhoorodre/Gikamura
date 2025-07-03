@@ -111,8 +111,9 @@ test-*.html
 *.test.local.*
 dev-*.js
 
-# Local development files
+# Docs
 AGENTS.md
+Field Notes From Shipping Real Code With Claude - diwank's space.pdf
 
 # Package manager lock files (uncomment if needed)
 # package-lock.json
