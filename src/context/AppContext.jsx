@@ -1,3 +1,4 @@
+// AIDEV-NOTE: App state management; hub loading, user data, and RemoteStorage integration
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -24,17 +25,16 @@ export const AppProvider = ({ children }) => {
     const [pinnedItems, setPinnedItems] = useState([]);
     const [historyItems, setHistoryItems] = useState([]);
     const [savedHubs, setSavedHubs] = useState([]);
-    const [hasRedirectedToHub, setHasRedirectedToHub] = useState(false); // Controla redirecionamento único
+    const [hasRedirectedToHub, setHasRedirectedToHub] = useState(false); // AIDEV-NOTE: Controls unique redirection
 
-    // Debug: Log quando hubUrlToLoad muda
-    // Log controlado apenas em desenvolvimento
+    // AIDEV-NOTE: Controlled logging only in development
     useEffect(() => {
         if (process.env.NODE_ENV === 'development') {
             console.log('🎯 [AppContext] hubUrlToLoad mudou para:', hubUrlToLoad);
         }
     }, [hubUrlToLoad]);
 
-    // Carregamento do Hub com useQuery e novo serviço de rede
+    // AIDEV-NOTE: Hub loading with useQuery and network service with robust error handling
     const {
         data: currentHubData,
         isLoading: hubLoading,
@@ -56,7 +56,7 @@ export const AppProvider = ({ children }) => {
                 }
                 const data = await loadHubJSON(hubUrlToLoad);
                 
-                // Salva o hub nos dados do usuário se conectado
+                // AIDEV-NOTE: Saves hub to user data if connected
                 if (data?.hub && remoteStorage.connected) {
                     api.addHub(hubUrlToLoad, data.hub.title, data.hub.icon?.url);
                 }
@@ -71,17 +71,17 @@ export const AppProvider = ({ children }) => {
             }
         },
         enabled: !!hubUrlToLoad,
-        retry: false, // TEMPORÁRIO: Desabilitar retry para evitar loop infinito
+        retry: false, // AIDEV-NOTE: Disabled retry to prevent infinite loops
         retryDelay: false,
-        staleTime: 5 * 60 * 1000, // 5 minutos
-        gcTime: 10 * 60 * 1000, // 10 minutos
-        refetchOnWindowFocus: false, // Evitar refetch automático
-        refetchOnMount: false, // Evitar refetch no mount
-        refetchOnReconnect: false, // Evitar refetch na reconexão
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes
+        refetchOnWindowFocus: false, // AIDEV-NOTE: Prevent automatic refetch
+        refetchOnMount: false, // AIDEV-NOTE: Prevent refetch on mount
+        refetchOnReconnect: false, // AIDEV-NOTE: Prevent refetch on reconnection
     });
 
-    // REMOVIDO: Redirecionamento automático que causava problemas de navegação
-    // O redirecionamento agora é responsabilidade do useHubLoader
+    // AIDEV-NOTE: Removed automatic redirection that caused navigation issues
+    // Redirection is now handled by useHubLoader
 
     const {
         loading: itemLoading,
@@ -91,6 +91,7 @@ export const AppProvider = ({ children }) => {
         clearSelectedItem
     } = useItem();
 
+    // AIDEV-NOTE: Refreshes user data when RemoteStorage is connected
     const refreshUserData = useCallback(() => {
         if (remoteStorage.connected) {
             api.getAllPinnedSeries().then(setPinnedItems);
@@ -152,7 +153,7 @@ export const AppProvider = ({ children }) => {
             console.log('🚀 [AppContext] loadHub chamado com URL:', url);
         }
         
-        // Evitar carregar a mesma URL várias vezes
+        // AIDEV-NOTE: Prevents loading same URL multiple times
         if (hubUrlToLoad === url) {
             if (process.env.NODE_ENV === 'development') {
                 console.log('⚠️ [AppContext] URL já está sendo carregada, ignorando...');
@@ -165,7 +166,7 @@ export const AppProvider = ({ children }) => {
         return Promise.resolve(true);
     }, [hubUrlToLoad]);
 
-    // Função para tentar recarregar hub em caso de erro
+    // AIDEV-NOTE: Retry function for hub loading errors
     const retryLoadHub = useCallback(() => {
         if (lastAttemptedUrl) {
             if (process.env.NODE_ENV === 'development') {
@@ -175,7 +176,7 @@ export const AppProvider = ({ children }) => {
         }
     }, [lastAttemptedUrl, refetchHub]);
 
-    // Função para limpar o estado do hub e voltar ao placeholder inicial
+    // AIDEV-NOTE: Clears hub state and returns to initial placeholder
     const clearHubData = useCallback(() => {
         if (process.env.NODE_ENV === 'development') {
             console.log('🧹 [AppContext] Limpando dados do hub para voltar ao placeholder');
@@ -185,12 +186,13 @@ export const AppProvider = ({ children }) => {
         setLastAttemptedUrl("");
         setHasRedirectedToHub(false);
         
-        // Limpa também o cache do React Query para este hub
+        // AIDEV-NOTE: Also clears React Query cache for this hub
         if (hubUrlToLoad) {
             queryClient.invalidateQueries(['hub', hubUrlToLoad]);
         }
     }, [hubUrlToLoad, queryClient]);
 
+    // AIDEV-NOTE: Toggles pin status with robust error handling
     const togglePinStatus = useCallback(async (item) => {
         if (!item || !item.slug || !item.sourceId) return;
         try {
@@ -214,8 +216,8 @@ export const AppProvider = ({ children }) => {
         lastAttemptedUrl,
         isConnected,
         loadHub,
-        retryLoadHub, // Nova função para retry
-        clearHubData, // Função para limpar dados do hub
+        retryLoadHub, // AIDEV-NOTE: New retry function for errors
+        clearHubData, // AIDEV-NOTE: Function to clear hub data
         itemLoading,
         pinnedItems,
         historyItems,

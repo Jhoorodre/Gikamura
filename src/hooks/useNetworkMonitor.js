@@ -1,3 +1,4 @@
+// AIDEV-NOTE: Network quality monitoring with recovery logic and user notifications
 import { useState, useEffect, useCallback } from 'react';
 import { clearNetworkCache } from '../services/networkService.js';
 
@@ -8,11 +9,11 @@ import { clearNetworkCache } from '../services/networkService.js';
 export const useNetworkMonitor = () => {
     const [isOnline, setIsOnline] = useState(navigator.onLine);
     const [lastOnlineTime, setLastOnlineTime] = useState(Date.now());
-    const [networkQuality, setNetworkQuality] = useState('unknown'); // fast, slow, offline, unknown
+    const [networkQuality, setNetworkQuality] = useState('unknown'); // AIDEV-NOTE: fast, slow, offline, unknown
     const [connectionType, setConnectionType] = useState('unknown');
     const [retryCount, setRetryCount] = useState(0);
 
-    // Detecta tipo de conexão se suportado
+    // AIDEV-NOTE: Detects connection type if browser supports it
     useEffect(() => {
         if ('connection' in navigator) {
             const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -29,14 +30,14 @@ export const useNetworkMonitor = () => {
         }
     }, []);
 
-    // Monitora status online/offline
+    // AIDEV-NOTE: Monitors online/offline status with cache clearing on recovery
     useEffect(() => {
         const handleOnline = () => {
             setIsOnline(true);
             setLastOnlineTime(Date.now());
             setRetryCount(0);
             
-            // Limpa cache quando volta online para forçar dados frescos
+            // AIDEV-NOTE: Clears cache when back online to force fresh data
             setTimeout(() => {
                 clearNetworkCache();
             }, 1000);
@@ -56,7 +57,7 @@ export const useNetworkMonitor = () => {
         };
     }, []);
 
-    // Testa qualidade da rede periodicamente
+    // AIDEV-NOTE: Tests network quality with response time measurement
     const testNetworkQuality = useCallback(async () => {
         if (!isOnline) {
             setNetworkQuality('offline');
@@ -66,7 +67,7 @@ export const useNetworkMonitor = () => {
         try {
             const startTime = Date.now();
             
-            // Testa com uma URL pequena e rápida
+            // AIDEV-NOTE: Tests with small fast URL for quality assessment
             const response = await fetch('https://httpbin.org/uuid', {
                 method: 'GET',
                 cache: 'no-cache'
@@ -98,29 +99,26 @@ export const useNetworkMonitor = () => {
         }
     }, [isOnline]);
 
-    // Executa teste de qualidade quando voltar online
+    // AIDEV-NOTE: Runs quality test when coming back online with delay for stabilization
     useEffect(() => {
         if (isOnline && networkQuality === 'offline') {
-            // Aguarda um pouco para a conexão estabilizar
             const timer = setTimeout(testNetworkQuality, 2000);
             return () => clearTimeout(timer);
         }
     }, [isOnline, networkQuality, testNetworkQuality]);
 
-    // Função para incrementar contador de retry
     const incrementRetry = useCallback(() => {
         setRetryCount(prev => prev + 1);
     }, []);
 
-    // Função para resetar contador de retry
     const resetRetry = useCallback(() => {
         setRetryCount(0);
     }, []);
 
-    // Calcula se está em modo de recuperação
-    const isRecovering = isOnline && (Date.now() - lastOnlineTime) < 30000; // 30 segundos
+    // AIDEV-NOTE: Considers recovering state for 30 seconds after coming online
+    const isRecovering = isOnline && (Date.now() - lastOnlineTime) < 30000;
 
-    // Sugere estratégia baseada na qualidade da rede
+    // AIDEV-NOTE: Network strategy recommendation based on quality assessment
     const getNetworkStrategy = useCallback(() => {
         if (!isOnline) {
             return {
@@ -136,7 +134,7 @@ export const useNetworkMonitor = () => {
             case 'fast':
                 return {
                     strategy: 'fast',
-                    cacheDuration: 2 * 60 * 1000, // 2 minutos
+                    cacheDuration: 2 * 60 * 1000, // AIDEV-NOTE: 2 minutes cache for fast connections
                     timeout: 10000,
                     retryCount: 2,
                     description: 'Conexão rápida - dados frescos'
@@ -144,7 +142,7 @@ export const useNetworkMonitor = () => {
             case 'medium':
                 return {
                     strategy: 'medium',
-                    cacheDuration: 5 * 60 * 1000, // 5 minutos
+                    cacheDuration: 5 * 60 * 1000, // AIDEV-NOTE: 5 minutes cache for medium connections
                     timeout: 15000,
                     retryCount: 3,
                     description: 'Conexão média - cache moderado'
@@ -152,7 +150,7 @@ export const useNetworkMonitor = () => {
             case 'slow':
                 return {
                     strategy: 'slow',
-                    cacheDuration: 10 * 60 * 1000, // 10 minutos
+                    cacheDuration: 10 * 60 * 1000, // AIDEV-NOTE: 10 minutes cache for slow connections
                     timeout: 30000,
                     retryCount: 1,
                     description: 'Conexão lenta - cache agressivo'
@@ -183,7 +181,7 @@ export const useNetworkMonitor = () => {
 };
 
 /**
- * Hook para exibir notificações de rede
+ * AIDEV-NOTE: Network notifications hook with smart timing and dismissal
  */
 export const useNetworkNotifications = () => {
     const { isOnline, networkQuality, isRecovering } = useNetworkMonitor();
@@ -199,6 +197,7 @@ export const useNetworkNotifications = () => {
         setShowSlowConnectionMessage(isOnline && networkQuality === 'slow');
     }, [isOnline, networkQuality]);
 
+    // AIDEV-NOTE: Shows recovery message for 5 seconds after reconnection
     useEffect(() => {
         if (isRecovering) {
             setShowRecoveringMessage(true);
@@ -209,6 +208,7 @@ export const useNetworkNotifications = () => {
         }
     }, [isRecovering]);
 
+    // AIDEV-NOTE: Returns appropriate message based on current network state
     const getNetworkMessage = () => {
         if (showOfflineMessage) {
             return {

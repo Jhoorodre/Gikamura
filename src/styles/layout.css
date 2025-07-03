@@ -1,22 +1,23 @@
 /*
  * CSS para layout principal e grids
- * AIDEV-NOTE: Main layout and grid system styles
+ * AIDEV-NOTE: Modern responsive layout and grid system with container variants
  */
 
 /* ========================================================================== */
 /* ==                SISTEMA DE LAYOUT MODERNO E RESPONSIVO               == */
 /* ========================================================================== */
 /*
- * Sistema de layout baseado na paleta do roadmap:
- * 70% #141414 (fundo principal)
- * 20% #341111 (destaques e bordas)
- * 10% #a4a4a4 (texto e acentos)
+ * AIDEV-NOTE: Layout system based on roadmap palette:
+ * 70% #141414 (main background)
+ * 20% #341111 (highlights and borders)
+ * 10% #a4a4a4 (text and accents)
  */
 
 /* ========================================================================== */
 /* == 1. CONTAINERS SOFISTICADOS                                         == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Base container with fluid max-width and consistent padding */
 .container {
   width: 100%;
   max-width: 1400px;
@@ -26,27 +27,29 @@
   position: relative;
 }
 
+/* AIDEV-NOTE: Container size variants for different content types */
 .container-sm {
-  max-width: 800px;
+  max-width: 800px; /* AIDEV-NOTE: For text-heavy content */
 }
 
 .container-md {
-  max-width: 1000px;
+  max-width: 1000px; /* AIDEV-NOTE: For balanced content */
 }
 
 .container-lg {
-  max-width: 1200px;
+  max-width: 1200px; /* AIDEV-NOTE: For media-rich content */
 }
 
 .container-xl {
-  max-width: 1400px;
+  max-width: 1400px; /* AIDEV-NOTE: For full-width layouts */
 }
 
 .container-fluid {
   width: 100%;
-  padding: 0 var(--space-8);
+  padding: 0 var(--space-8); /* AIDEV-NOTE: Full-width with consistent padding */
 }
 
+/* AIDEV-NOTE: Responsive breakpoint adjustments */
 @media (max-width: 1200px) {
   .container, .container-fluid {
     padding: 0 var(--space-6);

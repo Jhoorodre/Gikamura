@@ -1,3 +1,4 @@
+// AIDEV-NOTE: Main App component; routing, notifications, and global state management
 import { useRef, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
@@ -28,15 +29,15 @@ function App() {
     const { isOnline, updateAvailable, applyUpdate } = useServiceWorker();
     const { networkMessage, dismissSlowMessage } = useNetworkNotifications();
     
-    // Hook centralizado para carregamento de hubs (SEM URL padrão para evitar carregamento automático)
+    // AIDEV-NOTE: Centralized hub loading without auto-loading to prevent loops
     const { url: hubUrl, setUrl: setHubUrl, loading, handleSubmit: handleLoadHub } = useHubLoader();
 
     useEffect(() => {
         createParticles();
         console.log('🚀 [App] Aplicação iniciada - Remote Storage conectado:', remoteStorageConnected);
-    }, []); // FIXO: Removendo dependência que pode causar loop
+    }, []); // AIDEV-NOTE: Fixed deps to prevent infinite loops
 
-    // Diagnóstico uma única vez na inicialização
+    // AIDEV-NOTE: One-time network diagnostic in dev mode only
     useEffect(() => {
         const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
         if (isDevelopment) {
@@ -47,15 +48,15 @@ function App() {
                 console.error('❌ [App] Erro no diagnóstico:', error);
             });
         }
-    }, []); // Executa apenas uma vez
+    }, []); // AIDEV-NOTE: Runs only once on mount
 
     return (
         <div className="min-h-screen flex flex-col">
-            {/* Componentes globais sempre presentes */}
+            {/* AIDEV-NOTE: Global components always present */}
             <ArrowNavigation />
             <GlobalRemoteStorageWidget />
             
-            {/* Notificações de Rede Inteligentes */}
+            {/* AIDEV-NOTE: Smart network notifications system */}
             {networkMessage && (
                 <div className={`text-center py-2 font-semibold z-50 ${
                     networkMessage.type === 'offline' ? 'bg-red-600 text-white' :
@@ -75,7 +76,7 @@ function App() {
                 </div>
             )}
             
-            {/* Notificação de Atualização */}
+            {/* AIDEV-NOTE: Update notification with user action */}
             {updateAvailable && (
                 <div className="bg-blue-200 text-blue-900 text-center py-2 font-semibold z-50">
                     <span>Nova versão disponível! </span>
@@ -91,7 +92,7 @@ function App() {
             <div className="animated-bg"></div>
             <div id="particles-container"></div>
             
-            {/* Indicadores de Sistema */}
+            {/* AIDEV-NOTE: System status indicators */}
             {isSyncing && (
                 <div className="sync-indicator">
                     <Spinner size="sm" text="Sincronizando..." />
@@ -108,19 +109,19 @@ function App() {
                 </div>
             )}
 
-            {/* Sistema de Rotas Unificado */}
+            {/* AIDEV-NOTE: Unified routing system with conditional rendering */}
             <Routes>
-                {/* Rota principal condicional */}
+                {/* AIDEV-NOTE: Main route switches based on RemoteStorage connection */}
                 <Route path="/" element={
                     !remoteStorageConnected ? (
-                        /* Modo 1: Sem Remote Storage - Sempre usa MainContent */
+                        /* AIDEV-NOTE: Mode 1: No RemoteStorage - always uses MainContent */
                         <main className="flex-grow flex flex-col">
                             <div className="container mx-auto px-4 py-8 w-full">
                                 <MainContent />
                             </div>
                         </main>
                     ) : (
-                        /* Modo 2: Com Remote Storage */
+                        /* AIDEV-NOTE: Mode 2: With RemoteStorage */
                         <main className="flex-grow flex flex-col">
                             <div className="container mx-auto px-4 py-8 w-full">
                                 <MainContent />
@@ -129,7 +130,7 @@ function App() {
                     )
                 } />
                 
-                {/* Rotas sempre disponíveis com condicionais internas */}
+                {/* AIDEV-NOTE: Protected routes requiring RemoteStorage connection */}
                 <Route path="/collection" element={
                     remoteStorageConnected ? <CollectionPage /> : 
                     <div className="page-container">
@@ -167,7 +168,7 @@ function App() {
                     </div>
                 } />
 
-                {/* Rotas globais sempre disponíveis */}
+                {/* AIDEV-NOTE: Global routes always available regardless of connection */}
                 <Route path="/hub/:encodedUrl" element={<HubRouteHandler />} />
                 <Route path="/reader/:encodedUrl" element={<ReaderView />} />
                 <Route path="/read/:encodedUrl/:chapterId" element={<ChapterReaderView />} />

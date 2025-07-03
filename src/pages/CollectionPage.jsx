@@ -1,3 +1,4 @@
+// AIDEV-NOTE: Collection page showing user's pinned and historical items with navigation
 import { useAppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import ItemGrid from '../components/item/ItemGrid';
@@ -14,7 +15,7 @@ const CollectionPage = () => {
     } = useAppContext();
     const navigate = useNavigate();
 
-    // Função para navegar para a página de detalhes de um item
+    // AIDEV-NOTE: Navigates to item details with proper hub context validation
     const handleSelectItem = (item) => {
         if (!currentHubData) {
             console.error("Não há um hub carregado para selecionar o item.");
@@ -35,6 +36,7 @@ const CollectionPage = () => {
                     <h1 className="page-title orbitron">Minha Coleção</h1>
                 </header>
                 
+                {/* AIDEV-NOTE: Historical items section with empty state handling */}
                 <section className="page-section">
                     <h2 className="section-title">
                         📖 Histórico de Navegação

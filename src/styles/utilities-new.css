@@ -1,6 +1,8 @@
 /*
  * Utilitários globais de CSS
- * AIDEV-NOTE: Global CSS utilities for spacing, display, etc
+ * AIDEV-NOTE: Modern CSS utilities system with comprehensive spacing, display, and layout helpers
+ * AIDEV-TODO: Add more utility classes for modern CSS features (grid, flexbox, etc.)
+ * AIDEV-QUESTION: Should we implement atomic CSS approach for better performance?
  */
 
 /* ========================================================================== */
@@ -9,14 +11,15 @@
 /* ========================================================================== */
 
 /* === DISPLAY UTILITIES === */
+/* AIDEV-NOTE: Comprehensive display utility classes for all display types */
 .block { display: block; }
 .inline-block { display: inline-block; }
 .inline { display: inline; }
-.flex { display: flex; }
+.flex { display: flex; } /* AIDEV-TODO: Add flexbox direction and wrap utilities */
 .inline-flex { display: inline-flex; }
-.grid { display: grid; }
+.grid { display: grid; } /* AIDEV-TODO: Add grid template utilities */
 .inline-grid { display: inline-grid; }
-.hidden { display: none; }
+.hidden { display: none; } /* AIDEV-NOTE: Accessibility-friendly hiding */
 
 /* === POSITION UTILITIES === */
 .static { position: static; }

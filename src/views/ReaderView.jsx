@@ -1,3 +1,4 @@
+// AIDEV-NOTE: Reader view for manga/series with chapter listing and navigation
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useReader } from '../hooks/useReader';
@@ -9,13 +10,13 @@ import ErrorMessage from '../components/common/ErrorMessage';
 import Button from '../components/common/Button';
 import Image from '../components/common/Image';
 
-const INITIAL_CHAPTERS_DISPLAY_COUNT = 20;
+const INITIAL_CHAPTERS_DISPLAY_COUNT = 20; // AIDEV-NOTE: Initial chapter display limit for performance
 
 const ReaderView = () => {
     const { encodedUrl } = useParams();
     const navigate = useNavigate();
     const [showAllChapters, setShowAllChapters] = useState(false);
-    const [sortOrder, setSortOrder] = useState('desc'); // 'asc' ou 'desc'
+    const [sortOrder, setSortOrder] = useState('desc'); // AIDEV-NOTE: 'asc' or 'desc' for chapter ordering
     
     const { clearSelectedItem } = useAppContext();
     
@@ -29,12 +30,12 @@ const ReaderView = () => {
         saveReadingProgress
     } = useReader();
 
-    // Limpa seleção anterior quando entra no ReaderView
+    // AIDEV-NOTE: Clears previous selection when entering ReaderView
     useEffect(() => {
         clearSelectedItem();
     }, [clearSelectedItem]);
 
-    // Decodifica URL e carrega dados do manga
+    // AIDEV-NOTE: Decodes URL and loads manga data
     useEffect(() => {
         if (encodedUrl) {
             try {
@@ -47,34 +48,35 @@ const ReaderView = () => {
         }
     }, [encodedUrl, loadReader]);
 
-    // Lista de capítulos com limite e ordenação
+    // AIDEV-NOTE: Chapter list with display limit and smart numerical/alphabetical sorting
     const displayedChapters = useMemo(() => {
         if (!readerData?.chapters) return [];
         
         const chapterKeys = Object.keys(readerData.chapters).sort((a, b) => {
-            // Ordena numericamente quando possível
+            // AIDEV-NOTE: Sorts numerically when possible, falls back to alphabetical
             const numA = parseInt(a);
             const numB = parseInt(b);
             if (!isNaN(numA) && !isNaN(numB)) {
                 return sortOrder === 'asc' ? numA - numB : numB - numA;
             }
-            // Fallback para ordenação alfabética
+            // AIDEV-NOTE: Fallback to alphabetical sorting
             return sortOrder === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
         });
         
         const chapters = chapterKeys.map(key => ({
             id: key,
             ...readerData.chapters[key],
-            isRead: false, // TODO: implementar sistema de progresso
+            isRead: false, // AIDEV-TODO: implement reading progress system
         }));
         
         return showAllChapters ? chapters : chapters.slice(0, INITIAL_CHAPTERS_DISPLAY_COUNT);
     }, [readerData?.chapters, showAllChapters, sortOrder]);
 
+    // AIDEV-NOTE: Handles chapter selection and navigation with URL encoding
     const handleReadChapter = useCallback((chapterId) => {
         console.log('🎯 Iniciando leitura do capítulo:', chapterId);
         selectChapter(chapterId);
-        // Navega para visualização do capítulo específico
+        // AIDEV-NOTE: Navigate to specific chapter view
         navigate(`/read/${encodedUrl}/${encodeUrl(chapterId)}`);
     }, [navigate, encodedUrl, selectChapter]);
 
@@ -82,12 +84,14 @@ const ReaderView = () => {
         await markChapterAsRead(chapterId);
     };
 
+    // AIDEV-NOTE: Formats timestamp to Brazilian date format
     const formatDate = (timestamp) => {
         if (!timestamp) return 'Data desconhecida';
         const date = new Date(parseInt(timestamp) * 1000);
         return date.toLocaleDateString('pt-BR');
     };
 
+    // AIDEV-NOTE: Gets page count from first group (common pattern)
     const getPageCount = (chapter) => {
         const groups = chapter.groups || {};
         const groupKeys = Object.keys(groups);

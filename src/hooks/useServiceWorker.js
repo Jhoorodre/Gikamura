@@ -1,6 +1,6 @@
 /**
  * Hook para integração e controle do Service Worker
- * AIDEV-NOTE: Manages SW registration, updates and messaging
+ * AIDEV-NOTE: Manages SW registration, updates and messaging with dev mode cleanup
  */
 
 import { useEffect, useState } from 'react';
@@ -11,9 +11,9 @@ export const useServiceWorker = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
-    // Forçar desregistro completo do Service Worker para resolver problemas de CORS
+    // AIDEV-NOTE: Force complete SW unregistration to resolve CORS issues in dev
     const forceUnregisterSW = async () => {
-      // Verificar se já foi executado para evitar loop infinito
+      // AIDEV-NOTE: Check if already executed to avoid infinite loop
       const swCleanupKey = 'gikamoe-sw-cleanup-done';
       if (sessionStorage.getItem(swCleanupKey)) {
         console.log('✅ [SW] Limpeza já foi executada nesta sessão');
@@ -24,7 +24,7 @@ export const useServiceWorker = () => {
       
       if ('serviceWorker' in navigator) {
         try {
-          // 1. Desregistrar todas as registrations
+          // AIDEV-NOTE: 1. Unregister all registrations
           const registrations = await navigator.serviceWorker.getRegistrations();
           
           if (registrations.length === 0) {
@@ -38,7 +38,7 @@ export const useServiceWorker = () => {
             await registration.unregister();
           }
           
-          // 2. Limpar todos os caches
+          // AIDEV-NOTE: 2. Clear all caches
           if ('caches' in window) {
             const cacheNames = await caches.keys();
             for (const cacheName of cacheNames) {
@@ -49,10 +49,10 @@ export const useServiceWorker = () => {
           
           console.log('✅ Service Workers e caches completamente removidos');
           
-          // Marcar como concluído ANTES de recarregar
+          // AIDEV-NOTE: Mark as completed BEFORE reloading
           sessionStorage.setItem(swCleanupKey, 'true');
           
-          // 3. Recarregar APENAS uma vez
+          // AIDEV-NOTE: 3. Reload ONLY once
           console.log('🔄 Recarregando página para aplicar mudanças...');
           window.location.reload(true);
           
@@ -63,7 +63,7 @@ export const useServiceWorker = () => {
       }
     };
 
-    // Em desenvolvimento, tentar desregistrar (mas apenas uma vez por sessão)
+    // AIDEV-NOTE: In development, try to unregister (but only once per session)
     const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
     
     if (isDevelopment) {
@@ -72,7 +72,7 @@ export const useServiceWorker = () => {
     }
 
     /*
-    // Código original comentado
+    // AIDEV-NOTE: Original code commented out - SW registration for production
     const registerSW = async () => {
       if ('serviceWorker' in navigator) {
         try {
@@ -81,7 +81,7 @@ export const useServiceWorker = () => {
           console.log('Service Worker registrado:', registration);
           setSwRegistered(true);
 
-          // Verificar por atualizações
+          // AIDEV-NOTE: Check for updates
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             
@@ -94,7 +94,7 @@ export const useServiceWorker = () => {
             }
           });
 
-          // Verificar por atualizações a cada 5 minutos
+          // AIDEV-NOTE: Check for updates every 5 minutes
           setInterval(() => {
             registration.update();
           }, 5 * 60 * 1000);
@@ -105,10 +105,7 @@ export const useServiceWorker = () => {
       }
       */
     
-    // Chama a função de desregistro em vez de registro
-    // registerSW();
-
-    // Monitorar status de conectividade
+    // AIDEV-NOTE: Monitor connectivity status
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
@@ -121,7 +118,7 @@ export const useServiceWorker = () => {
     };
   }, []);
 
-  // Função para aplicar atualização
+  // AIDEV-NOTE: Function to apply updates with page reload
   const applyUpdate = () => {
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
@@ -129,7 +126,7 @@ export const useServiceWorker = () => {
     }
   };
 
-  // Função para verificar tamanho do cache
+  // AIDEV-NOTE: Function to check cache size in MB
   const getCacheSize = async () => {
     if ('caches' in window) {
       const cacheNames = await caches.keys();
@@ -153,7 +150,7 @@ export const useServiceWorker = () => {
     return 0;
   };
 
-  // Função para limpar cache
+  // AIDEV-NOTE: Function to clear all caches
   const clearCache = async () => {
     if ('caches' in window) {
       const cacheNames = await caches.keys();

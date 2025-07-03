@@ -1,6 +1,8 @@
 /*
  * CSS para layout principal do hub
- * AIDEV-NOTE: Styles for fixed hub layout and navigation
+ * AIDEV-NOTE: Fixed hub layout with responsive grid system and modern design
+ * AIDEV-TODO: Optimize for better mobile experience and touch interactions
+ * AIDEV-QUESTION: Should we implement infinite scroll or pagination for large content lists?
  */
 
 /* ========================================================================== */
@@ -8,25 +10,28 @@
 /* ========================================================================== */
 
 /* === HUB CONTAINER PRINCIPAL === */
+/* AIDEV-NOTE: Main hub container with full viewport height and overflow control */
 .hub-connected-container {
     min-height: 100vh;
-    background: var(--bg-primary);
+    background: var(--bg-primary); /* AIDEV-TODO: Ensure consistency with design tokens */
     position: relative;
-    overflow-x: hidden;
+    overflow-x: hidden; /* AIDEV-NOTE: Prevents horizontal scrolling issues */
 }
 
 /* === LAYOUT CENTRAL COM CARDS === */
+/* AIDEV-NOTE: Responsive grid layout with centered content and consistent spacing */
 .hub-central-layout {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-6);
-    max-width: 1400px;
+    max-width: 1400px; /* AIDEV-TODO: Make max-width configurable via design tokens */
     margin: 0 auto;
     padding: var(--space-8);
     position: relative;
-    min-height: 80vh;
+    min-height: 80vh; /* AIDEV-NOTE: Ensures minimum content height */
 }
 
+/* AIDEV-NOTE: Enhanced grid layout for larger screens */
 @media (min-width: 1024px) {
     .hub-central-layout {
         grid-template-columns: 300px 1fr 300px;

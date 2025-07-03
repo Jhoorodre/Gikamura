@@ -1,7 +1,6 @@
 /**
  * Hook para carregamento e gerenciamento do hub
- * AIDEV-NOTE: Loads and manages hub data and state
- * Centraliza a lógica de carregamento de JSON em um local
+ * AIDEV-NOTE: Centralized hub loading with state management and navigation
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -18,14 +17,14 @@ export const useHubLoader = (defaultUrl = "") => {
     const { loadHub: loadHubInContext, currentHubData, hubLoading } = useAppContext();
     const { isConnected } = useRemoteStorageContext() || { isConnected: false };
 
-    // useEffect para sincronizar loading com o estado do contexto
+    // AIDEV-NOTE: Syncs loading state with context when not connected
     useEffect(() => {
         if (!isConnected && hubLoading !== undefined) {
             setLoading(hubLoading);
         }
     }, [hubLoading, isConnected]);
 
-    // Monitora mudanças no estado para logs de debug
+    // AIDEV-NOTE: Debug monitoring for state changes (dev only)
     useEffect(() => {
         console.log('🎯 [useHubLoader] Estado atual:', {
             isConnected,
@@ -36,6 +35,7 @@ export const useHubLoader = (defaultUrl = "") => {
         });
     }, [isConnected, currentHubData, hubLoading, loading]);
 
+    // AIDEV-NOTE: Main hub loading logic with different strategies for connected/disconnected modes
     const loadHub = useCallback(async (hubUrl = url) => {
         const targetUrl = (hubUrl || url).trim();
         
@@ -64,15 +64,15 @@ export const useHubLoader = (defaultUrl = "") => {
         try {
             console.log('🚀 [useHubLoader] Carregando hub:', targetUrl);
             
-            // Se não conectado ao Remote Storage, carrega diretamente no contexto
+            // AIDEV-NOTE: Different strategies based on RemoteStorage connection
             if (!isConnected) {
                 console.log('🔄 [useHubLoader] Modo sem Remote Storage - carregando diretamente');
                 
-                // Chama loadHubInContext que carrega o hub
+                // AIDEV-NOTE: Direct loading through context without storage
                 await loadHubInContext(targetUrl);
                 console.log('✅ [useHubLoader] loadHubInContext concluído');
                 
-                // Após carregamento bem-sucedido, redirecionar imediatamente
+                // AIDEV-NOTE: Immediate redirect after successful loading
                 console.log('✅ [useHubLoader] Hub carregado com sucesso, redirecionando...');
                 const encodedUrl = btoa(encodeURIComponent(targetUrl));
                 console.log('🎯 [useHubLoader] Redirecionando para:', `/hub/${encodedUrl}`);
@@ -81,7 +81,7 @@ export const useHubLoader = (defaultUrl = "") => {
                 setLoading(false);
                 return true;
             } else {
-                // Se conectado, navega para a rota do hub
+                // AIDEV-NOTE: Connected mode - navigate to hub route
                 console.log('🔄 [useHubLoader] Modo com Remote Storage - navegando para rota');
                 const encodedHubUrl = encodeUrl(targetUrl);
                 console.log('🎯 [useHubLoader] Navegando para:', `/hub/${encodedHubUrl}`);
@@ -98,6 +98,7 @@ export const useHubLoader = (defaultUrl = "") => {
         }
     }, [url, navigate, isConnected, loadHubInContext, currentHubData, hubLoading]);
 
+    // AIDEV-NOTE: Form submission handler with validation
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
         console.log('🎯 [useHubLoader] handleSubmit chamado, URL:', url);

@@ -1,43 +1,46 @@
 /*
  * CSS principal do leitor
- * AIDEV-NOTE: Main reader styles and reading experience
+ * AIDEV-NOTE: Optimized reader experience with fullscreen support and minimal UI
  */
 
 /* ========================================
    READER - ESTILOS PARA LEITOR DE MANGA MINIMALISTA
    ======================================== */
 
+/* AIDEV-NOTE: Main reader container with user selection disabled for clean reading */
 /* Container principal do leitor */
 .reader-container {
   background: var(--bg-primary);
   color: var(--color-accent);
-  user-select: none;
+  user-select: none; /* AIDEV-NOTE: Prevent text selection for cleaner UX */
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   min-height: 100vh;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: hidden; /* AIDEV-NOTE: Prevent horizontal scroll */
 }
 
+/* AIDEV-NOTE: Fullscreen mode with maximum z-index for immersive reading */
 .reader-container.fullscreen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 9999;
+  z-index: 9999; /* AIDEV-NOTE: Ensure fullscreen is above all other elements */
   background: var(--bg-primary) !important;
 }
 
+/* AIDEV-NOTE: Fixed header and footer controls with smooth transitions */
 /* Header e Footer com controles */
 .reader-header,
 .reader-footer {
   position: fixed;
   left: 0;
   right: 0;
-  z-index: 30;
-  transition: none;
+  z-index: 30; /* AIDEV-NOTE: Above content but below fullscreen */
+  transition: none; /* AIDEV-NOTE: Disabled for performance */
 }
 
 .reader-header {

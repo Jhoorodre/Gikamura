@@ -1,12 +1,13 @@
 /*
  * Base CSS para reset e normalização de estilos
- * AIDEV-NOTE: Defines base resets and normalization for consistent cross-browser rendering
+ * AIDEV-NOTE: Modern CSS reset and base styles for consistent cross-browser rendering
  */
 
 /* ========================================================================== */
 /* ==                  ESTILOS BASE MINIMALISTAS DA APLICAÇÃO             == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Modern CSS reset with box-sizing inheritance */
 /* === 1. RESET MODERNO E CONFIGURAÇÕES GLOBAIS === */
 *, *::before, *::after { 
   box-sizing: border-box; 
@@ -14,6 +15,7 @@
   padding: 0; 
 }
 
+/* AIDEV-NOTE: Root HTML setup with smooth scrolling and overflow control */
 html { 
   font-size: 16px; 
   scroll-behavior: smooth;
@@ -21,6 +23,7 @@ html {
 }
 
 :root {
+  /* AIDEV-NOTE: Fluid typography scale using clamp() for responsive design */
   /* Tipografia fluida */
   --font-size-xs: clamp(0.75rem, 0.9vw, 0.85rem);
   --font-size-sm: clamp(0.875rem, 1vw, 1rem);
@@ -31,6 +34,7 @@ html {
   --font-size-3xl: clamp(1.875rem, 3vw, 3rem);
   --font-size-4xl: clamp(2.25rem, 4vw, 4rem);
 
+  /* AIDEV-NOTE: Fluid spacing system for consistent layout across viewport sizes */
   /* Espaçamento fluido */
   --space-1: clamp(0.25rem, 0.5vw, 0.5rem);
   --space-2: clamp(0.5rem, 0.8vw, 0.75rem);
@@ -42,6 +46,7 @@ html {
   --space-16: clamp(4rem, 8vw, 8rem);
 }
 
+/* AIDEV-NOTE: Base body styles with design token integration */
 body {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-base);

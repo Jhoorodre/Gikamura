@@ -1,10 +1,13 @@
 /*
  * CSS minimalista para o hub
- * AIDEV-NOTE: Minimal styles for hub UI and fast rendering
+ * AIDEV-NOTE: Minimal hub styles focused on performance and fast rendering
+ * AIDEV-TODO: Evaluate if minimal design meets all accessibility requirements
+ * AIDEV-QUESTION: Should we add subtle animations without compromising performance?
  */
 
 /* Hub Minimal Design - CSS Minimalista e Funcional */
 
+/* AIDEV-NOTE: Clean hub view with essential styling only */
 /* Container Principal */
 .hub-view {
     min-height: 100vh;
@@ -12,17 +15,19 @@
     color: var(--color-text-primary);
     font-family: var(--font-family-sans);
     padding: 0;
-    margin: 0;
+    margin: 0; /* AIDEV-NOTE: Reset default margins for consistent layout */
 }
 
+/* AIDEV-NOTE: Centered container with responsive padding */
 .hub-container {
-    max-width: 1200px;
+    max-width: 1200px; /* AIDEV-TODO: Use design token for max-width */
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2rem 1rem; /* AIDEV-TODO: Convert to design token spacing */
     width: 100%;
     box-sizing: border-box;
 }
 
+/* AIDEV-NOTE: Minimal header with focused content area */
 /* Header do Hub */
 .hub-minimal-header {
     margin-bottom: 3rem;

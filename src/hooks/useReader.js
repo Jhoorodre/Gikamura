@@ -1,7 +1,7 @@
 /**
  * Hook para gerenciar dados de obras (reader.json)
  * Integra com o serviço jsonReader e fornece estado reativo
- * AIDEV-NOTE: Central hook for all reader data and progress logic
+ * AIDEV-NOTE: Central hook for all reader data, progress, and chapter management
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -12,6 +12,7 @@ import { RS_PATH } from '../services/rs/rs-config.js';
 
 const READING_PROGRESS_PATH = (RS_PATH && RS_PATH.READING_PROGRESS) ? RS_PATH.READING_PROGRESS : 'data/reading-progress/';
 
+// AIDEV-NOTE: Safe path fallback for RemoteStorage operations
 function safePath(path, fallback = 'data/reading-progress/') {
   return (typeof path === 'string' && path) ? path : fallback;
 }
@@ -19,9 +20,9 @@ function safePath(path, fallback = 'data/reading-progress/') {
 export const useReader = () => {
     const [currentReaderUrl, setCurrentReaderUrl] = useState(null);
     const [selectedChapter, setSelectedChapter] = useState(null);
-    const [readingProgress, setReadingProgress] = useState({});
+    const [readingProgress, setReadingProgress] = useState({}); // AIDEV-NOTE: Tracks user reading progress per chapter
 
-    // Query para carregar dados da obra
+    // AIDEV-NOTE: React Query for reader data with progress loading integration
     const {
         data: readerData,
         isLoading: readerLoading,
@@ -41,7 +42,7 @@ export const useReader = () => {
                 console.log('📖 [useReader] Dados carregados:', data ? 'sucesso' : 'null');
                 console.log('📖 [useReader] Capítulos encontrados:', data?.chapters ? Object.keys(data.chapters).length : 0);
                 
-                // Carrega progresso de leitura se conectado
+                // AIDEV-NOTE: Load reading progress if connected to RemoteStorage
                 if (remoteStorage.connected) {
                     await loadReadingProgress(data);
                 }

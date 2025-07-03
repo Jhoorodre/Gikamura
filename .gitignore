@@ -111,6 +111,9 @@ test-*.html
 *.test.local.*
 dev-*.js
 
+# Local development files
+AGENTS.md
+
 # Package manager lock files (uncomment if needed)
 # package-lock.json
 # yarn.lock

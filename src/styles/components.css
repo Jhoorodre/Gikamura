@@ -1,42 +1,45 @@
 /*
  * CSS de componentes customizados
- * AIDEV-NOTE: Styles for custom UI components and widgets
+ * AIDEV-NOTE: Comprehensive component styles with design system integration
  */
 
 /* ========================================================================== */
 /* ==                   SISTEMA DE COMPONENTES MINIMALISTA                == */
 /* ========================================================================== */
 /*
- * Sistema de design minimalista baseado na paleta do roadmap:
- * 70% #141414 (fundo principal)
- * 20% #341111 (destaques e bordas)
- * 10% #a4a4a4 (texto e acentos)
+ * AIDEV-NOTE: Minimalist design system based on roadmap palette:
+ * 70% #141414 (main background)
+ * 20% #341111 (highlights and borders)  
+ * 10% #a4a4a4 (text and accents)
  */
 
 /* ========================================================================== */
 /* == 1. CARDS MINIMALISTAS                                              == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Base card component with subtle interactions and minimal shadows */
 .card {
   background: var(--bg-primary);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-2xl);
   padding: var(--space-8);
-  box-shadow: none;
+  box-shadow: none; /* AIDEV-NOTE: Minimal shadow approach for cleaner look */
   transition: background var(--transition-base), border var(--transition-base);
   position: relative;
   overflow: hidden;
   color: var(--text-primary);
 }
 
+/* AIDEV-NOTE: Disabled pseudo-element decorations for minimalism */
 .card::before {
   display: none;
 }
 
+/* AIDEV-NOTE: Subtle hover states without transforms for performance */
 .card:hover {
   background: var(--bg-secondary);
   border-color: var(--border-secondary);
-  transform: none;
+  transform: none; /* AIDEV-NOTE: No transform for better performance */
   box-shadow: none;
 }
 
@@ -44,6 +47,7 @@
   display: none;
 }
 
+/* AIDEV-NOTE: Card size variants for different use cases */
 /* Variações de cards */
 .card-compact {
   padding: var(--space-6);
@@ -53,6 +57,7 @@
 /* == 2. BOTÕES MINIMALISTAS                                             == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Estilo base para botões com foco em acessibilidade e clareza */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -75,10 +80,12 @@
   box-shadow: none;
 }
 
+/* AIDEV-NOTE: Removido o pseudo-elemento para simplificar o estilo do botão */
 .btn::before {
   display: none;
 }
 
+/* AIDEV-NOTE: Estados de foco e hover para acessibilidade */
 .btn:hover:not(:disabled) {
   background: var(--surface-hover);
   color: var(--text-primary);
@@ -93,6 +100,7 @@
   box-shadow: none;
 }
 
+/* AIDEV-NOTE: Transições suaves para estados de botão primário */
 .btn-primary:hover:not(:disabled) {
   background: var(--surface-hover);
   color: var(--text-primary);
@@ -105,6 +113,7 @@
   border: 1px solid var(--color-accent);
 }
 
+/* AIDEV-NOTE: Efeitos de hover para botão secundário */
 .btn-secondary:hover:not(:disabled) {
   background: var(--color-surface-primary);
   color: var(--color-accent-hover);
@@ -118,19 +127,14 @@
   border: 1px solid transparent;
 }
 
-.btn-ghost:hover:not(:disabled) {
-  background: var(--color-background);
-  color: var(--color-accent-base);
-  border-color: var(--color-accent-base);
-}
-
-/* Botão de Perigo */
+/* AIDEV-NOTE: Estilo de botão de perigo com ênfase em acessibilidade */
 .btn-danger {
   background: var(--color-error);
   color: var(--color-text-primary);
   box-shadow: none;
 }
 
+/* AIDEV-NOTE: Efeitos de hover para botão de perigo */
 .btn-danger:hover:not(:disabled) {
   background: var(--color-error-hover);
   color: var(--color-text-primary);
@@ -160,6 +164,7 @@
   color: var(--color-accent-base);
 }
 
+/* AIDEV-NOTE: Efeitos de hover para botões de ícone */
 .btn-icon:hover {
   background: var(--color-primary-hover);
   color: var(--color-accent-hover);
@@ -178,6 +183,7 @@
   opacity: 0.8;
 }
 
+/* AIDEV-NOTE: Indicador de carregamento para botões */
 .btn--loading::after {
   content: '';
   position: absolute;
@@ -197,6 +203,7 @@
 /* == 3. BADGES E TAGS SOFISTICADOS                                      == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Estilo base para badges com foco em legibilidade e contraste */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -210,12 +217,14 @@
   text-transform: uppercase;
 }
 
+/* AIDEV-NOTE: Badge primário com fundo sutilmente destacado */
 .badge-primary {
   background: rgba(var(--surface-secondary-rgb), 0.2);
   color: var(--color-accent);
   border: 1px solid rgba(var(--surface-secondary-rgb), 0.4);
 }
 
+/* AIDEV-NOTE: Efeito de destaque ao passar o mouse sobre o badge */
 .badge:hover {
   transform: scale(1.05);
   box-shadow: var(--shadow-sm);
@@ -225,6 +234,7 @@
 /* == 4. MEDIA CARDS ESPETACULARES                                       == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Cartão de mídia com gradiente e efeito de desfoque de fundo */
 .media-card {
   position: relative;
   background: linear-gradient(135deg, 
@@ -240,6 +250,7 @@
   box-shadow: var(--shadow-base);
 }
 
+/* AIDEV-NOTE: Sobreposição de gradiente sutil no cartão de mídia */
 .media-card::before {
   content: '';
   position: absolute;
@@ -257,16 +268,19 @@
   z-index: 1;
 }
 
+/* AIDEV-NOTE: Efeitos de hover para cartão de mídia */
 .media-card:hover {
   transform: translateY(-8px) scale(1.03);
   box-shadow: var(--shadow-2xl), var(--shadow-primary);
   border-color: rgba(var(--surface-secondary-rgb), 0.5);
 }
 
+/* AIDEV-NOTE: Exibição da sobreposição de gradiente no hover */
 .media-card:hover::before {
   opacity: 1;
 }
 
+/* AIDEV-NOTE: Efeito de clique para cartão de mídia */
 .media-card:active {
   transform: translateY(-4px) scale(1.01);
 }
@@ -281,6 +295,7 @@
   z-index: 0;
 }
 
+/* AIDEV-NOTE: Efeito de zoom na imagem do cartão de mídia */
 .media-card:hover .media-card-image {
   transform: scale(1.05);
 }
@@ -310,6 +325,7 @@
   );
 }
 
+/* AIDEV-NOTE: Estilo do título do cartão de mídia com suporte a múltiplas linhas */
 .media-card__title {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
@@ -337,6 +353,7 @@
   overflow: hidden;
 }
 
+/* AIDEV-NOTE: Estilo do subtítulo do cartão de mídia */
 .media-card-subtitle {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
@@ -362,6 +379,7 @@
 /* == 5. MODAIS E OVERLAYS MODERNOS                                      == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Estilo base para sobreposições de modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -376,10 +394,12 @@
   transition: opacity var(--transition-base);
 }
 
+/* AIDEV-NOTE: Estado ativo da sobreposição de modal */
 .modal-overlay.active {
   opacity: 1;
 }
 
+/* AIDEV-NOTE: Estilo base para conteúdo de modal */
 .modal-content {
   background: var(--surface-primary);
   border: 1px solid var(--border-primary);
@@ -393,10 +413,12 @@
   transition: transform var(--transition-base);
 }
 
+/* AIDEV-NOTE: Animação de entrada para o conteúdo do modal */
 .modal-overlay.active .modal-content {
   transform: scale(1) translateY(0);
 }
 
+/* AIDEV-NOTE: Estilo do cabeçalho do modal */
 .modal-header {
   display: flex;
   align-items: center;
@@ -406,6 +428,7 @@
   border-bottom: 1px solid var(--border-primary);
 }
 
+/* AIDEV-NOTE: Estilo do título do modal */
 .modal-title {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
@@ -413,6 +436,7 @@
   margin: 0;
 }
 
+/* AIDEV-NOTE: Estilo do botão de fechar do modal */
 .modal-close {
   background: none;
   border: none;
@@ -423,6 +447,7 @@
   transition: all var(--transition-base);
 }
 
+/* AIDEV-NOTE: Efeito de hover para o botão de fechar do modal */
 .modal-close:hover {
   background: var(--surface-hover);
   color: var(--text-primary);
@@ -432,11 +457,13 @@
 /* == 6. TOOLTIPS E POPOVER                                              == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Estilo base para tooltips */
 .tooltip {
   position: relative;
   display: inline-block;
 }
 
+/* AIDEV-NOTE: Estilo do conteúdo do tooltip */
 .tooltip-content {
   position: absolute;
   bottom: 100%;
@@ -455,6 +482,7 @@
   pointer-events: none;
 }
 
+/* AIDEV-NOTE: Triângulo do tooltip */
 .tooltip-content::after {
   content: '';
   position: absolute;
@@ -465,6 +493,7 @@
   border-top-color: var(--surface-tertiary);
 }
 
+/* AIDEV-NOTE: Exibição do tooltip ao passar o mouse */
 .tooltip:hover .tooltip-content {
   opacity: 1;
   visibility: visible;
@@ -475,6 +504,7 @@
 /* == 7. NAVEGAÇÃO E BREADCRUMBS                                         == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Estilo base para barras de navegação horizontais */
 .nav-horizontal {
   display: flex;
   align-items: center;
@@ -485,6 +515,7 @@
   border: 1px solid var(--border-primary);
 }
 
+/* AIDEV-NOTE: Estilo base para itens de navegação */
 .nav-item {
   display: flex;
   align-items: center;
@@ -497,12 +528,14 @@
   position: relative;
 }
 
+/* AIDEV-NOTE: Estados de hover e ativo para itens de navegação */
 .nav-item:hover,
 .nav-item.active {
   background: var(--surface-hover);
   color: var(--text-primary);
 }
 
+/* AIDEV-NOTE: Indicador de item ativo na navegação */
 .nav-item.active::after {
   content: '';
   position: absolute;
@@ -514,6 +547,7 @@
   border-radius: 1px;
 }
 
+/* AIDEV-NOTE: Estilo base para breadcrumbs */
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -521,6 +555,7 @@
   padding: var(--space-3) 0;
 }
 
+/* AIDEV-NOTE: Estilo dos itens de breadcrumb */
 .breadcrumb-item {
   color: var(--text-secondary);
   text-decoration: none;
@@ -528,15 +563,18 @@
   transition: color var(--transition-base);
 }
 
+/* AIDEV-NOTE: Efeito de hover para itens de breadcrumb */
 .breadcrumb-item:hover {
   color: var(--text-primary);
 }
 
+/* AIDEV-NOTE: Estilo do separador de breadcrumb */
 .breadcrumb-separator {
   color: var(--text-muted);
   font-size: var(--font-size-xs);
 }
 
+/* AIDEV-NOTE: Estilo do item ativo no breadcrumb */
 .breadcrumb-item.active {
   color: var(--text-primary);
   font-weight: var(--font-weight-medium);
@@ -546,6 +584,7 @@
 /* == 8. FORMULÁRIOS MODERNOS                                            == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Estilo base para grupos de formulários */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -553,12 +592,14 @@
   margin-bottom: var(--space-4);
 }
 
+/* AIDEV-NOTE: Estilo do rótulo do formulário */
 .form-label {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
+/* AIDEV-NOTE: Estilo base para campos de entrada de formulários */
 .form-input {
   background: var(--surface-primary);
   border: 1px solid var(--border-primary);
@@ -569,6 +610,7 @@
   transition: all var(--transition-base);
 }
 
+/* AIDEV-NOTE: Estilo de foco para campos de entrada */
 .form-input:focus {
   outline: none;
   border-color: var(--border-focus);
@@ -576,22 +618,26 @@
   box-shadow: 0 0 0 3px rgba(52, 17, 17, 0.3);
 }
 
+/* AIDEV-NOTE: Estilo do placeholder */
 .form-input::placeholder {
   color: var(--text-muted);
 }
 
+/* AIDEV-NOTE: Estilo para campos de entrada desabilitados */
 .form-input:disabled {
   background: var(--bg-secondary);
   color: var(--text-disabled);
   cursor: not-allowed;
 }
 
+/* AIDEV-NOTE: Estilo de mensagem de erro */
 .form-error {
   color: var(--color-error);
   font-size: var(--font-size-sm);
   margin-top: var(--space-1);
 }
 
+/* AIDEV-NOTE: Estilo de ajuda do formulário */
 .form-help {
   color: var(--text-muted);
   font-size: var(--font-size-sm);
@@ -602,6 +648,7 @@
 /* == 9. BADGES E TAGS                                                   == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Estilo base para badges com foco em legibilidade e contraste */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -614,24 +661,28 @@
   border: 1px solid var(--border-primary);
 }
 
+/* AIDEV-NOTE: Badge de sucesso com cores do sistema */
 .badge-success {
   background: var(--color-success-bg);
   color: var(--color-success);
   border-color: var(--color-success);
 }
 
+/* AIDEV-NOTE: Badge de aviso com cores do sistema */
 .badge-warning {
   background: var(--color-warning-bg);
   color: var(--color-warning);
   border-color: var(--color-warning);
 }
 
+/* AIDEV-NOTE: Badge de erro com cores do sistema */
 .badge-error {
   background: var(--color-error-bg);
   color: var(--color-error);
   border-color: var(--color-error);
 }
 
+/* AIDEV-NOTE: Badge de acento com fundo sutil */
 .badge-accent {
   background: rgba(164, 164, 164, 0.15);
   color: var(--color-accent);
@@ -642,6 +693,7 @@
 /* == 10. LOADING E SKELETON                                             == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Estilo de carregamento com spinner circular */
 .loading-spinner {
   width: 20px;
   height: 20px;
@@ -656,6 +708,7 @@
   100% { transform: rotate(360deg); }
 }
 
+/* AIDEV-NOTE: Estilo de esqueleto para carregamento de conteúdo */
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -672,21 +725,25 @@
   100% { background-position: -200% 0; }
 }
 
+/* AIDEV-NOTE: Estilo de texto em esqueleto */
 .skeleton-text {
   height: 1rem;
   border-radius: var(--radius-sm);
 }
 
+/* AIDEV-NOTE: Estilo de texto grande em esqueleto */
 .skeleton-text.large {
   height: 1.5rem;
 }
 
+/* AIDEV-NOTE: Estilo de avatar em esqueleto */
 .skeleton-avatar {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
 }
 
+/* AIDEV-NOTE: Estilo de botão em esqueleto */
 .skeleton-button {
   height: 2.5rem;
   border-radius: var(--radius-lg);
@@ -696,6 +753,7 @@
 /* == 11. CARDS ESPECIALIZADOS                                           == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Cartão de informação com cores do sistema */
 .info-card {
   background: var(--color-info-bg);
   border: 1px solid var(--color-info);
@@ -704,6 +762,7 @@
   color: var(--color-info);
 }
 
+/* AIDEV-NOTE: Cartão de sucesso com cores do sistema */
 .success-card {
   background: var(--color-success-bg);
   border: 1px solid var(--color-success);
@@ -712,6 +771,7 @@
   color: var(--color-success);
 }
 
+/* AIDEV-NOTE: Cartão de aviso com cores do sistema */
 .warning-card {
   background: var(--color-warning-bg);
   border: 1px solid var(--color-warning);
@@ -720,6 +780,7 @@
   color: var(--color-warning);
 }
 
+/* AIDEV-NOTE: Cartão de erro com cores do sistema */
 .error-card {
   background: var(--color-error-bg);
   border: 1px solid var(--color-error);
@@ -728,6 +789,7 @@
   color: var(--color-error);
 }
 
+/* AIDEV-NOTE: Cartão com efeito de vidro fosco */
 .glass-card {
   background: var(--bg-glass);
   backdrop-filter: blur(12px);
@@ -742,41 +804,47 @@
 /* == 12. STATES E INTERACTIONS                                          == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Estilo base para elementos interativos */
 .interactive {
   cursor: pointer;
   transition: all var(--transition-base);
   position: relative;
 }
 
+/* AIDEV-NOTE: Efeito de elevação ao passar o mouse */
 .interactive:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-lg);
 }
 
+/* AIDEV-NOTE: Efeito de clique para elementos interativos */
 .interactive:active {
   transform: translateY(0);
   box-shadow: var(--shadow-md);
 }
 
+/* AIDEV-NOTE: Estilo para elementos clicáveis */
 .clickable {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
+/* AIDEV-NOTE: Estilo para elementos desabilitados */
 .disabled {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
 }
 
+/* AIDEV-NOTE: Estilo para elementos em carregamento */
 .loading {
   opacity: 0.7;
   cursor: wait;
   pointer-events: none;
 }
 
-/* Ripple effect para interações */
+/* AIDEV-NOTE: Efeito de ripple para interações */
 .ripple {
   position: relative;
   overflow: hidden;

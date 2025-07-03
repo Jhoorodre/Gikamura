@@ -1,26 +1,25 @@
 /**
  * App Configuration Constants
- * AIDEV-NOTE: Centralizes all app-wide config and UI constants
+ * AIDEV-NOTE: Centralizes all app-wide config and UI constants for maintainability
  */
 export const APP_CONFIG = {
-  // URLs e proxies - CORS proxy removido para requests diretos
+  // AIDEV-NOTE: URLs and proxies - CORS proxy removed for direct requests
   // AIDEV-TODO: If CORS issues arise, consider re-adding a proxy URL
-  // CORS_PROXY_URL: 'https://api.allorigins.win/get?url=',
   DEFAULT_HUB_URL: 'https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/refs/heads/main/hub_tog.json',
   
-  // Timeouts e delays
+  // AIDEV-NOTE: Timeouts and delays for UX optimization
   SAVE_PROGRESS_DELAY: 1000,
   CONTROLS_TIMEOUT: 3000,
   CONFLICT_MESSAGE_TIMEOUT: 8000,
   
-  // Limits
+  // AIDEV-NOTE: Data and performance limits
   MAX_HISTORY_ITEMS: 20,
   CHUNK_SIZE_WARNING_LIMIT: 1000,
   
-  // Remote Storage
+  // AIDEV-NOTE: Remote Storage configuration
   RS_PATH: 'gikamoe',
   
-  // Mensagens de erro
+  // AIDEV-NOTE: Centralized error messages for consistency
   ERROR_MESSAGES: {
     HUB_LOAD_FAILED: 'Erro ao carregar o hub', // AIDEV-NOTE: Used for hub fetch failures
     ITEM_LOAD_FAILED: 'Erro ao carregar item',
@@ -29,19 +28,18 @@ export const APP_CONFIG = {
     INVALID_DATA: 'Dados inválidos recebidos'
   },
   
-  // UI Constants
+  // AIDEV-NOTE: UI constants for skeleton loaders and intersection observer
   SKELETON_COUNT: 8,
   INTERSECTION_ROOT_MARGIN: '100px 0px',
   
-  // Reading modes
+  // AIDEV-NOTE: Reading experience modes
   READING_MODES: {
     PAGINATED: 'paginated',
     SCROLLING: 'scrolling'
   }
 }
 
-// Constantes de otimização de performance
-// AIDEV-NOTE: Used for debounce/throttle and virtualization tuning
+// AIDEV-NOTE: Performance optimization constants for debounce/throttle and virtualization
 export const PERFORMANCE = {
   DEBOUNCE_DELAY: 300,
   THROTTLE_DELAY: 100,
@@ -49,8 +47,7 @@ export const PERFORMANCE = {
   VIRTUALIZATION_THRESHOLD: 100
 }
 
-// Breakpoints para design responsivo
-// AIDEV-NOTE: Used for responsive UI breakpoints
+// AIDEV-NOTE: Responsive design breakpoints for consistent UI across devices
 export const BREAKPOINTS = {
   mobile: '768px',
   tablet: '1024px',

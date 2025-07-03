@@ -52,7 +52,7 @@ const ReaderView = () => {
         const chapters = chapterKeys.map(key => ({
             id: key,
             ...readerData.chapters[key],
-            isRead: false, // TODO: implementar sistema de progresso
+            isRead: false, // AIDEV-TODO: implement reading progress system
         })).reverse(); // Mais recentes primeiro
         
         return showAllChapters ? chapters : chapters.slice(0, 20);

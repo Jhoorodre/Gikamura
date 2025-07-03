@@ -1,3 +1,4 @@
+// AIDEV-NOTE: Hub route handler with URL decoding, loading states, and error handling
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -11,6 +12,7 @@ const HubRouteHandler = () => {
     const { loadHub, currentHubData, hubLoading, hubError } = useAppContext();
     const [debugInfo, setDebugInfo] = useState('');
 
+    // AIDEV-NOTE: Processes encoded URL parameter and loads hub data
     useEffect(() => {
         const processHub = async () => {
             if (encodedUrl) {
@@ -23,7 +25,7 @@ const HubRouteHandler = () => {
                     
                     setDebugInfo(`📡 Carregando: ${decodedUrl}`);
                     
-                    // Teste direto do fetch aqui também
+                    // AIDEV-NOTE: Direct fetch test for debugging connectivity
                     console.log('🧪 [HubRouteHandler] Teste direto do fetch...');
                     const response = await fetch(decodedUrl);
                     console.log('🧪 [HubRouteHandler] Response status:', response.status);
@@ -45,7 +47,7 @@ const HubRouteHandler = () => {
         processHub();
     }, [encodedUrl, loadHub]);
 
-    // Mostrar loading enquanto carrega
+    // AIDEV-NOTE: Loading state with debug information
     if (hubLoading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
@@ -59,7 +61,7 @@ const HubRouteHandler = () => {
         );
     }
 
-    // Mostrar erro se houver
+    // AIDEV-NOTE: Error state with navigation back option
     if (hubError) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
@@ -82,12 +84,12 @@ const HubRouteHandler = () => {
         );
     }
 
-    // Mostrar o hub se carregado com sucesso
+    // AIDEV-NOTE: Success state - show hub view with loaded data
     if (currentHubData) {
         return <HubView />;
     }
 
-    // Fallback para estado indefinido
+    // AIDEV-NOTE: Fallback for undefined state
     return (
         <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
             <Spinner text="Inicializando..." />

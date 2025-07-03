@@ -1,3 +1,4 @@
+// AIDEV-NOTE: Robust network service with auto-retry, fallback proxies, and error recovery
 import { useState, useEffect } from 'react';
 
 /**
@@ -6,31 +7,29 @@ import { useState, useEffect } from 'react';
  * AIDEV-NOTE: Handles retries, fallback proxies and error recovery for network requests
  */
 
-// Configurações de retry
+// AIDEV-NOTE: Retry configuration with exponential backoff
 const RETRY_CONFIG = {
   maxRetries: 3,
-  initialDelay: 1000, // 1 segundo
-  maxDelay: 10000, // 10 segundos
+  initialDelay: 1000, // 1 second
+  maxDelay: 10000, // 10 seconds
   backoffMultiplier: 2
 };
 
-// Lista de fallback URLs para casos críticos
+// AIDEV-NOTE: Fallback proxy URLs for CORS issues (direct first, then fallbacks)
 const FALLBACK_PROXIES = [
-  '', // Request direto primeiro
-  'https://corsproxy.io/?', // Proxy principal recomendado
+  '', // Direct request first
+  'https://corsproxy.io/?', // Main recommended proxy
   'https://api.allorigins.win/get?url=',
   'https://cors-anywhere.herokuapp.com/'
 ];
 
 /**
- * Utilitário para aguardar um tempo específico
- * AIDEV-NOTE: Used for retry backoff logic
+ * AIDEV-NOTE: Utility for delay in retry backoff logic
  */
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
- * Calcula o tempo de espera para retry com backoff exponencial
- * AIDEV-NOTE: Exponential backoff for retry timing
+ * AIDEV-NOTE: Calculates retry delay with exponential backoff
  */
 const calculateRetryDelay = (attempt) => {
   const delay = RETRY_CONFIG.initialDelay * Math.pow(RETRY_CONFIG.backoffMultiplier, attempt);
@@ -38,21 +37,21 @@ const calculateRetryDelay = (attempt) => {
 };
 
 /**
- * Verifica se um erro é recuperável (vale a pena tentar novamente)
+ * AIDEV-NOTE: Determines if error is recoverable (worth retrying)
  * AIDEV-TODO: Expand error types for retry logic if needed
  */
 const isRetryableError = (error) => {
-  // Erros de rede são recuperáveis
-  if (!navigator.onLine) return false; // Não tentar se offline
+  // AIDEV-NOTE: Network errors are recoverable
+  if (!navigator.onLine) return false; // Don't retry if offline
   
-  // Status codes que vale a pena tentar novamente
+  // AIDEV-NOTE: Status codes worth retrying
   const retryableStatusCodes = [408, 429, 500, 502, 503, 504];
   
   if (error.status) {
     return retryableStatusCodes.includes(error.status);
   }
   
-  // Erros de rede/timeout são recuperáveis
+  // AIDEV-NOTE: Network/timeout errors are recoverable
   if (error.name === 'TypeError' || error.message.includes('fetch')) {
     return true;
   }
@@ -61,21 +60,20 @@ const isRetryableError = (error) => {
 };
 
 /**
- * Tenta fazer uma requisição com uma URL específica
- * AIDEV-NOTE: Tries direct and fallback proxy URLs for fetch
+ * AIDEV-NOTE: Attempts fetch with specific URL and timeout control
  */
 const attemptFetch = async (url, options = {}) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), options.timeout || 15000);
   
   try {
-    // Para requests GET simples, não enviar cabeçalhos desnecessários que causam CORS
+    // AIDEV-NOTE: For simple GET requests, don't send unnecessary headers that cause CORS
     const fetchOptions = {
       ...options,
       signal: controller.signal
     };
     
-    // Só adicionar cabeçalhos se realmente necessário
+    // AIDEV-NOTE: Only add headers if really necessary
     if (options.headers || (options.method && options.method !== 'GET')) {
       fetchOptions.headers = {
         'Accept': 'application/json',
@@ -237,7 +235,7 @@ export const fetchJSON = async (url, options = {}) => {
 };
 
 /**
- * Verifica se uma URL é acessível
+ * AIDEV-NOTE: Checks if URL is accessible with health monitoring
  */
 export const checkURLHealth = async (url) => {
   try {
@@ -260,16 +258,16 @@ export const checkURLHealth = async (url) => {
 };
 
 /**
- * Cache em memória para evitar requisições desnecessárias
+ * AIDEV-NOTE: In-memory cache to avoid unnecessary requests
  */
 const responseCache = new Map();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+const CACHE_DURATION = 5 * 60 * 1000; // AIDEV-NOTE: 5 minutes cache duration
 
 export const fetchJSONWithCache = async (url, options = {}) => {
   const cacheKey = `${url}:${JSON.stringify(options)}`;
   const cached = responseCache.get(cacheKey);
   
-  // Verifica se existe cache válido
+  // AIDEV-NOTE: Check if valid cache exists
   if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
     console.log(`[NetworkService] Cache hit para: ${url}`);
     return cached.data;
@@ -278,7 +276,7 @@ export const fetchJSONWithCache = async (url, options = {}) => {
   try {
     const data = await fetchJSON(url, options);
     
-    // Armazena no cache
+    // AIDEV-NOTE: Store in cache with timestamp
     responseCache.set(cacheKey, {
       data,
       timestamp: Date.now()
@@ -286,7 +284,7 @@ export const fetchJSONWithCache = async (url, options = {}) => {
     
     return data;
   } catch (error) {
-    // Se tem cache expirado, usa ele como fallback
+    // AIDEV-NOTE: Use expired cache as fallback if available
     if (cached) {
       console.warn(`[NetworkService] Usando cache expirado como fallback para: ${url}`);
       return cached.data;
@@ -297,14 +295,14 @@ export const fetchJSONWithCache = async (url, options = {}) => {
 };
 
 /**
- * Limpa o cache manualmente
+ * AIDEV-NOTE: Manual cache clearing utility
  */
 export const clearNetworkCache = () => {
   responseCache.clear();
   console.log('[NetworkService] Cache limpo');
 };
 
-// Hook para verificar status da rede
+// AIDEV-NOTE: Hook for network status monitoring with timestamps
 export const useNetworkStatus = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [lastOnline, setLastOnline] = useState(Date.now());

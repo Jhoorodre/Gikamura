@@ -1,3 +1,4 @@
+// AIDEV-NOTE: Main content router; handles hub/storage state rendering logic
 import { useAppContext } from '../../context/AppContext';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 import { useLocation } from 'react-router-dom';
@@ -7,15 +8,15 @@ import HubLoader from '../hub/HubLoaderComponent.jsx';
 import HubView from '../../views/HubView';
 
 /**
- * Este componente encapsula a lógica de renderização para a rota principal ('/').
- * Ele decide qual componente exibir com base no estado atual do hub e conexão Remote Storage.
+ * AIDEV-NOTE: Encapsulates rendering logic for main route ('/') 
+ * Decides which component to display based on hub and connection state
  */
 function MainContent() {
     const { currentHubData, hubLoading, hubError, loadHub, retryLoadHub, lastAttemptedUrl } = useAppContext();
     const { isConnected } = useRemoteStorageContext() || { isConnected: false };
     const location = useLocation();
 
-    // Log controlado apenas para mudanças significativas em desenvolvimento
+    // AIDEV-NOTE: Controlled logging only for significant changes in dev mode
     if (process.env.NODE_ENV === 'development') {
         if (hubLoading || hubError || (currentHubData && !window._hubLoadedLogged)) {
             console.log('🎯 [MainContent] Estado atual:', { 
@@ -41,7 +42,7 @@ function MainContent() {
             <ErrorMessage 
                 message={hubError} 
                 onRetry={() => {
-                    // Tenta usar a função de retry primeiro, senão usa loadHub
+                    // AIDEV-NOTE: Try retry function first, fallback to loadHub
                     if (retryLoadHub) {
                         retryLoadHub();
                     } else if (lastAttemptedUrl) {
@@ -52,10 +53,9 @@ function MainContent() {
         );
     }
 
-    // Se não conectado, SEMPRE mostra HubLoader na rota principal ('/') 
-    // independente de ter currentHubData ou não
+    // AIDEV-NOTE: If not connected, ALWAYS show HubLoader on main route regardless of data
     if (!isConnected) {
-        // Na rota principal ('/'), sempre mostra HubLoader para permitir carregar novo hub
+        // AIDEV-NOTE: On main route, always show HubLoader to allow loading new hub
         if (location.pathname === '/') {
             return (
                 <div className="p-4">
@@ -64,12 +64,12 @@ function MainContent() {
             );
         }
         
-        // Em outras rotas, pode mostrar HubView se tiver dados
+        // AIDEV-NOTE: On other routes, can show HubView if data exists
         if (currentHubData) {
             return <HubView />;
         }
         
-        // Fallback para HubLoader
+        // AIDEV-NOTE: Fallback to HubLoader
         return (
             <div className="p-4">
                 <HubLoader loading={hubLoading} />
@@ -77,12 +77,12 @@ function MainContent() {
         );
     }
 
-    // Se conectado mas sem hub carregado, mostra HubLoader (versão conectada com cards)
+    // AIDEV-NOTE: Connected but no hub loaded - show HubLoader with cards
     if (!currentHubData) {
         return <HubLoader loading={hubLoading} />;
     }
 
-    // Se conectado E tem hub carregado, mostra HubView com os dados do hub
+    // AIDEV-NOTE: Connected AND has hub loaded - show HubView with hub data
     return <HubView />;
 }
 

@@ -1,6 +1,8 @@
 /*
  * Base CSS para reset e normalização de estilos
- * AIDEV-NOTE: Defines base resets and normalization for consistent cross-browser rendering
+ * AIDEV-NOTE: Modern CSS reset and base styles for consistent cross-browser rendering
+ * AIDEV-TODO: Evaluate if all reset properties are still needed for modern browsers
+ * AIDEV-QUESTION: Should we include more accessibility-focused defaults?
  */
 
 /* ========================================================================== */
@@ -9,6 +11,7 @@
 /* ========================================================================== */
 
 /* === RESET MODERNO === */
+/* AIDEV-NOTE: Universal box-sizing border-box inheritance for predictable layouts */
 *,
 *::before,
 *::after {
@@ -17,14 +20,16 @@
   padding: 0;
 }
 
+/* AIDEV-NOTE: Root HTML setup with accessibility and performance optimizations */
 html {
   font-size: 100%;
-  scroll-behavior: smooth;
+  scroll-behavior: smooth; /* AIDEV-QUESTION: Should we respect user's motion preferences? */
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
 }
 
+/* AIDEV-NOTE: Base body styles with design token integration */
 body {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-base);

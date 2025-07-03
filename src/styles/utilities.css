@@ -1,22 +1,23 @@
 /*
  * Utilitários globais de CSS
- * AIDEV-NOTE: Global CSS utilities for spacing, display, etc
+ * AIDEV-NOTE: Comprehensive utility classes for spacing, typography, display, and layout
  */
 
 /* ========================================================================== */
 /* ==                   CLASSES UTILITÁRIAS AVANÇADAS                     == */
 /* ========================================================================== */
 /*
- * Sistema de utilitários baseado na paleta do roadmap:
- * 70% #141414 (fundo principal)
- * 20% #341111 (destaques e bordas)
- * 10% #a4a4a4 (texto e acentos)
+ * AIDEV-NOTE: Utility system based on roadmap palette:
+ * 70% #141414 (main background)
+ * 20% #341111 (highlights and borders)
+ * 10% #a4a4a4 (text and accents)
  */
 
 /* ========================================================================== */
 /* == 1. TIPOGRAFIA MODERNA                                              == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Typography scale with consistent line-height ratios */
 .text-xs { font-size: var(--font-size-xs); line-height: 1rem; }
 .text-sm { font-size: var(--font-size-sm); line-height: 1.25rem; }
 .text-base { font-size: var(--font-size-base); line-height: var(--line-height-normal); }
@@ -26,6 +27,7 @@
 .text-3xl { font-size: var(--font-size-3xl); line-height: 2.25rem; }
 .text-4xl { font-size: var(--font-size-4xl); line-height: 2.5rem; }
 
+/* AIDEV-NOTE: Font weight utilities using design tokens */
 .font-light { font-weight: var(--font-weight-light); }
 .font-normal { font-weight: var(--font-weight-normal); }
 .font-medium { font-weight: var(--font-weight-medium); }
@@ -33,17 +35,20 @@
 .font-bold { font-weight: var(--font-weight-bold); }
 .font-extrabold { font-weight: var(--font-weight-extrabold); }
 
+/* AIDEV-NOTE: Line height utilities for different content types */
 .leading-tight { line-height: var(--line-height-tight); }
 .leading-snug { line-height: var(--line-height-snug); }
 .leading-normal { line-height: var(--line-height-normal); }
 .leading-relaxed { line-height: var(--line-height-relaxed); }
 .leading-loose { line-height: var(--line-height-loose); }
 
+/* AIDEV-NOTE: Letter spacing for improved readability */
 .tracking-tight { letter-spacing: -0.025em; }
 .tracking-normal { letter-spacing: 0; }
 .tracking-wide { letter-spacing: 0.025em; }
 .tracking-wider { letter-spacing: 0.05em; }
 
+/* AIDEV-NOTE: Text alignment utilities */
 .text-left { text-align: left; }
 .text-center { text-align: center; }
 .text-right { text-align: right; }

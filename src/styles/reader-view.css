@@ -1,17 +1,21 @@
 /*
  * CSS para visualização do leitor
- * AIDEV-NOTE: Styles for reader view and navigation
+ * AIDEV-NOTE: Optimized reader view styles with custom scrollbars and clean UX
+ * AIDEV-TODO: Add keyboard navigation support and better accessibility
+ * AIDEV-QUESTION: Should we implement virtual scrolling for large manga chapters?
  */
 
 /* ========================================
    READER VIEW - ESTILOS LIMPOS E OTIMIZADOS
    ======================================== */
 
+/* AIDEV-NOTE: Custom scrollbar styling for better reading experience */
 /* Scrollbar customizada */
 .scrollbar-thin {
-  scrollbar-width: thin;
+  scrollbar-width: thin; /* AIDEV-NOTE: Firefox standard for thin scrollbars */
 }
 
+/* AIDEV-NOTE: Color scheme for scrollbar thumb and track */
 .scrollbar-thumb-gray-600 {
   scrollbar-color: #4b5563 transparent;
 }
@@ -20,6 +24,7 @@
   scrollbar-color: #4b5563 #1f2937;
 }
 
+/* AIDEV-NOTE: Webkit scrollbar customization for Chromium-based browsers */
 /* Webkit scrollbar para navegadores baseados em Chromium */
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;

@@ -1,6 +1,8 @@
 /*
  * CSS para páginas principais
- * AIDEV-NOTE: Styles for main app pages and containers
+ * AIDEV-NOTE: Legacy page styles with improvements and accessibility fixes
+ * AIDEV-TODO: Migrate to new page system and consolidate with pages-new.css
+ * AIDEV-QUESTION: Should we deprecate this file in favor of the new system?
  */
 
 /* ========================================================================== */
@@ -8,12 +10,13 @@
 /* ========================================================================== */
 
 /* === LAYOUT GLOBAL CORRIGIDO === */
+/* AIDEV-NOTE: Responsive page container with consistent spacing system */
 .page-container {
     min-height: 100vh;
     padding: var(--space-6) var(--space-4);
     background: var(--color-background);
     position: relative;
-    z-index: 1;
+    z-index: 1; /* AIDEV-NOTE: Ensures proper stacking context */
 }
 
 @media (min-width: 768px) {

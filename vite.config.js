@@ -1,3 +1,4 @@
+// AIDEV-NOTE: Vite config with optimized bundling, path aliases, and chunk splitting
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -6,6 +7,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   resolve: {
+    // AIDEV-NOTE: Path aliases for cleaner imports (FSD architecture ready)
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@app': path.resolve(__dirname, './src/app'),
@@ -24,6 +26,7 @@ export default defineConfig({
     rollupOptions: {
       input: path.resolve(__dirname, './src/main.jsx'),
       output: {
+        // AIDEV-NOTE: Manual chunk splitting for better caching and performance
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
@@ -38,6 +41,7 @@ export default defineConfig({
     port: 3000,
     open: true
   },
+  // AIDEV-NOTE: Pre-bundle frequently used dependencies for faster dev server
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query']
   }

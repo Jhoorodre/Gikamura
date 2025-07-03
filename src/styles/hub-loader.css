@@ -1,22 +1,23 @@
 /*
  * CSS para loader do hub
- * AIDEV-NOTE: Styles for hub loading animation and states
+ * AIDEV-NOTE: Hub loading states, animations, and responsive layout
  */
 
 /* ========================================================================== */
 /* ==                  ESTILOS DO HUB LOADER MINIMALISTA                  == */
 /* ========================================================================== */
 /*
- * Baseado na paleta do roadmap:
- * 70% #141414 (fundo principal)
- * 20% #341111 (destaques e bordas)
- * 10% #a4a4a4 (texto e acentos)
+ * AIDEV-NOTE: Based on roadmap palette:
+ * 70% #141414 (main background)
+ * 20% #341111 (highlights and borders)
+ * 10% #a4a4a4 (text and accents)
  */
 
 /* ========================================================================== */
 /* == 1. CONTAINER PRINCIPAL MINIMALISTA                                  == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Full-height container with centered content and responsive padding */
 .hub-loader-container {
   width: 100%;
   min-height: 100vh;
@@ -28,22 +29,25 @@
   background: var(--color-background);
 }
 
+/* AIDEV-NOTE: Disabled decorative pseudo-elements for minimalism */
 .hub-loader-container::before {
   display: none;
 }
 
+/* AIDEV-NOTE: Responsive grid layout that stacks on mobile, side-by-side on desktop */
 .hub-loader-main {
   width: 100%;
   max-width: 1200px;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr; /* AIDEV-NOTE: Single column on mobile */
   gap: var(--space-8);
   align-items: start;
 }
 
+/* AIDEV-NOTE: Desktop layout with main content and sidebar */
 @media (min-width: 1024px) {
   .hub-loader-main {
-    grid-template-columns: 2fr 350px;
+    grid-template-columns: 2fr 350px; /* AIDEV-NOTE: 2:1 ratio for content:sidebar */
     gap: var(--space-12);
     align-items: start;
   }

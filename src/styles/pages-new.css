@@ -1,6 +1,8 @@
 /*
  * CSS para páginas principais
- * AIDEV-NOTE: Styles for main app pages and containers
+ * AIDEV-NOTE: Comprehensive page-specific styles with modern design patterns
+ * AIDEV-TODO: Implement page transitions and loading states
+ * AIDEV-QUESTION: Should we add page-specific animations for better UX?
  */
 
 /* ========================================================================== */
@@ -9,14 +11,16 @@
 /* ========================================================================== */
 
 /* === HUB PAGE === */
+/* AIDEV-NOTE: Hub page with gradient background for visual hierarchy */
 .hub-page {
   min-height: 100vh;
   background: linear-gradient(135deg, 
     var(--color-background) 0%, 
     var(--color-background-subtle) 100%
-  );
+  ); /* AIDEV-TODO: Consider adding CSS custom properties for gradient stops */
 }
 
+/* AIDEV-NOTE: Hero-style header with modern gradient and glass effects */
 .hub-header {
   background: linear-gradient(135deg, 
     var(--color-surface) 0%, 
@@ -27,7 +31,7 @@
   padding: var(--space-8);
   margin-bottom: var(--space-8);
   position: relative;
-  overflow: hidden;
+  overflow: hidden; /* AIDEV-NOTE: Ensures decorative elements don't overflow */
   box-shadow: var(--shadow-lg);
 }
 

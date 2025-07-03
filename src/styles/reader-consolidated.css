@@ -1,6 +1,8 @@
 /*
  * CSS consolidado para o leitor
- * AIDEV-NOTE: Consolidated styles for reader UI and experience
+ * AIDEV-NOTE: Consolidated reader styles for complete reading experience
+ * AIDEV-TODO: Split into smaller, more focused CSS modules for better maintainability
+ * AIDEV-QUESTION: Should we implement different reading modes (scroll, paginated, etc.)?
  */
 /* ========================================
    READER STYLES CONSOLIDADO
@@ -8,21 +10,23 @@
    ======================================== */
 
 /* === IMPORTAÇÕES DOS ESTILOS EXISTENTES === */
+/* AIDEV-NOTE: Importing base reader view styles for consistency */
 @import './reader-view.css';
 
 /* === ESTILOS PARA READER PAGES (ItemViewer) === */
 
+/* AIDEV-NOTE: Main reader container with immersive dark theme and user interaction disabled */
 /* Container principal do leitor de páginas */
 .reader-page-container {
-  background: #0a0a0a;
-  color: #e5e5e5;
-  user-select: none;
+  background: #0a0a0a; /* AIDEV-TODO: Use design token for background color */
+  color: #e5e5e5; /* AIDEV-TODO: Use design token for text color */
+  user-select: none; /* AIDEV-NOTE: Prevents text selection for cleaner UX */
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   min-height: 100vh;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: hidden; /* AIDEV-NOTE: Prevents horizontal scroll issues */
 }
 
 .reader-page-container.fullscreen {

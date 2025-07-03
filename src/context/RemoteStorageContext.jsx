@@ -1,9 +1,10 @@
+// AIDEV-NOTE: RemoteStorage connection and sync management with anti-leak protection
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { remoteStorage } from '../services/remotestorage';
 
 const RemoteStorageContext = createContext();
 
-// Variáveis globais para controlar estado entre re-renders do Strict Mode
+// AIDEV-NOTE: Global vars to control state between Strict Mode re-renders
 let globalListenersSetup = false;
 let globalAutoSyncInterval = null;
 
@@ -16,16 +17,17 @@ export const RemoteStorageProvider = ({ children }) => {
     const [syncStats, setSyncStats] = useState({ success: 0, errors: 0 });
     const [conflictMessage, setConflictMessage] = useState(null);
 
-    // Refs para controle de intervalos e estado
+    // AIDEV-NOTE: Refs for interval and state control
     const autoSyncIntervalRef = useRef(null);
     const lastSyncAttemptRef = useRef(0);
     const listenersSetupRef = useRef(false);
     const isCleaningUpRef = useRef(false);
 
-    // Constantes de controle
-    const SYNC_COOLDOWN = 15000; // 15 segundos entre syncs
-    const AUTO_SYNC_INTERVAL = 60000; // 1 minuto para auto-sync
+    // AIDEV-NOTE: Control constants to prevent spam
+    const SYNC_COOLDOWN = 15000; // 15 seconds between syncs
+    const AUTO_SYNC_INTERVAL = 60000; // 1 minute for auto-sync
 
+    // AIDEV-NOTE: Prevents sync spam with cooldown and state checks
     const canSync = useCallback(() => {
         const now = Date.now();
         const timeSinceLastSync = now - lastSyncAttemptRef.current;
@@ -42,6 +44,7 @@ export const RemoteStorageProvider = ({ children }) => {
         return canSyncNow;
     }, [isSyncing, isConnected]);
 
+    // AIDEV-NOTE: Forces sync with cooldown protection
     const forceSync = useCallback(async () => {
         if (!canSync()) {
             return false;
@@ -52,8 +55,7 @@ export const RemoteStorageProvider = ({ children }) => {
         
         try {
             if (remoteStorage.connected) {
-                // RemoteStorage sincroniza automaticamente, mas podemos forçar um "flush"
-                // através de uma operação pequena que força a sincronização
+                // AIDEV-NOTE: Forces sync through small operation that triggers sync
                 const testKey = `sync-test-${Date.now()}`;
                 await remoteStorage.scope('/').storeObject('sync-test', `test-${testKey}`, { timestamp: Date.now() });
                 await remoteStorage.scope('/').remove(`sync-test`);
@@ -71,8 +73,8 @@ export const RemoteStorageProvider = ({ children }) => {
         }
     }, [canSync]);
 
+    // AIDEV-NOTE: Prevents multiple intervals using global variable
     const enableAutoSync = useCallback(() => {
-        // Previne múltiplos intervalos usando variável global
         if (globalAutoSyncInterval) {
             console.log('⚠️ Auto-sync já está ativado globalmente');
             return;
@@ -99,8 +101,8 @@ export const RemoteStorageProvider = ({ children }) => {
         }
     }, []);
 
+    // AIDEV-NOTE: Prevents duplicate listener setup using global variable
     useEffect(() => {
-        // Previne configuração dupla de listeners usando variável global
         if (globalListenersSetup) {
             console.log('⚠️ Listeners já configurados globalmente, pulando...');
             return;
@@ -111,17 +113,17 @@ export const RemoteStorageProvider = ({ children }) => {
         listenersSetupRef.current = true;
         isCleaningUpRef.current = false;
         
-        // Event listeners
+        // AIDEV-NOTE: Event handlers with proper logging and state management
         const handleConnected = () => {
             console.log('🔌 RemoteStorage conectado');
             setIsConnected(true);
             setLastSyncTime(new Date());
-            // Ativa auto-sync com delay para evitar execução imediata e múltipla
+            // AIDEV-NOTE: Activates auto-sync with delay to avoid immediate execution
             setTimeout(() => {
                 if (!isCleaningUpRef.current && !autoSyncIntervalRef.current) {
                     enableAutoSync();
                 }
-            }, 10000); // 10 segundos de delay
+            }, 10000); // 10 seconds delay
         };
 
         const handleDisconnected = () => {
@@ -142,6 +144,7 @@ export const RemoteStorageProvider = ({ children }) => {
             setSyncStats(prev => ({ ...prev, success: prev.success + 1 }));
         };
 
+        // AIDEV-NOTE: Conflict handler with automatic resolution and user notification
         const handleConflict = (event) => {
             console.warn('⚠️ Conflito de sincronização detectado:', event);
             const message = event?.path 
@@ -149,7 +152,7 @@ export const RemoteStorageProvider = ({ children }) => {
                 : 'Conflito de dados detectado. Versão mais recente aplicada.';
             setConflictMessage(message);
             
-            // Remove mensagem após 8 segundos
+            // AIDEV-NOTE: Auto-dismiss message after 8 seconds
             setTimeout(() => setConflictMessage(null), 8000);
         };
 
@@ -159,7 +162,7 @@ export const RemoteStorageProvider = ({ children }) => {
             setSyncStats(prev => ({ ...prev, errors: prev.errors + 1 }));
         };
 
-        // Adicionar listeners
+        // AIDEV-NOTE: Add all RemoteStorage event listeners
         remoteStorage.on('connected', handleConnected);
         remoteStorage.on('disconnected', handleDisconnected);
         remoteStorage.on('sync-req-done', handleSyncReqDone);
@@ -167,31 +170,31 @@ export const RemoteStorageProvider = ({ children }) => {
         remoteStorage.on('conflict', handleConflict);
         remoteStorage.on('error', handleError);
 
-        // Estado inicial
+        // AIDEV-NOTE: Set initial state
         setIsConnected(remoteStorage.connected);
 
-        // Se já está conectado, ativa auto-sync após delay maior
+        // AIDEV-NOTE: If already connected, activate auto-sync with larger delay
         if (remoteStorage.connected) {
             setTimeout(() => {
                 if (!isCleaningUpRef.current && !autoSyncIntervalRef.current) {
                     enableAutoSync();
                 }
-            }, 10000); // 10 segundos de delay para evitar execução múltipla
+            }, 10000); // 10 seconds delay to avoid multiple execution
         }
 
         return () => {
             console.log('🧹 Limpando RemoteStorage listeners e intervalos...');
             isCleaningUpRef.current = true;
             
-            // Cleanup auto-sync
+            // AIDEV-NOTE: Cleanup auto-sync
             disableAutoSync();
             
-            // Só remove listeners se for a última instância
+            // AIDEV-NOTE: Only remove listeners if this is the last instance
             if (globalListenersSetup) {
                 globalListenersSetup = false;
                 listenersSetupRef.current = false;
                 
-                // Cleanup listeners
+                // AIDEV-NOTE: Cleanup all event listeners
                 remoteStorage.removeEventListener('connected', handleConnected);
                 remoteStorage.removeEventListener('disconnected', handleDisconnected);
                 remoteStorage.removeEventListener('sync-req-done', handleSyncReqDone);
@@ -200,7 +203,7 @@ export const RemoteStorageProvider = ({ children }) => {
                 remoteStorage.removeEventListener('error', handleError);
             }
         };
-    }, []); // Dependencies vazias para executar apenas uma vez
+    }, []); // AIDEV-NOTE: Empty deps to execute only once
 
     const value = {
         isConnected,

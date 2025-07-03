@@ -1,6 +1,6 @@
 /**
  * Serviço para leitura e parsing de JSONs (hub.json e reader.json)
- * AIDEV-NOTE: Handles validation, caching, and robust error handling for JSON data
+ * AIDEV-NOTE: Handles validation, caching, and robust error handling for JSON data with multi-strategy fetch
  */
 
 import { validateHubJSON, validateReaderJSON } from './jsonValidator.js';
@@ -13,7 +13,7 @@ import { encodeUrl, decodeUrl } from '../utils/encoding';
 class JSONCache {
     constructor() {
         this.cache = new Map();
-        this.TTL = 5 * 60 * 1000; // 5 minutos
+        this.TTL = 5 * 60 * 1000; // AIDEV-NOTE: 5 minutes TTL
     }
 
     set(url, data) {
@@ -48,7 +48,7 @@ class JSONCache {
 const jsonCache = new JSONCache();
 
 /**
- * Fetch JSON com timeout, retry e múltiplas estratégias para contornar CORS
+ * AIDEV-NOTE: Fetch JSON with timeout, retry and multiple strategies to bypass CORS
  * AIDEV-TODO: Add fallback for fetch failures (e.g., offline mode)
  */
 async function fetchWithRetry(url, options = {}) {
@@ -61,7 +61,7 @@ async function fetchWithRetry(url, options = {}) {
     const isDev = process.env.NODE_ENV === 'development';
     if (isDev) console.log('🌐 [JSONReader] Iniciando fetch robusto para:', url);
 
-    // Estratégias de fetch em ordem de prioridade
+    // AIDEV-NOTE: Fetch strategies in priority order for maximum compatibility
     const strategies = [
         {
             name: 'Direto (CORS)',
@@ -89,7 +89,7 @@ async function fetchWithRetry(url, options = {}) {
                     cache: 'no-cache',
                     credentials: 'omit'
                 });
-                // no-cors sempre retorna response opaco, tentar ler mesmo assim
+                // AIDEV-NOTE: no-cors always returns opaque response, try to read anyway
                 try {
                     return await response.text();
                 } catch {

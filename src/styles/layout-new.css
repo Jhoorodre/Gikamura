@@ -1,6 +1,8 @@
 /*
  * CSS para layout principal e grids
- * AIDEV-NOTE: Main layout and grid system styles
+ * AIDEV-NOTE: Main layout system with responsive grids and modern CSS features
+ * AIDEV-TODO: Add more sophisticated grid layouts for complex pages
+ * AIDEV-QUESTION: Should we implement container queries for truly intrinsic layouts?
  */
 /* ========================================================================== */
 /* ==                        GIKAMOE LAYOUT SYSTEM                        == */
@@ -8,6 +10,7 @@
 /* ========================================================================== */
 
 /* === LAYOUT PRINCIPAL === */
+/* AIDEV-NOTE: Main app layout with modern flexbox and backdrop blur effects */
 .app-layout {
   min-height: 100vh;
   display: flex;
@@ -16,6 +19,7 @@
   color: var(--color-text-primary);
 }
 
+/* AIDEV-NOTE: Sticky header with glass morphism effect for modern feel */
 .app-header {
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
@@ -23,16 +27,18 @@
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px); /* AIDEV-TODO: Add fallback for older browsers */
   background-color: rgba(var(--rgb-surface), 0.9);
 }
 
+/* AIDEV-NOTE: Main content area with flexible growth */
 .app-main {
   flex: 1;
   padding: var(--space-6) 0;
   min-height: 0;
 }
 
+/* AIDEV-NOTE: Footer area with subtle separation from content */
 .app-footer {
   background-color: var(--color-surface);
   border-top: 1px solid var(--color-border);
@@ -41,6 +47,7 @@
 }
 
 /* === NAVIGATION MODERNO === */
+/* AIDEV-NOTE: Navigation bar styles for modern and clean look */
 .nav {
   display: flex;
   align-items: center;
@@ -48,6 +55,7 @@
   gap: var(--space-4);
 }
 
+/* AIDEV-NOTE: Brand logo and name styles */
 .nav-brand {
   display: flex;
   align-items: center;
@@ -58,10 +66,12 @@
   text-decoration: none;
 }
 
+/* AIDEV-NOTE: Brand hover effect for interactivity */
 .nav-brand:hover {
   color: var(--color-text-accent);
 }
 
+/* AIDEV-NOTE: Main navigation menu styles */
 .nav-menu {
   display: flex;
   align-items: center;
@@ -69,10 +79,12 @@
   list-style: none;
 }
 
+/* AIDEV-NOTE: Individual navigation item styles */
 .nav-item {
   position: relative;
 }
 
+/* AIDEV-NOTE: Navigation link styles with interactive effects */
 .nav-link {
   display: flex;
   align-items: center;
@@ -87,6 +99,7 @@
   overflow: hidden;
 }
 
+/* AIDEV-NOTE: Underline effect on navigation links */
 .nav-link::before {
   content: '';
   position: absolute;
@@ -98,25 +111,20 @@
   transition: width var(--transition-base);
 }
 
+/* AIDEV-NOTE: Navigation link hover effects */
 .nav-link:hover {
   color: var(--color-text-primary);
   background-color: var(--color-interactive-ghost);
 }
 
-.nav-link:hover::before {
-  width: 100%;
-}
-
+/* AIDEV-NOTE: Active navigation link styles */
 .nav-link.active {
   color: var(--color-text-primary);
   background-color: var(--color-interactive-ghost-hover);
 }
 
-.nav-link.active::before {
-  width: 100%;
-}
-
 /* === MOBILE NAVIGATION === */
+/* AIDEV-NOTE: Mobile navigation toggle button styles */
 .nav-toggle {
   display: none;
   flex-direction: column;
@@ -127,6 +135,7 @@
   cursor: pointer;
 }
 
+/* AIDEV-NOTE: Individual lines of the mobile navigation toggle */
 .nav-toggle-line {
   width: 24px;
   height: 2px;
@@ -135,6 +144,7 @@
   transform-origin: center;
 }
 
+/* AIDEV-NOTE: Transformations for active mobile navigation toggle */
 .nav-toggle.active .nav-toggle-line:nth-child(1) {
   transform: rotate(45deg) translate(5px, 5px);
 }
@@ -148,6 +158,7 @@
 }
 
 /* === SIDEBAR LAYOUT === */
+/* AIDEV-NOTE: Sidebar layout for desktop with grid system */
 .sidebar-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -155,6 +166,7 @@
   gap: 0;
 }
 
+/* AIDEV-NOTE: Sidebar styles including sticky positioning */
 .sidebar {
   background-color: var(--color-surface);
   border-right: 1px solid var(--color-border);
@@ -165,18 +177,21 @@
   height: 100vh;
 }
 
+/* AIDEV-NOTE: Sidebar header styles */
 .sidebar-header {
   margin-bottom: var(--space-8);
   padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--color-border-subtle);
 }
 
+/* AIDEV-NOTE: Sidebar navigation styles */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
+/* AIDEV-NOTE: Individual sidebar navigation item styles */
 .sidebar-nav-item {
   display: flex;
   align-items: center;
@@ -189,23 +204,27 @@
   font-weight: var(--font-weight-medium);
 }
 
+/* AIDEV-NOTE: Sidebar navigation item hover effects */
 .sidebar-nav-item:hover {
   color: var(--color-text-primary);
   background-color: var(--color-interactive-ghost);
 }
 
+/* AIDEV-NOTE: Active sidebar navigation item styles */
 .sidebar-nav-item.active {
   color: var(--color-text-primary);
   background-color: var(--color-interactive);
   box-shadow: var(--shadow-accent);
 }
 
+/* AIDEV-NOTE: Sidebar content area styles */
 .sidebar-content {
   padding: var(--space-6);
   overflow-y: auto;
 }
 
 /* === GRID LAYOUTS AVANÇADOS === */
+/* AIDEV-NOTE: Advanced grid layout for complex page structures */
 .masonry {
   columns: 3;
   column-gap: var(--space-4);
@@ -213,11 +232,13 @@
   widows: 1;
 }
 
+/* AIDEV-NOTE: Individual items in masonry layout */
 .masonry-item {
   break-inside: avoid;
   margin-bottom: var(--space-4);
 }
 
+/* AIDEV-NOTE: Responsive gallery grid layout */
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -225,6 +246,7 @@
   padding: var(--space-4);
 }
 
+/* AIDEV-NOTE: Hero section styles with gradient background */
 .hero-section {
   min-height: 80vh;
   display: flex;
@@ -240,6 +262,7 @@
   overflow: hidden;
 }
 
+/* AIDEV-NOTE: Overlay effect for hero section */
 .hero-section::before {
   content: '';
   position: absolute;
@@ -255,6 +278,7 @@
   pointer-events: none;
 }
 
+/* AIDEV-NOTE: Hero content positioning and padding */
 .hero-content {
   max-width: 800px;
   padding: var(--space-8);
@@ -262,6 +286,7 @@
   z-index: 1;
 }
 
+/* AIDEV-NOTE: Hero title styles with gradient text */
 .hero-title {
   font-size: var(--font-size-6xl);
   font-weight: var(--font-weight-extrabold);
@@ -275,6 +300,7 @@
   background-clip: text;
 }
 
+/* AIDEV-NOTE: Hero subtitle styles */
 .hero-subtitle {
   font-size: var(--font-size-xl);
   color: var(--color-text-secondary);
@@ -283,15 +309,18 @@
 }
 
 /* === SEÇÕES E CONTEÚDO === */
+/* AIDEV-NOTE: General section styles for padding and spacing */
 .section {
   padding: var(--space-16) 0;
 }
 
+/* AIDEV-NOTE: Section header styles */
 .section-header {
   text-align: center;
   margin-bottom: var(--space-12);
 }
 
+/* AIDEV-NOTE: Section title styles */
 .section-title {
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
@@ -299,6 +328,7 @@
   color: var(--color-text-hero);
 }
 
+/* AIDEV-NOTE: Section subtitle styles */
 .section-subtitle {
   font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
@@ -307,17 +337,20 @@
   line-height: var(--line-height-relaxed);
 }
 
+/* AIDEV-NOTE: Content wrapper for max width and centering */
 .content-wrapper {
   max-width: var(--container-xl);
   margin: 0 auto;
   padding: 0 var(--space-4);
 }
 
+/* AIDEV-NOTE: Prose styles for content readability */
 .prose {
   max-width: 65ch;
   line-height: var(--line-height-relaxed);
 }
 
+/* AIDEV-NOTE: Headings styles within prose */
 .prose h1,
 .prose h2,
 .prose h3,
@@ -328,21 +361,25 @@
   margin-bottom: var(--space-4);
 }
 
+/* AIDEV-NOTE: Paragraph styles within prose */
 .prose p {
   margin-bottom: var(--space-4);
 }
 
+/* AIDEV-NOTE: List styles within prose */
 .prose ul,
 .prose ol {
   margin-bottom: var(--space-4);
   padding-left: var(--space-6);
 }
 
+/* AIDEV-NOTE: List item styles within prose */
 .prose li {
   margin-bottom: var(--space-2);
 }
 
 /* === ESTADOS DE LOADING === */
+/* AIDEV-NOTE: Loading container styles for centralized loading indicators */
 .loading-container {
   display: flex;
   align-items: center;
@@ -352,16 +389,19 @@
   gap: var(--space-4);
 }
 
+/* AIDEV-NOTE: Loading text styles */
 .loading-text {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
 }
 
+/* AIDEV-NOTE: Empty state styles for no content scenarios */
 .empty-state {
   text-align: center;
   padding: var(--space-16) var(--space-4);
 }
 
+/* AIDEV-NOTE: Empty state icon styles */
 .empty-state-icon {
   width: 64px;
   height: 64px;
@@ -369,18 +409,21 @@
   opacity: 0.5;
 }
 
+/* AIDEV-NOTE: Empty state title styles */
 .empty-state-title {
   font-size: var(--font-size-xl);
   margin-bottom: var(--space-2);
   color: var(--color-text-primary);
 }
 
+/* AIDEV-NOTE: Empty state description styles */
 .empty-state-description {
   color: var(--color-text-muted);
   margin-bottom: var(--space-6);
 }
 
 /* === RESPONSIVIDADE AVANÇADA === */
+/* AIDEV-NOTE: Responsive adjustments for tablet and smaller devices */
 @media (max-width: 1024px) {
   .sidebar-layout {
     grid-template-columns: 1fr;
@@ -404,6 +447,7 @@
   }
 }
 
+/* AIDEV-NOTE: Mobile specific styles for navigation and layout */
 @media (max-width: 768px) {
   .nav-menu {
     display: none;
@@ -454,6 +498,7 @@
   }
 }
 
+/* AIDEV-NOTE: Small mobile devices adjustments */
 @media (max-width: 640px) {
   .app-main {
     padding: var(--space-4) 0;
@@ -475,14 +520,17 @@
 }
 
 /* === ANIMAÇÕES DE ENTRADA === */
+/* AIDEV-NOTE: Fade in animation for content entrance */
 .fade-in {
   animation: fadeIn 0.6s ease-out;
 }
 
+/* AIDEV-NOTE: Slide up animation for content entrance */
 .slide-up {
   animation: slideUp 0.6s ease-out;
 }
 
+/* AIDEV-NOTE: Scale in animation for content entrance */
 .scale-in {
   animation: scaleIn 0.6s ease-out;
 }
@@ -499,6 +547,7 @@
 }
 
 /* === OVERLAY DE NAVEGAÇÃO MOBILE === */
+/* AIDEV-NOTE: Fullscreen overlay for mobile navigation */
 .nav-overlay {
   position: fixed;
   top: 0;
@@ -513,12 +562,14 @@
   transition: all var(--transition-base);
 }
 
+/* AIDEV-NOTE: Open state for mobile navigation overlay */
 .nav-overlay.open {
   opacity: 1;
   visibility: visible;
 }
 
 /* === BREADCRUMB === */
+/* AIDEV-NOTE: Breadcrumb navigation styles */
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -527,16 +578,19 @@
   font-size: var(--font-size-sm);
 }
 
+/* AIDEV-NOTE: Individual breadcrumb item styles */
 .breadcrumb-item {
   color: var(--color-text-muted);
 }
 
+/* AIDEV-NOTE: Separator styles between breadcrumb items */
 .breadcrumb-item:not(:last-child)::after {
   content: '/';
   margin-left: var(--space-2);
   color: var(--color-text-disabled);
 }
 
+/* AIDEV-NOTE: Active breadcrumb item styles */
 .breadcrumb-item.active {
   color: var(--color-text-primary);
   font-weight: var(--font-weight-medium);

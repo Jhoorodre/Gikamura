@@ -1,6 +1,6 @@
 /*
  * CSS principal de index e resets globais
- * AIDEV-NOTE: Main index styles and global resets
+ * AIDEV-NOTE: Main index styles and global resets with modular architecture
  */
 @import './tokens.css';
 @import './base.css';
@@ -16,6 +16,7 @@
 /* ==                       APLICAÇÃO PRINCIPAL                           == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Root container with full viewport and flex structure */
 #root {
     min-height: 100vh;
     display: flex;
@@ -29,6 +30,7 @@
 /* ==                      TIPOGRAFIA ESPECIAL                            == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Special typography for brand elements with consistent styling */
 .orbitron { 
     font-family: var(--font-family-mono); 
     font-weight: var(--font-weight-bold);
@@ -45,6 +47,7 @@
 /* ==                  LAYOUT MINIMALISTA                                 == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: Minimal page layout with clean background */
 .minimal-page {
     background: var(--bg-primary);
     color: var(--text-primary);

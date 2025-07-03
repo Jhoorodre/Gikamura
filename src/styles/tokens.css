@@ -1,34 +1,36 @@
 /*
  * Tokens de design para cores, espaçamentos, etc
- * AIDEV-NOTE: Design tokens for theme and spacing consistency
+ * AIDEV-NOTE: Design tokens for consistent theming, colors, and spacing across the app
  */
 /* ========================================================================== */
 /* ==                      DESIGN TOKENS MODERNOS                         == */
 /* ========================================================================== */
 
 :root {
+  /* AIDEV-NOTE: Main color palette following 70/20/10 rule */
   /* === PALETA DE CORES PRINCIPAL === */
-  /* Cores obrigatórias do roadmap */
-  --color-background: #141414;       /* 70% - Cor principal de fundo */
-  --color-surface: #341111;          /* 20% - Cor secundária de destaque */
-  --color-accent: #a4a4a4;           /* 10% - Cor de acento e texto */
+  --color-background: #141414;       /* AIDEV-NOTE: 70% - Primary background color */
+  --color-surface: #341111;          /* AIDEV-NOTE: 20% - Secondary highlight color */
+  --color-accent: #a4a4a4;           /* AIDEV-NOTE: 10% - Accent and text color */
 
+  /* AIDEV-NOTE: Extended color system for comprehensive UI theming */
   /* === SISTEMA DE CORES EXPANDIDO === */
   /* Backgrounds */
   --bg-primary: var(--color-background);
   --bg-secondary: #1a1a1a;
   --bg-tertiary: #242424;
-  --bg-elevated: rgba(26, 26, 26, 0.95);
-  --bg-glass: rgba(20, 20, 20, 0.8);
+  --bg-elevated: rgba(26, 26, 26, 0.95); /* AIDEV-NOTE: For modals and overlays */
+  --bg-glass: rgba(20, 20, 20, 0.8);     /* AIDEV-NOTE: Glass morphism effect */
   --bg-overlay: rgba(0, 0, 0, 0.75);
 
   /* Surfaces */
   --surface-primary: var(--color-surface);
   --surface-secondary: #2a1010;
   --surface-tertiary: #4a1a1a;
-  --surface-hover: #5e1e1e;
+  --surface-hover: #5e1e1e;          /* AIDEV-NOTE: Interactive state colors */
   --surface-pressed: #721f1f;
 
+  /* AIDEV-NOTE: Text hierarchy with opacity levels for readability */
   /* Text colors */
   --text-primary: #ffffff;
   --text-secondary: var(--color-accent);
@@ -37,12 +39,14 @@
   --text-disabled: rgba(164, 164, 164, 0.4);
   --text-inverse: #141414;
 
+  /* AIDEV-NOTE: Border system with focus and hover states */
   /* Borders */
   --border-primary: rgba(52, 17, 17, 0.3);
   --border-secondary: rgba(52, 17, 17, 0.6);
   --border-focus: var(--color-surface);
   --border-hover: rgba(164, 164, 164, 0.3);
 
+  /* AIDEV-NOTE: Semantic state colors for user feedback */
   /* State colors */
   --color-success: #22c55e;
   --color-success-bg: rgba(34, 197, 94, 0.15);

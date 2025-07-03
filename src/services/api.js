@@ -1,3 +1,4 @@
+// AIDEV-NOTE: Series CRUD operations, history management, and RemoteStorage sync
 import { remoteStorage } from "./remotestorage.js";
 import { RS_PATH } from "./rs/rs-config.js";
 
@@ -10,8 +11,8 @@ const SORT_KEY = "timestamp";
  */
 
 /**
- * Helper para ordenar um objeto de objetos por uma chave interna.
- * @returns {Array} Array ordenado.
+ * AIDEV-NOTE: Sorts object values by internal timestamp key
+ * @returns {Array} Sorted array by timestamp desc
  */
 const getSortedArray = (obj) => {
   if (!obj) return [];
@@ -21,7 +22,7 @@ const getSortedArray = (obj) => {
 let syncExecuted = false;
 
 /**
- * Garante que o cache local não tenha objetos inválidos.
+ * AIDEV-NOTE: Ensures local cache doesn't have invalid objects
  */
 const sync = async () => {
   if (syncExecuted) return;
@@ -41,9 +42,10 @@ const sync = async () => {
 };
 
 const api = {
-  // --- Métodos de Séries ---
+  // AIDEV-NOTE: Series methods with history limit management
   maxHistory: MAX_HISTORY_ITEMS,
 
+  // AIDEV-NOTE: Adds or updates series with history limit enforcement
   async pushSeries(slug, coverUrl, source, url, title) {
     console.log('📊 [API] pushSeries called with:', { slug, coverUrl, source, url, title });
     
@@ -52,13 +54,13 @@ const api = {
     const existingSeries = allSeries.find(e => e.slug === slug && e.source === source);
 
     if (existingSeries) {
-      // Apenas atualiza o timestamp para movê-la para o topo do histórico
+      // AIDEV-NOTE: Only updates timestamp to move to top of history
       console.log('📊 [API] Updating existing series');
       return rs.editSeries(slug, source, { title, url, coverUrl });
     }
 
     console.log('📊 [API] Adding new series');
-    // Se não existe, adiciona e gerencia o limite do histórico
+    // AIDEV-NOTE: If doesn't exist, add and manage history limit
     const unpinnedSeries = allSeries.filter(e => !e.pinned);
     if (unpinnedSeries.length >= MAX_HISTORY_ITEMS) {
       const oldest = unpinnedSeries[unpinnedSeries.length - 1];
@@ -69,6 +71,7 @@ const api = {
 
   removeSeries: (slug, source) => remoteStorage['Gika']?.removeSeries(slug, source),
 
+  // AIDEV-NOTE: Bulk operations for cleanup
   async removeAllUnpinnedSeries() {
     const series = await this.getAllUnpinnedSeries();
     const promises = series.map(s => this.removeSeries(s.slug, s.source));
@@ -77,6 +80,7 @@ const api = {
 
   addChapter: (slug, source, chapter) => api.addChapters(slug, source, [chapter]),
 
+  // AIDEV-NOTE: Chapter management with deduplication
   async addChapters(slug, source, chapters) {
     const rs = remoteStorage['Gika'];
     const series = await rs.getSeries(slug, source);
@@ -102,6 +106,7 @@ const api = {
     return series?.chapters || [];
   },
 
+  // AIDEV-NOTE: Pin/unpin operations with existence validation
   async isSeriesPinned(slug, source) {
     const series = await remoteStorage['Gika']?.getSeries(slug, source);
     return !!series?.pinned;
@@ -112,12 +117,12 @@ const api = {
     if (series) {
       return remoteStorage['Gika']?.editSeries(slug, source, { pinned: true });
     }
-    // Se não existe, cria e já fixa (opcional, mas parece útil)
-    // return this.pushSeries(slug, coverUrl, source, url, title).then(() => this.pinSeries(slug, source));
+    // AIDEV-TODO: Consider creating series if doesn't exist when pinning
   },
 
   unpinSeries: (slug, source) => remoteStorage['Gika']?.editSeries(slug, source, { pinned: false }),
 
+  // AIDEV-NOTE: Filtered queries for different views
   async getAllPinnedSeries() {
     const all = getSortedArray(await remoteStorage['Gika']?.getAllSeries());
     return all.filter(e => e.pinned);
@@ -128,7 +133,7 @@ const api = {
     return all.filter(e => !e.pinned);
   },
 
-  // --- Métodos de Hubs ---
+  // AIDEV-NOTE: Hub management methods
   addHub: (url, title, iconUrl) => remoteStorage['Gika']?.addHub(url, title, iconUrl),
 
   removeHub: (url) => remoteStorage['Gika']?.removeHub(url),
@@ -139,10 +144,10 @@ const api = {
 };
 
 if (typeof window !== 'undefined') {
-  window.gikaApi = api; // Expondo a nova API para depuração
+  window.gikaApi = api; // AIDEV-NOTE: Exposed for debugging purposes
 }
 
-// Executa sync uma vez ao carregar a aplicação
+// AIDEV-NOTE: One-time sync execution on app load
 sync();
 
 export default api;

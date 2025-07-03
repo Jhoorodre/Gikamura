@@ -1,3 +1,4 @@
+// AIDEV-NOTE: Service Worker with intelligent caching strategies and dev mode detection
 // Service Worker para Gikamoe - Versão melhorada
 // Implementa estratégias de cache inteligentes sem causar erros
 
@@ -5,14 +6,14 @@ const CACHE_NAME = 'gikamoe-v2';
 const STATIC_CACHE = 'gikamoe-static-v2';
 const DYNAMIC_CACHE = 'gikamoe-dynamic-v2';
 
-// URLs de API que devem ser cached dinamicamente
+// AIDEV-NOTE: API URLs that should be cached dynamically
 const API_CACHE_PATTERNS = [
   /\/api\//,
   /\.json$/,
   /\/hub\//
 ];
 
-// Recursos que devem ser ignorados (Vite dev server)
+// AIDEV-NOTE: Resources to ignore (Vite dev server specific)
 const IGNORE_PATTERNS = [
   /@vite/,
   /@react-refresh/,
@@ -24,7 +25,7 @@ const IGNORE_PATTERNS = [
   /webpack-dev-server/
 ];
 
-// Instalar o Service Worker
+// AIDEV-NOTE: Install SW with static cache preparation and skip waiting
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing Service Worker v2');
   
@@ -35,11 +36,11 @@ self.addEventListener('install', (event) => {
     })
   );
   
-  // Força o SW a ativar imediatamente
+  // AIDEV-NOTE: Forces SW to activate immediately
   self.skipWaiting();
 });
 
-// Ativar o Service Worker
+// AIDEV-NOTE: Activate SW with old cache cleanup and immediate control
 self.addEventListener('activate', (event) => {
   console.log('[SW] Activating Service Worker v2');
   
@@ -47,7 +48,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          // Remove caches antigos
+          // AIDEV-NOTE: Remove old caches not matching current version
           if (!cacheName.includes('v2')) {
             console.log('[SW] Removing old cache:', cacheName);
             return caches.delete(cacheName);
@@ -57,38 +58,37 @@ self.addEventListener('activate', (event) => {
     })
   );
   
-  // Assume controle imediatamente
+  // AIDEV-NOTE: Take control immediately
   self.clients.claim();
 });
 
-// Interceptar requests de forma inteligente
+// AIDEV-NOTE: Smart request interception with dev mode detection
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   
-  // Durante desenvolvimento, não interceptar NENHUM request
-  // Detecta se está em modo de desenvolvimento
+  // AIDEV-NOTE: In development, don't intercept ANY request to avoid conflicts
   if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname.includes('dev')) {
     console.log('[SW] Development mode detected, bypassing request:', url.href);
-    return; // Deixa o navegador lidar com todos os requests
+    return; // Let browser handle all requests
   }
   
-  // Ignorar recursos de desenvolvimento do Vite
+  // AIDEV-NOTE: Ignore Vite development resources
   if (IGNORE_PATTERNS.some(pattern => pattern.test(url.pathname))) {
-    return; // Deixa o Vite lidar com esses recursos
+    return; // Let Vite handle these resources
   }
   
-  // Ignorar requests para localhost com porta diferente da atual
+  // AIDEV-NOTE: Ignore requests to localhost with different port
   if (url.hostname === 'localhost' && url.port !== location.port) {
-    return; // Evita erros de CORS e requests para portas incorretas
+    return; // Avoid CORS errors and incorrect port requests
   }
   
-  // Apenas em produção, usar cache para APIs
+  // AIDEV-NOTE: Only in production, use cache for APIs
   if (API_CACHE_PATTERNS.some(pattern => pattern.test(url.pathname))) {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          // Cache a resposta se for bem-sucedida
+          // AIDEV-NOTE: Cache response if successful
           if (response.status === 200) {
             const responseClone = response.clone();
             caches.open(DYNAMIC_CACHE).then((cache) => {
@@ -99,15 +99,14 @@ self.addEventListener('fetch', (event) => {
         })
         .catch((error) => {
           console.log('[SW] Network error for API request:', error);
-          // Se falhar, tenta buscar no cache
+          // AIDEV-NOTE: If fails, try to fetch from cache
           return caches.match(request);
         })
     );
     return;
   }
   
-  // Para outros recursos, apenas passa adiante sem cachear
-  // (evita problemas com hot-reload do Vite)
+  // AIDEV-NOTE: For other resources, just pass through without caching to avoid hot-reload issues
   event.respondWith(
     fetch(request).catch((error) => {
       console.log('[SW] Network error:', error);
@@ -116,14 +115,14 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Lidar com mensagens do cliente
+// AIDEV-NOTE: Handle client messages for skip waiting
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
 
-// Notificar sobre atualizações
+// AIDEV-NOTE: Notify about updates and version info
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'GET_VERSION') {
     event.ports[0].postMessage({ version: CACHE_NAME });

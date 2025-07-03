@@ -1,16 +1,16 @@
+// AIDEV-NOTE: RemoteStorage initialization with custom modules and cache management
 import RemoteStorage from "remotestoragejs";
 import { RS_PATH } from "./rs/rs-config.js";
 import { Model as CustomModule } from "./rs/rs-schemas.js";
 
 /**
  * Inicializa o RemoteStorage com módulos customizados
- * AIDEV-NOTE: Sets up RemoteStorage with custom modules and disables IndexedDB
+ * AIDEV-NOTE: Sets up RemoteStorage with custom modules and disables IndexedDB for performance
  */
 const remoteStorage = new RemoteStorage({
   cache: true,
   modules: [CustomModule],
-  // Descoberta genial sua! Previne que falhas no IndexedDB causem lentidão
-  // na inicialização, um problema comum e pouco documentado.
+  // AIDEV-NOTE: Prevents IndexedDB failures from causing startup slowdown (common undocumented issue)
   disableFeatures: ["IndexedDB"],
 });
 
@@ -18,8 +18,7 @@ remoteStorage.access.claim(RS_PATH.BASE, "rw");
 remoteStorage.caching.enable(`/${RS_PATH.BASE}/`);
 
 /**
- * Limpa o cache local de entradas órfãs ou corrompidas.
- * Útil para resolver estados inconsistentes.
+ * AIDEV-NOTE: Clears local cache of orphaned or corrupted entries for inconsistent states
  */
 const purgePreviousCache = () => {
   remoteStorage.caching.reset();
@@ -31,34 +30,33 @@ const purgePreviousCache = () => {
 };
 
 /**
- * Função utilitária para forçar sincronização através de operação nos dados
- * O RemoteStorage.js sincroniza automaticamente quando dados são alterados
+ * AIDEV-NOTE: Forces sync through data operation since RemoteStorage auto-syncs on data changes
  */
 const forceSyncByDataOperation = async () => {
   try {
-    // Verifica se está conectado
+    // AIDEV-NOTE: Check if connected before attempting sync
     if (!remoteStorage.connected) {
       console.warn('⚠️ RemoteStorage não conectado para sync');
       return false;
     }
 
-    // Tenta acessar o módulo customizado
+    // AIDEV-NOTE: Try to access custom module for sync trigger
     const customModule = remoteStorage.custom;
     if (customModule && typeof customModule.storeObject === 'function') {
-      // Cria um objeto pequeno para forçar sincronização
+      // AIDEV-NOTE: Create small object to force synchronization
       const timestamp = new Date().toISOString();
       const syncData = {
         lastSync: timestamp,
         type: 'sync-trigger'
       };
       
-      // Armazena o objeto (isso força sincronização)
+      // AIDEV-NOTE: Store object (this forces sync)
       await customModule.storeObject('json', 'sync-trigger.json', syncData);
       console.log('🔄 Sync forçado através de storeObject');
       return true;
     } 
     
-    // Fallback: tenta método mais simples
+    // AIDEV-NOTE: Fallback to simpler method if storeObject unavailable
     if (customModule && typeof customModule.storeFile === 'function') {
       const timestamp = new Date().getTime();
       await customModule.storeFile('text', 'sync-trigger.txt', timestamp.toString());
@@ -74,21 +72,20 @@ const forceSyncByDataOperation = async () => {
   }
 };
 
-// Garantir que o RemoteStorage esteja disponível globalmente
+// AIDEV-NOTE: Make RemoteStorage globally available with debug info
 if (typeof window !== 'undefined') {
   window.remoteStorage = remoteStorage;
   
-  // Log de debug para verificar se está funcionando
+  // AIDEV-NOTE: Debug log to verify initialization
   console.log('RemoteStorage inicializado:', {
     connected: remoteStorage.connected,
     access: remoteStorage.access.scopes,
     backend: remoteStorage.backend
   });
 
-  // ⚠️ REMOVIDO: Event listeners movidos para RemoteStorageContext.jsx
-  // para evitar duplicação e ter melhor controle
+  // AIDEV-NOTE: Event listeners moved to RemoteStorageContext.jsx to avoid duplication
   
-  // Event listener para conectado (apenas informativo)
+  // AIDEV-NOTE: Basic connection listener for informational purposes only
   if (!remoteStorage._basicListenersAdded) {
     remoteStorage.on('connected', () => {
       console.log('✅ RemoteStorage conectado!');

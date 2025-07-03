@@ -1,16 +1,16 @@
 /**
  * Validador JSON robusto para uploads
  * Garante que os arquivos seguem os padrões esperados (hub.json e reader.json)
- * AIDEV-NOTE: Validates hub.json and reader.json structure and fields
+ * AIDEV-NOTE: Validates hub.json and reader.json structure and fields with detailed schema validation
  */
 
-// Schemas de validação
+// AIDEV-NOTE: Schema definitions for comprehensive validation
 const HUB_SCHEMA = {
   required: ['schema', 'meta', 'hub', 'series'],
   schema: {
     required: ['version', 'format', 'encoding'],
     properties: {
-      version: { type: 'string', pattern: /^\d+\.\d+$/ },
+      version: { type: 'string', pattern: /^\d+\.\d+$/ }, // AIDEV-NOTE: Semantic version format
       format: { type: 'string', enum: ['application/json'] },
       encoding: { type: 'string', enum: ['utf-8'] }
     }
@@ -18,8 +18,8 @@ const HUB_SCHEMA = {
   meta: {
     required: ['version', 'lastUpdated', 'language'],
     properties: {
-      version: { type: 'string', pattern: /^\d+\.\d+\.\d+$/ },
-      lastUpdated: { type: 'string', pattern: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/ },
+      version: { type: 'string', pattern: /^\d+\.\d+\.\d+$/ }, // AIDEV-NOTE: Semantic version
+      lastUpdated: { type: 'string', pattern: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/ }, // AIDEV-NOTE: ISO date format
       language: { type: 'string', minLength: 2, maxLength: 5 }
     }
   },
@@ -28,7 +28,7 @@ const HUB_SCHEMA = {
     properties: {
       id: { type: 'string', minLength: 1 },
       title: { type: 'string', minLength: 1 },
-      slug: { type: 'string', pattern: /^[a-z0-9-]+$/ }
+      slug: { type: 'string', pattern: /^[a-z0-9-]+$/ } // AIDEV-NOTE: URL-safe slug pattern
     }
   },
   series: {
@@ -43,6 +43,7 @@ const HUB_SCHEMA = {
         status: { 
           type: 'object',
           properties: {
+            // AIDEV-NOTE: Standardized status values for translation and original work
             translation: { type: 'string', enum: ['ongoing', 'completed', 'hiatus', 'cancelled'] },
             original: { type: 'string', enum: ['ongoing', 'completed', 'hiatus', 'cancelled'] }
           }
