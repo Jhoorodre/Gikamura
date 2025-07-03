@@ -3,8 +3,6 @@ import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 import { useHubLoader } from '../../hooks/useHubLoader';
 import '../../styles/hub-loader.css';
 import HubHistory from './HubHistory';
-import { BookOpenIcon } from '../common/Icones';
-import { Link } from 'react-router-dom';
 
 const HubLoaderComponent = () => {
     const { savedHubs, removeHub } = useAppContext();
@@ -96,39 +94,11 @@ const HubLoaderComponent = () => {
     }
     
     return (
-        <div className="hub-connected-container">
-            {/* Status de Conexão */}
-            <div className="connection-status connected">
-                <div className="status-dot"></div>
-                <span>Remote Storage Conectado</span>
-            </div>
-
-            {/* Layout Central com Cards ao Redor */}
-            <div className="hub-central-layout">
-                {/* Card Coleção - Top Left */}
-                <Link to="/collection" className="nav-card nav-card-collection hub-card-top-left">
-                    <div className="nav-card-icon">
-                        <BookOpenIcon />
-                    </div>
-                    <div className="nav-card-content">
-                        <h3>Coleção</h3>
-                        <p>Veja seus itens favoritados e histórico sincronizados.</p>
-                    </div>
-                </Link>
-
-                {/* Card Obras - Top Right */}
-                <Link to="/works" className="nav-card nav-card-works hub-card-top-right">
-                    <div className="nav-card-icon">
-                        <span className="text-2xl">⭐</span>
-                    </div>
-                    <div className="nav-card-content">
-                        <h3>Obras</h3>
-                        <p>Acesse suas obras pinadas e favoritas.</p>
-                    </div>
-                </Link>
-
-                {/* Hub Central */}
-                <div className="hub-central-card">
+        <div className="hub-dashboard-container">
+            {/* AIDEV-NOTE: Transformed into focused Hub Dashboard without navigation cards */}
+            <div className="hub-dashboard-layout">
+                {/* AIDEV-NOTE: Main hub loading interface - simplified and focused */}
+                <div className="hub-main-card">
                     <div className="hub-loader-header">
                         <h1 className="orbitron text-accent">HUB</h1>
                         <p className="text-text-secondary">
@@ -173,25 +143,15 @@ const HubLoaderComponent = () => {
                     </div>
                 </div>
 
-                {/* Card Upload - Bottom Left */}
-                <Link to="/upload" className="nav-card nav-card-upload hub-card-bottom-left">
-                    <div className="nav-card-icon">
-                        <span className="text-2xl">📤</span>
-                    </div>
-                    <div className="nav-card-content">
-                        <h3>Upload</h3>
-                        <p>Faça upload de novos hubs ou conteúdos.</p>
-                    </div>
-                </Link>
-
-                {/* Card Em breve - Bottom Right */}
-                <div className="nav-card nav-card-placeholder hub-card-bottom-right">
-                    <div className="nav-card-icon">
-                        <span className="text-2xl opacity-50">🔧</span>
-                    </div>
-                    <div className="nav-card-content">
-                        <h3 className="opacity-50">Em breve</h3>
-                        <p className="opacity-50">Novas funcionalidades chegando...</p>
+                {/* AIDEV-NOTE: Welcome message and usage tips */}
+                <div className="hub-info-card">
+                    <div className="hub-info-content">
+                        <h3>🎯 Como usar</h3>
+                        <ul className="hub-tips-list">
+                            <li>Cole a URL de um arquivo hub.json acima</li>
+                            <li>Use a navegação superior para acessar outras seções</li>
+                            <li>Seus dados ficam sincronizados via RemoteStorage</li>
+                        </ul>
                     </div>
                 </div>
             </div>

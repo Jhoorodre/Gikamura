@@ -21,6 +21,7 @@ import UploadPage from './pages/UploadPage';
 import SeriesDetailPage from './pages/SeriesDetailPage';
 import ArrowNavigation from './components/common/ArrowNavigation';
 import GlobalRemoteStorageWidget from './components/common/SimpleRemoteStorageWidgetNew';
+import Header from './components/common/Header';
 import { runFullDiagnostic } from './utils/networkDebug';
 
 function App() {
@@ -52,6 +53,9 @@ function App() {
 
     return (
         <div className="min-h-screen flex flex-col">
+            {/* AIDEV-NOTE: Main application header with navigation */}
+            <Header />
+            
             {/* AIDEV-NOTE: Global components always present */}
             <ArrowNavigation />
             <GlobalRemoteStorageWidget />

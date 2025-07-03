@@ -208,32 +208,7 @@ const HubView = () => {
                             )}
                         </div>
 
-                        {/* Cards de Navegação - apenas quando conectado */}
-                        {isConnected && (
-                            <div className="hub-nav-grid">
-                                <Link to="/collection" className="hub-nav-card" aria-label="Ir para coleção">
-                                    <div className="hub-nav-icon" aria-hidden="true">📚</div>
-                                    <div className="hub-nav-content">
-                                        <h3 className="hub-nav-title">Coleção</h3>
-                                        <p className="hub-nav-desc">Itens favoritados</p>
-                                    </div>
-                                </Link>
-                                <Link to="/works" className="hub-nav-card" aria-label="Ir para obras">
-                                    <div className="hub-nav-icon" aria-hidden="true">★</div>
-                                    <div className="hub-nav-content">
-                                        <h3 className="hub-nav-title">Obras</h3>
-                                        <p className="hub-nav-desc">Conteúdo especial</p>
-                                    </div>
-                                </Link>
-                                <Link to="/upload" className="hub-nav-card" aria-label="Ir para upload">
-                                    <div className="hub-nav-icon" aria-hidden="true">⇧</div>
-                                    <div className="hub-nav-content">
-                                        <h3 className="hub-nav-title">Upload</h3>
-                                        <p className="hub-nav-desc">Enviar conteúdo</p>
-                                    </div>
-                                </Link>
-                            </div>
-                        )}
+                        {/* AIDEV-NOTE: Navigation cards removed - now using Header navigation */}
 
                         {/* Seção de Séries */}
                         <div className="hub-series-section">

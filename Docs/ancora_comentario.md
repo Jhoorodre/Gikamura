@@ -14,3 +14,15 @@ Example:
 # AIDEV-NOTE: perf-hot-path; avoid extra allocations (see ADR-24)  
 async def render_feed(...):  
     ...  
+
+
+### Search for anchors:
+```bash
+# Encontrar todos os anchor comments
+grep -r "AIDEV-" src/
+
+# Filtrar por tipo específico
+grep -r "AIDEV-NOTE" src/
+grep -r "AIDEV-TODO" src/
+grep -r "AIDEV-QUESTION" src/
+``` 

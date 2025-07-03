@@ -867,3 +867,62 @@
   width: 300px;
   height: 300px;
 }
+
+/* AIDEV-NOTE: Header navigation styles for traditional top navigation layout */
+
+/* === HEADER NAVIGATION === */
+.app-header {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+    z-index: var(--z-sticky);
+}
+
+.app-header .container {
+    max-width: 1200px;
+}
+
+/* AIDEV-NOTE: Header navigation links with hover and active states */
+.app-header nav a {
+    position: relative;
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition-base);
+}
+
+.app-header nav a:hover {
+    transform: translateY(-1px);
+}
+
+.app-header nav a.bg-surface {
+    background: var(--color-surface-hover);
+    border: 1px solid var(--color-border-subtle);
+}
+
+/* AIDEV-NOTE: Mobile dropdown menu styles */
+.app-header .absolute {
+    backdrop-filter: blur(8px);
+    background: rgba(var(--surface-rgb), 0.95);
+}
+
+/* AIDEV-NOTE: Connection status indicator in header */
+.app-header .bg-success {
+    background: var(--color-success);
+}
+
+.app-header .bg-warning {
+    background: var(--color-warning);
+}
+
+/* AIDEV-NOTE: Animation for temporary connection status message */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* AIDEV-NOTE: Header navigation styles with design system integration */

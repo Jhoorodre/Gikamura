@@ -6,10 +6,21 @@ const SimpleRemoteStorageWidgetNew = () => {
     const [address, setAddress] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [error, setError] = useState('');
+    const [showConnectedMessage, setShowConnectedMessage] = useState(false);
 
     useEffect(() => {
         const updateState = () => {
-            setConnected(remoteStorage.connected);
+            const wasConnected = connected;
+            const isNowConnected = remoteStorage.connected;
+            setConnected(isNowConnected);
+            
+            // AIDEV-NOTE: Show temporary "Connected" message for 5 seconds when connecting
+            if (!wasConnected && isNowConnected) {
+                setShowConnectedMessage(true);
+                setTimeout(() => {
+                    setShowConnectedMessage(false);
+                }, 5000);
+            }
         };
 
         // Listener para mudanças de conexão
@@ -58,37 +69,61 @@ const SimpleRemoteStorageWidgetNew = () => {
     // Estado conectado - mostrar indicador verde discreto
     if (connected) {
         return (
-            <div 
-                style={{
-                    position: 'fixed',
-                    bottom: '20px',
-                    left: '20px',
-                    zIndex: 9999,
-                }}
-            >
-                <div
+            <>
+                {/* AIDEV-NOTE: Temporary "Connected" message for 5 seconds */}
+                {showConnectedMessage && (
+                    <div 
+                        style={{
+                            position: 'fixed',
+                            bottom: '90px',
+                            left: '20px',
+                            zIndex: 10000,
+                            background: 'linear-gradient(135deg, #10b981, #059669)',
+                            color: 'white',
+                            padding: '8px 16px',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                            animation: 'fadeIn 0.3s ease'
+                        }}
+                    >
+                        ✅ Remote Storage Conectado
+                    </div>
+                )}
+                
+                <div 
                     style={{
-                        width: '56px',
-                        height: '56px',
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #10b981, #059669)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontSize: '20px',
-                        fontWeight: 'bold',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                        cursor: 'pointer',
-                        border: '2px solid rgba(255, 255, 255, 0.2)',
-                        transition: 'all 0.3s ease'
+                        position: 'fixed',
+                        bottom: '20px',
+                        left: '20px',
+                        zIndex: 9999,
                     }}
-                    onClick={handleDisconnect}
-                    title="Conectado ao RemoteStorage - Clique para desconectar"
                 >
-                    ✓
+                    <div
+                        style={{
+                            width: '56px',
+                            height: '56px',
+                            borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #10b981, #059669)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                            cursor: 'pointer',
+                            border: '2px solid rgba(255, 255, 255, 0.2)',
+                            transition: 'all 0.3s ease'
+                        }}
+                        onClick={handleDisconnect}
+                        title="Conectado ao RemoteStorage - Clique para desconectar"
+                    >
+                        ✓
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
