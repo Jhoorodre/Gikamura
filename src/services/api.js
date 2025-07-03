@@ -5,6 +5,11 @@ const MAX_HISTORY_ITEMS = 20;
 const SORT_KEY = "timestamp";
 
 /**
+ * API de séries, histórico e sincronização
+ * AIDEV-NOTE: Handles series CRUD, history and sync with RemoteStorage
+ */
+
+/**
  * Helper para ordenar um objeto de objetos por uma chave interna.
  * @returns {Array} Array ordenado.
  */
@@ -20,7 +25,7 @@ let syncExecuted = false;
  */
 const sync = async () => {
   if (syncExecuted) return;
-  const rs = remoteStorage[RS_PATH.BASE];
+  const rs = remoteStorage['Gika'];
   if (!rs) return;
 
   const allSeries = await rs.getAllSeries();
@@ -42,7 +47,7 @@ const api = {
   async pushSeries(slug, coverUrl, source, url, title) {
     console.log('📊 [API] pushSeries called with:', { slug, coverUrl, source, url, title });
     
-    const rs = remoteStorage[RS_PATH.BASE];
+    const rs = remoteStorage['Gika'];
     const allSeries = getSortedArray(await rs.getAllSeries());
     const existingSeries = allSeries.find(e => e.slug === slug && e.source === source);
 
@@ -62,7 +67,7 @@ const api = {
     return rs.addSeries(slug, coverUrl, source, url, title, false, []);
   },
 
-  removeSeries: (slug, source) => remoteStorage[RS_PATH.BASE]?.removeSeries(slug, source),
+  removeSeries: (slug, source) => remoteStorage['Gika']?.removeSeries(slug, source),
 
   async removeAllUnpinnedSeries() {
     const series = await this.getAllUnpinnedSeries();
@@ -73,7 +78,7 @@ const api = {
   addChapter: (slug, source, chapter) => api.addChapters(slug, source, [chapter]),
 
   async addChapters(slug, source, chapters) {
-    const rs = remoteStorage[RS_PATH.BASE];
+    const rs = remoteStorage['Gika'];
     const series = await rs.getSeries(slug, source);
     if (series) {
       const updatedChapters = [...new Set([...(series.chapters || []), ...chapters])];
@@ -82,7 +87,7 @@ const api = {
   },
 
   async removeChapter(slug, source, chapter) {
-    const rs = remoteStorage[RS_PATH.BASE];
+    const rs = remoteStorage['Gika'];
     const series = await rs.getSeries(slug, source);
     if (series?.chapters) {
       const updatedChapters = series.chapters.filter(c => c !== chapter);
@@ -90,46 +95,46 @@ const api = {
     }
   },
 
-  removeAllChapters: (slug, source) => remoteStorage[RS_PATH.BASE]?.editSeries(slug, source, { chapters: [] }),
+  removeAllChapters: (slug, source) => remoteStorage['Gika']?.editSeries(slug, source, { chapters: [] }),
 
   async getReadChapters(slug, source) {
-    const series = await remoteStorage[RS_PATH.BASE]?.getSeries(slug, source);
+    const series = await remoteStorage['Gika']?.getSeries(slug, source);
     return series?.chapters || [];
   },
 
   async isSeriesPinned(slug, source) {
-    const series = await remoteStorage[RS_PATH.BASE]?.getSeries(slug, source);
+    const series = await remoteStorage['Gika']?.getSeries(slug, source);
     return !!series?.pinned;
   },
 
   async pinSeries(slug, source) {
-    const series = await remoteStorage[RS_PATH.BASE]?.getSeries(slug, source);
+    const series = await remoteStorage['Gika']?.getSeries(slug, source);
     if (series) {
-      return remoteStorage[RS_PATH.BASE]?.editSeries(slug, source, { pinned: true });
+      return remoteStorage['Gika']?.editSeries(slug, source, { pinned: true });
     }
     // Se não existe, cria e já fixa (opcional, mas parece útil)
     // return this.pushSeries(slug, coverUrl, source, url, title).then(() => this.pinSeries(slug, source));
   },
 
-  unpinSeries: (slug, source) => remoteStorage[RS_PATH.BASE]?.editSeries(slug, source, { pinned: false }),
+  unpinSeries: (slug, source) => remoteStorage['Gika']?.editSeries(slug, source, { pinned: false }),
 
   async getAllPinnedSeries() {
-    const all = getSortedArray(await remoteStorage[RS_PATH.BASE]?.getAllSeries());
+    const all = getSortedArray(await remoteStorage['Gika']?.getAllSeries());
     return all.filter(e => e.pinned);
   },
 
   async getAllUnpinnedSeries() {
-    const all = getSortedArray(await remoteStorage[RS_PATH.BASE]?.getAllSeries());
+    const all = getSortedArray(await remoteStorage['Gika']?.getAllSeries());
     return all.filter(e => !e.pinned);
   },
 
   // --- Métodos de Hubs ---
-  addHub: (url, title, iconUrl) => remoteStorage[RS_PATH.BASE]?.addHub(url, title, iconUrl),
+  addHub: (url, title, iconUrl) => remoteStorage['Gika']?.addHub(url, title, iconUrl),
 
-  removeHub: (url) => remoteStorage[RS_PATH.BASE]?.removeHub(url),
+  removeHub: (url) => remoteStorage['Gika']?.removeHub(url),
 
   async getAllHubs() {
-    return getSortedArray(await remoteStorage[RS_PATH.BASE]?.getAllHubs());
+    return getSortedArray(await remoteStorage['Gika']?.getAllHubs());
   },
 };
 

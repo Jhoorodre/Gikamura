@@ -1,5 +1,6 @@
 /**
- * Hook personalizado para carregar hubs via URL
+ * Hook para carregamento e gerenciamento do hub
+ * AIDEV-NOTE: Loads and manages hub data and state
  * Centraliza a lógica de carregamento de JSON em um local
  */
 

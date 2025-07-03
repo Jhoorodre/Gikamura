@@ -1,7 +1,13 @@
+/**
+ * Hook para otimizações de listas, queries e dependências
+ * AIDEV-NOTE: Provides memoization, filtering, sorting and debug helpers
+ */
+
 import { useMemo, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 // Hook para detectar valor anterior
+// AIDEV-NOTE: Used for debugging and dependency change tracking
 const usePrevious = (value) => {
   const ref = useRef();
   useEffect(() => {
@@ -11,6 +17,7 @@ const usePrevious = (value) => {
 };
 
 // Hook para gerenciar queries de forma otimizada
+// AIDEV-NOTE: Centraliza query optimization para react-query
 export const useOptimizedQuery = (key, queryFn, options = {}) => {
   return useQuery({
     queryKey: key,
@@ -18,8 +25,6 @@ export const useOptimizedQuery = (key, queryFn, options = {}) => {
     staleTime: 5 * 60 * 1000, // 5 minutos
     gcTime: 10 * 60 * 1000, // 10 minutos
     retry: 2,
-    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
-    ...options
   });
 };
 

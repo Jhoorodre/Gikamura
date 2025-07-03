@@ -1,3 +1,8 @@
+/**
+ * Hook para integração e controle do Service Worker
+ * AIDEV-NOTE: Manages SW registration, updates and messaging
+ */
+
 import { useEffect, useState } from 'react';
 
 export const useServiceWorker = () => {

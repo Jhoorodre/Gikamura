@@ -1,3 +1,8 @@
+/**
+ * Hook para histórico de navegação e ações do usuário
+ * AIDEV-NOTE: Tracks navigation and user actions for history features
+ */
+
 // src/hooks/useHistory.js
 import { useState, useEffect, useCallback } from 'react';
 import { remoteStorage } from '../services/remotestorage';
@@ -8,9 +13,9 @@ export const useHistory = () => {
     const [isConnected, setIsConnected] = useState(remoteStorage.connected);
 
     const loadSavedHubs = useCallback(async () => {
-        if (remoteStorage.connected && remoteStorage[RS_PATH.BASE]) {
+        if (remoteStorage.connected && remoteStorage['Gika']) {
             try {
-                const hubs = await remoteStorage[RS_PATH.BASE].getAllHubs();
+                const hubs = await remoteStorage['Gika'].getAllHubs();
                 setSavedHubs(hubs || []);
             } catch (error) {
                 console.error("Erro ao carregar hubs salvos:", error);
@@ -50,14 +55,14 @@ export const useHistory = () => {
     }, [loadSavedHubs]);
 
     const addHub = (url, title, iconUrl) => {
-        if (remoteStorage.connected && remoteStorage[RS_PATH.BASE]) {
-            return remoteStorage[RS_PATH.BASE].addHub(url, title, iconUrl);
+        if (remoteStorage.connected && remoteStorage['Gika']) {
+            return remoteStorage['Gika'].addHub(url, title, iconUrl);
         }
     };
     
     const removeHub = (url) => {
-        if (remoteStorage.connected && remoteStorage[RS_PATH.BASE]) {
-            return remoteStorage[RS_PATH.BASE].removeHub(url);
+        if (remoteStorage.connected && remoteStorage['Gika']) {
+            return remoteStorage['Gika'].removeHub(url);
         }
     };
 

@@ -1,6 +1,7 @@
 /**
  * Hook para gerenciar dados de obras (reader.json)
  * Integra com o serviço jsonReader e fornece estado reativo
+ * AIDEV-NOTE: Central hook for all reader data and progress logic
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -8,6 +9,12 @@ import { useQuery } from '@tanstack/react-query';
 import { loadReaderJSON, JSONUtils } from '../services/jsonReader.js';
 import { remoteStorage } from '../services/remotestorage';
 import { RS_PATH } from '../services/rs/rs-config.js';
+
+const READING_PROGRESS_PATH = (RS_PATH && RS_PATH.READING_PROGRESS) ? RS_PATH.READING_PROGRESS : 'data/reading-progress/';
+
+function safePath(path, fallback = 'data/reading-progress/') {
+  return (typeof path === 'string' && path) ? path : fallback;
+}
 
 export const useReader = () => {
     const [currentReaderUrl, setCurrentReaderUrl] = useState(null);
@@ -72,7 +79,7 @@ export const useReader = () => {
         try {
             const workId = generateWorkId(currentReaderUrl);
             // Usar false como maxAge para evitar cache
-            const progressData = await remoteStorage.scope(RS_PATH.READING_PROGRESS).getObject('progress', workId, false);
+            const progressData = await remoteStorage.scope(safePath(READING_PROGRESS_PATH)).getObject('progress', workId, false);
             
             if (progressData) {
                 setReadingProgress(progressData);
@@ -119,7 +126,7 @@ export const useReader = () => {
 
             console.log('💾 [useReader] Objeto de progresso a ser salvo:', progressData);
 
-            await remoteStorage.scope(RS_PATH.READING_PROGRESS).storeObject('progress', workId, progressData);
+            await remoteStorage.scope(safePath(READING_PROGRESS_PATH)).storeObject('progress', workId, progressData);
             setReadingProgress(progressData);
             
             console.log('✅ [useReader] Progresso salvo com sucesso:', { chapterId, pageIndex, totalPages });

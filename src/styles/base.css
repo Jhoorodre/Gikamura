@@ -1,3 +1,8 @@
+/*
+ * Base CSS para reset e normalização de estilos
+ * AIDEV-NOTE: Defines base resets and normalization for consistent cross-browser rendering
+ */
+
 /* ========================================================================== */
 /* ==                  ESTILOS BASE MINIMALISTAS DA APLICAÇÃO             == */
 /* ========================================================================== */
@@ -42,8 +47,8 @@ body {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
   line-height: 1.6;
-  color: var(--color-text-primary);
-  background-color: var(--color-background);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -56,10 +61,11 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-display);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
-  color: var(--color-text-primary);
+  color: var(--text-primary);
   letter-spacing: -0.025em;
   margin-bottom: var(--space-2);
   background: none;
+  background-clip: unset;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
 }
@@ -90,7 +96,7 @@ h5, h6 {
 }
 
 p {
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
   line-height: var(--line-height-relaxed);
   margin-bottom: var(--space-4);
 }
@@ -104,11 +110,11 @@ a {
 }
 
 a:hover {
-  color: var(--color-accent-hover);
+  color: var(--text-secondary);
 }
 
 a:active {
-  color: var(--color-accent-base);
+  color: var(--color-accent);
 }
 
 /* === 4. BOTÕES E INTERATIVIDADE === */
@@ -122,11 +128,11 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: var(--color-surface-secondary);
+  background: var(--surface-hover);
 }
 
 button:active:not(:disabled) {
-  background: var(--color-secondary-base);
+  background: var(--surface-pressed);
 }
 
 button:disabled {
@@ -146,16 +152,16 @@ button:disabled {
 input, textarea, select {
   font: inherit;
   color: inherit;
-  background: var(--color-surface-primary);
-  border: 1px solid var(--color-border);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   padding: var(--space-3) var(--space-4);
   transition: border var(--transition-base);
 }
 
 input:focus, textarea:focus, select:focus {
-  border-color: var(--color-accent);
-  background: var(--color-surface-elevated);
+  border-color: var(--border-focus);
+  background: var(--bg-elevated);
   box-shadow: none;
 }
 
@@ -178,29 +184,29 @@ ul, ol {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-surface-primary);
+  background: var(--surface-primary);
   border-radius: var(--radius-lg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-secondary-base);
+  background: var(--surface-secondary);
   border-radius: var(--radius-lg);
   transition: background var(--transition-base);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-hover);
+  background: var(--surface-hover);
 }
 
 /* === 9. SELEÇÃO DE TEXTO === */
 ::selection {
-  background: rgba(var(--accent-rgb), 0.3);
-  color: var(--color-text-primary);
+  background: rgba(164, 164, 164, 0.3);
+  color: var(--text-primary);
 }
 
 ::-moz-selection {
-  background: rgba(var(--accent-rgb), 0.3);
-  color: var(--color-text-primary);
+  background: rgba(164, 164, 164, 0.3);
+  color: var(--text-primary);
 }
 
 /* Consolidado e simplificado para o padrão minimalista global */

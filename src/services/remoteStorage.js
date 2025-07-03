@@ -2,6 +2,10 @@ import RemoteStorage from "remotestoragejs";
 import { RS_PATH } from "./rs/rs-config.js";
 import { Model as CustomModule } from "./rs/rs-schemas.js";
 
+/**
+ * Inicializa o RemoteStorage com módulos customizados
+ * AIDEV-NOTE: Sets up RemoteStorage with custom modules and disables IndexedDB
+ */
 const remoteStorage = new RemoteStorage({
   cache: true,
   modules: [CustomModule],

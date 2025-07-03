@@ -1,6 +1,7 @@
 /**
  * Validador JSON robusto para uploads
  * Garante que os arquivos seguem os padrões esperados (hub.json e reader.json)
+ * AIDEV-NOTE: Validates hub.json and reader.json structure and fields
  */
 
 // Schemas de validação

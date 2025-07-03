@@ -1,21 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useLocalStorage } from './useUtils';
-
 /**
  * Hook para gerenciar configurações e estado do leitor
+ * AIDEV-NOTE: This hook centralizes all persistent and temporary reader settings
  */
 export const useReaderSettings = () => {
-    // Configurações persistentes
+    // Persistent settings
     const [readingDirection, setReadingDirection] = useLocalStorage('reader-direction', 'ltr');
     const [readingMode, setReadingMode] = useLocalStorage('reader-mode', 'paginated');
     const [autoHideControls, setAutoHideControls] = useLocalStorage('reader-auto-hide-controls', true);
     const [preloadPages, setPreloadPages] = useLocalStorage('reader-preload-pages', 5);
     
-    // Estado temporário
+    // Temporary state
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [showControls, setShowControls] = useState(true);
     
-    // Gerenciamento de fullscreen
+    // Fullscreen management
+    // AIDEV-TODO: Consider supporting more browsers if needed
     const toggleFullscreen = useCallback(async () => {
         try {
             if (!isFullscreen) {
@@ -32,7 +31,7 @@ export const useReaderSettings = () => {
                 );
             }
         } catch (error) {
-            console.warn('Erro ao alternar fullscreen:', error);
+            console.warn('Error toggling fullscreen:', error); // AIDEV-NOTE: Error is non-blocking
         }
     }, [isFullscreen]);
 
@@ -44,11 +43,11 @@ export const useReaderSettings = () => {
                 document.msExitFullscreen?.()
             );
         } catch (error) {
-            console.warn('Erro ao sair do fullscreen:', error);
+            console.warn('Error exiting fullscreen:', error); // AIDEV-NOTE: Error is non-blocking
         }
     }, []);
 
-    // Monitor de mudanças de fullscreen
+    // Fullscreen change monitor
     useEffect(() => {
         const handleFullscreenChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
@@ -66,7 +65,8 @@ export const useReaderSettings = () => {
         };
     }, []);
 
-    // Gerenciamento de controles
+    // Controls management
+    // AIDEV-NOTE: showControlsTemporarily is used to auto-hide UI controls after a delay
     const showControlsTemporarily = useCallback((duration = 4000) => {
         if (!autoHideControls) return;
         
@@ -79,17 +79,20 @@ export const useReaderSettings = () => {
         return () => clearTimeout(timeoutId);
     }, [autoHideControls]);
 
-    // Alternar direção de leitura
+    // Toggle reading direction
+    // AIDEV-NOTE: Flips between 'ltr' and 'rtl' for reading direction
     const toggleReadingDirection = useCallback(() => {
         setReadingDirection(prev => prev === 'ltr' ? 'rtl' : 'ltr');
     }, [setReadingDirection]);
 
-    // Alternar modo de leitura
+    // Toggle reading mode
+    // AIDEV-NOTE: Flips between 'paginated' and 'scrolling' modes
     const toggleReadingMode = useCallback(() => {
         setReadingMode(prev => prev === 'paginated' ? 'scrolling' : 'paginated');
     }, [setReadingMode]);
 
-    // Resetar configurações
+    // Reset settings
+    // AIDEV-TODO: Add reset for any new settings added in the future
     const resetSettings = useCallback(() => {
         setReadingDirection('ltr');
         setReadingMode('paginated');
@@ -98,7 +101,7 @@ export const useReaderSettings = () => {
     }, [setReadingDirection, setReadingMode, setAutoHideControls, setPreloadPages]);
 
     return {
-        // Configurações
+        // Settings
         readingDirection,
         setReadingDirection,
         readingMode,
@@ -108,12 +111,12 @@ export const useReaderSettings = () => {
         preloadPages,
         setPreloadPages,
         
-        // Estado
+        // State
         isFullscreen,
         showControls,
         setShowControls,
         
-        // Ações
+        // Actions
         toggleFullscreen,
         exitFullscreen,
         showControlsTemporarily,
@@ -124,12 +127,14 @@ export const useReaderSettings = () => {
 };
 
 /**
- * Hook para pré-carregamento de imagens
+ * Hook for preloading images
+ * AIDEV-NOTE: Preloads images for upcoming pages to improve reader UX
  */
 export const useImagePreloader = (pages, currentPage, preloadCount = 5) => {
     const [preloadedImages, setPreloadedImages] = useState(new Set());
     const [loadingImages, setLoadingImages] = useState(new Set());
 
+    // AIDEV-NOTE: Avoids reloading already loaded or loading images
     const preloadImage = useCallback((url, index) => {
         if (preloadedImages.has(index) || loadingImages.has(index)) {
             return Promise.resolve();
@@ -156,7 +161,7 @@ export const useImagePreloader = (pages, currentPage, preloadCount = 5) => {
                     newSet.delete(index);
                     return newSet;
                 });
-                console.warn(`Falha ao pré-carregar imagem ${index + 1}: ${url}`);
+                console.warn(`Failed to preload image ${index + 1}: ${url}`); // AIDEV-NOTE: Non-blocking image preload error
                 reject();
             };
             
@@ -164,6 +169,7 @@ export const useImagePreloader = (pages, currentPage, preloadCount = 5) => {
         });
     }, [preloadedImages, loadingImages]);
 
+    // AIDEV-NOTE: Preloads a range of pages (forward and backward)
     const preloadPages = useCallback(async (startIndex, count) => {
         if (!pages || pages.length === 0) return;
 
@@ -177,17 +183,16 @@ export const useImagePreloader = (pages, currentPage, preloadCount = 5) => {
         try {
             await Promise.allSettled(promises);
         } catch (error) {
-            console.warn('Alguns pré-carregamentos falharam:', error);
+            console.warn('Some preloads failed:', error); // AIDEV-NOTE: Non-blocking preload error
         }
     }, [pages, preloadImage]);
 
-    // Pré-carrega páginas próximas quando a página atual muda
+    // Preload nearby pages when current page changes
     useEffect(() => {
         if (pages && pages.length > 0 && currentPage >= 0) {
-            // Pré-carrega páginas seguintes
+            // Preload next pages
             preloadPages(currentPage + 1, preloadCount);
-            
-            // Pré-carrega algumas páginas anteriores também
+            // Preload some previous pages too
             preloadPages(Math.max(0, currentPage - 2), 2);
         }
     }, [currentPage, pages, preloadCount, preloadPages]);
@@ -202,7 +207,8 @@ export const useImagePreloader = (pages, currentPage, preloadCount = 5) => {
 };
 
 /**
- * Hook para navegação do leitor com suporte a RTL/LTR
+ * Hook for reader navigation with RTL/LTR support
+ * AIDEV-NOTE: Handles navigation logic for both reading directions
  */
 export const useReaderNavigation = ({ 
     page, 
@@ -212,18 +218,19 @@ export const useReaderNavigation = ({
     onNextEntry, 
     onPrevEntry 
 }) => {
+    // AIDEV-NOTE: goToNextPage/PrevPage handle RTL/LTR logic and entry boundaries
     const goToNextPage = useCallback(() => {
         const isRtl = readingDirection === 'rtl';
         
         if (isRtl) {
-            // Em RTL, "próxima" é para a esquerda (página anterior)
+            // In RTL, "next" is to the left (previous page)
             if (page > 0) {
                 setPage(page - 1);
             } else {
                 onPrevEntry?.();
             }
         } else {
-            // Em LTR, "próxima" é para a direita (página seguinte)
+            // In LTR, "next" is to the right (next page)
             if (page < totalPages - 1) {
                 setPage(page + 1);
             } else {
@@ -236,14 +243,14 @@ export const useReaderNavigation = ({
         const isRtl = readingDirection === 'rtl';
         
         if (isRtl) {
-            // Em RTL, "anterior" é para a direita (página seguinte)
+            // In RTL, "previous" is to the right (next page)
             if (page < totalPages - 1) {
                 setPage(page + 1);
             } else {
                 onNextEntry?.();
             }
         } else {
-            // Em LTR, "anterior" é para a esquerda (página anterior)
+            // In LTR, "previous" is to the left (previous page)
             if (page > 0) {
                 setPage(page - 1);
             } else {
@@ -252,6 +259,7 @@ export const useReaderNavigation = ({
         }
     }, [page, totalPages, readingDirection, setPage, onNextEntry, onPrevEntry]);
 
+    // AIDEV-NOTE: goToPage validates page boundaries
     const goToPage = useCallback((pageNumber) => {
         if (pageNumber >= 0 && pageNumber < totalPages) {
             setPage(pageNumber);

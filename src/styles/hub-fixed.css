@@ -1,3 +1,8 @@
+/*
+ * CSS para layout principal do hub
+ * AIDEV-NOTE: Styles for fixed hub layout and navigation
+ */
+
 /* ========================================================================== */
 /* ==                    CORREÇÕES DO HUB - DESIGN LIMPO                 == */
 /* ========================================================================== */
@@ -5,7 +10,7 @@
 /* === HUB CONTAINER PRINCIPAL === */
 .hub-connected-container {
     min-height: 100vh;
-    background: var(--color-background);
+    background: var(--bg-primary);
     position: relative;
     overflow-x: hidden;
 }
@@ -34,10 +39,10 @@
 /* === CARDS DE NAVEGAÇÃO MELHORADOS === */
 .nav-card {
     background: linear-gradient(135deg, 
-        rgba(var(--surface-primary-rgb), 0.9) 0%, 
-        rgba(var(--surface-secondary-rgb), 0.4) 100%
+        rgba(52, 17, 17, 0.9) 0%, 
+        rgba(42, 16, 16, 0.4) 100%
     );
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--border-primary);
     border-radius: var(--radius-2xl);
     padding: var(--space-6);
     backdrop-filter: blur(12px);

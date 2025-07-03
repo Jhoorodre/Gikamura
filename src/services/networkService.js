@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 /**
  * Serviço de rede robusto com retry automático e recuperação de falhas
  * Remove a dependência de proxies CORS fazendo requests diretos
+ * AIDEV-NOTE: Handles retries, fallback proxies and error recovery for network requests
  */
 
 // Configurações de retry
@@ -23,11 +24,13 @@ const FALLBACK_PROXIES = [
 
 /**
  * Utilitário para aguardar um tempo específico
+ * AIDEV-NOTE: Used for retry backoff logic
  */
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * Calcula o tempo de espera para retry com backoff exponencial
+ * AIDEV-NOTE: Exponential backoff for retry timing
  */
 const calculateRetryDelay = (attempt) => {
   const delay = RETRY_CONFIG.initialDelay * Math.pow(RETRY_CONFIG.backoffMultiplier, attempt);
@@ -36,6 +39,7 @@ const calculateRetryDelay = (attempt) => {
 
 /**
  * Verifica se um erro é recuperável (vale a pena tentar novamente)
+ * AIDEV-TODO: Expand error types for retry logic if needed
  */
 const isRetryableError = (error) => {
   // Erros de rede são recuperáveis
@@ -58,6 +62,7 @@ const isRetryableError = (error) => {
 
 /**
  * Tenta fazer uma requisição com uma URL específica
+ * AIDEV-NOTE: Tries direct and fallback proxy URLs for fetch
  */
 const attemptFetch = async (url, options = {}) => {
   const controller = new AbortController();

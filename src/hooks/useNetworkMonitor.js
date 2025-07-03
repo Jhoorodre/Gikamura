@@ -3,6 +3,7 @@ import { clearNetworkCache } from '../services/networkService.js';
 
 /**
  * Hook para monitoramento da qualidade de rede e recuperação de falhas
+ * AIDEV-NOTE: Monitors network status, quality and triggers recovery logic
  */
 export const useNetworkMonitor = () => {
     const [isOnline, setIsOnline] = useState(navigator.onLine);

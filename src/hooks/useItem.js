@@ -1,3 +1,8 @@
+/**
+ * Hook para manipulação de itens (obras, capítulos, etc)
+ * AIDEV-NOTE: Handles item state, selection and actions
+ */
+
 import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchJSONWithCache } from '../services/networkService.js';

@@ -8,6 +8,10 @@ const PROGRESS_TYPE = "progress";
 const SERIES_PATH_BASE = "series/";
 const HUB_PATH_BASE = "hubs/";
 
+/**
+ * Define schemas e funções auxiliares do RemoteStorage
+ * AIDEV-NOTE: Declares all types and helpers for RemoteStorage integration
+ */
 export const Model = {
   name: RS_PATH.BASE,
   builder: (privateClient) => {

@@ -1,6 +1,10 @@
+/**
+ * Cria partículas animadas de fundo para polimento visual
+ * AIDEV-NOTE: Creates animated background particles for UI polish
+ */
 export const createParticles = () => {
     const container = document.getElementById('particles-container');
-    // Não faz nada se o container não existir ou já tiver partículas
+    // AIDEV-NOTE: Prevents duplicate particles if already present
     if (!container || container.childElementCount > 0) return;
 
     for (let i = 0; i < 20; i++) {

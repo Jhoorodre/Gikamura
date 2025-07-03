@@ -1,6 +1,6 @@
 /**
  * Serviço para leitura e parsing de JSONs (hub.json e reader.json)
- * Implementa validação, cache e tratamento de erros robusto
+ * AIDEV-NOTE: Handles validation, caching, and robust error handling for JSON data
  */
 
 import { validateHubJSON, validateReaderJSON } from './jsonValidator.js';
@@ -8,6 +8,7 @@ import { encodeUrl, decodeUrl } from '../utils/encoding';
 
 /**
  * Classe para gerenciar cache de dados JSON
+ * AIDEV-NOTE: TTL-based cache for performance and memory control
  */
 class JSONCache {
     constructor() {
@@ -48,6 +49,7 @@ const jsonCache = new JSONCache();
 
 /**
  * Fetch JSON com timeout, retry e múltiplas estratégias para contornar CORS
+ * AIDEV-TODO: Add fallback for fetch failures (e.g., offline mode)
  */
 async function fetchWithRetry(url, options = {}) {
     const {

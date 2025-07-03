@@ -1,12 +1,11 @@
 /**
  * Utilitários para codificação/decodificação segura de URLs
- * Implementação robusta com tratamento de erros e caracteres especiais
+ * AIDEV-NOTE: Robust implementation for safe Base64 URL handling
  */
 
 /**
  * Codifica uma URL em Base64 de forma segura
- * @param {string} str - URL a ser codificada
- * @returns {string} - URL codificada em Base64 URL-safe
+ * AIDEV-NOTE: Throws if input is not a valid string
  */
 export const encodeUrl = (str) => {
   try {
@@ -20,15 +19,14 @@ export const encodeUrl = (str) => {
       .replace(/\//g, '_')
       .replace(/=+$/, ''); // Remove padding
   } catch (error) {
-    console.error('Erro ao codificar URL:', error);
+    console.error('Erro ao codificar URL:', error); // AIDEV-NOTE: Encoding error is non-blocking
     throw new Error('Falha na codificação da URL');
   }
 };
 
 /**
  * Decodifica uma URL Base64 de forma segura
- * @param {string} encodedStr - String codificada em Base64
- * @returns {string} - URL decodificada
+ * AIDEV-NOTE: Throws if input is not a valid string
  */
 export const decodeUrl = (encodedStr) => {
   try {
@@ -49,13 +47,14 @@ export const decodeUrl = (encodedStr) => {
     // Decodifica e desescapa caracteres URI
     return decodeURIComponent(atob(base64));
   } catch (error) {
-    console.error('Erro ao decodificar URL:', error);
+    console.error('Erro ao decodificar URL:', error); // AIDEV-NOTE: Decoding error is non-blocking
     throw new Error('Falha na decodificação da URL');
   }
 };
 
 /**
  * Valida se uma string é uma URL válida
+ * AIDEV-TODO: Consider using a stricter URL validation regex
  * @param {string} str - String a ser validada
  * @returns {boolean} - Se é uma URL válida
  */

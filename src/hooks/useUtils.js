@@ -1,3 +1,8 @@
+/**
+ * Hook para utilidades diversas usadas em múltiplos componentes
+ * AIDEV-NOTE: Provides common utility hooks for the app
+ */
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { PERFORMANCE } from '../constants/app';
 import { encodeUrl, decodeUrl } from '../utils/encoding';

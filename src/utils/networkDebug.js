@@ -1,15 +1,17 @@
 /**
  * Utilitários para debug de rede e Service Worker
+ * AIDEV-NOTE: Use these helpers for troubleshooting SW and cache issues
  */
 
 /**
  * Verifica o status do Service Worker e remove se necessário
+ * AIDEV-TODO: Add more granular SW cleanup if multiple scopes are used
  */
 export const checkAndCleanServiceWorker = async () => {
-  console.log('🔍 [NetworkDebug] Verificando Service Workers...');
+  console.log('🔍 [NetworkDebug] Checking Service Workers...');
   
   if (!('serviceWorker' in navigator)) {
-    console.log('✅ [NetworkDebug] Service Worker não suportado');
+    console.log('✅ [NetworkDebug] Service Worker not supported');
     return;
   }
 
@@ -17,11 +19,11 @@ export const checkAndCleanServiceWorker = async () => {
     const registrations = await navigator.serviceWorker.getRegistrations();
     
     if (registrations.length === 0) {
-      console.log('✅ [NetworkDebug] Nenhum Service Worker registrado');
+      console.log('✅ [NetworkDebug] No Service Worker registered');
       return;
     }
 
-    console.log(`🔍 [NetworkDebug] Encontrados ${registrations.length} Service Workers:`);
+    console.log(`🔍 [NetworkDebug] Found ${registrations.length} Service Workers:`);
     
     for (const registration of registrations) {
       console.log('📋 [NetworkDebug] Service Worker:', {
@@ -32,30 +34,32 @@ export const checkAndCleanServiceWorker = async () => {
         active: !!registration.active
       });
 
-      // Desregistrar Service Worker
-      console.log('🗑️ [NetworkDebug] Desregistrando Service Worker:', registration.scope);
+      // Unregister Service Worker
+      // AIDEV-NOTE: Unregistering all found SWs for a clean state
+      console.log('🗑️ [NetworkDebug] Unregistering Service Worker:', registration.scope);
       await registration.unregister();
     }
 
-    // Verificar se há controlador ativo
+    // Check for active controller
     if (navigator.serviceWorker.controller) {
-      console.log('🎯 [NetworkDebug] Service Worker ainda controlando a página');
-      console.log('🔄 [NetworkDebug] Enviando mensagem para skip waiting...');
+      console.log('🏁 [NetworkDebug] Service Worker still controlling the page');
+      console.log('🔄 [NetworkDebug] Sending skip waiting message...');
       
       navigator.serviceWorker.controller.postMessage({
         type: 'SKIP_WAITING'
       });
     }
 
-    console.log('✅ [NetworkDebug] Limpeza de Service Workers concluída');
+    console.log('✅ [NetworkDebug] Service Worker cleanup complete');
     
   } catch (error) {
-    console.error('❌ [NetworkDebug] Erro ao limpar Service Workers:', error);
+    console.error('❌ [NetworkDebug] Error cleaning Service Workers:', error); // AIDEV-NOTE: SW cleanup error is non-blocking
   }
 };
 
 /**
- * Limpa todos os caches
+ * Clears all caches
+ * AIDEV-NOTE: Use for hard reset of browser cache during dev
  */
 export const clearAllCaches = async () => {
   console.log('🗑️ [NetworkDebug] Limpando todos os caches...');
@@ -76,6 +80,7 @@ export const clearAllCaches = async () => {
     console.log(`🔍 [NetworkDebug] Encontrados ${cacheNames.length} caches:`, cacheNames);
     
     for (const cacheName of cacheNames) {
+      // AIDEV-NOTE: Iterates and deletes all named caches for a clean state
       console.log('🗑️ [NetworkDebug] Removendo cache:', cacheName);
       await caches.delete(cacheName);
     }
@@ -83,12 +88,13 @@ export const clearAllCaches = async () => {
     console.log('✅ [NetworkDebug] Todos os caches removidos');
     
   } catch (error) {
-    console.error('❌ [NetworkDebug] Erro ao limpar caches:', error);
+    console.error('❌ [NetworkDebug] Erro ao limpar caches:', error); // AIDEV-NOTE: Cache cleanup error is non-blocking
   }
 };
 
 /**
  * Testa conectividade de rede básica
+ * AIDEV-NOTE: Tests multiple endpoints for connectivity and latency
  */
 export const testNetworkConnectivity = async () => {
   console.log('🌐 [NetworkDebug] Testando conectividade de rede...');
@@ -103,6 +109,7 @@ export const testNetworkConnectivity = async () => {
 
   for (const url of testUrls) {
     try {
+      // AIDEV-NOTE: Measures response time and status for each endpoint
       console.log(`📡 [NetworkDebug] Testando: ${url}`);
       
       const startTime = Date.now();
@@ -137,12 +144,14 @@ export const testNetworkConnectivity = async () => {
     }
   }
 
+  // AIDEV-NOTE: Results array contains connectivity and latency info for diagnostics
   console.log('📊 [NetworkDebug] Resultados dos testes de conectividade:', results);
   return results;
 };
 
 /**
  * Força recarregamento completo da página sem cache
+ * AIDEV-NOTE: Forces full reload, bypassing cache and SW if possible
  */
 export const hardReload = () => {
   console.log('🔄 [NetworkDebug] Forçando recarregamento completo...');
@@ -159,6 +168,7 @@ export const hardReload = () => {
 
 /**
  * Executa diagnóstico completo do ambiente (versão simplificada)
+ * AIDEV-NOTE: Collects environment info for troubleshooting
  */
 export const runFullDiagnostic = async () => {
   console.log('🩺 [NetworkDebug] Iniciando diagnóstico simplificado...');
