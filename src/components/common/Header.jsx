@@ -31,7 +31,6 @@ const Header = () => {
         { 
             path: '/', 
             label: 'Hub Loader', 
-            icon: '🔗',
             requiresConnection: false,
             description: 'Carregar novos hubs',
             onClick: handleHubLoaderClick
@@ -39,21 +38,18 @@ const Header = () => {
         { 
             path: '/collection', 
             label: 'Coleção', 
-            icon: '📚',
             requiresConnection: true,
             description: 'Seus itens salvos e histórico'
         },
         { 
             path: '/works', 
             label: 'Obras', 
-            icon: '⭐',
             requiresConnection: true,
             description: 'Suas obras favoritas'
         },
         { 
             path: '/upload', 
             label: 'Upload', 
-            icon: '📤',
             requiresConnection: true,
             description: 'Enviar conteúdo'
         }
@@ -114,29 +110,27 @@ const Header = () => {
                                 <button
                                     key={item.path}
                                     onClick={item.onClick}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                                    className={`px-4 py-2 rounded-lg transition-colors ${
                                         isActiveRoute(item.path)
                                             ? 'bg-surface-hover text-accent font-medium border border-border-subtle'
                                             : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                                     }`}
                                     title={item.description}
                                 >
-                                    <span className="text-sm">{item.icon}</span>
-                                    <span>{item.label}</span>
+                                    {item.label}
                                 </button>
                             ) : (
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                                    className={`px-4 py-2 rounded-lg transition-colors ${
                                         isActiveRoute(item.path)
                                             ? 'bg-surface-hover text-accent font-medium border border-border-subtle'
                                             : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                                     }`}
                                     title={item.description}
                                 >
-                                    <span className="text-sm">{item.icon}</span>
-                                    <span>{item.label}</span>
+                                    {item.label}
                                 </Link>
                             )
                         ))}
@@ -166,34 +160,28 @@ const Header = () => {
                                                     item.onClick();
                                                     setIsDropdownOpen(false);
                                                 }}
-                                                className={`flex items-start gap-3 px-4 py-3 transition-colors w-full text-left ${
+                                                className={`px-4 py-3 transition-colors w-full text-left ${
                                                     isActiveRoute(item.path)
                                                         ? 'bg-surface-hover text-accent'
                                                         : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                                                 }`}
                                             >
-                                                <span className="text-lg mt-0.5">{item.icon}</span>
-                                                <div className="flex-1">
-                                                    <div className="font-medium">{item.label}</div>
-                                                    <div className="text-sm text-text-tertiary">{item.description}</div>
-                                                </div>
+                                                <div className="font-medium">{item.label}</div>
+                                                <div className="text-sm text-text-tertiary">{item.description}</div>
                                             </button>
                                         ) : (
                                             <Link
                                                 key={item.path}
                                                 to={item.path}
                                                 onClick={() => setIsDropdownOpen(false)}
-                                                className={`flex items-start gap-3 px-4 py-3 transition-colors ${
+                                                className={`px-4 py-3 transition-colors ${
                                                     isActiveRoute(item.path)
                                                         ? 'bg-surface-hover text-accent'
                                                         : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                                                 }`}
                                             >
-                                                <span className="text-lg mt-0.5">{item.icon}</span>
-                                                <div className="flex-1">
-                                                    <div className="font-medium">{item.label}</div>
-                                                    <div className="text-sm text-text-tertiary">{item.description}</div>
-                                                </div>
+                                                <div className="font-medium">{item.label}</div>
+                                                <div className="text-sm text-text-tertiary">{item.description}</div>
                                             </Link>
                                         )
                                     ))}

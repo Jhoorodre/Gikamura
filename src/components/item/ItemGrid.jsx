@@ -1,17 +1,25 @@
+// AIDEV-NOTE: Grid de itens minimalista com cards limpos e acessíveis
 import { memo, createElement } from 'react';
 import Image from '../common/Image';
 
 const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
-    <div className="grid grid-auto-fill gap-8">
+    <div className="min-item-grid">
         {items.map((item) => (
             <div 
                 key={item.id} 
-                className="media-card cursor-pointer relative"
+                className="min-item-card"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelectItem(item);
+                    }
+                }}
             >
-                {/* O botão de fixar não deve aparecer no card estático */}
+                {/* AIDEV-NOTE: Botão de favoritar com acessibilidade */}
                 {onPinToggle && !item.isStatic && (
                     <button
-                        className={`absolute top-2 right-2 z-10 btn btn-sm btn-circle ${item.pinned ? 'btn-warning' : 'btn-ghost'}`}
+                        className={`min-item-pin-button ${item.pinned ? 'pinned' : ''}`}
                         aria-label={item.pinned ? 'Desafixar dos favoritos' : 'Fixar nos favoritos'}
                         title={item.pinned ? 'Desafixar dos favoritos' : 'Fixar nos favoritos'}
                         onClick={e => {
@@ -23,22 +31,22 @@ const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
                     </button>
                 )}
                 <div onClick={() => onSelectItem(item)}>
-                    {/* Renderiza ícone se existir, senão imagem */}
+                    {/* AIDEV-NOTE: Renderiza ícone ou imagem com fallback */}
                     {item.iconComponent ? (
-                        <div className="media-card-image flex items-center justify-center bg-slate-800/50">
+                        <div className="min-item-image flex items-center justify-center">
                             {createElement(item.iconComponent)}
                         </div>
                     ) : (
                         <Image
                             src={item.cover?.url}
                             alt={item.cover?.alt || item.title}
-                            className="media-card-image"
+                            className="min-item-image"
                             errorSrc="https://placehold.co/300x450/1e293b/94a3b8?text=Capa"
                         />
                     )}
-                    <div className="media-card-content">
-                        <h3 className="media-card-title truncate">{item.title}</h3>
-                        {item.subtitle && <p className="media-card-subtitle truncate">{item.subtitle}</p>}
+                    <div className="min-item-content">
+                        <h3 className="min-item-title">{item.title}</h3>
+                        {item.subtitle && <p className="min-item-subtitle">{item.subtitle}</p>}
                     </div>
                 </div>
             </div>
