@@ -1,10 +1,9 @@
 // AIDEV-NOTE: Main application header with traditional navigation structure
 import { useState } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 import { useAppContext } from '../../context/AppContext';
 import { encodeUrl } from '../../utils/encoding';
-import { ChevronDownIcon } from './Icones';
 
 const Header = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -152,7 +151,7 @@ const Header = () => {
                             aria-label="Menu de navegação"
                         >
                             <span>Menu</span>
-                            <ChevronDownIcon className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                            <span className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}>▼</span>
                         </button>
 
                         {/* AIDEV-NOTE: Mobile dropdown menu */}

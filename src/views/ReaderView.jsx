@@ -18,7 +18,7 @@ const ReaderView = () => {
     const [showAllChapters, setShowAllChapters] = useState(false);
     const [sortOrder, setSortOrder] = useState('desc'); // AIDEV-NOTE: 'asc' or 'desc' for chapter ordering
     
-    const { clearSelectedItem } = useAppContext();
+    const { clearSelectedItem, currentHubData, currentHubUrl } = useAppContext();
     
     const {
         readerData,
@@ -179,16 +179,35 @@ const ReaderView = () => {
             {/* Header minimalista com navegação */}
             <div className="border-b border-gray-800 sticky top-0 z-20 bg-gray-950/95 backdrop-blur-sm">
                 <div className="max-w-4xl mx-auto px-4 py-3">
-                    {/* AIDEV-NOTE: Minimalist back to hub button - visible but clean design */}
-                    <Button
-                        onClick={() => navigate('/')}
-                        variant="outline"
-                        className="text-white hover:bg-gray-800 border-gray-600 hover:border-gray-500 px-3 py-2 flex items-center gap-2"
-                        title="Voltar ao Hub"
-                    >
-                        <ChevronLeftIcon className="w-4 h-4" />
-                        <span className="text-sm">Hub</span>
-                    </Button>
+                    {/* AIDEV-NOTE: Navigation buttons - Hub and Series side by side */}
+                    <div className="flex items-center gap-3">
+                        {/* AIDEV-NOTE: Minimalist back to hub button - visible but clean design */}
+                        <Button
+                            onClick={() => navigate('/')}
+                            variant="outline"
+                            className="text-white hover:bg-gray-800 border-gray-600 hover:border-gray-500 px-3 py-2 flex items-center gap-2"
+                            title="Voltar ao Hub"
+                        >
+                            <ChevronLeftIcon className="w-4 h-4" />
+                            <span className="text-sm">Hub</span>
+                        </Button>
+                        
+                        {/* AIDEV-NOTE: Series button - navigates to current hub (scan page) */}
+                        {currentHubData && currentHubUrl && (
+                            <Button
+                                onClick={() => {
+                                    const encodedHubUrl = encodeUrl(currentHubUrl);
+                                    navigate(`/hub/${encodedHubUrl}`);
+                                }}
+                                variant="outline"
+                                className="text-white hover:bg-gray-800 border-gray-600 hover:border-gray-500 px-3 py-2 flex items-center gap-2"
+                                title="Ir para a página da scan"
+                            >
+                                <span className="text-sm"></span>
+                                <span className="text-sm">Série</span>
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </div>
 

@@ -113,10 +113,11 @@ async def render_feed(...):
 ```
 ### Search for anchors:
 ```bash
+
 # Encontrar todos os anchor comments
 grep -r "AIDEV-" src/
 
-# Comando usado
+# Comando correto:
 Get-ChildItem
 
 # Filtrar por tipo específico
@@ -124,6 +125,7 @@ grep -r "AIDEV-NOTE" src/
 grep -r "AIDEV-TODO" src/
 grep -r "AIDEV-QUESTION" src/
 ``` 
+
 -----
 
 ## 6\. Modelos de Dados (JSON)
