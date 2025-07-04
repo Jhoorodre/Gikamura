@@ -1,10 +1,31 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
+import { useEffect, useState } from 'react';
 
 const ArrowNavigation = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { isConnected } = useRemoteStorageContext() || {};
+    const [shouldRender, setShouldRender] = useState(true);
+
+    // AIDEV-NOTE: Use effect to ensure route checking happens after navigation
+    useEffect(() => {
+        const isReaderPage = location.pathname.includes('/read/') || 
+                            location.pathname.includes('/reader/') ||
+                            location.pathname.includes('/series/');
+
+        if (isReaderPage) {
+            console.log('🔍 [ArrowNavigation] Hiding navigation for reader page:', location.pathname);
+            setShouldRender(false);
+        } else {
+            setShouldRender(true);
+        }
+    }, [location.pathname]);
+
+    // AIDEV-NOTE: Early return if should not render
+    if (!shouldRender) {
+        return null;
+    }
 
     const routes = [
         { path: '/', requiresConnection: false },

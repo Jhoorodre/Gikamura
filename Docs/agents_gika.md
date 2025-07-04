@@ -116,6 +116,9 @@ async def render_feed(...):
 # Encontrar todos os anchor comments
 grep -r "AIDEV-" src/
 
+# Comando usado
+Get-ChildItem
+
 # Filtrar por tipo específico
 grep -r "AIDEV-NOTE" src/
 grep -r "AIDEV-TODO" src/

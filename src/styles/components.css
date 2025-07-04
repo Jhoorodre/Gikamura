@@ -874,8 +874,10 @@
 .app-header {
     background: var(--color-surface);
     border-bottom: 1px solid var(--color-border);
-    position: relative;
-    z-index: var(--z-sticky);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(8px);
 }
 
 .app-header .container {
@@ -925,4 +927,27 @@
     }
 }
 
-/* AIDEV-NOTE: Header navigation styles with design system integration */
+/* AIDEV-NOTE: Ensure clean reading experience without navigation conflicts */
+.min-h-screen.bg-gray-950 {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.min-h-screen.bg-gray-900 {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* AIDEV-NOTE: Reader page headers should be independent */
+.min-h-screen .border-b.border-gray-800.sticky {
+    z-index: 20;
+    position: sticky;
+    top: 0;
+}
+
+/* AIDEV-NOTE: ChapterReaderView header styles */
+.min-h-screen .bg-gray-900\/90.backdrop-blur-sm {
+    z-index: 20;
+    position: sticky;
+    top: 0;
+}

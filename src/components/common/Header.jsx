@@ -9,19 +9,14 @@ const Header = () => {
     const { isConnected } = useRemoteStorageContext() || { isConnected: false };
     const location = useLocation();
 
-    // AIDEV-NOTE: Only show header when user is connected to RemoteStorage
-    if (!isConnected) {
-        return null;
-    }
-
     // AIDEV-NOTE: Navigation items with RemoteStorage dependency logic
     const navigationItems = [
         { 
             path: '/', 
-            label: 'Hub', 
-            icon: '🏠',
+            label: 'Hub Loader', 
+            icon: '🔗',
             requiresConnection: false,
-            description: 'Carregar e gerenciar hubs'
+            description: 'Carregar novos hubs'
         },
         { 
             path: '/collection', 
@@ -55,13 +50,32 @@ const Header = () => {
 
     const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
+    // AIDEV-NOTE: Hide header in reading pages to avoid conflicts
+    const isReadingPage = location.pathname.includes('/read/') || 
+                         location.pathname.includes('/reader/') || 
+                         location.pathname.includes('/series/');
+    
+    if (isReadingPage) {
+        return null;
+    }
+
+    // AIDEV-NOTE: Hide entire header when not connected to RemoteStorage
+    // This removes the red header bar completely from the UI when no RemoteStorage
+    if (!isConnected) {
+        return null;
+    }
+
     return (
         <header className="app-header">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
-                    {/* AIDEV-NOTE: Brand/Logo area */}
+                    {/* AIDEV-NOTE: Brand/Logo area - click to return to hub loader */}
                     <div className="flex items-center">
-                        <Link to="/" className="text-2xl font-bold text-accent orbitron">
+                        <Link 
+                            to="/" 
+                            className="text-2xl font-bold text-accent orbitron"
+                            title="Voltar ao Hub Loader para carregar novos hubs"
+                        >
                             Gikamoe
                         </Link>
                     </div>

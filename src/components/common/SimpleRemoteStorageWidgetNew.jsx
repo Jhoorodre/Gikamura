@@ -1,12 +1,30 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { remoteStorage } from '../../services/remotestorage';
 
 const SimpleRemoteStorageWidgetNew = () => {
+    const location = useLocation();
     const [connected, setConnected] = useState(false);
     const [address, setAddress] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [error, setError] = useState('');
     const [showConnectedMessage, setShowConnectedMessage] = useState(false);
+    const [shouldRender, setShouldRender] = useState(true);
+
+    // AIDEV-NOTE: All hooks must be called before any conditional returns
+    // Use effect to ensure route checking happens after navigation
+    useEffect(() => {
+        const isReadingPage = location.pathname.includes('/read/') || 
+                             location.pathname.includes('/reader/') || 
+                             location.pathname.includes('/series/');
+        
+        if (isReadingPage) {
+            console.log('🔍 [RemoteStorageWidget] Hiding widget for reading page:', location.pathname);
+            setShouldRender(false);
+        } else {
+            setShouldRender(true);
+        }
+    }, [location.pathname]);
 
     useEffect(() => {
         const updateState = () => {
@@ -38,7 +56,12 @@ const SimpleRemoteStorageWidgetNew = () => {
             remoteStorage.removeEventListener('connected', updateState);
             remoteStorage.removeEventListener('disconnected', updateState);
         };
-    }, []);
+    }, [connected]);
+
+    // AIDEV-NOTE: Early return AFTER all hooks have been called
+    if (!shouldRender) {
+        return null;
+    }
 
     const handleConnect = async (e) => {
         e.preventDefault();

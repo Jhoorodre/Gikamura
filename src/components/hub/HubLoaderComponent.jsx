@@ -34,9 +34,8 @@ const HubLoaderComponent = () => {
             <div className="anonymous-page min-h-screen flex items-center justify-center">
                 <div className="container mx-auto px-4 py-8">
                     <div className="fade-in-minimal space-y-8 w-full max-w-lg mx-auto">
-                        {/* Título */}
+                        {/* AIDEV-NOTE: Title removed when not connected per user request */}
                         <div className="text-center">
-                            <h1 className="text-5xl orbitron text-accent mb-6">Gikamoe</h1>
                             <p className="text-text-secondary text-lg mb-6">
                                 Conecte-se ao Remote Storage ou cole um link JSON
                             </p>
@@ -100,7 +99,7 @@ const HubLoaderComponent = () => {
                 {/* AIDEV-NOTE: Main hub loading interface - simplified and focused */}
                 <div className="hub-main-card">
                     <div className="hub-loader-header">
-                        <h1 className="orbitron text-accent">HUB</h1>
+                        <h1 className="orbitron text-accent">HUB LOADER</h1>
                         <p className="text-text-secondary">
                             Cole a URL de um hub.json para carregar a aplicação
                         </p>

@@ -176,16 +176,18 @@ const ReaderView = () => {
 
     return (
         <div className="min-h-screen bg-gray-950">
-            {/* Header minimalista */}
+            {/* Header minimalista com navegação */}
             <div className="border-b border-gray-800 sticky top-0 z-20 bg-gray-950/95 backdrop-blur-sm">
                 <div className="max-w-4xl mx-auto px-4 py-3">
+                    {/* AIDEV-NOTE: Minimalist back to hub button - visible but clean design */}
                     <Button
                         onClick={() => navigate('/')}
-                        variant="ghost"
-                        className="text-gray-400 hover:text-white px-2 py-1"
+                        variant="outline"
+                        className="text-white hover:bg-gray-800 border-gray-600 hover:border-gray-500 px-3 py-2 flex items-center gap-2"
+                        title="Voltar ao Hub"
                     >
-                        <ChevronLeftIcon className="w-4 h-4 mr-1" />
-                        Hub
+                        <ChevronLeftIcon className="w-4 h-4" />
+                        <span className="text-sm">Hub</span>
                     </Button>
                 </div>
             </div>

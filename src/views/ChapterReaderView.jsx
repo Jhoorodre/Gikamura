@@ -219,6 +219,17 @@ const ChapterReaderView = () => {
                         </div>
 
                         <div className="flex items-center gap-2">
+                            {/* AIDEV-NOTE: Minimalist back to hub button - visible but clean design */}
+                            <Button
+                                onClick={() => navigate('/')}
+                                variant="outline"
+                                size="sm"
+                                className="text-white hover:bg-gray-800 border-gray-600 hover:border-gray-500 px-2 py-1 flex items-center gap-1"
+                                title="Voltar ao Hub"
+                            >
+                                <ChevronLeftIcon className="w-3 h-3" />
+                                <span className="text-xs">Hub</span>
+                            </Button>
                             <Button
                                 onClick={handlePrevChapter}
                                 disabled={!prevChapter}

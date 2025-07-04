@@ -170,41 +170,40 @@ const HubView = () => {
                             )}
                         </div>
 
-                        {/* Status de Conexão */}
+                        {/* Status de Conexão - Minimalista */}
                         <div className="hub-connection-status">
-                            {isConnected && (isSyncing || showConnectedStatus) ? (
+                            {isSyncing && (
                                 <div className="status-card connected">
                                     <div className="status-dot"></div>
-                                    <span className="status-text">
-                                        {isSyncing
-                                            ? "🔄 Sincronizando..."
-                                            : (showConnectedStatus && "✅ Remote Storage Conectado")}
-                                    </span>
-                                    {!isSyncing && showConnectedStatus && (
-                                        <button 
-                                            className="hub-btn"
-                                            onClick={handleSyncClick}
-                                            disabled={!canSync()}
-                                            title="Forçar sincronização"
-                                        >
-                                            🔄 Sync
-                                        </button>
-                                    )}
+                                    <span className="status-text">🔄 Sincronizando...</span>
                                 </div>
-                            ) : (
-                                !isConnected && showDisconnectedStatus && (
-                                    <div className="status-card disconnected">
-                                        <div className="status-dot"></div>
-                                        <span className="status-text">⚠️ Remote Storage Desconectado</span>
-                                        <button 
-                                            className="hub-btn"
-                                            onClick={() => setShowDisconnectedStatus(false)}
-                                            title="Fechar notificação"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                )
+                            )}
+                            {showConnectedStatus && !isSyncing && (
+                                <div className="status-card connected">
+                                    <div className="status-dot"></div>
+                                    <span className="status-text">✅ Conectado</span>
+                                    <button 
+                                        className="hub-btn"
+                                        onClick={handleSyncClick}
+                                        disabled={!canSync()}
+                                        title="Sincronizar dados"
+                                    >
+                                        🔄
+                                    </button>
+                                </div>
+                            )}
+                            {!isConnected && showDisconnectedStatus && (
+                                <div className="status-card disconnected">
+                                    <div className="status-dot"></div>
+                                    <span className="status-text">⚠️ Desconectado</span>
+                                    <button 
+                                        className="hub-btn"
+                                        onClick={() => setShowDisconnectedStatus(false)}
+                                        title="Fechar"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
                             )}
                         </div>
 

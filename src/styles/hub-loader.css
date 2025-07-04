@@ -886,3 +886,118 @@
         font-size: 0.75rem !important;
     }
 }
+
+/* === HUB DASHBOARD STYLES === */
+/* AIDEV-NOTE: Clean dashboard layout for connected RemoteStorage state */
+.hub-dashboard-container {
+    min-height: 100vh;
+    background: var(--color-background);
+    padding: var(--space-6);
+}
+
+.hub-dashboard-layout {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-top: var(--space-8);
+}
+
+.hub-main-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+.hub-loader-header h1 {
+    font-size: 2rem;
+    margin-bottom: var(--space-2);
+    color: var(--color-accent);
+}
+
+.hub-loader-header p {
+    margin-bottom: var(--space-6);
+    color: var(--color-text-secondary);
+}
+
+.hub-loader-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.hub-loader-form input {
+    padding: var(--space-3);
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    transition: all var(--transition-base);
+}
+
+.hub-loader-form input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2);
+}
+
+.hub-loader-form button {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-accent);
+    color: var(--color-background);
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.hub-loader-form button:hover:not(:disabled) {
+    background: var(--color-accent-hover);
+    transform: translateY(-1px);
+}
+
+.hub-loader-form button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.hub-info-card {
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+}
+
+.hub-info-content h3 {
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+    font-size: 1.1rem;
+}
+
+.hub-tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.hub-tips-list li {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2);
+    padding-left: var(--space-4);
+    position: relative;
+}
+
+.hub-tips-list li::before {
+    content: "•";
+    color: var(--color-accent);
+    position: absolute;
+    left: 0;
+}
+
+.hub-history-compact {
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border-subtle);
+}

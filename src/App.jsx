@@ -19,7 +19,6 @@ import CollectionPage from './pages/CollectionPage';
 import WorksPage from './pages/WorksPage';
 import UploadPage from './pages/UploadPage';
 import SeriesDetailPage from './pages/SeriesDetailPage';
-import ArrowNavigation from './components/common/ArrowNavigation';
 import GlobalRemoteStorageWidget from './components/common/SimpleRemoteStorageWidgetNew';
 import Header from './components/common/Header';
 import { runFullDiagnostic } from './utils/networkDebug';
@@ -56,8 +55,8 @@ function App() {
             {/* AIDEV-NOTE: Main application header with navigation */}
             <Header />
             
-            {/* AIDEV-NOTE: Global components always present */}
-            <ArrowNavigation />
+            {/* AIDEV-NOTE: Old navigation system completely removed - ArrowNavigation.jsx deleted */}
+            {/* AIDEV-NOTE: Global RemoteStorage widget (essential functionality, not part of old nav) */}
             <GlobalRemoteStorageWidget />
             
             {/* AIDEV-NOTE: Smart network notifications system */}

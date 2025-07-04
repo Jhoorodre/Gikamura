@@ -185,12 +185,16 @@ const SeriesDetailPage = () => {
                                     </Button>
                                 )}
                                 
+                                {/* AIDEV-NOTE: Minimalist back to hub button - visible but clean design */}
                                 <Button
                                     onClick={() => navigate(-1)}
                                     variant="outline"
-                                    size="lg"
+                                    size="sm"
+                                    className="text-white hover:bg-gray-800 border-gray-600 hover:border-gray-500 px-3 py-2 flex items-center gap-2"
+                                    title="Voltar ao Hub"
                                 >
-                                    Voltar ao Hub
+                                    <ChevronLeftIcon className="w-4 h-4" />
+                                    <span className="text-sm">Hub</span>
                                 </Button>
                             </div>
 
