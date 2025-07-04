@@ -1,6 +1,6 @@
 // AIDEV-NOTE: Main application header with traditional navigation structure
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 import { useAppContext } from '../../context/AppContext';
 import { encodeUrl } from '../../utils/encoding';
