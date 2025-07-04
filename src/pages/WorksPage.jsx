@@ -10,17 +10,23 @@ const WorksPage = () => {
     const { pinnedItems, togglePinStatus, currentHubData, selectItem } = useAppContext();
     const navigate = useNavigate();
 
-    // AIDEV-NOTE: Seleciona item e navega para a página da série
+    /**
+     * ✅ CORREÇÃO: Esta função agora usa os dados do próprio item para navegar,
+     * garantindo que a URL e a source corretas são utilizadas.
+     */
     const handleSelectItem = (item) => {
-        if (!currentHubData) {
-            console.error("Não há um hub carregado para selecionar o item.");
-            navigate('/');
+        if (!item || !item.url) {
+            console.error("Item selecionado não tem uma URL de dados válida:", item);
             return;
         }
-        const uniqueId = `${item.sourceId}:${item.slug}`;
-        const encodedId = encodeUrl(uniqueId);
-        selectItem(item, item.sourceId);
-        navigate(`/series/${encodedId}`);
+
+        // Usa a URL do item para navegar para o leitor
+        const encodedReaderUrl = encodeUrl(item.url);
+        
+        // Passa o item completo para o contexto, incluindo a source
+        selectItem(item, item.source); 
+        
+        navigate(`/reader/${encodedReaderUrl}`);
     };
 
     return (

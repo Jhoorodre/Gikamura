@@ -11,6 +11,7 @@ const HubRouteHandler = () => {
     const navigate = useNavigate();
     const { loadHub, currentHubData, hubLoading, hubError } = useAppContext();
     const [debugInfo, setDebugInfo] = useState('');
+    const [decodedUrl, setDecodedUrl] = useState(null);
 
     // AIDEV-NOTE: Processes encoded URL parameter and loads hub data
     useEffect(() => {
@@ -20,14 +21,15 @@ const HubRouteHandler = () => {
                     setDebugInfo('🔓 Decodificando URL...');
                     console.log('🎯 [HubRouteHandler] Processando URL codificada:', encodedUrl);
                     
-                    const decodedUrl = decodeUrl(encodedUrl);
-                    console.log('🔓 [HubRouteHandler] URL decodificada:', decodedUrl);
+                    const url = decodeUrl(encodedUrl);
+                    setDecodedUrl(url);
+                    console.log('🔓 [HubRouteHandler] URL decodificada:', url);
                     
-                    setDebugInfo(`📡 Carregando: ${decodedUrl}`);
+                    setDebugInfo(`📡 Carregando: ${url}`);
                     
                     // AIDEV-NOTE: Direct fetch test for debugging connectivity
                     console.log('🧪 [HubRouteHandler] Teste direto do fetch...');
-                    const response = await fetch(decodedUrl);
+                    const response = await fetch(url);
                     console.log('🧪 [HubRouteHandler] Response status:', response.status);
                     
                     if (response.ok) {
@@ -36,7 +38,7 @@ const HubRouteHandler = () => {
                         setDebugInfo(`✅ Fetch direto funcionou: ${data.hub?.title}`);
                     }
                     
-                    await loadHub(decodedUrl);
+                    await loadHub(url);
                 } catch (error) {
                     console.error('❌ [HubRouteHandler] Erro ao processar URL do hub:', error);
                     setDebugInfo(`❌ Erro: ${error.message}`);
@@ -86,7 +88,7 @@ const HubRouteHandler = () => {
 
     // AIDEV-NOTE: Success state - show hub view with loaded data
     if (currentHubData) {
-        return <HubView />;
+        return <HubView hubUrl={decodedUrl} />;
     }
 
     // AIDEV-NOTE: Fallback for undefined state

@@ -192,19 +192,33 @@ export const AppProvider = ({ children }) => {
         }
     }, [hubUrlToLoad, queryClient]);
 
-    // AIDEV-NOTE: Toggles pin status with robust error handling
+    /**
+     * ✅ CORREÇÃO: Recebe o objeto 'item' completo e passa-o
+     * diretamente para a função da API correspondente.
+     */
     const togglePinStatus = useCallback(async (item) => {
-        if (!item || !item.slug || !item.sourceId) return;
+        if (!item || !item.slug || !item.source) return;
+        
+        // Log detalhado do objeto recebido
+        console.debug('[AppContext][togglePinStatus] Recebido:', item);
         try {
             if (item.pinned) {
-                await api.unpinSeries(item.slug, item.sourceId);
+                await api.unpinSeries(item.slug, item.source);
+                console.log(`[togglePinStatus] Desafixou:`, item.slug);
+                console.debug('[AppContext][togglePinStatus] Sucesso ao desafixar:', item);
             } else {
-                await api.pinSeries(item.slug, item.sourceId);
+                // Passa o objeto completo para a função pinSeries
+                await api.pinSeries(item);
+                console.log(`[togglePinStatus] Fixou:`, item.slug);
+                // AIDEV-NOTE: Log detalhado de sucesso para depuração de dados salvos no RemoteStorage
+                console.debug('[AppContext][togglePinStatus] Sucesso ao fixar:', item);
             }
+            refreshUserData();
         } catch (error) {
-            console.error("Falha ao alterar o estado de 'fixado':", error);
+            // Log detalhado do erro
+            console.error("[AppContext][togglePinStatus] Falha ao alterar o estado de 'fixado':", error, 'Objeto:', item);
         }
-    }, []);
+    }, [refreshUserData]);
 
     const value = {
         currentHubData,

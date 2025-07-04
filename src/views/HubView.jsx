@@ -8,8 +8,8 @@ import { encodeUrl } from '../utils/encoding';
 import { JSONUtils } from '../services/jsonReader.js';
 import '../styles/hub-minimal.css';
 
-const HubView = () => {
-    const { currentHubData, selectItem, togglePinStatus } = useAppContext();
+const HubView = ({ hubUrl }) => {
+    const { currentHubData, selectItem, togglePinStatus, pinnedItems } = useAppContext();
     const { isConnected, isSyncing, forceSync, canSync } = useRemoteStorageContext() || { 
         isConnected: false, 
         isSyncing: false, 
@@ -79,10 +79,17 @@ const HubView = () => {
         };
     }, [currentHubData]);
 
-    // Lista todas as séries com filtragem inteligente
+    // AIDEV-NOTE: Garante que cada série do hub mantém todos os dados originais, enriquecendo apenas com o status 'pinned'.
     const allSeries = useMemo(() => {
-        return currentHubData?.series || [];
-    }, [currentHubData?.series]);
+        const seriesFromHub = currentHubData?.series || [];
+        if (!seriesFromHub.length) return [];
+        return seriesFromHub.map(series => ({
+            ...series, // Mantém todos os dados originais da série (incluindo o objeto 'data')
+            pinned: pinnedItems.some(pinnedItem =>
+                pinnedItem.slug === series.slug && pinnedItem.source === hubInfo?.id
+            )
+        }));
+    }, [currentHubData?.series, pinnedItems, hubInfo?.id]);
 
     // Extrai gêneros únicos para filtros
     const availableGenres = useMemo(() => {
@@ -142,6 +149,50 @@ const HubView = () => {
             }
         }
     }, [forceSync, canSync]);
+
+    /**
+     * ✅ CORREÇÃO: Verificação de segurança para evitar race condition ao fixar
+     * Adiciona logs de debug detalhados para rastreamento do fluxo de dados.
+     */
+    const handlePinToggle = useCallback((item) => {
+        if (!currentHubData?.hub?.id) {
+            console.error("[HubView] Ação de fixar bloqueada: o ID do hub (source) não está disponível.");
+            return;
+        }
+
+        const originalUrl = item.url || item.data?.url;
+
+        if (!originalUrl) {
+            console.error("Falha ao fixar: URL da série não encontrada.", item);
+            return;
+        }
+
+        // AIDEV-NOTE: Decodifica e recodifica o nome do arquivo para evitar dupla codificação na URL
+        let cleanUrl = originalUrl.replace(/@refs\/heads\/main/g, '@main');
+        try {
+            const urlObject = new URL(cleanUrl);
+            const pathParts = urlObject.pathname.split('/');
+            const dirtyFileName = pathParts.pop();
+            const decodedFileName = decodeURIComponent(dirtyFileName);
+            const encodedFileName = encodeURIComponent(decodedFileName);
+            urlObject.pathname = [...pathParts, encodedFileName].join('/');
+            cleanUrl = urlObject.toString();
+        } catch (e) {
+            console.error("Erro ao processar a URL, usando-a como fallback:", e);
+        }
+
+        const itemParaApi = {
+            id: item.id,
+            slug: item.slug || item.id,
+            source: currentHubData.hub.id,
+            url: cleanUrl, // Usa a URL final e padronizada.
+            title: item.title,
+            coverUrl: item.cover?.url,
+            pinned: item.pinned,
+        };
+        console.debug('[HubView] [LOG-DETALHADO] Objeto sendo enviado para togglePinStatus:', itemParaApi);
+        togglePinStatus(itemParaApi);
+    }, [currentHubData, togglePinStatus, pinnedItems, hubInfo]);
 
     return (
         <div className="hub-view" data-connected={isConnected}>
@@ -235,7 +286,7 @@ const HubView = () => {
                                     <ItemGrid
                                         items={filteredSeries}
                                         onSelectItem={handleSelectItem}
-                                        onPinToggle={togglePinStatus}
+                                        onPinToggle={handlePinToggle}
                                     />
                                 </div>
                             ) : (

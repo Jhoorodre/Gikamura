@@ -33,8 +33,19 @@ const ChapterReaderView = () => {
         error,
         loadReader,
         selectChapter,
-        saveReadingProgress
+        saveReadingProgress,
+        saveError
     } = useReader();
+
+    // AIDEV-NOTE: Estado local para controlar exibição temporária do erro
+    const [showSaveError, setShowSaveError] = useState(false);
+    useEffect(() => {
+        if (saveError) {
+            setShowSaveError(true);
+            const timer = setTimeout(() => setShowSaveError(false), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [saveError]);
 
     // Carrega o reader.json
     useEffect(() => {
@@ -285,6 +296,27 @@ const ChapterReaderView = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Feedback visual minimalista para erro de salvamento de progresso */}
+            {showSaveError && (
+                <div
+                    className="reader-error-message"
+                    role="alert"
+                    style={{
+                        color: '#b91c1c',
+                        background: '#fee2e2',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        margin: '16px auto 0',
+                        maxWidth: 480,
+                        textAlign: 'center',
+                        fontSize: '1rem',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+                    }}
+                >
+                    {saveError}
+                </div>
+            )}
 
             {/* Leitor de páginas */}
             <div className="reader-content">

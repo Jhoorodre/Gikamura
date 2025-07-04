@@ -21,6 +21,7 @@ export const useReader = () => {
     const [currentReaderUrl, setCurrentReaderUrl] = useState(null);
     const [selectedChapter, setSelectedChapter] = useState(null);
     const [readingProgress, setReadingProgress] = useState({}); // AIDEV-NOTE: Tracks user reading progress per chapter
+    const [saveError, setSaveError] = useState(null);
 
     // AIDEV-NOTE: React Query for reader data with progress loading integration
     const {
@@ -79,8 +80,8 @@ export const useReader = () => {
 
         try {
             const workId = generateWorkId(currentReaderUrl);
-            // Usar false como maxAge para evitar cache
-            const progressData = await remoteStorage.scope(safePath(READING_PROGRESS_PATH)).getObject('progress', workId, false);
+            // AIDEV-NOTE: Chamada correta para getObject no escopo: apenas o caminho (workId) deve ser passado
+            const progressData = await remoteStorage.scope(safePath(READING_PROGRESS_PATH)).getObject(workId);
             
             if (progressData) {
                 setReadingProgress(progressData);
@@ -95,44 +96,129 @@ export const useReader = () => {
     const saveReadingProgress = useCallback(async (chapterId, pageIndex, totalPages) => {
         if (!remoteStorage.connected || !currentReaderUrl) {
             console.log('📚 [useReader] Progresso não salvo - RemoteStorage desconectado');
-            return Promise.resolve(); // Retorna Promise resolvida quando não há conexão
+            return Promise.resolve();
         }
 
         try {
             const workId = generateWorkId(currentReaderUrl);
-            
-            // Criar o objeto de progresso conforme o schema
+
+            // AIDEV-NOTE: Cria objeto de progresso conforme schema, sanitizando dados antigos
             const progressData = {
-                // Campos obrigatórios do schema principal
                 lastChapter: chapterId,
                 lastUpdated: Date.now(),
-                // Adicionar dados do capítulo atual
                 [chapterId]: {
-                    pageIndex: Number(pageIndex), // Garantir que seja número
-                    totalPages: Number(totalPages), // Garantir que seja número
+                    pageIndex: Number(pageIndex),
+                    totalPages: Number(totalPages),
                     lastRead: Date.now(),
                     completed: pageIndex >= totalPages - 1
                 }
             };
 
-            // Se já existir progresso, mesclar com os dados existentes
+            // Mesclar progresso antigo, mas só copiar capítulos válidos
             if (readingProgress && typeof readingProgress === 'object') {
-                // Preservar dados de outros capítulos
                 Object.keys(readingProgress).forEach(key => {
-                    if (key !== 'lastChapter' && key !== 'lastUpdated' && key !== chapterId) {
-                        progressData[key] = readingProgress[key];
+                    if (
+                        key !== 'lastChapter' &&
+                        key !== 'lastUpdated' &&
+                        key !== chapterId &&
+                        typeof readingProgress[key] === 'object'
+                    ) {
+                        const old = readingProgress[key];
+                        // AIDEV-NOTE: Sanitiza cada capítulo antigo
+                        if (
+                            typeof old.pageIndex === 'number' &&
+                            typeof old.totalPages === 'number' &&
+                            typeof old.lastRead === 'number' &&
+                            typeof old.completed === 'boolean'
+                        ) {
+                            progressData[key] = {
+                                pageIndex: old.pageIndex,
+                                totalPages: old.totalPages,
+                                lastRead: old.lastRead,
+                                completed: old.completed
+                            };
+                        }
                     }
                 });
             }
 
-            console.log('💾 [useReader] Objeto de progresso a ser salvo:', progressData);
+            console.log('💾 [useReader] Objeto de progresso a ser salvo (sanitizado):', progressData);
 
-            await remoteStorage.scope(safePath(READING_PROGRESS_PATH)).storeObject('progress', workId, progressData);
-            setReadingProgress(progressData);
+            // AIDEV-NOTE: Limpeza de propriedades inválidas do objeto de progresso antes de salvar
+            function cleanProgressData(progressData) {
+                const allowedRoot = ['lastChapter', 'lastUpdated'];
+                const allowedChapterFields = ['pageIndex', 'totalPages', 'lastRead', 'completed'];
+                const cleaned = {};
+                let removed = [];
+                for (const key of Object.keys(progressData)) {
+                    if (!Object.prototype.hasOwnProperty.call(progressData, key)) continue;
+                    if (allowedRoot.includes(key)) {
+                        cleaned[key] = progressData[key];
+                    } else if (key === '@context') {
+                        removed.push(key);
+                    } else if (
+                        typeof progressData[key] === 'object' &&
+                        progressData[key] !== null &&
+                        allowedChapterFields.every(f => f in progressData[key])
+                    ) {
+                        cleaned[key] = progressData[key];
+                    } else {
+                        removed.push(key);
+                    }
+                }
+                if (removed.length > 0) {
+                    console.warn('⚠️ [useReader] Removendo campos inválidos do progresso antes de salvar:', removed);
+                }
+                return cleaned;
+            }
+
+            // AIDEV-NOTE: Remove recursivamente qualquer campo '@context' de qualquer nível do objeto
+            function deepRemoveContext(obj) {
+                if (Array.isArray(obj)) {
+                    return obj.map(deepRemoveContext);
+                } else if (obj && typeof obj === 'object') {
+                    const cleaned = {};
+                    for (const key of Object.keys(obj)) {
+                        if (key !== '@context') {
+                            cleaned[key] = deepRemoveContext(obj[key]);
+                        }
+                    }
+                    return cleaned;
+                }
+                return obj;
+            }
+
+            // Antes de salvar:
+            const cleanedProgress = cleanProgressData(progressData);
+            const finalProgress = deepRemoveContext(cleanedProgress);
+            // Log para debug
+            console.log('💾 [useReader] Objeto de progresso FINAL a ser salvo (limpo):', finalProgress);
+            console.log('🔑 [useReader] Chaves do objeto de progresso limpo:', Object.keys(finalProgress));
+
+            await remoteStorage.scope(safePath(READING_PROGRESS_PATH)).storeObject('progress', workId, finalProgress);
+            setReadingProgress(finalProgress);
+            setSaveError(null);
             
             console.log('✅ [useReader] Progresso salvo com sucesso:', { chapterId, pageIndex, totalPages });
         } catch (error) {
-            console.error('❌ [useReader] Erro ao salvar progresso:', error);
+            setSaveError("Não foi possível salvar seu progresso. Verifique sua conexão.");
+            // AIDEV-NOTE: Log detalhado do erro do RemoteStorage ao salvar progresso
+            if (error && typeof error === 'object') {
+                console.error('❌ [useReader] Erro ao salvar progresso:', error);
+                if (typeof error.toString === 'function') {
+                    console.error('⛔ [useReader] error.toString():', error.toString());
+                }
+                if (error.stack) {
+                    console.error('⛔ [useReader] error.stack:', error.stack);
+                }
+                Object.keys(error).forEach(key => {
+                    if (key !== 'stack' && key !== 'toString') {
+                        console.error(`⛔ [useReader] error[${key}]:`, error[key]);
+                    }
+                });
+            } else {
+                console.error('❌ [useReader] Erro ao salvar progresso (não-objeto):', error);
+            }
             throw error; // Re-throw para manter comportamento de erro
         }
     }, [currentReaderUrl, readingProgress]);
@@ -201,6 +287,7 @@ export const useReader = () => {
         error: readerError,
         selectedChapter: selectedChapterData,
         readingProgress,
+        saveError,
 
         // Ações
         loadReader,

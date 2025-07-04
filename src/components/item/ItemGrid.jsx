@@ -4,9 +4,11 @@ import Image from '../common/Image';
 
 const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
     <div className="min-item-grid">
-        {items.map((item) => (
+        {/* ✅ Filtra itens sem chave única válida */}
+        {items.filter(item => item && (item.id || item.slug)).map((item) => (
             <div 
-                key={item.id} 
+                // ✅ Usa slug como fallback para garantir chave única
+                key={`${item.source || 'local'}-${item.id || item.slug}`}
                 className="min-item-card"
                 tabIndex={0}
                 onKeyDown={(e) => {
@@ -38,7 +40,7 @@ const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
                         </div>
                     ) : (
                         <Image
-                            src={item.cover?.url}
+                            src={item.coverUrl || item.cover?.url}
                             alt={item.cover?.alt || item.title}
                             className="min-item-image"
                             errorSrc="https://placehold.co/300x450/1e293b/94a3b8?text=Capa"

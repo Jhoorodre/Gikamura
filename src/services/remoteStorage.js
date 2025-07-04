@@ -19,6 +19,7 @@ remoteStorage.caching.enable(`/${RS_PATH.BASE}/`);
 
 /**
  * AIDEV-NOTE: Clears local cache of orphaned or corrupted entries for inconsistent states
+ * AIDEV-NOTE: Chame purgePreviousCache na inicialização do app ou após erro de cache para evitar dados órfãos/corrompidos.
  */
 const purgePreviousCache = () => {
   remoteStorage.caching.reset();
@@ -30,7 +31,8 @@ const purgePreviousCache = () => {
 };
 
 /**
- * AIDEV-NOTE: Forces sync through data operation since RemoteStorage auto-syncs on data changes
+ * AIDEV-NOTE: Esta operação de escrita 'falsa' é usada para forçar a sincronização do RemoteStorage,
+ * pois a biblioteca não expõe um método de sync manual. Qualquer alteração de dados dispara o sync automático.
  */
 const forceSyncByDataOperation = async () => {
   try {

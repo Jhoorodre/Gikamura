@@ -32,10 +32,14 @@ const sync = async () => {
   const allSeries = await rs.getAllSeries();
   if (!allSeries) return;
 
+  // AIDEV-NOTE: Só remove se slug e source existirem para evitar erro undefined-undefined
   for (const item of Object.values(allSeries)) {
-    if (!item || !item[SORT_KEY]) {
-      console.warn(`[API Sync] Removendo série inválida: ${item?.slug}`);
-      await rs.removeSeries(item?.slug, item?.source);
+    if (!item || !item[SORT_KEY] || !item.slug || !item.source) {
+      console.warn(`[API Sync] Removendo série inválida ou incompleta:`, item);
+      // Só tenta remover se tiver as chaves necessárias
+      if (item?.slug && item?.source) {
+        await rs.removeSeries(item.slug, item.source);
+      }
     }
   }
   syncExecuted = true;
@@ -106,18 +110,47 @@ const api = {
     return series?.chapters || [];
   },
 
-  // AIDEV-NOTE: Pin/unpin operations with existence validation
-  async isSeriesPinned(slug, source) {
-    const series = await remoteStorage['Gika']?.getSeries(slug, source);
-    return !!series?.pinned;
-  },
+  /**
+   * ✅ CORREÇÃO: Recebe o objeto 'item' completo e guarda todas as
+   * informações necessárias, incluindo a 'url' do reader.json.
+   */
+  async pinSeries(item) {
+    console.debug("[api.pinSeries] Chamado com:", item);
+    
+    const { id, slug, source, url, title, coverUrl } = item;
 
-  async pinSeries(slug, source) {
-    const series = await remoteStorage['Gika']?.getSeries(slug, source);
-    if (series) {
-      return remoteStorage['Gika']?.editSeries(slug, source, { pinned: true });
+    if (!source || !slug) {
+      console.error("[api.pinSeries] 'source' e 'slug' são obrigatórios.");
+      throw new Error("Dados insuficientes para fixar a série.");
     }
-    // AIDEV-TODO: Consider creating series if doesn't exist when pinning
+
+    const rs = remoteStorage['Gika'];
+    const existingSeries = await rs.getSeries(slug, source);
+
+    if (existingSeries) {
+      console.debug("[api.pinSeries] Série já existe, editando para pinned:true");
+      const result = await rs.editSeries(slug, source, { pinned: true, timestamp: Date.now() });
+      console.debug('[api.pinSeries] Sucesso ao editar série existente:', result);
+      return result;
+    }
+    
+    console.debug("[api.pinSeries] Série não existe, criando nova como pinned:true");
+    // Constrói o objeto completo para ser guardado
+    const seriesData = {
+      id,
+      slug,
+      source,
+      url, // URL para o reader.json
+      title,
+      coverUrl,
+      pinned: true,
+      timestamp: Date.now(),
+      chapters: []
+    };
+
+    const result = await rs.storeObject('series', `${source}-${slug}`, seriesData);
+    console.debug('[api.pinSeries] Sucesso ao criar nova série:', result);
+    return result;
   },
 
   unpinSeries: (slug, source) => remoteStorage['Gika']?.editSeries(slug, source, { pinned: false }),

@@ -166,8 +166,8 @@ const Header = () => {
                                                         : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                                                 }`}
                                             >
-                                                <div className="font-medium">{item.label}</div>
-                                                <div className="text-sm text-text-tertiary">{item.description}</div>
+                                                    <div className="font-medium">{item.label}</div>
+                                                    <div className="text-sm text-text-tertiary">{item.description}</div>
                                             </button>
                                         ) : (
                                             <Link
@@ -180,8 +180,8 @@ const Header = () => {
                                                         : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                                                 }`}
                                             >
-                                                <div className="font-medium">{item.label}</div>
-                                                <div className="text-sm text-text-tertiary">{item.description}</div>
+                                                    <div className="font-medium">{item.label}</div>
+                                                    <div className="text-sm text-text-tertiary">{item.description}</div>
                                             </Link>
                                         )
                                     ))}

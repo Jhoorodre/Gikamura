@@ -27,8 +27,10 @@ export const Model = {
         timestamp: { type: "number" },
         chapters: { type: "array", default: [] },
         pinned: { type: "boolean", default: false },
+        "@context": { type: "string" }
       },
-      required: ["slug", "source", "url", "title", "timestamp", "chapters", "pinned"],
+      required: ["slug", "source", "url", "title", "timestamp"],
+      additionalProperties: true
     });
 
     privateClient.declareType(HUB_TYPE, {
@@ -47,22 +49,25 @@ export const Model = {
       properties: {
         lastChapter: { type: "string" },
         lastUpdated: { type: "number" },
+        "@context": { type: "string" }
       },
       required: ["lastChapter", "lastUpdated"],
-      additionalProperties: {
-        type: "object",
-        properties: {
-          pageIndex: { type: "number" },
-          totalPages: { type: "number" },
-          lastRead: { type: "number" },
-          completed: { type: "boolean" }
-        },
-        required: ["pageIndex", "totalPages", "lastRead", "completed"]
-      }
+      additionalProperties: true
     });
 
     // --- Funções Auxiliares ---
-    const getSeriesKey = (slug, source) => `${source}-${slug}`;
+
+    // AIDEV-NOTE: Sanitiza e codifica a source para garantir chaves válidas no RemoteStorage
+    const getSeriesKey = (slug, source) => {
+      if (!source || !slug) {
+        console.error(`[RS] Tentativa de criar chave com slug ou source inválido:`, { slug, source });
+        // Retorna um valor que indica erro, mas não quebra a aplicação
+        return `invalid-key-${Date.now()}`;
+      }
+      // Remove caracteres inválidos para nomes de ficheiro e codifica a source
+      const sanitizedSource = source.replace(/[:/\\?#*|"<>]/g, '_');
+      return `${encodeURIComponent(sanitizedSource)}-${slug}`;
+    };
     const getHubKey = (url) => encodeUrl(url);
 
     // --- Métodos Exportados (API de Baixo Nível) ---
