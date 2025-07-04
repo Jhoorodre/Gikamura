@@ -208,6 +208,7 @@ export const AppProvider = ({ children }) => {
 
     const value = {
         currentHubData,
+        currentHubUrl: hubUrlToLoad, // AIDEV-NOTE: Export hubUrlToLoad as currentHubUrl for navigation
         hubLoading,
         hubError: hubError ? hubError.message : null,
         isSyncing,

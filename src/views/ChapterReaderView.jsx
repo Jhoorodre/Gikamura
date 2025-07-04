@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useReader } from '../hooks/useReader';
+import { useAppContext } from '../context/AppContext';
 import { decodeUrl, encodeUrl } from '../utils/encoding';
 import { ChevronLeftIcon, BookOpenIcon } from '../components/common/Icones';
 import Spinner from '../components/common/Spinner';
@@ -12,6 +13,7 @@ const ChapterReaderView = () => {
     // Recebe os parâmetros codificados da URL
     const { encodedUrl, chapterId } = useParams();
     const navigate = useNavigate();
+    const { currentHubData, currentHubUrl } = useAppContext() || { currentHubData: null, currentHubUrl: null };
     
     const [page, setPage] = useState(0);
     const [readingMode, setReadingMode] = useState('paginated');
@@ -103,6 +105,18 @@ const ChapterReaderView = () => {
     const getChaptersList = () => {
         if (!readerData?.chapters) return [];
         return Object.keys(readerData.chapters).sort();
+    };
+
+    // AIDEV-NOTE: Smart navigation back to hub logic
+    const handleBackToHub = () => {
+        if (currentHubData && currentHubUrl) {
+            // AIDEV-NOTE: Navigate to current loaded hub (never exposes raw/json URL)
+            const encodedHubUrl = encodeUrl(currentHubUrl);
+            navigate(`/hub/${encodedHubUrl}`);
+        } else {
+            // AIDEV-NOTE: No hub loaded, go to Hub Loader
+            navigate('/');
+        }
     };
 
     const currentChapterIndex = getChaptersList().findIndex(id => id === decodedChapterId);
@@ -229,6 +243,25 @@ const ChapterReaderView = () => {
                             >
                                 <ChevronLeftIcon className="w-3 h-3" />
                                 <span className="text-xs">Hub</span>
+                            </Button>
+                            {/* AIDEV-NOTE: Serie button - navigate to hub (all mangas) page */}
+                            <Button
+                                onClick={() => {
+                                    if (currentHubData && currentHubUrl) {
+                                        // Navigate to current loaded hub
+                                        const encodedHubUrl = encodeUrl(currentHubUrl);
+                                        navigate(`/hub/${encodedHubUrl}`);
+                                    } else {
+                                        // No hub loaded, go to Hub Loader
+                                        navigate('/');
+                                    }
+                                }}
+                                variant="outline"
+                                size="sm"
+                                className="text-white hover:bg-gray-800 border-gray-600 hover:border-gray-500 px-2 py-1"
+                                title="Voltar ao hub (todos os mangás)"
+                            >
+                                Série
                             </Button>
                             <Button
                                 onClick={handlePrevChapter}

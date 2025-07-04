@@ -53,18 +53,13 @@ function MainContent() {
         );
     }
 
-    // AIDEV-NOTE: If not connected, ALWAYS show HubLoader on main route regardless of data
+    // AIDEV-NOTE: Always show HubLoader on main route (/) regardless of connection or data
+    if (location.pathname === '/') {
+        return <HubLoader loading={hubLoading} />;
+    }
+
+    // AIDEV-NOTE: If not connected, show HubView if data exists, otherwise HubLoader
     if (!isConnected) {
-        // AIDEV-NOTE: On main route, always show HubLoader to allow loading new hub
-        if (location.pathname === '/') {
-            return (
-                <div className="p-4">
-                    <HubLoader loading={hubLoading} />
-                </div>
-            );
-        }
-        
-        // AIDEV-NOTE: On other routes, can show HubView if data exists
         if (currentHubData) {
             return <HubView />;
         }
