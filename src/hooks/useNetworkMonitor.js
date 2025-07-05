@@ -116,7 +116,7 @@ export const useNetworkMonitor = () => {
     }, []);
 
     // AIDEV-NOTE: Considers recovering state for 30 seconds after coming online
-    const isRecovering = isOnline && (Date.now() - lastOnlineTime) < 30000;
+    const isRecovering = isOnline && (Date.now() - lastOnlineTime) < 3000; // AIDEV-NOTE: Reduced from 30s to 3s
 
     // AIDEV-NOTE: Network strategy recommendation based on quality assessment
     const getNetworkStrategy = useCallback(() => {
@@ -197,13 +197,13 @@ export const useNetworkNotifications = () => {
         setShowSlowConnectionMessage(isOnline && networkQuality === 'slow');
     }, [isOnline, networkQuality]);
 
-    // AIDEV-NOTE: Shows recovery message for 5 seconds after reconnection
+    // AIDEV-NOTE: Shows recovery message for 2 seconds after reconnection (reduced)
     useEffect(() => {
         if (isRecovering) {
             setShowRecoveringMessage(true);
             const timer = setTimeout(() => {
                 setShowRecoveringMessage(false);
-            }, 5000);
+            }, 2000); // AIDEV-NOTE: Reduced from 5s to 2s
             return () => clearTimeout(timer);
         }
     }, [isRecovering]);
@@ -221,7 +221,7 @@ export const useNetworkNotifications = () => {
         if (showRecoveringMessage) {
             return {
                 type: 'recovering',
-                message: 'Conectividade restaurada. Sincronizando dados...',
+                message: 'Conectividade restaurada. Carregando dados...',
                 action: null
             };
         }

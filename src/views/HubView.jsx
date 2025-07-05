@@ -223,12 +223,14 @@ const HubView = ({ hubUrl }) => {
 
                         {/* Status de Conexão - Minimalista */}
                         <div className="hub-connection-status">
+                            {/* AIDEV-NOTE: Sync status temporarily disabled - causing persistent display issues
                             {isSyncing && (
                                 <div className="status-card connected">
                                     <div className="status-dot"></div>
                                     <span className="status-text">🔄 Sincronizando...</span>
                                 </div>
                             )}
+                            */}
                             {showConnectedStatus && !isSyncing && (
                                 <div className="status-card connected">
                                     <div className="status-dot"></div>

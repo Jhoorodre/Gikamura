@@ -1,11 +1,12 @@
 // AIDEV-NOTE: Main App component; routing, notifications, and global state management
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
 import { useRemoteStorageContext } from './context/RemoteStorageContext';
 import { useServiceWorker } from './hooks/useServiceWorker';
-import { useNetworkNotifications } from './hooks/useNetworkMonitor';
+// import { useNetworkNotifications } from './hooks/useNetworkMonitor'; // AIDEV-NOTE: Disabled to remove network messages
 import { useHubLoader } from './hooks/useHubLoader';
+import { useSyncOverlay } from './hooks/useSyncOverlay';
 import ItemDetailView from './views/ItemDetailView';
 import ReaderView from './views/ReaderView';
 import ChapterReaderView from './views/ChapterReaderView';
@@ -25,9 +26,13 @@ import { runFullDiagnostic } from './utils/networkDebug';
 
 function App() {
     const { conflictMessage: appConflictMessage } = useAppContext();
-    const { isConnected: remoteStorageConnected, isSyncing, conflictMessage } = useRemoteStorageContext();
+    const { isConnected: remoteStorageConnected, conflictMessage } = useRemoteStorageContext();
     const { isOnline, updateAvailable, applyUpdate } = useServiceWorker();
-    const { networkMessage, dismissSlowMessage } = useNetworkNotifications();
+    // const { networkMessage, dismissSlowMessage } = useNetworkNotifications(); // AIDEV-NOTE: Disabled to remove network messages
+    
+    // AIDEV-NOTE: Sync overlay temporarily disabled
+    // const { isConnected: remoteStorageConnected, isSyncing, conflictMessage } = useRemoteStorageContext();
+    // const { showOverlay: showSyncOverlay, forceHide: forcHideSyncOverlay } = useSyncOverlay(isSyncing);
     
     // AIDEV-NOTE: Centralized hub loading without auto-loading to prevent loops
     const { url: hubUrl, setUrl: setHubUrl, loading, handleSubmit: handleLoadHub } = useHubLoader();
@@ -59,8 +64,8 @@ function App() {
             {/* AIDEV-NOTE: Global RemoteStorage widget (essential functionality, not part of old nav) */}
             <GlobalRemoteStorageWidget />
             
-            {/* AIDEV-NOTE: Smart network notifications system */}
-            {networkMessage && (
+            {/* AIDEV-NOTE: Network notifications system - DISABLED to remove "Carregando dados" message */}
+            {/* {networkMessage && (
                 <div className={`text-center py-2 font-semibold z-50 ${
                     networkMessage.type === 'offline' ? 'bg-red-600 text-white' :
                     networkMessage.type === 'recovering' ? 'bg-blue-600 text-white' :
@@ -77,7 +82,7 @@ function App() {
                         </button>
                     )}
                 </div>
-            )}
+            )} */}
             
             {/* AIDEV-NOTE: Update notification with user action */}
             {updateAvailable && (
@@ -95,12 +100,23 @@ function App() {
             <div className="animated-bg"></div>
             <div id="particles-container"></div>
             
-            {/* AIDEV-NOTE: System status indicators */}
-            {isSyncing && (
+            {/* AIDEV-NOTE: System status indicators with controlled display */}
+            {/* AIDEV-NOTE: Sync overlay temporarily disabled - causing persistent display issues
+            {showSyncOverlay && (
                 <div className="sync-indicator">
-                    <Spinner size="sm" text="Sincronizando..." />
+                    <div className="flex items-center gap-3">
+                        <Spinner size="sm" text="Sincronizando..." />
+                        <button 
+                            onClick={forcHideSyncOverlay}
+                            className="text-xs text-gray-500 hover:text-gray-700 underline"
+                            title="Ocultar overlay de sincronização"
+                        >
+                            Ocultar
+                        </button>
+                    </div>
                 </div>
             )}
+            */}
             {conflictMessage && (
                 <div className="conflict-indicator">
                     <ErrorMessage message={conflictMessage} />

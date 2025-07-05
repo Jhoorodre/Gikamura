@@ -23,10 +23,11 @@ export const RemoteStorageProvider = ({ children }) => {
     const lastCleanupAttemptRef = useRef(0);
     const listenersSetupRef = useRef(false);
     const isCleaningUpRef = useRef(false);
+    const syncTimeoutRef = useRef(null);
 
     // AIDEV-NOTE: Control constants to prevent spam
     const SYNC_COOLDOWN = 30000; // 30 seconds between syncs (increased from 15)
-    const AUTO_SYNC_INTERVAL = 120000; // 2 minutes for auto-sync (increased from 1 minute)
+    const AUTO_SYNC_INTERVAL = 300000; // 5 minutes for auto-sync (increased to reduce frequency)
     const CLEANUP_COOLDOWN = 60000; // 1 minute between cleanup operations
 
     // AIDEV-NOTE: Prevents sync spam with cooldown and state checks
@@ -82,12 +83,14 @@ export const RemoteStorageProvider = ({ children }) => {
             return;
         }
 
-        console.log('🔄 Ativando auto-sync com intervalo de 1 minuto');
+        console.log('🔄 Ativando auto-sync com intervalo de 5 minutos');
         
         globalAutoSyncInterval = setInterval(() => {
             if (canSync()) {
                 console.log('🔄 Auto-sync: executando sincronização automática');
                 forceSync();
+            } else {
+                console.log('🔄 Auto-sync: pulando sincronização (cooldown ativo ou sincronizando)');
             }
         }, AUTO_SYNC_INTERVAL);
         
@@ -137,13 +140,31 @@ export const RemoteStorageProvider = ({ children }) => {
         const handleSyncReqDone = () => {
             console.log('📡 Sync iniciado...');
             setIsSyncing(true);
+            
+            // AIDEV-NOTE: Auto-timeout to prevent persistent sync overlay (safety net)
+            // Clear any existing timeout first
+            if (syncTimeoutRef.current) {
+                clearTimeout(syncTimeoutRef.current);
+            }
+            
+            syncTimeoutRef.current = setTimeout(() => {
+                console.log('⏰ Timeout de sync - forçando isSyncing = false');
+                setIsSyncing(false);
+                syncTimeoutRef.current = null;
+            }, 20000); // 20 segundos timeout (reduzido)
         };
 
         const handleSyncDone = async () => {
-            console.log('✅ Sync concluído');
+            console.log('✅ Sync concluído - setIsSyncing(false)');
             setIsSyncing(false);
             setLastSyncTime(new Date());
             setSyncStats(prev => ({ ...prev, success: prev.success + 1 }));
+            
+            // AIDEV-NOTE: Clear sync timeout since sync completed successfully
+            if (syncTimeoutRef.current) {
+                clearTimeout(syncTimeoutRef.current);
+                syncTimeoutRef.current = null;
+            }
             
             // AIDEV-NOTE: Trigger automatic cleanup after sync completion with throttling
             const now = Date.now();
@@ -189,9 +210,15 @@ export const RemoteStorageProvider = ({ children }) => {
         };
 
         const handleError = (error) => {
-            console.error('❌ Erro do RemoteStorage:', error);
+            console.error('❌ Erro do RemoteStorage - setIsSyncing(false):', error);
             setIsSyncing(false);
             setSyncStats(prev => ({ ...prev, errors: prev.errors + 1 }));
+            
+            // AIDEV-NOTE: Clear sync timeout on error
+            if (syncTimeoutRef.current) {
+                clearTimeout(syncTimeoutRef.current);
+                syncTimeoutRef.current = null;
+            }
         };
 
         // AIDEV-NOTE: Add all RemoteStorage event listeners
@@ -221,6 +248,12 @@ export const RemoteStorageProvider = ({ children }) => {
             // AIDEV-NOTE: Cleanup auto-sync
             disableAutoSync();
             
+            // AIDEV-NOTE: Clear sync timeout if running
+            if (syncTimeoutRef.current) {
+                clearTimeout(syncTimeoutRef.current);
+                syncTimeoutRef.current = null;
+            }
+            
             // AIDEV-NOTE: Only remove listeners if this is the last instance
             if (globalListenersSetup) {
                 globalListenersSetup = false;
@@ -236,6 +269,27 @@ export const RemoteStorageProvider = ({ children }) => {
             }
         };
     }, []); // AIDEV-NOTE: Empty deps to execute only once
+
+    // AIDEV-NOTE: Watchdog effect to ensure isSyncing never gets stuck
+    useEffect(() => {
+        if (isSyncing) {
+            console.log('🐕 [RemoteStorage] Watchdog: sync iniciado');
+            
+            // AIDEV-NOTE: Emergency timeout to force sync completion (longer than normal timeout)
+            const emergencyTimeout = setTimeout(() => {
+                console.warn('🚨 [RemoteStorage] WATCHDOG: Forçando isSyncing = false (timeout de emergência)');
+                setIsSyncing(false);
+                if (syncTimeoutRef.current) {
+                    clearTimeout(syncTimeoutRef.current);
+                    syncTimeoutRef.current = null;
+                }
+            }, 60000); // 60 segundos - timeout de emergência
+            
+            return () => {
+                clearTimeout(emergencyTimeout);
+            };
+        }
+    }, [isSyncing]);
 
     const value = {
         isConnected,
