@@ -113,12 +113,12 @@ export const Model = {
         },
 
         // AIDEV-NOTE: Remove series by direct key (for cleanup purposes)
-        removeSeriesByKey: (key) => {
+        removeSeriesByKey: async (key) => {
           try {
             if (key.startsWith(SERIES_PATH_BASE)) {
-              return privateClient.remove(key);
+              return await privateClient.remove(key);
             }
-            return privateClient.remove(`${SERIES_PATH_BASE}${key}`);
+            return await privateClient.remove(`${SERIES_PATH_BASE}${key}`);
           } catch (error) {
             // AIDEV-NOTE: Silent fail for non-existing keys during cleanup
             if (error.message && error.message.includes('non-existing')) {

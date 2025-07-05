@@ -567,6 +567,8 @@ const api = {
   /**
    * ✅ CORREÇÃO: Recebe o objeto 'item' completo e guarda todas as
    * informações necessárias, incluindo a 'url' do reader.json.
+   * AIDEV-NOTE: Robust pin/unpin functionality with proper error handling for new series
+   * Fixes: "rs.storeObject is not a function" by using correct schema methods
    */
   async pinSeries(item) {
     console.debug("[api.pinSeries] Chamado com:", item);
@@ -579,7 +581,16 @@ const api = {
     }
 
     const rs = remoteStorage['Gika'];
-    const existingSeries = await rs.getSeries(slug, source);
+    let existingSeries = null;
+    
+    try {
+      // AIDEV-NOTE: Try to get existing series, handle 404 gracefully
+      existingSeries = await rs.getSeries(slug, source);
+    } catch (error) {
+      // AIDEV-NOTE: Series doesn't exist yet, will create new one
+      console.debug("[api.pinSeries] Série não existe ainda (404), criando nova:", error.message);
+      existingSeries = null;
+    }
 
     if (existingSeries) {
       console.debug("[api.pinSeries] Série já existe, editando para pinned:true");
@@ -600,20 +611,8 @@ const api = {
     }
     
     console.debug("[api.pinSeries] Série não existe, criando nova como pinned:true");
-    // Constrói o objeto completo para ser guardado
-    const seriesData = {
-      id,
-      slug,
-      source,
-      url, // URL para o reader.json
-      title,
-      coverUrl,
-      pinned: true,
-      timestamp: Date.now(),
-      chapters: []
-    };
-
-    const result = await rs.storeObject('series', `${source}-${slug}`, seriesData);
+    // AIDEV-NOTE: Use addSeries method instead of direct storeObject call
+    const result = await rs.addSeries(slug, coverUrl, source, url, title, true, []);
     clearCaches(); // AIDEV-NOTE: Clear caches after data modification
     console.debug('[api.pinSeries] Sucesso ao criar nova série:', result);
     return result;
@@ -622,7 +621,14 @@ const api = {
   async unpinSeries(slug, source) {
     // AIDEV-NOTE: Get existing series to preserve required fields during unpin
     const rs = remoteStorage['Gika'];
-    const existingSeries = await rs.getSeries(slug, source);
+    let existingSeries = null;
+    
+    try {
+      existingSeries = await rs.getSeries(slug, source);
+    } catch (error) {
+      console.warn("[api.unpinSeries] Série não encontrada (404):", { slug, source });
+      return;
+    }
     
     if (!existingSeries) {
       console.warn("[api.unpinSeries] Série não encontrada para despinnar:", { slug, source });
