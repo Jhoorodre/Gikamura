@@ -112,6 +112,14 @@ export const Model = {
           return privateClient.remove(`${SERIES_PATH_BASE}${seriesKey}`);
         },
 
+        // AIDEV-NOTE: Remove series by direct key (for cleanup purposes)
+        removeSeriesByKey: (key) => {
+          if (key.startsWith(SERIES_PATH_BASE)) {
+            return privateClient.remove(key);
+          }
+          return privateClient.remove(`${SERIES_PATH_BASE}${key}`);
+        },
+
         getAllSeries: () => {
           // Não usar maxAge por incompatibilidade com versão atual do RemoteStorage
           return privateClient.getAll(SERIES_PATH_BASE);
@@ -130,6 +138,9 @@ export const Model = {
         },
 
         getAllHubs: () => privateClient.getAll(HUB_PATH_BASE),
+
+        // --- Método genérico de remoção ---
+        remove: (path) => privateClient.remove(path),
       },
     };
   },

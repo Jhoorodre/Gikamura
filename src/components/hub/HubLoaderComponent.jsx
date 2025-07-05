@@ -2,12 +2,14 @@
 import { useAppContext } from '../../context/AppContext';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 import { useHubLoader } from '../../hooks/useHubLoader';
+import { useLocation } from 'react-router-dom';
 import HubHistory from './HubHistory';
 import '../../styles/minimalist-pages.css';
 
 const HubLoaderComponent = () => {
     const { savedHubs, removeHub } = useAppContext();
     const { isConnected } = useRemoteStorageContext() || { isConnected: false };
+    const location = useLocation();
     
     const { 
         url, 
@@ -18,6 +20,14 @@ const HubLoaderComponent = () => {
         loadHub, 
         resetError 
     } = useHubLoader();
+
+    // AIDEV-NOTE: Debug log to track what's being displayed
+    if (import.meta.env?.DEV && savedHubs?.length > 0) {
+        console.log('🔍 [HubLoaderComponent] savedHubs:', savedHubs);
+    }
+
+    // AIDEV-NOTE: On main route, don't show hub history to keep the UI clean
+    const shouldShowHistory = location.pathname !== '/' && isConnected && savedHubs && savedHubs.length > 0;
 
     // AIDEV-NOTE: Permite carregar hub diretamente do histórico
     const handleLoadDirectly = (hubUrl) => {
@@ -56,12 +66,21 @@ const HubLoaderComponent = () => {
                         <p className="min-error-message">{error}</p>
                     )}
                 </form>
-                {/* AIDEV-NOTE: Histórico de hubs só aparece se conectado */}
-                {isConnected && savedHubs && savedHubs.length > 0 && (
+                {/* AIDEV-NOTE: Hub history completely disabled on main route to keep UI clean */}
+                {false && shouldShowHistory && (
                     <div className="min-history-section">
                         <h2 className="min-section-title">Hubs Recentes</h2>
                         <HubHistory
-                            hubs={savedHubs}
+                            hubs={savedHubs.filter(hub => 
+                                hub && 
+                                typeof hub === 'object' && 
+                                hub.url && 
+                                hub.title && 
+                                typeof hub.url === 'string' && 
+                                typeof hub.title === 'string' &&
+                                !hub.url.includes('localhost:') && // AIDEV-NOTE: Filter out corrupted localhost entries
+                                !hub.url.includes('127.0.0.1:')
+                            )}
                             onSelectHub={(hub) => handleLoadDirectly(hub.url)}
                             onRemoveHub={removeHub}
                         />

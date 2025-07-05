@@ -112,7 +112,7 @@ function main() {
     
     if (!fs.existsSync(srcDir)) {
         console.error('❌ Diretório src não encontrado!');
-        // eslint-disable-next-line no-process-exit
+        // processo de saída
         process.exit(1);
     }
     
@@ -135,7 +135,7 @@ function main() {
         console.warn('\n🔍 Executando ESLint novamente...');
         try {
             execSync('npm run lint', { stdio: 'inherit' });
-        } catch (error) {
+        } catch (_error) {
             console.warn('\n⚠️  Ainda existem problemas de lint para correção manual.');
         }
     }

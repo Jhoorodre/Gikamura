@@ -58,7 +58,7 @@ async function fetchWithRetry(url, options = {}) {
         retryDelay = 1000
     } = options;
 
-    const isDev = process.env.NODE_ENV === 'development';
+    const isDev = import.meta.env?.DEV;
     if (isDev) console.log('🌐 [JSONReader] Iniciando fetch robusto para:', url);
 
     // AIDEV-NOTE: Fetch strategies in priority order for maximum compatibility
@@ -189,7 +189,7 @@ async function fetchWithRetry(url, options = {}) {
  */
 export async function loadHubJSON(url) {
     try {
-        const isDev = process.env.NODE_ENV === 'development';
+        const isDev = import.meta.env?.DEV;
         if (isDev) console.log('🎯 Carregando Hub JSON:', url);
 
         // Verifica cache primeiro

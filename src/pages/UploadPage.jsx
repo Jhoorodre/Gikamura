@@ -131,7 +131,7 @@ const UploadPage = () => {
                                 <textarea
                                     value={manualJson}
                                     onChange={(e) => setManualJson(e.target.value)}
-                                    placeholder='Cole o conteúdo JSON aqui...'
+                                    placeholder="Cole o conteúdo JSON aqui..."
                                     className="min-textarea"
                                 />
                                 <Button onClick={handleManualValidation} className="min-button mt-4" disabled={!manualJson.trim() || uploadState === 'validating'}>

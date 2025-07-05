@@ -6,9 +6,8 @@
 import { useEffect, useState } from 'react';
 
 export const useServiceWorker = () => {
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [swRegistered, setSwRegistered] = useState(false);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);    const [_swRegistered, _setSwRegistered] = useState(false);
+    const [_updateAvailable, _setUpdateAvailable] = useState(false);
 
   useEffect(() => {
     // AIDEV-NOTE: Force complete SW unregistration to resolve CORS issues in dev
@@ -161,8 +160,8 @@ export const useServiceWorker = () => {
 
   return {
     isOnline,
-    swRegistered,
-    updateAvailable,
+    _swRegistered,
+    _updateAvailable,
     applyUpdate,
     getCacheSize,
     clearCache

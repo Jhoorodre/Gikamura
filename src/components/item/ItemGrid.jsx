@@ -4,20 +4,26 @@ import Image from '../common/Image';
 
 const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
     <div className="min-item-grid">
-        {/* ✅ Filtra itens sem chave única válida */}
-        {items.filter(item => item && (item.id || item.slug)).map((item) => (
-            <div 
-                // ✅ Usa slug como fallback para garantir chave única
-                key={`${item.source || 'local'}-${item.id || item.slug}`}
-                className="min-item-card"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        onSelectItem(item);
-                    }
-                }}
-            >
+        {/* ✅ Filtra itens sem chave única válida e cria chave única baseada em source+slug+title */}
+        {items.filter(item => item && (item.id || item.slug || item.title)).map((item, index) => {
+            // AIDEV-NOTE: Cria chave única para evitar duplicatas React
+            const uniqueKey = item.source && item.slug ? 
+                `${item.source}-${item.slug}` : 
+                item.id || 
+                `${item.title?.replace(/[^\w]/g, '')}-${index}`;
+            
+            return (
+                <div 
+                    key={uniqueKey}
+                    className="min-item-card"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onSelectItem(item);
+                        }
+                    }}
+                >
                 {/* AIDEV-NOTE: Botão de favoritar com acessibilidade */}
                 {onPinToggle && !item.isStatic && (
                     <button
@@ -52,7 +58,8 @@ const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
                     </div>
                 </div>
             </div>
-        ))}
+            );
+        })}
     </div>
 ));
 

@@ -59,7 +59,7 @@ const HubView = ({ hubUrl }) => {
             hasData: !!currentHubData, 
             title: currentHubData?.hub?.title,
             seriesCount: currentHubData?.series?.length,
-            isConnected: isConnected // Adicionar log do isConnected
+            isConnected // Adicionar log do isConnected
         });
         lastLogRef.current = currentDataSignature;
     }
@@ -120,7 +120,7 @@ const HubView = ({ hubUrl }) => {
             return;
         }
 
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env?.DEV) {
             console.log('🎯 Selecionando série:', item.title);
         }
         
@@ -131,7 +131,7 @@ const HubView = ({ hubUrl }) => {
     }, [selectItem, currentHubData?.hub?.id, navigate]);
 
     const handleSyncClick = useCallback(async () => {
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env?.DEV) {
             console.log('🔄 Botão de sync clicado');
         }
         
@@ -141,7 +141,7 @@ const HubView = ({ hubUrl }) => {
         }
         
         const success = await forceSync();
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env?.DEV) {
             if (success) {
                 console.log('✅ Sincronização iniciada com sucesso');
             } else {

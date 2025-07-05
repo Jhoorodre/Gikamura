@@ -18,7 +18,7 @@ const usePrevious = (value) => {
 
 // Hook para gerenciar queries de forma otimizada
 // AIDEV-NOTE: Centraliza query optimization para react-query
-export const useOptimizedQuery = (key, queryFn, options = {}) => {
+export const useOptimizedQuery = (key, queryFn, _options = {}) => {
   return useQuery({
     queryKey: key,
     queryFn,
@@ -102,7 +102,7 @@ export const usePagination = (items, pageSize = 20) => {
 export const useDependencyChange = (deps, name = 'dependencies') => {
   const previous = usePrevious(deps);
   
-  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && previous) {
+  if (typeof window !== 'undefined' && import.meta.env?.DEV && previous) {
     const changes = deps.reduce((acc, dep, index) => {
       if (dep !== previous[index]) {
         acc.push({ index, old: previous[index], new: dep });

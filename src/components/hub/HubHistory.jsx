@@ -32,8 +32,8 @@ const HubHistory = ({ hubs, onSelectHub, onRemoveHub }) => {
                 <h3 className="text-xl font-bold text-white orbitron">Hubs Salvos</h3>
             </div>
             <div className="space-y-2 max-h-64 overflow-y-auto">
-                {hubs.map((hub) => (
-                    <div key={hub.url} className="chapter-item flex items-center justify-between p-3 rounded-lg panel-dark cursor-pointer">
+                {hubs.map((hub, index) => (
+                    <div key={`${hub.url}-${index}`} className="chapter-item flex items-center justify-between p-3 rounded-lg panel-dark cursor-pointer">
                         <div className="flex items-center gap-3 flex-1" onClick={() => onSelectHub(hub)}>
                             {hub.iconUrl && (
                                 <Image 

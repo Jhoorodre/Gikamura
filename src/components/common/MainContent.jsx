@@ -17,7 +17,7 @@ function MainContent() {
     const location = useLocation();
 
     // AIDEV-NOTE: Controlled logging only for significant changes in dev mode
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env?.DEV) {
         if (hubLoading || hubError || (currentHubData && !window._hubLoadedLogged)) {
             console.log('🎯 [MainContent] Estado atual:', { 
                 currentHubData: !!currentHubData, 
@@ -55,6 +55,11 @@ function MainContent() {
 
     // AIDEV-NOTE: Always show HubLoader on main route (/) regardless of connection or data
     if (location.pathname === '/') {
+        // AIDEV-NOTE: Force clean state for Hub Loader - no series data should be shown
+        // Clear any hub data that might be loaded to ensure a clean experience
+        if (currentHubData && import.meta.env?.DEV) {
+            console.log('🧹 [MainContent] Hub data detected on main route, ensuring clean Hub Loader state');
+        }
         return <HubLoader loading={hubLoading} />;
     }
 

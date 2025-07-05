@@ -4,7 +4,7 @@
  * AIDEV-NOTE: Central hook for all reader data, progress, and chapter management
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { loadReaderJSON, JSONUtils } from '../services/jsonReader.js';
 import { remoteStorage } from '../services/remotestorage';
@@ -149,7 +149,7 @@ export const useReader = () => {
                 const allowedRoot = ['lastChapter', 'lastUpdated'];
                 const allowedChapterFields = ['pageIndex', 'totalPages', 'lastRead', 'completed'];
                 const cleaned = {};
-                let removed = [];
+                const removed = [];
                 for (const key of Object.keys(progressData)) {
                     if (!Object.prototype.hasOwnProperty.call(progressData, key)) continue;
                     if (allowedRoot.includes(key)) {

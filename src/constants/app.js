@@ -5,7 +5,8 @@
 export const APP_CONFIG = {
   // AIDEV-NOTE: URLs and proxies - CORS proxy removed for direct requests
   // AIDEV-TODO: If CORS issues arise, consider re-adding a proxy URL
-  DEFAULT_HUB_URL: 'https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/refs/heads/main/hub_tog.json',
+  // AIDEV-NOTE: Empty default to prevent auto-loading any hub on startup
+  DEFAULT_HUB_URL: '', // AIDEV-NOTE: Removed default URL to keep Hub Loader clean
   
   // AIDEV-NOTE: Timeouts and delays for UX optimization
   SAVE_PROGRESS_DELAY: 1000,

@@ -1,3 +1,28 @@
+import { useState, useCallback, useEffect } from 'react';
+
+// Hook personalizado para simular localStorage
+const useLocalStorage = (key, initialValue) => {
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      return initialValue;
+    }
+  });
+
+  const setValue = (value) => {
+    try {
+      setStoredValue(value);
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (_error) {
+      console.error('Error saving to localStorage:', _error);
+    }
+  };
+
+  return [storedValue, setValue];
+};
+
 /**
  * Hook para gerenciar configurações e estado do leitor
  * AIDEV-NOTE: This hook centralizes all persistent and temporary reader settings

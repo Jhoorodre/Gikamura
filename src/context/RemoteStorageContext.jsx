@@ -20,12 +20,14 @@ export const RemoteStorageProvider = ({ children }) => {
     // AIDEV-NOTE: Refs for interval and state control
     const autoSyncIntervalRef = useRef(null);
     const lastSyncAttemptRef = useRef(0);
+    const lastCleanupAttemptRef = useRef(0);
     const listenersSetupRef = useRef(false);
     const isCleaningUpRef = useRef(false);
 
     // AIDEV-NOTE: Control constants to prevent spam
-    const SYNC_COOLDOWN = 15000; // 15 seconds between syncs
-    const AUTO_SYNC_INTERVAL = 60000; // 1 minute for auto-sync
+    const SYNC_COOLDOWN = 30000; // 30 seconds between syncs (increased from 15)
+    const AUTO_SYNC_INTERVAL = 120000; // 2 minutes for auto-sync (increased from 1 minute)
+    const CLEANUP_COOLDOWN = 60000; // 1 minute between cleanup operations
 
     // AIDEV-NOTE: Prevents sync spam with cooldown and state checks
     const canSync = useCallback(() => {
@@ -137,11 +139,41 @@ export const RemoteStorageProvider = ({ children }) => {
             setIsSyncing(true);
         };
 
-        const handleSyncDone = () => {
+        const handleSyncDone = async () => {
             console.log('✅ Sync concluído');
             setIsSyncing(false);
             setLastSyncTime(new Date());
             setSyncStats(prev => ({ ...prev, success: prev.success + 1 }));
+            
+            // AIDEV-NOTE: Trigger automatic cleanup after sync completion with throttling
+            const now = Date.now();
+            const timeSinceLastCleanup = now - lastCleanupAttemptRef.current;
+            
+            if (timeSinceLastCleanup >= CLEANUP_COOLDOWN) {
+                lastCleanupAttemptRef.current = now;
+                
+                try {
+                    const { cleanCorruptedRemoteStorageData } = await import('../services/api.js');
+                    setTimeout(async () => {
+                        try {
+                            console.log('🧹 [RemoteStorage] Iniciando limpeza automática pós-sync...');
+                            const cleaned = await cleanCorruptedRemoteStorageData();
+                            if (cleaned) {
+                                console.log('🧹 [RemoteStorage] Limpeza automática pós-sync concluída com sucesso');
+                            } else {
+                                console.log('✨ [RemoteStorage] Limpeza automática: nenhum dado corrompido encontrado');
+                            }
+                        } catch (error) {
+                            console.error('❌ [RemoteStorage] Erro na limpeza automática pós-sync:', error);
+                        }
+                    }, 2000); // 2 second delay to ensure sync is fully complete
+                } catch (error) {
+                    console.error('❌ [RemoteStorage] Erro ao importar função de limpeza:', error);
+                }
+            } else {
+                const waitTime = Math.ceil((CLEANUP_COOLDOWN - timeSinceLastCleanup) / 1000);
+                console.log(`⏳ [RemoteStorage] Limpeza automática em cooldown (${waitTime}s restantes)`);
+            }
         };
 
         // AIDEV-NOTE: Conflict handler with automatic resolution and user notification

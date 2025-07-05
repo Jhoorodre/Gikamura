@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { remoteStorage } from '../../services/remotestorage';
+import { useAppContext } from '../../context/AppContext';
 
 const SimpleRemoteStorageWidgetNew = () => {
     const location = useLocation();
+    const { forceRefreshPinnedWorks } = useAppContext();
     const [connected, setConnected] = useState(false);
     const [address, setAddress] = useState('');
     const [showForm, setShowForm] = useState(false);
@@ -38,6 +40,13 @@ const SimpleRemoteStorageWidgetNew = () => {
                 setTimeout(() => {
                     setShowConnectedMessage(false);
                 }, 5000);
+                
+                // AIDEV-NOTE: CRITICAL - Force load pinned works immediately after connection for 100% reliability
+                setTimeout(() => {
+                    if (forceRefreshPinnedWorks) {
+                        forceRefreshPinnedWorks();
+                    }
+                }, 2000); // 2 second delay to ensure RemoteStorage is fully ready
             }
         };
 
@@ -56,7 +65,7 @@ const SimpleRemoteStorageWidgetNew = () => {
             remoteStorage.removeEventListener('connected', updateState);
             remoteStorage.removeEventListener('disconnected', updateState);
         };
-    }, [connected]);
+    }, [connected, forceRefreshPinnedWorks]);
 
     // AIDEV-NOTE: Early return AFTER all hooks have been called
     if (!shouldRender) {

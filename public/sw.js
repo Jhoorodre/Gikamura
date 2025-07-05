@@ -30,7 +30,7 @@ self.addEventListener('install', (event) => {
   console.log('[SW] Installing Service Worker v2');
   
   event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => {
+    caches.open(STATIC_CACHE).then((_cache) => {
       console.log('[SW] Static cache ready');
       return Promise.resolve();
     })

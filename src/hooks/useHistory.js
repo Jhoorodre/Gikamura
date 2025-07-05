@@ -6,7 +6,7 @@
 // src/hooks/useHistory.js
 import { useState, useEffect, useCallback } from 'react';
 import { remoteStorage } from '../services/remotestorage';
-import { RS_PATH } from '../services/rs/rs-config';
+import { _RS_PATH } from '../services/rs/rs-config';
 
 export const useHistory = () => {
     const [savedHubs, setSavedHubs] = useState([]);

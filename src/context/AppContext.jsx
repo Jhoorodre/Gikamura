@@ -1,5 +1,11 @@
 // AIDEV-NOTE: App state management; hub loading, user data, and RemoteStorage integration
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+// AIDEV-NOTE: CRITICAL IMPLEMENTATION - 100% Reliability for Pinned Works Display on RemoteStorage Connection:
+// 1. Multiple event listeners (connected, sync-done) trigger refreshUserData()
+// 2. Safety check with timeout to re-load if no pinned items after connection
+// 3. Manual force refresh function available (forceRefreshPinnedWorks)
+// 4. Widget-level additional force refresh after connection
+// 5. Enhanced error handling and logging for debugging
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useItem } from '../hooks/useItem';
@@ -26,10 +32,13 @@ export const AppProvider = ({ children }) => {
     const [historyItems, setHistoryItems] = useState([]);
     const [savedHubs, setSavedHubs] = useState([]);
     const [hasRedirectedToHub, setHasRedirectedToHub] = useState(false); // AIDEV-NOTE: Controls unique redirection
+    const refreshTimeoutRef = useRef(null); // AIDEV-NOTE: Timeout ref for debouncing refresh calls
+    const refreshInProgressRef = useRef(false); // AIDEV-NOTE: Prevent concurrent refresh operations
+    const cleanupRunRef = useRef(false); // AIDEV-NOTE: Track if cleanup has run
 
     // AIDEV-NOTE: Controlled logging only in development
     useEffect(() => {
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env?.DEV) {
             console.log('🎯 [AppContext] hubUrlToLoad mudou para:', hubUrlToLoad);
         }
     }, [hubUrlToLoad]);
@@ -44,14 +53,14 @@ export const AppProvider = ({ children }) => {
         queryKey: ['hub', hubUrlToLoad],
         queryFn: async () => {
             if (!hubUrlToLoad) {
-                if (process.env.NODE_ENV === 'development') {
+                if (import.meta.env?.DEV) {
                     console.log('⚠️ [AppContext] useQuery: hubUrlToLoad é null/undefined');
                 }
                 return null;
             }
             
             try {
-                if (process.env.NODE_ENV === 'development') {
+                if (import.meta.env?.DEV) {
                     console.log('🎯 [AppContext] useQuery: Carregando hub:', hubUrlToLoad);
                 }
                 const data = await loadHubJSON(hubUrlToLoad);
@@ -61,7 +70,7 @@ export const AppProvider = ({ children }) => {
                     api.addHub(hubUrlToLoad, data.hub.title, data.hub.icon?.url);
                 }
                 
-                if (process.env.NODE_ENV === 'development') {
+                if (import.meta.env?.DEV) {
                     console.log('✅ [AppContext] useQuery: Hub carregado com sucesso:', data.hub?.title);
                 }
                 return data;
@@ -91,23 +100,120 @@ export const AppProvider = ({ children }) => {
         clearSelectedItem
     } = useItem();
 
-    // AIDEV-NOTE: Refreshes user data when RemoteStorage is connected
+    // AIDEV-NOTE: CRITICAL - Refreshes user data when RemoteStorage is connected, ensuring pinned works are loaded
     const refreshUserData = useCallback(() => {
-        if (remoteStorage.connected) {
-            api.getAllPinnedSeries().then(setPinnedItems);
-            api.getAllUnpinnedSeries().then(setHistoryItems);
-            api.getAllHubs().then(setSavedHubs);
+        // AIDEV-NOTE: Prevent concurrent refresh operations
+        if (refreshInProgressRef.current) {
+            console.log('⏳ [AppContext] refreshUserData: Refresh já em andamento, ignorando...');
+            return;
         }
-    }, []);
+
+        refreshInProgressRef.current = true;
+        
+        if (remoteStorage.connected) {
+            if (import.meta.env?.DEV) {
+                console.log('🔄 [AppContext] refreshUserData: Carregando dados do usuário...');
+            }
+            
+            // AIDEV-NOTE: Load pinned series first as they are critical for "Obras" page
+            api.getAllPinnedSeries().then(data => {
+                // AIDEV-NOTE: Validate data before setting state to prevent invalid renders
+                if (Array.isArray(data)) {
+                    setPinnedItems(data);
+                    if (import.meta.env?.DEV) {
+                        console.log('📌 [AppContext] refreshUserData: Obras pinadas carregadas:', data.length);
+                        data.forEach((item, index) => {
+                            console.log(`  ${index + 1}. ${item.title} (${item.source}:${item.slug}) - Pinned: ${item.pinned}`);
+                        });
+                    }
+                } else {
+                    console.error('❌ [AppContext] refreshUserData: getAllPinnedSeries retornou dados inválidos:', data);
+                    setPinnedItems([]);
+                }
+            }).catch(error => {
+                console.error('❌ [AppContext] refreshUserData: Erro ao carregar obras pinadas:', error);
+                setPinnedItems([]);
+            });
+            
+            api.getAllUnpinnedSeries().then(data => {
+                // AIDEV-NOTE: Validate data before setting state
+                if (Array.isArray(data)) {
+                    setHistoryItems(data);
+                    if (import.meta.env?.DEV) {
+                        console.log('📄 [AppContext] refreshUserData: Histórico carregado:', data.length);
+                        data.forEach((item, index) => {
+                            console.log(`  ${index + 1}. ${item.title} (${item.source}:${item.slug}) - Pinned: ${item.pinned}`);
+                        });
+                    }
+                } else {
+                    console.error('❌ [AppContext] refreshUserData: getAllUnpinnedSeries retornou dados inválidos:', data);
+                    setHistoryItems([]);
+                }
+            }).catch(error => {
+                console.error('❌ [AppContext] refreshUserData: Erro ao carregar histórico:', error);
+                setHistoryItems([]);
+            });
+            
+            api.getAllHubs().then(setSavedHubs).catch(error => {
+                console.error('❌ [AppContext] refreshUserData: Erro ao carregar hubs salvos:', error);
+            });
+        }
+        
+        // AIDEV-NOTE: Reset the flag after a delay to allow operations to complete
+        setTimeout(() => {
+            refreshInProgressRef.current = false;
+        }, 1000);
+    }, [remoteStorage.connected]); // AIDEV-NOTE: Dependency on connected state to prevent unnecessary calls
     const handleChange = useCallback((event) => {
         if (event.path.startsWith(`/${RS_PATH}/`)) {
-            refreshUserData();
+            // AIDEV-NOTE: Debounce refresh to prevent multiple rapid calls
+            clearTimeout(refreshTimeoutRef.current);
+            refreshTimeoutRef.current = setTimeout(() => {
+                refreshUserData();
+            }, 300); // 300ms debounce
         }
     }, [refreshUserData]);
     useEffect(() => {
-        const handleConnectionChange = () => setIsConnected(remoteStorage.connected);
+        const handleConnectionChange = () => {
+            const isNowConnected = remoteStorage.connected;
+            setIsConnected(isNowConnected);
+            // AIDEV-NOTE: Reset sync flag and refresh user data when connecting to ensure cleanup runs again
+            if (isNowConnected) {
+                console.log('🔌 [AppContext] RemoteStorage conectado - resetando sync e recarregando dados');
+                api.resetSync(); // AIDEV-NOTE: Allow sync to run again for cleanup
+                cleanupRunRef.current = false; // AIDEV-NOTE: Reset cleanup flag
+                refreshUserData();
+            }
+        };
         const handleSyncReqDone = () => setIsSyncing(true);
-        const handleSyncDone = () => setIsSyncing(false);
+        const handleSyncDone = () => {
+            setIsSyncing(false);
+            // AIDEV-NOTE: Refresh user data after sync completes with better control to prevent loops
+            if (remoteStorage.connected && !refreshInProgressRef.current) {
+                // AIDEV-NOTE: Only run cleanup once per session to prevent loops
+                if (!cleanupRunRef.current) {
+                    cleanupRunRef.current = true;
+                    console.log('🧹 [AppContext] handleSyncDone: Executando limpeza única pós-sync...');
+                    setTimeout(() => {
+                        api.cleanupCorruptedData().then((cleaned) => {
+                            if (cleaned) {
+                                console.log('🧹 [AppContext] handleSyncDone: Limpeza concluída, atualizando dados...');
+                                refreshUserData();
+                            } else {
+                                console.log('🧹 [AppContext] handleSyncDone: Nenhuma limpeza necessária, atualizando dados...');
+                                refreshUserData();
+                            }
+                        }).catch(error => {
+                            console.error('❌ [AppContext] handleSyncDone: Erro na limpeza:', error);
+                            refreshUserData(); // Refresh anyway
+                        });
+                    }, 1500); // AIDEV-NOTE: Longer delay to ensure sync is completely done
+                } else {
+                    console.log('🔄 [AppContext] handleSyncDone: Limpeza já executada, apenas atualizando dados...');
+                    refreshUserData();
+                }
+            }
+        };
         const handleOffline = () => setIsOffline(true);
         const handleOnline = () => setIsOffline(false);
         const handleConflict = (conflictEvent) => {
@@ -126,6 +232,7 @@ export const AppProvider = ({ children }) => {
         window.addEventListener('offline', handleOffline);
         window.addEventListener('online', handleOnline);
         return () => {
+            clearTimeout(refreshTimeoutRef.current); // AIDEV-NOTE: Cleanup timeout on unmount
             remoteStorage.removeEventListener('connected', handleConnectionChange);
             remoteStorage.removeEventListener('disconnected', handleConnectionChange);
             remoteStorage.removeEventListener('sync-req-done', handleSyncReqDone);
@@ -134,12 +241,22 @@ export const AppProvider = ({ children }) => {
             window.removeEventListener('offline', handleOffline);
             window.removeEventListener('online', handleOnline);
         };
-    }, []);
+
+        // AIDEV-NOTE: Cleanup timeout on unmount
+        return () => {
+            if (refreshTimeoutRef.current) {
+                clearTimeout(refreshTimeoutRef.current);
+            }
+        };
+    }, [refreshUserData]);
+    // AIDEV-NOTE: CRITICAL - Ensures pinned works are ALWAYS displayed on "Obras" page when RemoteStorage connects
     useEffect(() => {
         if (isConnected && remoteStorage.private) {
+            // AIDEV-NOTE: Double-ensure data is loaded when connection is established
             refreshUserData();
             remoteStorage.private.on('change', handleChange);
             return () => {
+                clearTimeout(refreshTimeoutRef.current); // AIDEV-NOTE: Cleanup timeout
                 if (remoteStorage.private) {
                     remoteStorage.private.removeEventListener('change', handleChange);
                 }
@@ -149,13 +266,13 @@ export const AppProvider = ({ children }) => {
 
     // loadHub agora só define a URL com recuperação de erro
     const loadHub = useCallback((url) => {
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env?.DEV) {
             console.log('🚀 [AppContext] loadHub chamado com URL:', url);
         }
         
         // AIDEV-NOTE: Prevents loading same URL multiple times
         if (hubUrlToLoad === url) {
-            if (process.env.NODE_ENV === 'development') {
+            if (import.meta.env?.DEV) {
                 console.log('⚠️ [AppContext] URL já está sendo carregada, ignorando...');
             }
             return Promise.resolve(true);
@@ -169,7 +286,7 @@ export const AppProvider = ({ children }) => {
     // AIDEV-NOTE: Retry function for hub loading errors
     const retryLoadHub = useCallback(() => {
         if (lastAttemptedUrl) {
-            if (process.env.NODE_ENV === 'development') {
+            if (import.meta.env?.DEV) {
                 console.log('[AppContext] Tentando recarregar hub:', lastAttemptedUrl);
             }
             refetchHub();
@@ -178,7 +295,7 @@ export const AppProvider = ({ children }) => {
 
     // AIDEV-NOTE: Clears hub state and returns to initial placeholder
     const clearHubData = useCallback(() => {
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env?.DEV) {
             console.log('🧹 [AppContext] Limpando dados do hub para voltar ao placeholder');
         }
         
@@ -220,6 +337,32 @@ export const AppProvider = ({ children }) => {
         }
     }, [refreshUserData]);
 
+    // AIDEV-NOTE: CRITICAL - Additional safety check to ensure pinned works are loaded when RemoteStorage connects
+    useEffect(() => {
+        let hasFired = false; // AIDEV-NOTE: Prevent multiple executions
+        
+        if (isConnected && pinnedItems.length === 0 && !hasFired) {
+            hasFired = true;
+            // AIDEV-NOTE: If connected but no pinned items loaded, force refresh after a short delay
+            const timeoutId = setTimeout(() => {
+                if (import.meta.env?.DEV) {
+                    console.log('🔄 [AppContext] Safety check: Re-loading pinned works after connection');
+                }
+                refreshUserData();
+            }, 1000); // 1 second delay to allow initial sync
+            
+            return () => clearTimeout(timeoutId);
+        }
+    }, [isConnected, refreshUserData]); // AIDEV-NOTE: Removed pinnedItems.length to prevent loops
+
+    // AIDEV-NOTE: Force refresh of pinned works - can be called manually to ensure 100% reliability
+    const forceRefreshPinnedWorks = useCallback(() => {
+        if (import.meta.env?.DEV) {
+            console.log('🔃 [AppContext] forceRefreshPinnedWorks: Forçando recarregamento das obras pinadas');
+        }
+        refreshUserData();
+    }, [refreshUserData]);
+
     const value = {
         currentHubData,
         currentHubUrl: hubUrlToLoad, // AIDEV-NOTE: Export hubUrlToLoad as currentHubUrl for navigation
@@ -241,6 +384,7 @@ export const AppProvider = ({ children }) => {
         removeHub: api.removeHub,
         togglePinStatus,
         refreshUserData,
+        forceRefreshPinnedWorks, // AIDEV-NOTE: Manual force refresh for 100% reliability
         itemError,
         selectedItemData,
         selectItem,

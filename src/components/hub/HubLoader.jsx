@@ -3,9 +3,10 @@ import { useAppContext } from '../../context/AppContext';
 import '../../styles/hub-loader.css';
 import HubHistory from './HubHistory';
 import { encodeUrl } from '../../utils/encoding';
+import { APP_CONFIG } from '../../constants/app';
 
 const HubLoader = ({ onLoadHub, loading }) => {
-    const [url, setUrl] = useState("https://raw.githubusercontent.com/Jhoorodre/TOG-Brasil/main/hub_tog.json");
+    const [url, setUrl] = useState(APP_CONFIG.DEFAULT_HUB_URL); // AIDEV-NOTE: Use normalized URL from constants
     const [error, setError] = useState('');
     const { savedHubs, removeHub } = useAppContext();
 
