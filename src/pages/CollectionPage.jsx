@@ -10,12 +10,12 @@ const CollectionPage = () => {
     const { savedHubs, removeHub } = useAppContext();
     const navigate = useNavigate();
 
-    // AIDEV-NOTE: Navega para o hub selecionado via query parameter
+    // AIDEV-NOTE: Navega diretamente para a rota do hub (não query parameter)
     const handleSelectHub = (hub) => {
         try {
             const encodedHubUrl = encodeUrl(hub.url);
-            // AIDEV-NOTE: Carrega hub na mesma aba via query parameter
-            navigate(`/?hub=${encodedHubUrl}`);
+            // AIDEV-NOTE: Navega diretamente para a rota do hub para manter URL correta
+            navigate(`/hub/${encodedHubUrl}`);
         } catch (error) {
             console.error("Erro ao navegar para o hub:", error);
         }

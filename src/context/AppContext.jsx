@@ -301,15 +301,13 @@ export const AppProvider = ({ children }) => {
             console.log('🧹 [AppContext] Limpando dados do hub para voltar ao placeholder');
         }
         
+        // AIDEV-NOTE: Clear React Query cache for all hub queries to ensure clean state
+        queryClient.removeQueries(['hub']);
+        
         setHubUrlToLoad(null);
         setLastAttemptedUrl("");
         setHasRedirectedToHub(false);
-        
-        // AIDEV-NOTE: Also clears React Query cache for this hub
-        if (hubUrlToLoad) {
-            queryClient.invalidateQueries(['hub', hubUrlToLoad]);
-        }
-    }, [hubUrlToLoad, queryClient]);
+    }, [queryClient]);
 
     /**
      * ✅ CORREÇÃO: Recebe o objeto 'item' completo e passa-o

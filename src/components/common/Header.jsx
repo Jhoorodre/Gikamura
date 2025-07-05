@@ -9,22 +9,46 @@ import ThemeToggle from './ThemeToggle';
 const Header = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const { isConnected } = useRemoteStorageContext() || { isConnected: false };
-    const { currentHubData, currentHubUrl, clearHubData } = useAppContext() || { currentHubData: null, currentHubUrl: null, clearHubData: () => {} };
+    const { currentHubData, currentHubUrl, lastAttemptedUrl, clearHubData } = useAppContext() || { 
+        currentHubData: null, 
+        currentHubUrl: null, 
+        lastAttemptedUrl: null,
+        clearHubData: () => {} 
+    };
     const location = useLocation();
     const navigate = useNavigate();
 
-    // AIDEV-NOTE: Smart navigation for Hub Loader button
+    // AIDEV-NOTE: Smart navigation for Hub Loader button - vai para hub atual ou página inicial
     const handleHubLoaderClick = (e) => {
         e.preventDefault();
         
-        if (currentHubData && currentHubUrl) {
-            // AIDEV-NOTE: Navigate to current loaded hub (never exposes raw/json URL)
-            const encodedHubUrl = encodeUrl(currentHubUrl);
-            navigate(`/hub/${encodedHubUrl}`);
-        } else {
-            // AIDEV-NOTE: No hub loaded, go to Hub Loader
-            navigate('/');
+        // AIDEV-NOTE: Debug logs para entender o estado atual
+        console.log('🔍 [Header] Hub Loader clicked:', {
+            isConnected,
+            currentHubData: !!currentHubData,
+            currentHubUrl,
+            lastAttemptedUrl,
+            hubTitle: currentHubData?.hub?.title,
+            currentPath: location.pathname
+        });
+        
+        // AIDEV-NOTE: Se há hub carregado e URL disponível, navega para o hub
+        if (currentHubData && (currentHubUrl || lastAttemptedUrl)) {
+            const hubUrl = currentHubUrl || lastAttemptedUrl;
+            try {
+                const encodedHubUrl = encodeUrl(hubUrl);
+                const hubRoute = `/hub/${encodedHubUrl}`;
+                console.log('🎯 [Header] Navegando para hub atual:', hubRoute);
+                navigate(hubRoute);
+                return;
+            } catch (error) {
+                console.error('❌ [Header] Erro ao codificar URL do hub:', error);
+            }
         }
+        
+        // AIDEV-NOTE: Se não há hub carregado, vai para página inicial
+        console.log('🏠 [Header] Indo para página inicial');
+        navigate('/');
     };
 
     // AIDEV-NOTE: Navigation items with RemoteStorage dependency logic
@@ -65,10 +89,20 @@ const Header = () => {
 
     const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
-    // AIDEV-NOTE: Logo navigation - clears hub data and goes to Hub Loader (/)
+    // AIDEV-NOTE: Logo navigation - vai para página inicial, limpa estado apenas se necessário
     const handleLogoClick = (e) => {
         e.preventDefault();
-        clearHubData(); // AIDEV-NOTE: Clear hub data to force showing Hub Loader placeholder
+        
+        // AIDEV-NOTE: Se já estamos na página inicial, não faz nada para evitar limpar estado desnecessariamente
+        if (location.pathname === '/') {
+            return;
+        }
+        
+        // AIDEV-NOTE: Só limpa dados se não estamos em rota de hub para preservar navegação
+        if (!location.pathname.startsWith('/hub/')) {
+            clearHubData();
+        }
+        
         navigate('/');
     };
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useReader } from '../hooks/useReader';
-import { decodeUrl } from '../utils/encoding';
+import { decodeUrl, encodeUrl } from '../utils/encoding';
 import { BookOpenIcon, PlayIcon, ClockIcon, CheckIcon } from '../components/common/Icones';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
@@ -48,7 +48,7 @@ const SeriesDetailPage = () => {
         console.log('🎯 Iniciando leitura do capítulo:', chapterId);
         selectChapter(chapterId);
         // Navega para a página de leitura com o capítulo selecionado
-        navigate(`/read/${encodedUrl}/${encodeURIComponent(chapterId)}`);
+        navigate(`/read/${encodedUrl}/${encodeUrl(chapterId)}`);
     };
 
     const handleMarkAsRead = async (chapterId) => {

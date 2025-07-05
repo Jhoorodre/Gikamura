@@ -55,16 +55,17 @@ function MainContent() {
         }
     }
 
+    // AIDEV-NOTE: Loading state - always show skeleton while loading
     if (hubLoading) {
         return <ItemGridSkeleton />;
     }
 
+    // AIDEV-NOTE: Error state - always show error with retry
     if (hubError) {
         return (
             <ErrorMessage 
                 message={hubError} 
                 onRetry={() => {
-                    // AIDEV-NOTE: Try retry function first, fallback to loadHub
                     if (retryLoadHub) {
                         retryLoadHub();
                     } else if (lastAttemptedUrl) {
@@ -75,54 +76,31 @@ function MainContent() {
         );
     }
 
-    // AIDEV-NOTE: Always show HubLoader on main route (/) if no query params and no current data
+    // AIDEV-NOTE: Main route (/) behavior depends on connection and hub state
     if (location.pathname === '/') {
         const searchParams = new URLSearchParams(location.search);
         const hubParam = searchParams.get('hub');
         
-        // AIDEV-NOTE: If processing hub query parameter, show loading state
-        if (hubParam && hubLoading) {
-            return <ItemGridSkeleton />;
-        }
-        
-        // AIDEV-NOTE: If hub data loaded from query param, show HubView
+        // AIDEV-NOTE: Processing hub from query parameter
         if (hubParam && currentHubData) {
             return <HubView />;
         }
         
-        // AIDEV-NOTE: If hub data loaded without query param, show HubView  
-        if (currentHubData && !hubParam) {
+        // AIDEV-NOTE: If connected and has hub data, show HubView (allows proper navigation)
+        if (isConnected && currentHubData) {
             return <HubView />;
         }
         
-        // AIDEV-NOTE: Default state - show HubLoader for manual input
-        if (import.meta.env?.DEV && currentHubData) {
-            console.log('🧹 [MainContent] Hub data detected on main route, ensuring clean Hub Loader state');
-        }
+        // AIDEV-NOTE: Default: show HubLoader for loading new hubs
         return <HubLoader loading={hubLoading} />;
     }
 
-    // AIDEV-NOTE: If not connected, show HubView if data exists, otherwise HubLoader
-    if (!isConnected) {
-        if (currentHubData) {
-            return <HubView />;
-        }
-        
-        // AIDEV-NOTE: Fallback to HubLoader
-        return (
-            <div className="p-4">
-                <HubLoader loading={hubLoading} />
-            </div>
-        );
+    // AIDEV-NOTE: Non-main routes: show hub data if available, otherwise HubLoader
+    if (currentHubData) {
+        return <HubView />;
     }
 
-    // AIDEV-NOTE: Connected but no hub loaded - show HubLoader with cards
-    if (!currentHubData) {
-        return <HubLoader loading={hubLoading} />;
-    }
-
-    // AIDEV-NOTE: Connected AND has hub loaded - show HubView with hub data
-    return <HubView />;
+    return <HubLoader loading={hubLoading} />;
 }
 
 export default MainContent;

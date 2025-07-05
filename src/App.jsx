@@ -36,7 +36,10 @@ function App() {
     const { url: _hubUrl, setUrl: _setHubUrl, loading: _loading, handleSubmit: _handleLoadHub } = useHubLoader();
 
     useEffect(() => {
-        createParticles();
+        // AIDEV-NOTE: Create particles after DOM is ready
+        setTimeout(() => {
+            createParticles();
+        }, 100);
         console.log('🚀 [App] Aplicação iniciada - Remote Storage conectado:', remoteStorageConnected);
     }, []); // AIDEV-NOTE: Fixed deps to prevent infinite loops
 
@@ -128,23 +131,13 @@ function App() {
 
             {/* AIDEV-NOTE: Unified routing system with conditional rendering */}
             <Routes>
-                {/* AIDEV-NOTE: Main route switches based on RemoteStorage connection */}
+                {/* AIDEV-NOTE: Main route - unified content for all connection states */}
                 <Route path="/" element={
-                    !remoteStorageConnected ? (
-                        /* AIDEV-NOTE: Mode 1: No RemoteStorage - always uses MainContent */
-                        <main className="flex-grow flex flex-col">
-                            <div className="container mx-auto px-4 py-8 w-full">
-                                <MainContent />
-                            </div>
-                        </main>
-                    ) : (
-                        /* AIDEV-NOTE: Mode 2: With RemoteStorage */
-                        <main className="flex-grow flex flex-col">
-                            <div className="container mx-auto px-4 py-8 w-full">
-                                <MainContent />
-                            </div>
-                        </main>
-                    )
+                    <main className="flex-grow flex flex-col">
+                        <div className="container mx-auto px-4 py-8 w-full">
+                            <MainContent />
+                        </div>
+                    </main>
                 } />
                 
                 {/* AIDEV-NOTE: Protected routes requiring RemoteStorage connection */}
@@ -188,11 +181,12 @@ function App() {
                 {/* AIDEV-NOTE: Global routes always available regardless of connection */}
                 <Route path="/hub/:encodedUrl" element={<HubRouteHandler />} />
                 <Route path="/reader/:encodedUrl" element={<ReaderView />} />
-                <Route path="/read/:encodedUrl/:chapterId" element={<ChapterReaderView />} />
                 <Route path="/series/:encodedUrl" element={<SeriesDetailPage />} />
-                <Route path="/series/:encodedId" element={<ItemDetailView />} />
-                <Route path="/read/:encodedSeriesId/:encodedEntryKey" element={<ReaderView />} />
+                <Route path="/read/:encodedUrl/:chapterId" element={<ChapterReaderView />} />
                 <Route path="/redirect/:base64Url" element={<RedirectPage />} />
+
+                {/* Rota de fallback para conteúdo legado ou IDs antigos */}
+                <Route path="/series/:encodedId" element={<ItemDetailView />} />
             </Routes>
         </div>
     );

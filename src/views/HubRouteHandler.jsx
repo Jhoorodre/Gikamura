@@ -18,26 +18,8 @@ const HubRouteHandler = () => {
         const processHub = async () => {
             if (encodedUrl) {
                 try {
-                    setDebugInfo('🔓 Decodificando URL...');
-                    console.log('🎯 [HubRouteHandler] Processando URL codificada:', encodedUrl);
-                    
                     const url = decodeUrl(encodedUrl);
                     setDecodedUrl(url);
-                    console.log('🔓 [HubRouteHandler] URL decodificada:', url);
-                    
-                    setDebugInfo(`📡 Carregando: ${url}`);
-                    
-                    // AIDEV-NOTE: Direct fetch test for debugging connectivity
-                    console.log('🧪 [HubRouteHandler] Teste direto do fetch...');
-                    const response = await fetch(url);
-                    console.log('🧪 [HubRouteHandler] Response status:', response.status);
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log('🧪 [HubRouteHandler] Fetch direto funcionou! Título:', data.hub?.title);
-                        setDebugInfo(`✅ Fetch direto funcionou: ${data.hub?.title}`);
-                    }
-                    
                     await loadHub(url);
                 } catch (error) {
                     console.error('❌ [HubRouteHandler] Erro ao processar URL do hub:', error);
@@ -92,16 +74,7 @@ const HubRouteHandler = () => {
     }
 
     // AIDEV-NOTE: Fallback for undefined state
-    return (
-        <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
-            <Spinner text="Inicializando..." />
-            {debugInfo && (
-                <div className="text-sm text-gray-400 text-center max-w-md">
-                    {debugInfo}
-                </div>
-            )}
-        </div>
-    );
+    return <Spinner text="Inicializando..." />;
 };
 
 export default HubRouteHandler;

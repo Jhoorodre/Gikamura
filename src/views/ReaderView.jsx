@@ -74,9 +74,8 @@ const ReaderView = () => {
 
     // AIDEV-NOTE: Handles chapter selection and navigation with URL encoding
     const handleReadChapter = useCallback((chapterId) => {
-        console.log('🎯 Iniciando leitura do capítulo:', chapterId);
-        selectChapter(chapterId);
-        // AIDEV-NOTE: Navigate to specific chapter view
+        // A encodedUrl da obra já está disponível via useParams()
+        // O chapterId é codificado antes de ser passado para a nova rota
         navigate(`/read/${encodedUrl}/${encodeUrl(chapterId)}`);
     }, [navigate, encodedUrl, selectChapter]);
 
