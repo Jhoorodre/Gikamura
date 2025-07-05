@@ -21,13 +21,12 @@ export default defineConfig({
       '@shared': path.resolve(__dirname, './src/shared'),
     }
   },
-  root: path.resolve(__dirname, './src'),
   build: {
     target: 'es2015',
     minify: 'terser',
     sourcemap: false,
     rollupOptions: {
-      input: path.resolve(__dirname, './src/main.jsx'),
+      input: path.resolve(__dirname, './index.html'),
       output: {
         // AIDEV-NOTE: Manual chunk splitting for better caching and performance
         manualChunks: {

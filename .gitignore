@@ -1,6 +1,7 @@
-# Logs
+# Logs e debug
 logs
 *.log
+debug.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -13,38 +14,43 @@ pids
 *.seed
 *.pid.lock
 
-# Dependencies
+# Dependências
 node_modules/
 jspm_packages/
 
 # Build output
+build/
 dist/
 dist-ssr/
-build/
 .next/
 out/
 
-# Production
-/build
-/dist
+# Assets gerados
+/dist/assets/capa/
+/dist/assets/icone/
+/dist/assets/webt/
 
-# Generated files
-.docusaurus
-.cache
-.parcel-cache
-
-# Test coverage
+# Testes e dados temporários - apenas JSON e pastas (AIDEV-NOTE: arquivos físicos removidos)
 coverage/
 .nyc_output
 .coverage
 *.lcov
-
-# Test reports
 test-results/
 playwright-report/
 test-results.xml
+raw/teste_json/
 
-# Environment variables
+# Arquivos JSON de debug e desenvolvimento
+debug-*.json
+test-*.json
+*-debug.json
+test-remotestorage.html
+debug-enhanced.js
+debug-remotestorage.js
+fix-process-env.js
+scripts/fix-*.js
+
+# Arquivos de configuração e ambiente
 .env
 .env.local
 .env.development.local
@@ -53,7 +59,7 @@ test-results.xml
 .env.*.local
 !/.env.example
 
-# Cache directories
+# Cache
 .npm
 .eslintcache
 .stylelintcache
@@ -61,7 +67,7 @@ test-results.xml
 .parcel-cache/
 .vite/
 
-# Editor directories and files
+# Editor/IDE
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
@@ -72,7 +78,7 @@ test-results.xml
 *.swo
 *~
 
-# OS generated files
+# Arquivos do sistema operacional
 .DS_Store
 .DS_Store?
 ._*
@@ -89,33 +95,28 @@ desktop.ini
 *.msp
 *.lnk
 
-# Temporary files
+# Temporários
 *.tmp
 *.temp
 .temp/
 tmp/
 
-# Workspace files
+# Arquivos de workspace
+*.code-workspace
 gikamoe.code-workspace
 
-# Debug files
-*.tsbuildinfo
-debug.log
-
-# Storybook build outputs
+# Storybook
 storybook-static
 
-# Local development files
-test-*.js
-test-*.html
-*.test.local.*
-dev-*.js
-
-# Docs
+# Documentação e arquivos grandes
+Docs/
 AGENTS.md
 Field Notes From Shipping Real Code With Claude - diwank's space.pdf
 
-# Package manager lock files (uncomment if needed)
+# Componentes não utilizados (AIDEV-NOTE: versões antigas ou duplicadas)
+
+
+# Arquivos de lock (descomente se necessário)
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml

@@ -1,18 +1,11 @@
 // AIDEV-NOTE: Main App component; routing, notifications, and global state management
-import { useRef, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
 import { useRemoteStorageContext } from './context/RemoteStorageContext';
 import { useServiceWorker } from './hooks/useServiceWorker';
 // import { useNetworkNotifications } from './hooks/useNetworkMonitor'; // AIDEV-NOTE: Disabled to remove network messages
 import { useHubLoader } from './hooks/useHubLoader';
-import { useSyncOverlay } from './hooks/useSyncOverlay';
-import ItemDetailView from './views/ItemDetailView';
-import ReaderView from './views/ReaderView';
-import ChapterReaderView from './views/ChapterReaderView';
-import Spinner from './components/common/Spinner';
-import ErrorMessage from './components/common/ErrorMessage';
-import RedirectPage from './pages/RedirectPage';
 import { createParticles } from './utils/particles.js';
 import MainContent from './components/common/MainContent';
 import HubRouteHandler from './views/HubRouteHandler';
@@ -20,6 +13,11 @@ import CollectionPage from './pages/CollectionPage';
 import WorksPage from './pages/WorksPage';
 import UploadPage from './pages/UploadPage';
 import SeriesDetailPage from './pages/SeriesDetailPage';
+import ItemDetailView from './views/ItemDetailView';
+import ReaderView from './views/ReaderView';
+import ChapterReaderView from './views/ChapterReaderView';
+import RedirectPage from './pages/RedirectPage';
+import ErrorMessage from './components/common/ErrorMessage';
 import GlobalRemoteStorageWidget from './components/common/SimpleRemoteStorageWidgetNew';
 import Header from './components/common/Header';
 import { runFullDiagnostic } from './utils/networkDebug';
@@ -27,7 +25,7 @@ import { runFullDiagnostic } from './utils/networkDebug';
 function App() {
     const { conflictMessage: appConflictMessage } = useAppContext();
     const { isConnected: remoteStorageConnected, conflictMessage } = useRemoteStorageContext();
-    const { isOnline, updateAvailable, applyUpdate } = useServiceWorker();
+    const { updateAvailable, applyUpdate } = useServiceWorker();
     // const { networkMessage, dismissSlowMessage } = useNetworkNotifications(); // AIDEV-NOTE: Disabled to remove network messages
     
     // AIDEV-NOTE: Sync overlay temporarily disabled
@@ -35,7 +33,7 @@ function App() {
     // const { showOverlay: showSyncOverlay, forceHide: forcHideSyncOverlay } = useSyncOverlay(isSyncing);
     
     // AIDEV-NOTE: Centralized hub loading without auto-loading to prevent loops
-    const { url: hubUrl, setUrl: setHubUrl, loading, handleSubmit: handleLoadHub } = useHubLoader();
+    const { url: _hubUrl, setUrl: _setHubUrl, loading: _loading, handleSubmit: _handleLoadHub } = useHubLoader();
 
     useEffect(() => {
         createParticles();
@@ -60,7 +58,7 @@ function App() {
             {/* AIDEV-NOTE: Main application header with navigation */}
             <Header />
             
-            {/* AIDEV-NOTE: Old navigation system completely removed - ArrowNavigation.jsx deleted */}
+            {/* AIDEV-NOTE: Sistema de navegação antigo removido - ArrowNavigation.jsx deletado definitivamente */}
             {/* AIDEV-NOTE: Global RemoteStorage widget (essential functionality, not part of old nav) */}
             <GlobalRemoteStorageWidget />
             
