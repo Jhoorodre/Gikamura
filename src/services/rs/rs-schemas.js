@@ -114,10 +114,19 @@ export const Model = {
 
         // AIDEV-NOTE: Remove series by direct key (for cleanup purposes)
         removeSeriesByKey: (key) => {
-          if (key.startsWith(SERIES_PATH_BASE)) {
-            return privateClient.remove(key);
+          try {
+            if (key.startsWith(SERIES_PATH_BASE)) {
+              return privateClient.remove(key);
+            }
+            return privateClient.remove(`${SERIES_PATH_BASE}${key}`);
+          } catch (error) {
+            // AIDEV-NOTE: Silent fail for non-existing keys during cleanup
+            if (error.message && error.message.includes('non-existing')) {
+              console.warn(`[RS] Tentativa de remover chave inexistente: ${key}`);
+              return Promise.resolve();
+            }
+            throw error;
           }
-          return privateClient.remove(`${SERIES_PATH_BASE}${key}`);
         },
 
         getAllSeries: () => {
@@ -132,15 +141,35 @@ export const Model = {
           return privateClient.storeObject(HUB_TYPE, `${HUB_PATH_BASE}${hubKey}`, hubData);
         },
 
-        removeHub: (url) => {
-          const hubKey = getHubKey(url);
-          return privateClient.remove(`${HUB_PATH_BASE}${hubKey}`);
+        removeHub: async (url) => {
+          try {
+            const hubKey = getHubKey(url);
+            return await privateClient.remove(`${HUB_PATH_BASE}${hubKey}`);
+          } catch (error) {
+            // AIDEV-NOTE: Silent fail for non-existing keys during cleanup
+            if (error.message && error.message.includes('non-existing')) {
+              console.warn(`[RS] Tentativa de remover hub inexistente: ${url}`);
+              return Promise.resolve();
+            }
+            throw error;
+          }
         },
 
         getAllHubs: () => privateClient.getAll(HUB_PATH_BASE),
 
         // --- Método genérico de remoção ---
-        remove: (path) => privateClient.remove(path),
+        remove: async (path) => {
+          try {
+            return await privateClient.remove(path);
+          } catch (error) {
+            // AIDEV-NOTE: Silent fail for non-existing keys during cleanup
+            if (error.message && error.message.includes('non-existing')) {
+              console.warn(`[RS] Tentativa de remover path inexistente: ${path}`);
+              return Promise.resolve();
+            }
+            throw error;
+          }
+        },
       },
     };
   },

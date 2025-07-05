@@ -1,91 +1,114 @@
-/* AIDEV-NOTE: Centraliza estilos minimalistas para páginas principais (Hub Loader, Coleção, Obras, Upload) */
+/*
+ * AIDEV-NOTE: Minimalist page styles for main app sections (Hub, Collection, Works, Upload)
+ * Provides consistent layouts and components following design system tokens
+ */
 
+/* ========================================================================== */
+/* ==                      LAYOUT CONTAINERS                              == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: main container with responsive padding and proper viewport handling */
 .min-page-container {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    min-height: calc(100vh - var(--header-height));
-    padding: var(--space-8) var(--space-4);
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
+    min-height: calc(100vh - var(--header-height, 60px));
+    padding: var(--space-8, 2rem) var(--space-4, 1rem);
+    background-color: var(--bg-primary, #141414);
+    color: var(--text-primary, #ffffff);
 }
 
+/* AIDEV-NOTE: content wrapper with max-width constraint for optimal reading */
 .min-content-wrapper {
     width: 100%;
-    max-width: var(--content-width-lg);
+    max-width: var(--content-width-lg, 1024px);
     display: flex;
     flex-direction: column;
-    gap: var(--space-8);
+    gap: var(--space-8, 2rem);
 }
 
+/* ========================================================================== */
+/* ==                      TYPOGRAPHY SYSTEM                              == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: page header with visual hierarchy separation */
 .min-header {
     text-align: center;
-    border-bottom: 1px solid var(--border-primary);
-    padding-bottom: var(--space-6);
-    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-primary, rgba(52, 17, 17, 0.3));
+    padding-bottom: var(--space-6, 1.5rem);
+    margin-bottom: var(--space-4, 1rem);
 }
 
+/* AIDEV-NOTE: main page title with semantic sizing and proper contrast */
 .min-title {
-    font-size: var(--text-4xl);
-    font-weight: var(--fw-bold);
-    color: var(--text-primary);
-    margin-bottom: var(--space-2);
-    line-height: var(--leading-tight);
+    font-size: var(--text-4xl, 2.25rem);
+    font-weight: var(--fw-bold, 700);
+    color: var(--text-primary, #ffffff);
+    margin-bottom: var(--space-2, 0.5rem);
+    line-height: var(--leading-tight, 1.25);
 }
 
+/* AIDEV-NOTE: subtitle with secondary text color for hierarchy */
 .min-subtitle {
-    font-size: var(--text-lg);
-    color: var(--text-secondary);
-    line-height: var(--leading-normal);
+    font-size: var(--text-lg, 1.125rem);
+    color: var(--text-secondary, #a4a4a4);
+    line-height: var(--leading-normal, 1.5);
 }
 
+/* ========================================================================== */
+/* ==                      FORM COMPONENTS                                == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: responsive form layout with flexible wrapping */
 .min-form {
     display: flex;
-    gap: var(--space-4);
+    gap: var(--space-4, 1rem);
     flex-wrap: wrap;
 }
 
+/* AIDEV-NOTE: input field with focus states and accessibility support */
 .min-input {
     flex-grow: 1;
     min-width: 200px;
-    padding: var(--space-3) var(--space-4);
-    font-size: var(--text-base);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-primary);
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
-    transition: var(--transition-base);
-    font-family: var(--font-sans);
+    padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+    font-size: var(--text-base, 1rem);
+    border-radius: var(--radius-lg, 12px);
+    border: 1px solid var(--border-primary, rgba(52, 17, 17, 0.3));
+    background-color: var(--bg-secondary, #1a1a1a);
+    color: var(--text-primary, #ffffff);
+    transition: var(--transition-base, all 0.2s ease);
+    font-family: var(--font-sans, system-ui);
 }
 
 .min-input:focus {
     outline: none;
-    border-color: var(--border-focus);
+    border-color: var(--border-focus, #341111);
     box-shadow: 0 0 0 3px rgba(52, 17, 17, 0.1);
 }
 
 .min-input::placeholder {
-    color: var(--text-tertiary);
+    color: var(--text-tertiary, rgba(164, 164, 164, 0.8));
 }
 
+/* AIDEV-NOTE: button with hover/focus states and disabled handling */
 .min-button {
-    padding: var(--space-3) var(--space-6);
-    font-size: var(--text-base);
-    font-weight: var(--fw-medium);
-    border-radius: var(--radius-lg);
-    background-color: var(--surface-primary);
-    color: var(--text-primary);
+    padding: var(--space-3, 0.75rem) var(--space-6, 1.5rem);
+    font-size: var(--text-base, 1rem);
+    font-weight: var(--fw-medium, 500);
+    border-radius: var(--radius-lg, 12px);
+    background-color: var(--surface-primary, #341111);
+    color: var(--text-primary, #ffffff);
     border: none;
     cursor: pointer;
-    transition: var(--transition-base);
-    font-family: var(--font-sans);
+    transition: var(--transition-base, all 0.2s ease);
+    font-family: var(--font-sans, system-ui);
     white-space: nowrap;
 }
 
 .min-button:hover:not(:disabled) {
-    background-color: var(--surface-hover);
+    background-color: var(--surface-hover, #5e1e1e);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.12));
 }
 
 .min-button:focus {
@@ -100,87 +123,159 @@
     box-shadow: none;
 }
 
+/* AIDEV-NOTE: textarea for larger text input with proper styling */
+.min-textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: var(--space-4, 1rem);
+    border-radius: var(--radius-lg, 12px);
+    border: 1px solid var(--border-primary, rgba(52, 17, 17, 0.3));
+    background-color: var(--bg-secondary, #1a1a1a);
+    color: var(--text-primary, #ffffff);
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm, 0.875rem);
+    line-height: var(--leading-relaxed, 1.625);
+    resize: vertical;
+    transition: var(--transition-base, all 0.2s ease);
+}
+
+.min-textarea:focus {
+    outline: none;
+    border-color: var(--border-focus, #341111);
+    box-shadow: 0 0 0 3px rgba(52, 17, 17, 0.1);
+}
+
+.min-textarea::placeholder {
+    color: var(--text-tertiary, rgba(164, 164, 164, 0.8));
+}
+
+/* ========================================================================== */
+/* ==                      FEEDBACK & MESSAGING                           == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: error message styling with proper semantics and visibility */
 .min-error-message {
-    color: var(--color-error);
+    color: var(--color-error, #dc2626);
     text-align: center;
     width: 100%;
-    padding-top: var(--space-2);
-    font-size: var(--text-sm);
-    background-color: var(--color-error-bg);
-    padding: var(--space-3);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-error);
+    padding: var(--space-3, 0.75rem);
+    font-size: var(--text-sm, 0.875rem);
+    background-color: var(--color-error-bg, rgba(220, 38, 38, 0.1));
+    border-radius: var(--radius-lg, 12px);
+    border: 1px solid var(--color-error, #dc2626);
 }
 
+/* AIDEV-NOTE: validation result with semantic styling for success/error states */
+.min-validation-result {
+    padding: var(--space-4, 1rem);
+    border-radius: var(--radius-lg, 12px);
+    margin-top: var(--space-4, 1rem);
+    font-size: var(--text-base, 1rem);
+}
+
+.min-validation-result h4 {
+    margin: 0 0 var(--space-2, 0.5rem) 0;
+    font-weight: var(--fw-semibold, 600);
+    color: var(--text-primary, #ffffff);
+}
+
+.min-validation-result p {
+    margin: 0;
+    font-size: var(--text-sm, 0.875rem);
+}
+
+.min-validation-result.valid {
+    background-color: var(--color-success-bg, rgba(34, 197, 94, 0.1));
+    border: 1px solid var(--color-success, #22c55e);
+}
+
+.min-validation-result.invalid {
+    background-color: var(--color-error-bg, rgba(220, 38, 38, 0.1));
+    border: 1px solid var(--color-error, #dc2626);
+}
+
+/* ========================================================================== */
+/* ==                      SECTION LAYOUT                                 == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: history section with spacing and semantic structure */
 .min-history-section {
-    margin-top: var(--space-8);
+    margin-top: var(--space-8, 2rem);
 }
 
+/* AIDEV-NOTE: section title with visual hierarchy and spacing */
 .min-section-title {
-    font-size: var(--text-2xl);
-    font-weight: var(--fw-semibold);
-    color: var(--text-primary);
-    margin-bottom: var(--space-4);
-    padding-bottom: var(--space-2);
-    border-bottom: 1px solid var(--border-primary);
+    font-size: var(--text-2xl, 1.5rem);
+    font-weight: var(--fw-semibold, 600);
+    color: var(--text-primary, #ffffff);
+    margin-bottom: var(--space-4, 1rem);
+    padding-bottom: var(--space-2, 0.5rem);
+    border-bottom: 1px solid var(--border-primary, rgba(52, 17, 17, 0.3));
 }
 
+/* AIDEV-NOTE: empty state design with proper visual feedback */
 .min-empty-state {
     text-align: center;
-    padding: var(--space-12) var(--space-4);
-    border: 2px dashed var(--border-primary);
-    border-radius: var(--radius-xl);
-    background-color: var(--bg-secondary);
+    padding: var(--space-12, 3rem) var(--space-4, 1rem);
+    border: 2px dashed var(--border-primary, rgba(52, 17, 17, 0.3));
+    border-radius: var(--radius-xl, 16px);
+    background-color: var(--bg-secondary, #1a1a1a);
 }
 
 .min-empty-icon {
-    font-size: var(--text-5xl);
+    font-size: var(--text-5xl, 3rem);
     display: block;
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-4, 1rem);
     opacity: 0.7;
 }
 
 .min-empty-title {
-    font-size: var(--text-xl);
-    font-weight: var(--fw-semibold);
-    margin-bottom: var(--space-2);
-    color: var(--text-primary);
+    font-size: var(--text-xl, 1.25rem);
+    font-weight: var(--fw-semibold, 600);
+    margin-bottom: var(--space-2, 0.5rem);
+    color: var(--text-primary, #ffffff);
 }
 
 .min-empty-description {
-    color: var(--text-secondary);
-    font-size: var(--text-base);
-    line-height: var(--leading-normal);
+    color: var(--text-secondary, #a4a4a4);
+    font-size: var(--text-base, 1rem);
+    line-height: var(--leading-normal, 1.5);
 }
 
+/* ========================================================================== */
+/* ==                      TAB NAVIGATION                                 == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: tab container with proper keyboard navigation support */
 .min-tabs {
     display: flex;
-    border-bottom: 1px solid var(--border-primary);
-    gap: var(--space-1);
+    border-bottom: 1px solid var(--border-primary, rgba(52, 17, 17, 0.3));
+    gap: var(--space-1, 0.25rem);
 }
 
+/* AIDEV-NOTE: tab button with focus states and active indicator */
 .min-tab-button {
-    padding: var(--space-3) var(--space-6);
+    padding: var(--space-3, 0.75rem) var(--space-6, 1.5rem);
     border: none;
     background: none;
-    color: var(--text-secondary);
+    color: var(--text-secondary, #a4a4a4);
     cursor: pointer;
     position: relative;
-    font-size: var(--text-base);
-    font-weight: var(--fw-medium);
-    transition: var(--transition-base);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    font-size: var(--text-base, 1rem);
+    font-weight: var(--fw-medium, 500);
+    transition: var(--transition-base, all 0.2s ease);
+    border-radius: var(--radius-lg, 12px) var(--radius-lg, 12px) 0 0;
 }
 
 .min-tab-button:hover {
-    color: var(--text-primary);
-    background-color: var(--bg-secondary);
+    color: var(--text-primary, #ffffff);
+    background-color: var(--bg-secondary, #1a1a1a);
 }
 
 .min-tab-button.active {
-    color: var(--text-primary);
-    font-weight: var(--fw-semibold);
-    background-color: var(--bg-secondary);
+    color: var(--text-primary, #ffffff);
+    font-weight: var(--fw-semibold, 600);
+    background-color: var(--bg-secondary, #1a1a1a);
 }
 
 .min-tab-button.active::after {
@@ -190,31 +285,37 @@
     left: 0;
     right: 0;
     height: 2px;
-    background-color: var(--surface-primary);
+    background-color: var(--surface-primary, #341111);
 }
 
 .min-tab-button:focus {
     outline: none;
-    box-shadow: 0 0 0 2px var(--border-focus);
+    box-shadow: 0 0 0 2px var(--border-focus, #341111);
 }
 
+/* ========================================================================== */
+/* ==                      UPLOAD COMPONENTS                              == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: upload content section with proper spacing */
 .min-upload-content {
-    padding: var(--space-8) 0;
+    padding: var(--space-8, 2rem) 0;
 }
 
+/* AIDEV-NOTE: drag-and-drop zone with interactive states */
 .min-dropzone {
-    border: 2px dashed var(--border-primary);
-    border-radius: var(--radius-xl);
-    padding: var(--space-8);
+    border: 2px dashed var(--border-primary, rgba(52, 17, 17, 0.3));
+    border-radius: var(--radius-xl, 16px);
+    padding: var(--space-8, 2rem);
     text-align: center;
     cursor: pointer;
-    transition: var(--transition-base);
-    background-color: var(--bg-secondary);
+    transition: var(--transition-base, all 0.2s ease);
+    background-color: var(--bg-secondary, #1a1a1a);
 }
 
 .min-dropzone:hover {
-    border-color: var(--border-hover);
-    background-color: var(--bg-tertiary);
+    border-color: var(--border-hover, rgba(164, 164, 164, 0.3));
+    background-color: var(--bg-tertiary, #242424);
 }
 
 .min-dropzone-input {
@@ -226,190 +327,228 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-4, 1rem);
 }
 
 .min-dropzone-icon {
-    font-size: var(--text-4xl);
+    font-size: var(--text-4xl, 2.25rem);
     opacity: 0.7;
 }
 
 .min-dropzone-label p {
-    font-size: var(--text-lg);
-    color: var(--text-primary);
+    font-size: var(--text-lg, 1.125rem);
+    color: var(--text-primary, #ffffff);
     margin: 0;
 }
 
 .min-dropzone-label small {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-}
-
-.min-textarea {
-    width: 100%;
-    min-height: 150px;
-    padding: var(--space-4);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-primary);
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    line-height: var(--leading-relaxed);
-    resize: vertical;
-    transition: var(--transition-base);
-}
-
-.min-textarea:focus {
-    outline: none;
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(52, 17, 17, 0.1);
-}
-
-.min-textarea::placeholder {
-    color: var(--text-tertiary);
-}
-
-.min-validation-result {
-    padding: var(--space-4);
-    border-radius: var(--radius-lg);
-    margin-top: var(--space-4);
-    font-size: var(--text-base);
-}
-
-.min-validation-result h4 {
-    margin: 0 0 var(--space-2) 0;
-    font-weight: var(--fw-semibold);
-    color: var(--text-primary);
-}
-
-.min-validation-result p {
-    margin: 0;
-    font-size: var(--text-sm);
-}
-
-.min-validation-result.valid {
-    background-color: var(--color-success-bg);
-    border: 1px solid var(--color-success);
-}
-
-.min-validation-result.invalid {
-    background-color: var(--color-error-bg);
-    border: 1px solid var(--color-error);
+    font-size: var(--text-sm, 0.875rem);
+    color: var(--text-secondary, #a4a4a4);
 }
 
 .min-upload-actions {
-    margin-top: var(--space-4);
+    margin-top: var(--space-4, 1rem);
     text-align: right;
 }
 
-/* AIDEV-NOTE: Estilos minimalistas para grid de itens (ItemGrid) */
-.min-item-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--space-6);
-    padding: var(--space-4) 0;
+/* ========================================================================== */
+/* ==                      COLLECTION & HUB STYLES                        == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: compact container for hub collection with optimal width */
+.hub-collection-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
+/* AIDEV-NOTE: compact hub item cards with hover effects and proper spacing */
+.hub-collection-container .chapter-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 12px 16px !important;
+    min-height: 60px !important;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    border-radius: 8px !important;
+    background: var(--bg-secondary, #1a1a1a) !important;
+}
+
+.hub-collection-container .chapter-item:hover {
+    border-color: var(--border-accent, #a4a4a4);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* AIDEV-NOTE: smaller images for compact hub layout */
+.hub-collection-container .chapter-item img {
+    width: 40px !important;
+    height: 40px !important;
+    object-fit: cover !important;
+    border-radius: 6px !important;
+    flex-shrink: 0 !important;
+}
+
+/* AIDEV-NOTE: compact content layout with text overflow handling */
+.hub-collection-container .chapter-item .chapter-content {
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+}
+
+.hub-collection-container .chapter-item .chapter-title {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.hub-collection-container .chapter-item .chapter-subtitle {
+    font-size: 0.75rem !important;
+    color: var(--text-secondary, #a4a4a4) !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* AIDEV-NOTE: compact action buttons for hub items */
+.hub-collection-container .chapter-actions {
+    display: flex !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+}
+
+.hub-collection-container .chapter-actions button {
+    padding: 4px 8px !important;
+    font-size: 0.7rem !important;
+    border-radius: 4px !important;
+}
+
+/* ========================================================================== */
+/* ==                      ITEM GRID LAYOUT                               == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: responsive grid for item cards with improved sizing and proportions */
+.min-item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-6, 1.5rem);
+    padding: var(--space-6, 1.5rem) 0;
+}
+
+/* AIDEV-NOTE: item card with improved proportions and enhanced hover effects */
 .min-item-card {
     position: relative;
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-xl);
+    background: var(--bg-secondary, #1a1a1a);
+    border-radius: var(--radius-lg, 12px);
     overflow: hidden;
-    transition: var(--transition-base);
+    transition: all 0.3s ease;
     cursor: pointer;
+    border: 1px solid var(--border-primary, rgba(52, 17, 17, 0.3));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .min-item-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--border-hover);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    border-color: var(--border-accent, #a4a4a4);
 }
 
-.min-item-card:focus-within {
-    outline: none;
-    box-shadow: 0 0 0 3px var(--border-focus);
+/* AIDEV-NOTE: pin button with improved visibility and positioning */
+.min-item-pin-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
 }
 
+.min-item-pin-button:hover {
+    background: rgba(0, 0, 0, 0.95);
+    transform: scale(1.1);
+}
+
+.min-item-pin-button.pinned {
+    background: var(--color-yellow-500, #eab308);
+    color: var(--color-yellow-900, #713f12);
+}
+
+/* AIDEV-NOTE: improved image sizing with proper aspect ratio and better visual presentation */
 .min-item-image {
     width: 100%;
-    aspect-ratio: 3/4;
+    height: 280px;
     object-fit: cover;
-    background-color: var(--bg-tertiary);
-    transition: var(--transition-base);
+    border-radius: 0;
+    display: block;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    transition: transform 0.3s ease;
 }
 
 .min-item-card:hover .min-item-image {
     transform: scale(1.02);
 }
 
+/* AIDEV-NOTE: enhanced content area with better spacing and typography */
 .min-item-content {
-    padding: var(--space-4);
+    padding: var(--space-4, 1rem) var(--space-4, 1rem) var(--space-5, 1.25rem);
+    text-align: center;
 }
 
 .min-item-title {
-    font-size: var(--text-base);
-    font-weight: var(--fw-semibold);
-    color: var(--text-primary);
-    margin-bottom: var(--space-1);
-    line-height: var(--leading-tight);
+    font-size: var(--text-base, 1rem);
+    font-weight: var(--fw-semibold, 600);
+    color: var(--text-primary, #ffffff);
+    margin: 0 0 var(--space-2, 0.5rem) 0;
+    line-height: var(--leading-tight, 1.25);
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
 .min-item-subtitle {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    line-height: var(--leading-normal);
+    font-size: var(--text-sm, 0.875rem);
+    color: var(--text-secondary, #a4a4a4);
+    margin: 0;
+    line-height: var(--leading-normal, 1.5);
     display: -webkit-box;
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.min-item-pin-button {
-    position: absolute;
-    top: var(--space-2);
-    right: var(--space-2);
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-full);
-    border: none;
-    background-color: var(--bg-elevated);
-    color: var(--text-secondary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--text-lg);
-    transition: var(--transition-base);
-    z-index: 10;
-}
+/* ========================================================================== */
+/* ==                      RESPONSIVE DESIGN                              == */
+/* ========================================================================== */
 
-.min-item-pin-button:hover {
-    background-color: var(--surface-primary);
-    color: var(--text-primary);
-    transform: scale(1.1);
-}
-
-.min-item-pin-button.pinned {
-    color: var(--color-warning);
-}
-
-.min-item-pin-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--border-focus);
-}
-
-/* AIDEV-NOTE: Responsividade para dispositivos móveis */
+/* AIDEV-NOTE: mobile-first responsive design with optimized layouts */
 @media (max-width: 768px) {
+    /* Container adjustments */
     .min-page-container {
-        padding: var(--space-4) var(--space-2);
+        padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
     }
     
+    /* Form layout adjustments */
     .min-form {
         flex-direction: column;
     }
@@ -418,34 +557,246 @@
         min-width: auto;
     }
     
+    /* Tab navigation for mobile */
     .min-tabs {
         flex-direction: column;
         border-bottom: none;
     }
     
     .min-tab-button {
-        border-radius: var(--radius-lg);
-        border-bottom: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg, 12px);
+        border-bottom: 1px solid var(--border-primary, rgba(52, 17, 17, 0.3));
     }
     
     .min-tab-button.active::after {
         display: none;
     }
     
+    /* Grid adjustments for smaller screens with improved card sizing */
     .min-item-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: var(--space-4);
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: var(--space-4, 1rem);
+        padding: var(--space-4, 1rem) 0;
     }
     
+    /* Adjust image height for mobile */
+    .min-item-image {
+        height: 240px;
+    }
+    
+    /* Content padding adjustments */
     .min-item-content {
-        padding: var(--space-3);
+        padding: var(--space-3, 0.75rem);
     }
     
     .min-item-title {
-        font-size: var(--text-sm);
+        font-size: var(--text-sm, 0.875rem);
     }
     
     .min-item-subtitle {
-        font-size: var(--text-xs);
+        font-size: var(--text-xs, 0.75rem);
     }
-} 
+    
+    /* Pin button adjustments for mobile */
+    .min-item-pin-button {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+        top: 8px;
+        right: 8px;
+    }
+    
+    /* Empty state adjustments */
+    .min-empty-state {
+        padding: var(--space-8, 2rem) var(--space-2, 0.5rem);
+    }
+    
+    /* Dropzone adjustments */
+    .min-dropzone {
+        padding: var(--space-6, 1.5rem);
+    }
+    
+    .min-dropzone-icon {
+        font-size: var(--text-3xl, 1.875rem);
+    }
+}
+
+/* AIDEV-NOTE: tablet adjustments for medium screens with balanced proportions */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .min-item-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: var(--space-5, 1.25rem);
+    }
+    
+    .min-item-image {
+        height: 260px;
+    }
+    
+    /* Hub collection mobile adjustments - minimalist */
+    .hub-collection-container .panel-solid .chapter-item {
+        padding: var(--space-3, 0.75rem) var(--space-4, 1rem) !important;
+        min-height: 56px !important;
+    }
+    
+    .hub-collection-container .panel-solid .chapter-item img {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    
+    .hub-collection-container .panel-solid .chapter-item button {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    
+    .hub-collection-container .panel-solid .chapter-item .flex-1 p:first-child {
+        font-size: var(--text-sm, 0.875rem) !important;
+    }
+    
+    .hub-collection-container .panel-solid .chapter-item .flex-1 p:last-child {
+        font-size: var(--text-xs, 0.75rem) !important;
+    }
+}
+
+/* AIDEV-NOTE: large screen optimizations with spacious layout */
+@media (min-width: 1200px) {
+    .min-item-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--space-8, 2rem);
+    }
+    
+    .min-item-image {
+        height: 320px;
+    }
+    
+    .min-item-content {
+        padding: var(--space-5, 1.25rem) var(--space-5, 1.25rem) var(--space-6, 1.5rem);
+    }
+    
+    .min-item-title {
+        font-size: var(--text-lg, 1.125rem);
+    }
+}
+
+/* ========================================================================== */
+/* ==                      HUB HISTORY COMPONENT - MINIMALIST             == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: minimalist hub container with subtle styling */
+.hub-collection-container .panel-solid {
+    background: var(--bg-secondary, #1a1a1a);
+    border: 1px solid var(--border-primary, rgba(52, 17, 17, 0.3));
+    border-radius: var(--radius-lg, 12px);
+    padding: var(--space-4, 1rem);
+    margin-bottom: var(--space-4, 1rem);
+}
+
+/* AIDEV-NOTE: hide only the large icon, keep the text smaller */
+.hub-collection-container .panel-solid h3 {
+    font-size: var(--text-lg, 1.125rem);
+    font-weight: var(--fw-semibold, 600);
+    color: var(--text-primary, #ffffff);
+    margin: 0 0 var(--space-4, 1rem) 0;
+    display: block;
+}
+
+/* AIDEV-NOTE: hide the large icon but keep the text */
+.hub-collection-container .panel-solid h3 svg,
+.hub-collection-container .panel-solid .flex.items-center.gap-3 svg {
+    display: none !important;
+}
+
+/* AIDEV-NOTE: simple list container */
+.hub-collection-container .space-y-2 {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+    max-height: none;
+    overflow-y: visible;
+    padding-right: 0;
+}
+
+/* AIDEV-NOTE: clean hub item design with minimal styling */
+.hub-collection-container .panel-solid .chapter-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: var(--space-3, 0.75rem) !important;
+    padding: var(--space-4, 1rem) var(--space-5, 1.25rem) !important;
+    min-height: 60px !important;
+    background: var(--bg-secondary, #1a1a1a) !important;
+    border: 1px solid var(--border-primary, rgba(52, 17, 17, 0.3)) !important;
+    border-radius: var(--radius-lg, 12px) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.hub-collection-container .panel-solid .chapter-item:hover {
+    background: var(--bg-tertiary, #242424) !important;
+    border-color: var(--border-hover, rgba(164, 164, 164, 0.3)) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* AIDEV-NOTE: hub content with clean layout */
+.hub-collection-container .panel-solid .chapter-item > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--space-3, 0.75rem) !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+/* AIDEV-NOTE: smaller hub icons for minimal design */
+.hub-collection-container .panel-solid .chapter-item img {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: var(--radius-md, 8px) !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+    border: none !important;
+}
+
+/* AIDEV-NOTE: clean typography without excessive styling */
+.hub-collection-container .panel-solid .chapter-item .flex-1 p:first-child {
+    font-size: var(--text-base, 1rem) !important;
+    font-weight: var(--fw-medium, 500) !important;
+    color: var(--text-primary, #ffffff) !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.hub-collection-container .panel-solid .chapter-item .flex-1 p:last-child {
+    font-size: var(--text-sm, 0.875rem) !important;
+    color: var(--text-tertiary, rgba(164, 164, 164, 0.8)) !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* AIDEV-NOTE: subtle remove button */
+.hub-collection-container .panel-solid .chapter-item button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: var(--radius-md, 8px) !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-tertiary, rgba(164, 164, 164, 0.8)) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+}
+
+.hub-collection-container .panel-solid .chapter-item button:hover {
+    background: rgba(220, 38, 38, 0.1) !important;
+    color: var(--color-error, #dc2626) !important;
+}
+
+.hub-collection-container .panel-solid .chapter-item button svg {
+    width: 14px !important;
+    height: 14px !important;
+}

@@ -6,6 +6,8 @@ import ConfirmModal from '../common/ConfirmModal';
 const HubHistory = ({ hubs, onSelectHub, onRemoveHub }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [hubToRemove, setHubToRemove] = useState(null);
+    const [removing, setRemoving] = useState(false); // AIDEV-NOTE: Loading state for removal
+    
     if (!hubs || hubs.length === 0) return null;
 
     const handleRemoveClick = (hub, e) => {
@@ -13,16 +15,38 @@ const HubHistory = ({ hubs, onSelectHub, onRemoveHub }) => {
         setHubToRemove(hub);
         setModalOpen(true);
     };
-    const handleConfirm = () => {
-        if (hubToRemove) {
-            onRemoveHub(hubToRemove.url);
+    
+    const handleConfirm = async () => {
+        // AIDEV-NOTE: Robust hub removal with error handling and user feedback
+        if (hubToRemove && onRemoveHub) {
+            setRemoving(true);
+            try {
+                await onRemoveHub(hubToRemove.url);
+                console.log(`[HubHistory] Hub removido com sucesso: ${hubToRemove.title}`);
+            } catch (error) {
+                // AIDEV-NOTE: Handle specific error cases gracefully
+                if (error.message && error.message.includes('non-existing')) {
+                    console.warn(`[HubHistory] Hub já foi removido: ${hubToRemove.title}`);
+                } else {
+                    console.error(`[HubHistory] Erro ao remover hub ${hubToRemove.title}:`, error);
+                }
+                // AIDEV-NOTE: Always proceed to close modal since removal attempt was made
+            } finally {
+                setRemoving(false);
+                setModalOpen(false);
+                setHubToRemove(null);
+            }
+        } else {
+            setModalOpen(false);
+            setHubToRemove(null);
         }
-        setModalOpen(false);
-        setHubToRemove(null);
     };
+    
     const handleCancel = () => {
-        setModalOpen(false);
-        setHubToRemove(null);
+        if (!removing) {
+            setModalOpen(false);
+            setHubToRemove(null);
+        }
     };
 
     return (
@@ -64,6 +88,9 @@ const HubHistory = ({ hubs, onSelectHub, onRemoveHub }) => {
                 message={hubToRemove ? `Tem certeza que deseja remover o hub "${hubToRemove.title}"?` : ''}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
+                loading={removing} // AIDEV-NOTE: Show loading state during removal
+                confirmText={removing ? "Removendo..." : "Remover"}
+                disabled={removing}
             />
         </div>
     );

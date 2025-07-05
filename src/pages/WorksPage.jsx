@@ -1,4 +1,4 @@
-// AIDEV-NOTE: Página Obras - CRITICAL: Sempre exibe obras pinadas quando RemoteStorage conecta (100% reliability)
+// AIDEV-NOTE: Página Obras - Apenas obras favoritas/pinadas (sem histórico)
 // AIDEV-NOTE: GUARANTEED BEHAVIOR - Esta página sempre mostra obras pinadas após conexão RemoteStorage devido a:
 // 1. Multiple refresh triggers em AppContext (connected + sync-done events)
 // 2. Safety check que re-carrega dados se necessário
@@ -12,10 +12,10 @@ import ProtectedRoute from '../components/common/ProtectedRoute';
 import '../styles/minimalist-pages.css';
 
 const WorksPage = () => {
-    const { pinnedItems, togglePinStatus, selectItem } = useAppContext();
+    const { pinnedItems, togglePinStatus, selectItem, currentHubData } = useAppContext();
     const navigate = useNavigate();
 
-    // AIDEV-NOTE: Log para depuração - garante rastreamento das obras pinadas
+    // AIDEV-NOTE: Log para depuração - garante rastreamento das obras favoritas
     if (import.meta.env?.DEV) {
         console.log('📌 [WorksPage] Renderizando com', pinnedItems.length, 'obras pinadas');
     }

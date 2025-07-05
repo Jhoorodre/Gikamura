@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useItem } from '../hooks/useItem';
 import { remoteStorage } from '../services/remotestorage';
 import { RS_PATH } from '../services/rs/rs-config.js';
-import api from '../services/api.js';
+import api, { clearCaches } from '../services/api.js';
 import { loadHubJSON } from '../services/jsonReader.js';
 import { encodeUrl } from '../utils/encoding';
 
@@ -181,6 +181,7 @@ export const AppProvider = ({ children }) => {
             if (isNowConnected) {
                 console.log('🔌 [AppContext] RemoteStorage conectado - resetando sync e recarregando dados');
                 api.resetSync(); // AIDEV-NOTE: Allow sync to run again for cleanup
+                clearCaches(); // AIDEV-NOTE: Clear API caches on connection
                 cleanupRunRef.current = false; // AIDEV-NOTE: Reset cleanup flag
                 refreshUserData();
             }
@@ -198,6 +199,7 @@ export const AppProvider = ({ children }) => {
                         api.cleanupCorruptedData().then((cleaned) => {
                             if (cleaned) {
                                 console.log('🧹 [AppContext] handleSyncDone: Limpeza concluída, atualizando dados...');
+                                clearCaches(); // AIDEV-NOTE: Clear caches after cleanup
                                 refreshUserData();
                             } else {
                                 console.log('🧹 [AppContext] handleSyncDone: Nenhuma limpeza necessária, atualizando dados...');
@@ -363,6 +365,44 @@ export const AppProvider = ({ children }) => {
         refreshUserData();
     }, [refreshUserData]);
 
+    // AIDEV-NOTE: Robust hub removal with proper state management and error handling
+    const handleRemoveHub = useCallback(async (url) => {
+        try {
+            console.log(`[AppContext] Iniciando remoção do hub: ${url}`);
+            
+            // AIDEV-NOTE: Check if hub still exists before attempting removal
+            const currentHubs = await api.getAllHubs();
+            const hubExists = currentHubs.some(hub => hub.url === url);
+            
+            if (!hubExists) {
+                console.warn(`[AppContext] Hub já foi removido automaticamente: ${url}`);
+                // AIDEV-NOTE: Force refresh even if hub doesn't exist to sync UI state
+                await refreshUserData();
+                return Promise.resolve();
+            }
+            
+            await api.removeHub(url);
+            
+            // AIDEV-NOTE: Force refresh of user data to update savedHubs state
+            console.log('[AppContext] Hub removido, atualizando dados do usuário...');
+            await refreshUserData();
+            
+            return Promise.resolve();
+        } catch (error) {
+            console.error('[AppContext] Erro ao remover hub:', error);
+            
+            // AIDEV-NOTE: Handle graceful failure and always refresh data to reflect actual state
+            if (error.message && error.message.includes('non-existing')) {
+                console.warn('[AppContext] Hub já foi removido, sincronizando estado da UI...');
+            } else {
+                console.log('[AppContext] Atualizando dados após erro de remoção...');
+            }
+            await refreshUserData();
+            
+            throw error;
+        }
+    }, [refreshUserData]);
+
     const value = {
         currentHubData,
         currentHubUrl: hubUrlToLoad, // AIDEV-NOTE: Export hubUrlToLoad as currentHubUrl for navigation
@@ -381,7 +421,7 @@ export const AppProvider = ({ children }) => {
         historyItems,
         savedHubs,
         addHub: api.addHub,
-        removeHub: api.removeHub,
+        removeHub: handleRemoveHub, // AIDEV-NOTE: Use robust wrapper instead of direct API call
         togglePinStatus,
         refreshUserData,
         forceRefreshPinnedWorks, // AIDEV-NOTE: Manual force refresh for 100% reliability

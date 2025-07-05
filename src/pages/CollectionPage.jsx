@@ -1,26 +1,24 @@
-// AIDEV-NOTE: Página Coleção minimalista, histórico de navegação do usuário
+// AIDEV-NOTE: Página Coleção para gerenciar hubs salvos (não séries)
 import { useAppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-import ItemGrid from '../components/item/ItemGrid';
 import { encodeUrl } from '../utils/encoding';
 import ProtectedRoute from '../components/common/ProtectedRoute';
+import HubHistory from '../components/hub/HubHistory';
 import '../styles/minimalist-pages.css';
 
 const CollectionPage = () => {
-    const { historyItems, togglePinStatus, currentHubData, selectItem } = useAppContext();
+    const { savedHubs, removeHub } = useAppContext();
     const navigate = useNavigate();
 
-    // AIDEV-NOTE: Seleciona item e navega para a página da série
-    const handleSelectItem = (item) => {
-        if (!currentHubData) {
-            console.error("Não há um hub carregado para selecionar o item.");
-            navigate('/');
-            return;
+    // AIDEV-NOTE: Navega para o hub selecionado via query parameter
+    const handleSelectHub = (hub) => {
+        try {
+            const encodedHubUrl = encodeUrl(hub.url);
+            // AIDEV-NOTE: Carrega hub na mesma aba via query parameter
+            navigate(`/?hub=${encodedHubUrl}`);
+        } catch (error) {
+            console.error("Erro ao navegar para o hub:", error);
         }
-        const uniqueId = `${item.sourceId}:${item.slug}`;
-        const encodedId = encodeUrl(uniqueId);
-        selectItem(item, item.sourceId);
-        navigate(`/series/${encodedId}`);
     };
 
     return (
@@ -29,20 +27,23 @@ const CollectionPage = () => {
                 <div className="min-content-wrapper">
                     <div className="min-header">
                         <h1 className="min-title">Coleção</h1>
-                        <p className="min-subtitle">Seu histórico de navegação.</p>
+                        <p className="min-subtitle">Seus hubs salvos para acesso rápido.</p>
                     </div>
-                    {historyItems.length > 0 ? (
-                        <ItemGrid
-                            items={historyItems}
-                            onSelectItem={handleSelectItem}
-                            onPinToggle={togglePinStatus}
-                        />
+                    
+                    {savedHubs && savedHubs.length > 0 ? (
+                        <div className="hub-collection-container">
+                            <HubHistory 
+                                hubs={savedHubs}
+                                onSelectHub={handleSelectHub}
+                                onRemoveHub={removeHub}
+                            />
+                        </div>
                     ) : (
                         <div className="min-empty-state">
-                            <span className="min-empty-icon">📖</span>
-                            <h3 className="min-empty-title">Histórico Vazio</h3>
+                            <span className="min-empty-icon">🌐</span>
+                            <h3 className="min-empty-title">Nenhum Hub Salvo</h3>
                             <p className="min-empty-description">
-                                Explore os hubs para que os itens visitados apareçam aqui.
+                                Conecte-se ao RemoteStorage e carregue hubs no Hub Loader para salvá-los aqui.
                             </p>
                         </div>
                     )}

@@ -29,13 +29,20 @@ const deduplicateSeries = (series) => {
   
   const seen = new Map();
   const deduplicated = [];
+  let duplicatesFound = 0;
+  
+  // AIDEV-NOTE: Throttle para evitar spam de logs de duplicatas
+  const now = Date.now();
+  const shouldLog = now - lastDeduplicateLog > 30000; // Log apenas a cada 30 segundos
   
   // Sort by timestamp descending first to keep most recent
   const sorted = series.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   
   for (const item of sorted) {
     if (!item.source || !item.slug || !item.title) {
-      console.warn('⚠️ [API] deduplicateSeries: Item sem source, slug ou title encontrado:', item);
+      if (shouldLog) {
+        console.warn('⚠️ [API] deduplicateSeries: Item sem source, slug ou title encontrado:', item);
+      }
       continue;
     }
     
@@ -48,38 +55,112 @@ const deduplicateSeries = (series) => {
     if (!seen.has(key)) {
       seen.set(key, true);
       deduplicated.push(item);
-    } else if (import.meta.env?.DEV) {
-      console.warn(`⚠️ [API] deduplicateSeries: Duplicata removida: ${item.title} (${item.slug})`);
+    } else {
+      duplicatesFound++;
+      if (shouldLog && import.meta.env?.DEV) {
+        console.warn(`⚠️ [API] deduplicateSeries: Duplicata removida: ${item.title} (${item.slug})`);
+      }
     }
   }
   
-  if (import.meta.env?.DEV && series.length !== deduplicated.length) {
-    console.log(`🧹 [API] deduplicateSeries: ${series.length} -> ${deduplicated.length} (removidas ${series.length - deduplicated.length} duplicatas)`);
+  if (shouldLog && import.meta.env?.DEV && duplicatesFound > 0) {
+    console.log(`🧹 [API] deduplicateSeries: ${series.length} -> ${deduplicated.length} (removidas ${duplicatesFound} duplicatas)`);
+    lastDeduplicateLog = now;
   }
   
   return deduplicated;
 };
 
 let syncExecuted = false;
+let lastSyncTime = 0;
+
+// AIDEV-NOTE: Cache para evitar chamadas excessivas ao RemoteStorage
+let seriesCache = null;
+let hubsCache = null;
+let cacheTime = 0;
+const CACHE_DURATION = 5000; // 5 segundos
+
+// AIDEV-NOTE: Throttling timestamps para evitar spam de logs
+let lastDeduplicateLog = 0;
+let lastHubDuplicateLog = 0;
 
 /**
- * AIDEV-NOTE: Reset sync flag to allow re-execution on reconnection
+ * AIDEV-NOTE: Reset sync flag and caches to allow re-execution on reconnection
  */
 const resetSync = () => {
   syncExecuted = false;
-  console.log('[API] Sync flag resetado para permitir nova execução');
+  lastSyncTime = 0;
+  seriesCache = null;
+  hubsCache = null;
+  cacheTime = 0;
+  lastDeduplicateLog = 0;
+  lastHubDuplicateLog = 0;
+  console.log('[API] Sync flag e caches resetados para permitir nova execução');
+};
+
+/**
+ * AIDEV-NOTE: Get cached series or fetch from RemoteStorage
+ */
+const getCachedSeries = async () => {
+  const now = Date.now();
+  if (seriesCache && (now - cacheTime < CACHE_DURATION)) {
+    return seriesCache;
+  }
+  
+  const rs = remoteStorage['Gika'];
+  if (!rs) return null;
+  
+  seriesCache = await rs.getAllSeries();
+  cacheTime = now;
+  return seriesCache;
+};
+
+/**
+ * AIDEV-NOTE: Get cached hubs or fetch from RemoteStorage
+ */
+const getCachedHubs = async () => {
+  const now = Date.now();
+  if (hubsCache && (now - cacheTime < CACHE_DURATION)) {
+    return hubsCache;
+  }
+  
+  const rs = remoteStorage['Gika'];
+  if (!rs) return null;
+  
+  hubsCache = await rs.getAllHubs();
+  cacheTime = now;
+  return hubsCache;
+};
+
+/**
+ * AIDEV-NOTE: Clear caches when data changes
+ */
+const clearCaches = () => {
+  seriesCache = null;
+  hubsCache = null;
+  cacheTime = 0;
+  lastDeduplicateLog = 0;
+  lastHubDuplicateLog = 0;
 };
 
 /**
  * AIDEV-NOTE: Ensures local cache doesn't have invalid objects and cleans up corrupted data
+ * with throttling to prevent excessive execution
  */
 const sync = async () => {
-  if (syncExecuted) return;
+  const now = Date.now();
+  
+  // AIDEV-NOTE: Throttle sync execution to prevent excessive calls
+  if (syncExecuted || (now - lastSyncTime < 10000)) {
+    return;
+  }
+  
+  lastSyncTime = now;
   const rs = remoteStorage['Gika'];
   if (!rs) return;
 
   try {
-    const allSeries = await rs.getAllSeries();
+    const allSeries = await getCachedSeries();
     if (!allSeries) return;
 
     let hasChanges = false;
@@ -120,19 +201,58 @@ const sync = async () => {
     // Remove invalid entries using the key directly
     for (const key of keysToRemove) {
       try {
-        // Use key directly for corrupted entries - they should be removed from RemoteStorage
-        if (key.includes('series/') || (!key.includes('hubs/') && !key.includes('/'))) {
-          await rs.custom.removeSeriesByKey(key);
-        } else if (key.includes('hubs/')) {
-          // For hub entries, remove directly
-          await rs.custom.removeHub(key.replace('hubs/', ''));
-        } else {
-          // For other entries, use direct key removal
+        // AIDEV-NOTE: Verify rs.custom exists before attempting removal
+        if (!rs.custom) {
+          console.warn('[API Sync] ⚠️ rs.custom não disponível para remoção:', key);
+          continue;
+        }
+        
+        // AIDEV-NOTE: Try multiple removal strategies for corrupted entries
+        let removed = false;
+        
+        // Strategy 1: Try direct key removal first (safest for corrupted data)
+        try {
           const path = key.startsWith('/') ? key.substring(1) : key;
           await rs.custom.remove(path);
+          removed = true;
+          console.log('[API Sync] ✅ Removido (direto):', key);
+        } catch (directError) {
+          // Strategy 2: Try specific removal methods
+          if (key.includes('series/') || (!key.includes('hubs/') && !key.includes('/'))) {
+            try {
+              await rs.custom.removeSeriesByKey(key);
+              removed = true;
+              console.log('[API Sync] ✅ Removido (série):', key);
+            } catch (seriesError) {
+              // If series removal fails, try removing from full path
+              try {
+                await rs.custom.remove(`series/${key}`);
+                removed = true;
+                console.log('[API Sync] ✅ Removido (série path):', key);
+              } catch (seriesPathError) {
+                console.warn('[API Sync] ⚠️ Falha ao remover série:', key, seriesPathError.message);
+              }
+            }
+          } else if (key.includes('hubs/')) {
+            try {
+              // For hub entries, remove directly
+              const hubUrl = key.replace('hubs/', '');
+              await rs.custom.removeHub(hubUrl);
+              removed = true;
+              console.log('[API Sync] ✅ Removido (hub):', key);
+            } catch (hubError) {
+              console.warn('[API Sync] ⚠️ Falha ao remover hub:', key, hubError.message);
+            }
+          }
+          
+          if (!removed) {
+            console.warn('[API Sync] ⚠️ Não foi possível remover:', key, directError.message);
+          }
         }
-        console.log('[API Sync] ✅ Removido:', key);
-        hasChanges = true;
+        
+        if (removed) {
+          hasChanges = true;
+        }
       } catch (error) {
         console.error('[API Sync] ❌ Erro ao remover:', key, error);
       }
@@ -337,7 +457,7 @@ const api = {
     console.log('📊 [API] pushSeries called with:', { slug, coverUrl, source, url, title });
     
     const rs = remoteStorage['Gika'];
-    const allSeries = getSortedArray(await rs.getAllSeries());
+    const allSeries = getSortedArray(await getCachedSeries());
     const existingSeries = allSeries.find(e => e.slug === slug && e.source === source);
 
     if (existingSeries) {
@@ -474,6 +594,7 @@ const api = {
         source: existingSeries.source || source
       };
       const result = await rs.editSeries(slug, source, updatedData);
+      clearCaches(); // AIDEV-NOTE: Clear caches after data modification
       console.debug('[api.pinSeries] Sucesso ao editar série existente:', result);
       return result;
     }
@@ -493,6 +614,7 @@ const api = {
     };
 
     const result = await rs.storeObject('series', `${source}-${slug}`, seriesData);
+    clearCaches(); // AIDEV-NOTE: Clear caches after data modification
     console.debug('[api.pinSeries] Sucesso ao criar nova série:', result);
     return result;
   },
@@ -518,13 +640,15 @@ const api = {
       source: existingSeries.source
     };
     
-    return rs.editSeries(slug, source, updatedData);
+    const result = rs.editSeries(slug, source, updatedData);
+    clearCaches(); // AIDEV-NOTE: Clear caches after data modification
+    return result;
   },
 
   // AIDEV-NOTE: CRITICAL - Filtered queries for different views, especially for "Obras" page reliability
   async getAllPinnedSeries() {
     try {
-      const allSeries = await remoteStorage['Gika']?.getAllSeries();
+      const allSeries = await getCachedSeries();
       const cleanSeries = cleanMalformedData(allSeries || {}, 'series');
       const all = getSortedArray(cleanSeries);
       const deduplicated = deduplicateSeries(all); // AIDEV-NOTE: Remove duplicates before filtering
@@ -543,7 +667,7 @@ const api = {
 
   async getAllUnpinnedSeries() {
     try {
-      const allSeries = await remoteStorage['Gika']?.getAllSeries();
+      const allSeries = await getCachedSeries();
       const cleanSeries = cleanMalformedData(allSeries || {}, 'series');
       const all = getSortedArray(cleanSeries);
       const deduplicated = deduplicateSeries(all); // AIDEV-NOTE: Remove duplicates before filtering
@@ -566,29 +690,112 @@ const api = {
     return remoteStorage['Gika']?.addHub(normalizedUrl, title, iconUrl);
   },
 
-  removeHub: (url) => {
-    const normalizedUrl = normalizeHubUrl(url);
-    return remoteStorage['Gika']?.removeHub(normalizedUrl);
+  removeHub: async (url) => {
+    // AIDEV-NOTE: Robust hub removal with error handling and cache update
+    try {
+      const normalizedUrl = normalizeHubUrl(url);
+      const result = await remoteStorage['Gika']?.removeHub(normalizedUrl);
+      
+      // AIDEV-NOTE: Clear cache after successful removal to force refresh
+      if (hubsCache) {
+        hubsCache = null;
+        console.log('[API] Cache de hubs limpo após remoção');
+      }
+      
+      return result;
+    } catch (error) {
+      // AIDEV-NOTE: Handle removal of non-existing hubs gracefully
+      if (error.message && error.message.includes('non-existing')) {
+        console.warn(`[API] Hub já foi removido: ${url}`);
+        
+        // AIDEV-NOTE: Clear cache to reflect actual state
+        if (hubsCache) {
+          hubsCache = null;
+          console.log('[API] Cache de hubs limpo após tentativa de remoção de hub inexistente');
+        }
+        
+        return Promise.resolve(); // Treat as successful removal
+      }
+      
+      console.error('[API] Erro ao remover hub:', error);
+      throw error;
+    }
   },
 
   async getAllHubs() {
+    // AIDEV-NOTE: Robust hub deduplication with permanent cleanup to prevent RemoteStorage errors
     try {
-      const hubs = await remoteStorage['Gika']?.getAllHubs();
+      const hubs = await getCachedHubs();
       const cleanHubs = cleanMalformedData(hubs || {}, 'hub');
       const hubArray = getSortedArray(cleanHubs);
       
-      // AIDEV-NOTE: Remove duplicatas de hub baseado em URL normalizada
+      // AIDEV-NOTE: Remove duplicatas de hub baseado em URL normalizada com throttling
+      const now = Date.now();
+      const shouldLog = now - lastHubDuplicateLog > 30000; // Log apenas a cada 30 segundos
+      
       const seen = new Set();
+      const keysToRemove = [];
+      let duplicatesFound = 0;
+      
+      // AIDEV-NOTE: Create mapping for efficient key lookup
+      const hubToKeyMap = new Map();
+      Object.entries(cleanHubs).forEach(([key, hub]) => {
+        if (hub && hub.url) {
+          hubToKeyMap.set(hub, key);
+        }
+      });
+      
       const deduplicated = hubArray.filter(hub => {
         if (!hub || !hub.url) return false;
         const normalizedUrl = normalizeHubUrl(hub.url);
         if (seen.has(normalizedUrl)) {
-          console.warn('⚠️ [API] getAllHubs: Hub duplicado removido:', hub.url);
+          duplicatesFound++;
+          // AIDEV-NOTE: Collect keys of duplicates for permanent removal
+          const hubKey = hubToKeyMap.get(hub);
+          if (hubKey) {
+            keysToRemove.push({ key: hubKey, url: hub.url });
+          }
+          if (shouldLog) {
+            console.warn('⚠️ [API] getAllHubs: Hub duplicado removido:', hub.url);
+          }
           return false;
         }
         seen.add(normalizedUrl);
         return true;
       });
+      
+      // AIDEV-NOTE: Permanently remove duplicates from RemoteStorage
+      if (keysToRemove.length > 0) {
+        const rs = remoteStorage['Gika'];
+        if (rs) {
+          for (const { key, url } of keysToRemove) {
+            try {
+              if (shouldLog) {
+                console.log(`🗑️ [API] getAllHubs: Tentando remover duplicata: ${key} para URL: ${url}`);
+              }
+              await rs.remove(`hubs/${key}`);
+              if (shouldLog) {
+                console.log(`✅ [API] getAllHubs: Duplicata removida permanentemente: ${url}`);
+              }
+            } catch (error) {
+              // AIDEV-NOTE: Ignore errors for already removed items
+              if (error.message?.includes('non-existing')) {
+                if (shouldLog) {
+                  console.warn(`⚠️ [API] getAllHubs: Duplicata já removida: ${url}`);
+                }
+              } else {
+                console.warn(`❌ [API] getAllHubs: Erro ao remover duplicata ${url}:`, error);
+              }
+            }
+          }
+          // AIDEV-NOTE: Clear cache to reflect changes
+          hubsCache = null;
+        }
+      }
+      
+      if (shouldLog && duplicatesFound > 0) {
+        lastHubDuplicateLog = now;
+      }
       
       return deduplicated;
     } catch (error) {
@@ -648,9 +855,14 @@ const api = {
       let removedCount = 0;
       for (const key of keysToRemove) {
         try {
-          await rs.removeSeriesByKey(key);
-          removedCount++;
-          console.log(`✅ [API] cleanupCorruptedData: Removido permanentemente (${removedCount}/${keysToRemove.length}):`, key);
+          // AIDEV-NOTE: Use robust removal method
+          if (rs && rs.removeSeriesByKey) {
+            await rs.removeSeriesByKey(key);
+            removedCount++;
+            console.log(`✅ [API] cleanupCorruptedData: Removido permanentemente (${removedCount}/${keysToRemove.length}):`, key);
+          } else {
+            console.warn(`⚠️ [API] cleanupCorruptedData: Função de remoção não disponível para:`, key);
+          }
         } catch (error) {
           console.error('❌ [API] cleanupCorruptedData: Erro ao remover:', key, error);
         }
@@ -713,6 +925,10 @@ const api = {
 
   // AIDEV-NOTE: Função para limpeza manual de dados corrompidos
   cleanCorruptedData: cleanCorruptedRemoteStorageData,
+  
+  // AIDEV-NOTE: Cache management functions
+  clearCaches,
+  resetSync,
 };
 
 if (typeof window !== 'undefined') {
@@ -723,6 +939,6 @@ if (typeof window !== 'undefined') {
 sync();
 
 // AIDEV-NOTE: Export individual functions for direct import
-export { cleanCorruptedRemoteStorageData };
+export { cleanCorruptedRemoteStorageData, clearCaches, resetSync };
 
 export default api;
