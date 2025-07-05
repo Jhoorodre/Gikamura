@@ -29,6 +29,7 @@ out/
 /dist/assets/capa/
 /dist/assets/icone/
 /dist/assets/webt/
+/raw/teste_json/
 
 # Testes e dados temporários - apenas JSON e pastas (AIDEV-NOTE: arquivos físicos removidos)
 coverage/
