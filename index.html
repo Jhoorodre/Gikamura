@@ -8,6 +8,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hub</title>
+    <!-- Fundo escuro imediato para evitar flash branco -->
+    <style>
+      html, body {
+        background: #141414 !important;
+        color: #f1f1f1;
+        min-height: 100vh;
+        width: 100vw;
+      }
+    </style>
+    <script>
+      // Garante tema escuro como padrão antes do CSS carregar
+      (function() {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.style.background = '#141414';
+        document.body.style.background = '#141414';
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

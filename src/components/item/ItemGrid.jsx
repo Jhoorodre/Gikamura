@@ -1,10 +1,10 @@
-// AIDEV-NOTE: Grid de itens minimalista com cards limpos e acessíveis
+// AIDEV-NOTE: Grid de itens com design system aprimorado e proporções harmoniosas
 import { memo, createElement } from 'react';
 import Image from '../common/Image';
 
 const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
     <div className="min-item-grid">
-        {/* ✅ Filtra itens sem chave única válida e cria chave única baseada em source+slug+title */}
+        {/* AIDEV-NOTE: Filtra itens sem chave única válida e cria chave única baseada em source+slug+title */}
         {items.filter(item => item && (item.id || item.slug || item.title)).map((item, index) => {
             // AIDEV-NOTE: Cria chave única para evitar duplicatas React
             const uniqueKey = item.source && item.slug ? 
@@ -24,7 +24,7 @@ const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
                         }
                     }}
                 >
-                {/* AIDEV-NOTE: Botão de favoritar com acessibilidade */}
+                {/* AIDEV-NOTE: Botão de favoritar com acessibilidade e design system */}
                 {onPinToggle && !item.isStatic && (
                     <button
                         className={`min-item-pin-button ${item.pinned ? 'pinned' : ''}`}
@@ -39,7 +39,7 @@ const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
                     </button>
                 )}
                 <div onClick={() => onSelectItem(item)}>
-                    {/* AIDEV-NOTE: Renderiza ícone ou imagem com fallback */}
+                    {/* AIDEV-NOTE: Renderiza ícone ou imagem com fallback e proporção consistente */}
                     {item.iconComponent ? (
                         <div className="min-item-image flex items-center justify-center">
                             {createElement(item.iconComponent)}

@@ -15,11 +15,11 @@
 
 /* === ESTILOS PARA READER PAGES (ItemViewer) === */
 
-/* AIDEV-NOTE: Main reader container with immersive dark theme and user interaction disabled */
+/* AIDEV-NOTE: Main reader container with design system integration */
 /* Container principal do leitor de páginas */
 .reader-page-container {
-  background: #0a0a0a; /* AIDEV-TODO: Use design token for background color */
-  color: #e5e5e5; /* AIDEV-TODO: Use design token for text color */
+  background: var(--color-background);
+  color: var(--text-primary);
   user-select: none; /* AIDEV-NOTE: Prevents text selection for cleaner UX */
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -27,6 +27,7 @@
   min-height: 100vh;
   position: relative;
   overflow-x: hidden; /* AIDEV-NOTE: Prevents horizontal scroll issues */
+  transition: background var(--theme-transition), color var(--theme-transition);
 }
 
 .reader-page-container.fullscreen {
@@ -35,8 +36,8 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 9999;
-  background: #000 !important;
+  z-index: var(--z-modal);
+  background: var(--color-background) !important;
 }
 
 /* Header e Footer com controles do leitor */
@@ -45,22 +46,22 @@
   position: fixed;
   left: 0;
   right: 0;
-  z-index: 30;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: var(--z-fixed);
+  transition: transform var(--transition-normal), opacity var(--transition-normal);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
 .reader-page-header {
   top: 0;
-  background: rgba(15, 15, 15, 0.9);
-  border-bottom: 1px solid rgba(55, 65, 81, 0.3);
+  background: rgba(var(--color-background), 0.9);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .reader-page-footer {
   bottom: 0;
-  background: rgba(15, 15, 15, 0.9);
-  border-top: 1px solid rgba(55, 65, 81, 0.3);
+  background: rgba(var(--color-background), 0.9);
+  border-top: 1px solid var(--color-border);
 }
 
 .reader-page-header.hidden,
@@ -84,7 +85,8 @@
 .reader-page-content {
   min-height: 100vh;
   position: relative;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  background: var(--color-background);
+  transition: background var(--theme-transition);
 }
 
 /* Modo paginado */
@@ -94,7 +96,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 2rem 1rem;
+  padding: var(--space-xl) var(--space-md);
 }
 
 .reader-page-image-container {
@@ -112,21 +114,15 @@
   width: auto;
   height: auto;
   object-fit: contain;
-  border-radius: 12px;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.8), 
-    0 10px 20px -5px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
-  background: #1f1f1f;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  background: var(--color-surface);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .reader-page-main-image:hover {
   transform: scale(1.02);
-  box-shadow: 
-    0 30px 60px -12px rgba(0, 0, 0, 0.9), 
-    0 15px 25px -5px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-xl);
 }
 
 /* Áreas de navegação por clique */
@@ -191,10 +187,11 @@
 
 /* Modo scroll */
 .scrolling-reader-container {
-  padding: 2rem 1rem;
-  background: #0a0a0a;
+  padding: var(--space-xl) var(--space-md);
+  background: var(--color-background);
   max-width: 800px;
   margin: 0 auto;
+  transition: background var(--theme-transition);
 }
 
 .scroll-page-item {

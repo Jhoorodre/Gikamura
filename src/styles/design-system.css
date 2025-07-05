@@ -1,0 +1,306 @@
+/*
+ * Sistema de Design Centralizado - Gikamoe
+ * AIDEV-NOTE: Centralized design system with fluid scales and harmonious proportions
+ * AIDEV-TODO: Apply this system consistently across all components
+ * AIDEV-QUESTION: Should we implement CSS custom properties for theme switching?
+ */
+
+:root {
+  /* ========================================================================== */
+  /* ==                      SISTEMA DE TEMAS                              == */
+  /* ========================================================================== */
+  
+  /* AIDEV-NOTE: Theme system with dark/light mode support */
+  --theme-transition: 300ms ease-in-out;
+  
+  /* ========================================================================== */
+  /* ==                      PALETA DE CORES SEMÂNTICA                      == */
+  /* ========================================================================== */
+  
+  /* AIDEV-NOTE: Core color palette following 70/20/10 rule for visual hierarchy */
+  --color-background: #141414;       /* 70% - Primary background */
+  --color-surface: #1a1a1a;          /* 20% - Secondary surfaces */
+  --color-primary: #341111;          /* 10% - Primary accent */
+  --color-accent: #a4a4a4;           /* 10% - Text and accents */
+
+  /* AIDEV-NOTE: Text hierarchy with semantic color naming */
+  --text-primary: #f1f1f1;
+  --text-secondary: var(--color-accent);
+  --text-tertiary: #808080;
+  --text-inverse: var(--color-background);
+
+  /* AIDEV-NOTE: State colors for user feedback */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  /* AIDEV-NOTE: Border system with focus states */
+  --color-border: #2c2c2c;
+  --color-border-focus: var(--color-primary);
+
+  /* ========================================================================== */
+  /* ==                    ESCALA DE ESPAÇAMENTO FLUIDA                    == */
+  /* ========================================================================== */
+  
+  /* AIDEV-NOTE: Fluid spacing scale using clamp() for responsive proportions */
+  --space-xxs: clamp(0.25rem, 0.5vw, 0.375rem);   /* 4-6px */
+  --space-xs:  clamp(0.5rem, 1vw, 0.75rem);       /* 8-12px */
+  --space-sm:  clamp(0.75rem, 1.5vw, 1rem);       /* 12-16px */
+  --space-md:  clamp(1rem, 2vw, 1.5rem);          /* 16-24px */
+  --space-lg:  clamp(1.5rem, 3vw, 2rem);          /* 24-32px */
+  --space-xl:  clamp(2rem, 4vw, 3rem);            /* 32-48px */
+  --space-xxl: clamp(3rem, 6vw, 4rem);            /* 48-64px */
+
+  /* ========================================================================== */
+  /* ==                   ESCALA TIPOGRÁFICA FLUIDA                        == */
+  /* ========================================================================== */
+  
+  /* AIDEV-NOTE: Fluid typography scale for consistent text hierarchy */
+  --font-size-sm: clamp(0.8rem, 1.5vw, 0.9rem);    /* 12.8-14.4px */
+  --font-size-base: clamp(1rem, 2vw, 1.1rem);      /* 16-17.6px */
+  --font-size-md: clamp(1.125rem, 2.5vw, 1.25rem); /* 18-20px */
+  --font-size-lg: clamp(1.25rem, 3vw, 1.5rem);     /* 20-24px */
+  --font-size-xl: clamp(1.5rem, 4vw, 2rem);        /* 24-32px */
+  --font-size-xxl: clamp(2rem, 5vw, 3rem);         /* 32-48px */
+
+  /* AIDEV-NOTE: Font weights for visual hierarchy */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* AIDEV-NOTE: Line heights for optimal readability */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+
+  /* ========================================================================== */
+  /* ==                      BORDAS E SOMBRAS                              == */
+  /* ========================================================================== */
+  
+  /* AIDEV-NOTE: Border radius scale for consistent component styling */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* AIDEV-NOTE: Shadow system for depth and hierarchy */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.2);
+
+  /* ========================================================================== */
+  /* ==                      TRANSIÇÕES                                    == */
+  /* ========================================================================== */
+  
+  /* AIDEV-NOTE: Transition timing for smooth interactions */
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 300ms ease-out;
+
+  /* ========================================================================== */
+  /* ==                      ASPECT RATIOS                                 == */
+  /* ========================================================================== */
+  
+  /* AIDEV-NOTE: Standard aspect ratios for consistent media proportions */
+  --aspect-square: 1 / 1;
+  --aspect-video: 16 / 9;
+  --aspect-photo: 4 / 3;
+  --aspect-book: 3 / 4;  /* Standard book/manga cover ratio */
+  --aspect-poster: 2 / 3; /* Movie poster ratio */
+
+  /* ========================================================================== */
+  /* ==                      BREAKPOINTS                                   == */
+  /* ========================================================================== */
+  
+  /* AIDEV-NOTE: Responsive breakpoints for consistent layouts */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ========================================================================== */
+  /* ==                      Z-INDEX SCALE                                 == */
+  /* ========================================================================== */
+  
+  /* AIDEV-NOTE: Z-index hierarchy for proper layering */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+}
+
+/* ========================================================================== */
+/* ==                      TEMA CLARO                                      == */
+/* ========================================================================== */
+
+[data-theme="light"] {
+  /* AIDEV-NOTE: Light theme color palette */
+  --color-background: #ffffff;
+  --color-surface: #f8f9fa;
+  --color-primary: #e74c3c;
+  --color-accent: #495057;
+
+  /* AIDEV-NOTE: Light theme text colors */
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-tertiary: #adb5bd;
+  --text-inverse: #ffffff;
+
+  /* AIDEV-NOTE: Light theme borders */
+  --color-border: #dee2e6;
+  --color-border-focus: var(--color-primary);
+
+  /* AIDEV-NOTE: Light theme shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================================================== */
+/* ==                      TEMA ESCURO (PADRÃO)                           == */
+/* ========================================================================== */
+
+[data-theme="dark"] {
+  /* AIDEV-NOTE: Dark theme color palette (default) */
+  --color-background: #141414;
+  --color-surface: #1a1a1a;
+  --color-primary: #341111;
+  --color-accent: #a4a4a4;
+
+  /* AIDEV-NOTE: Dark theme text colors */
+  --text-primary: #f1f1f1;
+  --text-secondary: var(--color-accent);
+  --text-tertiary: #808080;
+  --text-inverse: var(--color-background);
+
+  /* AIDEV-NOTE: Dark theme borders */
+  --color-border: #2c2c2c;
+  --color-border-focus: var(--color-primary);
+
+  /* AIDEV-NOTE: Dark theme shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================================================== */
+/* ==                    UTILITÁRIOS DE PROPORÇÃO                         == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: Utility classes for consistent spacing */
+.space-xxs { margin: var(--space-xxs); }
+.space-xs { margin: var(--space-xs); }
+.space-sm { margin: var(--space-sm); }
+.space-md { margin: var(--space-md); }
+.space-lg { margin: var(--space-lg); }
+.space-xl { margin: var(--space-xl); }
+.space-xxl { margin: var(--space-xxl); }
+
+/* AIDEV-NOTE: Utility classes for consistent padding */
+.p-xxs { padding: var(--space-xxs); }
+.p-xs { padding: var(--space-xs); }
+.p-sm { padding: var(--space-sm); }
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+.p-xl { padding: var(--space-xl); }
+.p-xxl { padding: var(--space-xxl); }
+
+/* AIDEV-NOTE: Padding utilities with direction */
+.px-xxs { padding-left: var(--space-xxs); padding-right: var(--space-xxs); }
+.px-xs { padding-left: var(--space-xs); padding-right: var(--space-xs); }
+.px-sm { padding-left: var(--space-sm); padding-right: var(--space-sm); }
+.px-md { padding-left: var(--space-md); padding-right: var(--space-md); }
+.px-lg { padding-left: var(--space-lg); padding-right: var(--space-lg); }
+.px-xl { padding-left: var(--space-xl); padding-right: var(--space-xl); }
+
+.py-xxs { padding-top: var(--space-xxs); padding-bottom: var(--space-xxs); }
+.py-xs { padding-top: var(--space-xs); padding-bottom: var(--space-xs); }
+.py-sm { padding-top: var(--space-sm); padding-bottom: var(--space-sm); }
+.py-md { padding-top: var(--space-md); padding-bottom: var(--space-md); }
+.py-lg { padding-top: var(--space-lg); padding-bottom: var(--space-lg); }
+.py-xl { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
+
+/* AIDEV-NOTE: Margin utilities with direction */
+.mx-xxs { margin-left: var(--space-xxs); margin-right: var(--space-xxs); }
+.mx-xs { margin-left: var(--space-xs); margin-right: var(--space-xs); }
+.mx-sm { margin-left: var(--space-sm); margin-right: var(--space-sm); }
+.mx-md { margin-left: var(--space-md); margin-right: var(--space-md); }
+.mx-lg { margin-left: var(--space-lg); margin-right: var(--space-lg); }
+.mx-xl { margin-left: var(--space-xl); margin-right: var(--space-xl); }
+
+.my-xxs { margin-top: var(--space-xxs); margin-bottom: var(--space-xxs); }
+.my-xs { margin-top: var(--space-xs); margin-bottom: var(--space-xs); }
+.my-sm { margin-top: var(--space-sm); margin-bottom: var(--space-sm); }
+.my-md { margin-top: var(--space-md); margin-bottom: var(--space-md); }
+.my-lg { margin-top: var(--space-lg); margin-bottom: var(--space-lg); }
+.my-xl { margin-top: var(--space-xl); margin-bottom: var(--space-xl); }
+
+/* AIDEV-NOTE: Gap utilities */
+.gap-xxs { gap: var(--space-xxs); }
+.gap-xs { gap: var(--space-xs); }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }
+.gap-xl { gap: var(--space-xl); }
+
+/* AIDEV-NOTE: Utility classes for consistent typography */
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-md { font-size: var(--font-size-md); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+.text-xxl { font-size: var(--font-size-xxl); }
+
+/* AIDEV-NOTE: Utility classes for line heights */
+.leading-tight { line-height: var(--line-height-tight); }
+.leading-normal { line-height: var(--line-height-normal); }
+.leading-relaxed { line-height: var(--line-height-relaxed); }
+
+/* AIDEV-NOTE: Utility classes for aspect ratios */
+.aspect-square { aspect-ratio: var(--aspect-square); }
+.aspect-video { aspect-ratio: var(--aspect-video); }
+.aspect-photo { aspect-ratio: var(--aspect-photo); }
+.aspect-book { aspect-ratio: var(--aspect-book); }
+.aspect-poster { aspect-ratio: var(--aspect-poster); }
+
+/* AIDEV-NOTE: Color utility classes */
+.bg-background { background-color: var(--color-background); }
+.bg-surface { background-color: var(--color-surface); }
+.bg-primary { background-color: var(--color-primary); }
+.bg-accent { background-color: var(--color-accent); }
+.bg-success { background-color: var(--color-success); }
+.bg-warning { background-color: var(--color-warning); }
+.bg-error { background-color: var(--color-error); }
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-inverse { color: var(--text-inverse); }
+
+.border-border { border-color: var(--color-border); }
+.border-border-focus { border-color: var(--color-border-focus); }
+
+/* AIDEV-NOTE: Border radius utilities */
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-full { border-radius: var(--radius-full); }
+
+/* AIDEV-NOTE: Shadow utilities */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+
+/* AIDEV-NOTE: Transition utilities */
+.transition-all { transition: all var(--transition-normal); }
+.transition-colors { transition: color var(--transition-normal), background-color var(--transition-normal), border-color var(--transition-normal); }
+.transition-transform { transition: transform var(--transition-normal); }
+.transition-opacity { transition: opacity var(--transition-normal); }
+
+/* AIDEV-NOTE: Duration utilities */
+.duration-300 { transition-duration: var(--transition-normal); }
+.duration-150 { transition-duration: var(--transition-fast); } 

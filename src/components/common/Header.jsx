@@ -1,9 +1,10 @@
-// AIDEV-NOTE: Main application header with traditional navigation structure
+// AIDEV-NOTE: Main application header with design system integration
 import { useState } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 import { useAppContext } from '../../context/AppContext';
 import { encodeUrl } from '../../utils/encoding';
+import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -103,49 +104,56 @@ const Header = () => {
                         </button>
                     </div>
 
-                    {/* AIDEV-NOTE: Desktop navigation */}
+                    {/* AIDEV-NOTE: Desktop navigation with design system */}
                     <nav className="hidden md:flex items-center space-x-1">
                         {visibleItems.map((item) => (
                             item.onClick ? (
                                 <button
                                     key={item.path}
                                     onClick={item.onClick}
-                                    className={`px-4 py-2 rounded-lg transition-colors ${
+                                    className={`px-md py-sm rounded-lg transition-all duration-300 ${
                                         isActiveRoute(item.path)
-                                            ? 'bg-surface-hover text-accent font-medium border border-border-subtle'
-                                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
+                                            ? 'bg-primary text-inverse font-medium border border-border-focus'
+                                            : 'text-secondary hover:text-primary hover:bg-surface'
                                     }`}
                                     title={item.description}
                                 >
                                     {item.label}
                                 </button>
                             ) : (
-                                <Link
+                                <a
                                     key={item.path}
-                                    to={item.path}
-                                    className={`px-4 py-2 rounded-lg transition-colors ${
+                                    href={item.path}
+                                    className={`px-md py-sm rounded-lg transition-all duration-300 ${
                                         isActiveRoute(item.path)
-                                            ? 'bg-surface-hover text-accent font-medium border border-border-subtle'
-                                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
+                                            ? 'bg-primary text-inverse font-medium border border-border-focus'
+                                            : 'text-secondary hover:text-primary hover:bg-surface'
                                     }`}
                                     title={item.description}
                                 >
                                     {item.label}
-                                </Link>
+                                </a>
                             )
                         ))}
+                        
+                        {/* AIDEV-NOTE: Theme toggle in desktop navigation */}
+                        <div className="ml-md">
+                            <ThemeToggle size="sm" />
+                        </div>
                     </nav>
 
-                    {/* AIDEV-NOTE: Mobile dropdown navigation */}
-                    <div className="md:hidden relative">
+                    {/* AIDEV-NOTE: Mobile dropdown navigation with design system */}
+                    <div className="md:hidden relative flex items-center gap-sm">
+                        <ThemeToggle size="sm" />
+                        
                         <button
                             onClick={toggleDropdown}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-hover text-accent border border-border"
+                            className="flex items-center gap-2 px-md py-sm rounded-lg bg-surface text-accent border border-border transition-all duration-300"
                             aria-expanded={isDropdownOpen}
                             aria-label="Menu de navegação"
                         >
                             <span>Menu</span>
-                            <span className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}>▼</span>
+                            <span className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}>▼</span>
                         </button>
 
                         {/* AIDEV-NOTE: Mobile dropdown menu */}
