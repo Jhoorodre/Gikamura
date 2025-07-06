@@ -1,6 +1,6 @@
 // AIDEV-NOTE: Main application header with design system integration
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 import { useAppContext } from '../../context/AppContext';
 import { encodeUrl } from '../../utils/encoding';
@@ -53,28 +53,35 @@ const Header = () => {
 
     // AIDEV-NOTE: Navigation items with RemoteStorage dependency logic
     const navigationItems = [
-        { 
-            path: '/', 
-            label: 'Hub Loader', 
+        {
+            path: '/',
+            label: 'Início',
+            requiresConnection: false,
+            description: 'Voltar para a página inicial',
+            isExternal: true
+        },
+        {
+            path: '/',
+            label: 'Hub Loader',
             requiresConnection: false,
             description: 'Carregar novos hubs',
             onClick: handleHubLoaderClick
         },
-        { 
-            path: '/collection', 
-            label: 'Coleção', 
+        {
+            path: '/collection',
+            label: 'Coleção',
             requiresConnection: true,
             description: 'Seus itens salvos e histórico'
         },
-        { 
-            path: '/works', 
-            label: 'Obras', 
+        {
+            path: '/works',
+            label: 'Obras',
             requiresConnection: true,
             description: 'Suas obras favoritas'
         },
-        { 
-            path: '/upload', 
-            label: 'Upload', 
+        {
+            path: '/upload',
+            label: 'Upload',
             requiresConnection: true,
             description: 'Enviar conteúdo'
         }
@@ -140,11 +147,39 @@ const Header = () => {
 
                     {/* AIDEV-NOTE: Desktop navigation with design system */}
                     <nav className="hidden md:flex items-center space-x-1">
-                        {visibleItems.map((item) => (
-                            item.onClick ? (
-                                <button
+                        {visibleItems.map((item) => {
+                            if (item.isExternal) {
+                                return (
+                                    <a
+                                        key={item.path + '-external'}
+                                        href="http://localhost:3000/"
+                                        className={`px-md py-sm rounded-lg transition-all duration-300 text-secondary hover:text-primary hover:bg-surface`}
+                                        title={item.description}
+                                    >
+                                        {item.label}
+                                    </a>
+                                );
+                            }
+                            if (item.onClick) {
+                                return (
+                                    <button
+                                        key={item.path}
+                                        onClick={item.onClick}
+                                        className={`px-md py-sm rounded-lg transition-all duration-300 ${
+                                            isActiveRoute(item.path)
+                                                ? 'bg-primary text-inverse font-medium border border-border-focus'
+                                                : 'text-secondary hover:text-primary hover:bg-surface'
+                                        }`}
+                                        title={item.description}
+                                    >
+                                        {item.label}
+                                    </button>
+                                );
+                            }
+                            return (
+                                <Link
                                     key={item.path}
-                                    onClick={item.onClick}
+                                    to={item.path}
                                     className={`px-md py-sm rounded-lg transition-all duration-300 ${
                                         isActiveRoute(item.path)
                                             ? 'bg-primary text-inverse font-medium border border-border-focus'
@@ -153,23 +188,9 @@ const Header = () => {
                                     title={item.description}
                                 >
                                     {item.label}
-                                </button>
-                            ) : (
-                                <a
-                                    key={item.path}
-                                    href={item.path}
-                                    className={`px-md py-sm rounded-lg transition-all duration-300 ${
-                                        isActiveRoute(item.path)
-                                            ? 'bg-primary text-inverse font-medium border border-border-focus'
-                                            : 'text-secondary hover:text-primary hover:bg-surface'
-                                    }`}
-                                    title={item.description}
-                                >
-                                    {item.label}
-                                </a>
-                            )
-                        ))}
-                        
+                                </Link>
+                            );
+                        })}
                         {/* AIDEV-NOTE: Theme toggle in desktop navigation */}
                         <div className="ml-md">
                             <ThemeToggle size="sm" />
@@ -194,40 +215,55 @@ const Header = () => {
                         {isDropdownOpen && (
                             <div className="absolute right-0 top-full mt-2 w-64 bg-surface border border-border rounded-lg shadow-lg z-50">
                                 <div className="py-2">
-                                    {visibleItems.map((item) => (
-                                        item.onClick ? (
-                                            <button
-                                                key={item.path}
-                                                onClick={() => {
-                                                    item.onClick();
-                                                    setIsDropdownOpen(false);
-                                                }}
-                                                className={`px-4 py-3 transition-colors w-full text-left ${
-                                                    isActiveRoute(item.path)
-                                                        ? 'bg-surface-hover text-accent'
-                                                        : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
-                                                }`}
-                                            >
+                                    {visibleItems.map((item) => {
+                                        if (item.isExternal) {
+                                            return (
+                                                <a
+                                                    key={item.path + '-external-mobile'}
+                                                    href="http://localhost:3000/"
+                                                    className={`px-4 py-3 transition-colors w-full text-left text-text-secondary hover:text-text-primary hover:bg-surface-hover`}
+                                                    onClick={() => setIsDropdownOpen(false)}
+                                                >
                                                     <div className="font-medium">{item.label}</div>
                                                     <div className="text-sm text-text-tertiary">{item.description}</div>
-                                            </button>
-                                        ) : (
+                                                </a>
+                                            );
+                                        }
+                                        if (item.onClick) {
+                                            return (
+                                                <button
+                                                    key={item.path}
+                                                    onClick={() => {
+                                                        item.onClick(new Event('click'));
+                                                        setIsDropdownOpen(false);
+                                                    }}
+                                                    className={`px-4 py-3 transition-colors w-full text-left ${
+                                                        isActiveRoute(item.path)
+                                                            ? 'bg-surface-hover text-accent'
+                                                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
+                                                    }`}
+                                                >
+                                                    <div className="font-medium">{item.label}</div>
+                                                    <div className="text-sm text-text-tertiary">{item.description}</div>
+                                                </button>
+                                            );
+                                        }
+                                        return (
                                             <Link
                                                 key={item.path}
                                                 to={item.path}
                                                 onClick={() => setIsDropdownOpen(false)}
-                                                className={`px-4 py-3 transition-colors ${
+                                                className={`block px-4 py-3 transition-colors ${
                                                     isActiveRoute(item.path)
                                                         ? 'bg-surface-hover text-accent'
                                                         : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                                                 }`}
                                             >
-                                                    <div className="font-medium">{item.label}</div>
-                                                    <div className="text-sm text-text-tertiary">{item.description}</div>
+                                                <div className="font-medium">{item.label}</div>
+                                                <div className="text-sm text-text-tertiary">{item.description}</div>
                                             </Link>
-                                        )
-                                    ))}
-                                    
+                                        );
+                                    })}
                                     {/* AIDEV-NOTE: Connection status indicator in mobile menu */}
                                     <div className="px-4 py-2 border-t border-border mt-2">
                                         <div className="flex items-center gap-2 text-sm">

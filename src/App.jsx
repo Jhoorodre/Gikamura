@@ -1,6 +1,6 @@
 // AIDEV-NOTE: Main App component; routing, notifications, and global state management
-import { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
 import { useRemoteStorageContext } from './context/RemoteStorageContext';
 import { useServiceWorker } from './hooks/useServiceWorker';
@@ -21,6 +21,7 @@ import ErrorMessage from './components/common/ErrorMessage';
 import GlobalRemoteStorageWidget from './components/common/SimpleRemoteStorageWidgetNew';
 import Header from './components/common/Header';
 import { runFullDiagnostic } from './utils/networkDebug';
+import Spinner from './components/common/Spinner';
 
 function App() {
     const { conflictMessage: appConflictMessage } = useAppContext();
@@ -34,6 +35,18 @@ function App() {
     
     // AIDEV-NOTE: Centralized hub loading without auto-loading to prevent loops
     const { url: _hubUrl, setUrl: _setHubUrl, loading: _loading, handleSubmit: _handleLoadHub } = useHubLoader();
+
+    const [loading, setLoading] = useState(true);
+    const location = useLocation();
+
+    useEffect(() => {
+        // AIDEV-NOTE: Delay curto para garantir que o contexto de conexão seja resolvido antes de renderizar
+        setLoading(true);
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 50);
+        return () => clearTimeout(timer);
+    }, [location.pathname]);
 
     useEffect(() => {
         // AIDEV-NOTE: Create particles after DOM is ready
@@ -55,6 +68,15 @@ function App() {
             });
         }
     }, []); // AIDEV-NOTE: Runs only once on mount
+
+    // AIDEV-NOTE: Tela de carregamento enquanto verifica conexão RemoteStorage
+    if (loading) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center">
+                <Spinner size="lg" text="Carregando..." />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex flex-col">
