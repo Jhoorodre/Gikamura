@@ -2,14 +2,14 @@
 import { useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
-import { useAppContext } from '../../context/AppContext';
+import { useHubContext } from '../../context/HubContext';
 import { encodeUrl } from '../../utils/encoding';
 import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const { isConnected } = useRemoteStorageContext() || { isConnected: false };
-    const { currentHubData, currentHubUrl, lastAttemptedUrl, clearHubData } = useAppContext() || { 
+    const { currentHubData, currentHubUrl, lastAttemptedUrl, clearHubData } = useHubContext() || { 
         currentHubData: null, 
         currentHubUrl: null, 
         lastAttemptedUrl: null,
@@ -17,6 +17,8 @@ const Header = () => {
     };
     const location = useLocation();
     const navigate = useNavigate();
+
+    // AIDEV-NOTE: Smart navigation for Hub Loader button - vai para hub atual ou página inicial
 
     // AIDEV-NOTE: Smart navigation for Hub Loader button - vai para hub atual ou página inicial
     const handleHubLoaderClick = (e) => {
@@ -32,9 +34,11 @@ const Header = () => {
             currentPath: location.pathname
         });
         
+        // AIDEV-NOTE: Use currentHubUrl or lastAttemptedUrl as fallback
+        const hubUrl = currentHubUrl || lastAttemptedUrl;
+        
         // AIDEV-NOTE: Se há hub carregado e URL disponível, navega para o hub
-        if (currentHubData && (currentHubUrl || lastAttemptedUrl)) {
-            const hubUrl = currentHubUrl || lastAttemptedUrl;
+        if (currentHubData && hubUrl) {
             try {
                 const encodedHubUrl = encodeUrl(hubUrl);
                 const hubRoute = `/hub/${encodedHubUrl}`;

@@ -9,6 +9,8 @@ import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Button from '../components/common/Button';
 import Image from '../components/common/Image';
+import BackToTopButton from '../components/common/BackToTopButton';
+import { FixedSizeList as List } from 'react-window';
 
 const INITIAL_CHAPTERS_DISPLAY_COUNT = 20; // AIDEV-NOTE: Initial chapter display limit for performance
 
@@ -308,35 +310,76 @@ const ReaderView = () => {
                     </div>
 
                     <div className="space-y-2">
-                        {displayedChapters.map((chapter) => (
-                            <div
-                                key={chapter.id}
-                                className="flex items-center justify-between p-4 bg-gray-800/30 hover:bg-gray-800/50 rounded-lg border border-gray-700/30 hover:border-gray-600/50 cursor-pointer transition-colors"
-                                onClick={() => handleReadChapter(chapter.id)}
+                        {/* AIDEV-NOTE: Virtualiza lista de capítulos com react-window se houver muitos capítulos (>100) automaticamente */}
+                        {displayedChapters.length > 100 ? (
+                            <List
+                                height={600}
+                                itemCount={displayedChapters.length}
+                                itemSize={72}
+                                width={"100%"}
+                                style={{overflowX: 'hidden'}}
                             >
-                                <div className="flex-1">
-                                    <h3 className="font-medium text-white mb-1">
-                                        {chapter.title || `Capítulo ${chapter.id}`}
-                                    </h3>
-                                    
-                                    <div className="flex items-center gap-4 text-xs text-gray-400">
-                                        <span>{getPageCount(chapter)} páginas</span>
-                                        <span>{formatDate(chapter.last_updated)}</span>
-                                    </div>
-                                </div>
-
-                                <Button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleReadChapter(chapter.id);
-                                    }}
-                                    variant="ghost"
-                                    className="text-blue-400 hover:text-blue-300 p-2"
+                                {({ index, style }) => {
+                                    const chapter = displayedChapters[index];
+                                    return (
+                                        <div
+                                            key={chapter.id}
+                                            style={style}
+                                            className="flex items-center justify-between p-4 bg-gray-800/30 hover:bg-gray-800/50 rounded-lg border border-gray-700/30 hover:border-gray-600/50 cursor-pointer transition-colors"
+                                            onClick={() => handleReadChapter(chapter.id)}
+                                        >
+                                            <div className="flex-1">
+                                                <h3 className="font-medium text-white mb-1">
+                                                    {chapter.title || `Capítulo ${chapter.id}`}
+                                                </h3>
+                                                <div className="flex items-center gap-4 text-xs text-gray-400">
+                                                    <span>{getPageCount(chapter)} páginas</span>
+                                                    <span>{formatDate(chapter.last_updated)}</span>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleReadChapter(chapter.id);
+                                                }}
+                                                variant="ghost"
+                                                className="text-blue-400 hover:text-blue-300 p-2"
+                                            >
+                                                <PlayIcon className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    );
+                                }}
+                            </List>
+                        ) : (
+                            displayedChapters.map((chapter) => (
+                                <div
+                                    key={chapter.id}
+                                    className="flex items-center justify-between p-4 bg-gray-800/30 hover:bg-gray-800/50 rounded-lg border border-gray-700/30 hover:border-gray-600/50 cursor-pointer transition-colors"
+                                    onClick={() => handleReadChapter(chapter.id)}
                                 >
-                                    <PlayIcon className="w-4 h-4" />
-                                </Button>
-                            </div>
-                        ))}
+                                    <div className="flex-1">
+                                        <h3 className="font-medium text-white mb-1">
+                                            {chapter.title || `Capítulo ${chapter.id}`}
+                                        </h3>
+                                        <div className="flex items-center gap-4 text-xs text-gray-400">
+                                            <span>{getPageCount(chapter)} páginas</span>
+                                            <span>{formatDate(chapter.last_updated)}</span>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleReadChapter(chapter.id);
+                                        }}
+                                        variant="ghost"
+                                        className="text-blue-400 hover:text-blue-300 p-2"
+                                    >
+                                        <PlayIcon className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            ))
+                        )}
                     </div>
 
                     {displayedChapters.length === 0 && (
@@ -346,6 +389,9 @@ const ReaderView = () => {
                     )}
                 </div>
             </div>
+            
+            {/* AIDEV-NOTE: Back to top button for chapter listing */}
+            <BackToTopButton threshold={300} />
         </div>
     );
 };

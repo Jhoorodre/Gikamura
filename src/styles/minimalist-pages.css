@@ -794,3 +794,8 @@
     width: 14px !important;
     height: 14px !important;
 }
+
+.min-item-grid > .min-item-card {
+  content-visibility: auto; /* AIDEV-NOTE: Otimiza renderização de listas longas */
+  contain-intrinsic-size: 300px 400px; /* AIDEV-NOTE: Tamanho estimado do card para layout estável */
+}

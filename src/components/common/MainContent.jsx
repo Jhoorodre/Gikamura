@@ -1,5 +1,6 @@
 // AIDEV-NOTE: Main content router; handles hub/storage state rendering logic and query parameters
 import { useAppContext } from '../../context/AppContext';
+import { useHubContext } from '../../context/HubContext';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -15,7 +16,7 @@ import HubView from '../../views/HubView';
  * Processes query parameters like ?hub=encodedUrl from Collection page
  */
 function MainContent() {
-    const { currentHubData, hubLoading, hubError, loadHub, retryLoadHub, lastAttemptedUrl } = useAppContext();
+    const { currentHubData, hubLoading, hubError, loadHub, retryLoadHub, lastAttemptedUrl } = useHubContext();
     const { isConnected } = useRemoteStorageContext() || { isConnected: false };
     const location = useLocation();
 

@@ -25,14 +25,23 @@ const IGNORE_PATTERNS = [
   /webpack-dev-server/
 ];
 
+// AIDEV-NOTE: Lista de assets estáticos para cache-first
+const STATIC_ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/vite.svg',
+  // Adicione aqui os caminhos para seus bundles de CSS e JS
+];
+
 // AIDEV-NOTE: Install SW with static cache preparation and skip waiting
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing Service Worker v2');
   
   event.waitUntil(
-    caches.open(STATIC_CACHE).then((_cache) => {
-      console.log('[SW] Static cache ready');
-      return Promise.resolve();
+    caches.open(STATIC_CACHE).then((cache) => {
+      console.log('[SW] Caching static assets');
+      return cache.addAll(STATIC_ASSETS);
     })
   );
   
@@ -102,6 +111,16 @@ self.addEventListener('fetch', (event) => {
           // AIDEV-NOTE: If fails, try to fetch from cache
           return caches.match(request);
         })
+    );
+    return;
+  }
+  
+  // AIDEV-NOTE: Cache-first para assets estáticos
+  if (STATIC_ASSETS.includes(url.pathname)) {
+    event.respondWith(
+      caches.match(request).then(response => {
+        return response || fetch(request);
+      })
     );
     return;
   }

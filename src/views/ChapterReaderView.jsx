@@ -7,6 +7,7 @@ import { ChevronLeftIcon, BookOpenIcon } from '../components/common/Icones';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Button from '../components/common/Button';
+import BackToTopButton from '../components/common/BackToTopButton';
 const ItemViewer = React.lazy(() => import('../components/item/ItemViewer.jsx'));
 
 const ChapterReaderView = () => {
@@ -345,6 +346,9 @@ const ChapterReaderView = () => {
                     />
                 </Suspense>
             </div>
+            
+            {/* AIDEV-NOTE: Back to top button for scroll reading mode */}
+            <BackToTopButton threshold={200} />
         </div>
     );
 };
