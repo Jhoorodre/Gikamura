@@ -202,20 +202,37 @@ const HubView = () => {
                     <div className="hub-title-section">
                         {currentHubData.hub.icon && (
                             <img 
-                                src={currentHubData.hub.icon.url} 
+                                src={currentHubData.hub.icon.url}
                                 alt={currentHubData.hub.icon.alt || currentHubData.hub.title}
-                                className="hub-icon"
+                                width={128}
+                                height={128}
+                                style={{ borderRadius: '16px', objectFit: 'cover' }}
                             />
                         )}
                         <div className="hub-title-text">
-                            <h1 className="hub-title">{currentHubData.hub.title}</h1>
-                            {currentHubData.hub.subtitle && (
-                                <p className="hub-subtitle">{currentHubData.hub.subtitle}</p>
-                            )}
+                          <h1
+                            className="hub-title"
+                            style={{ fontSize: "2.5rem" }}
+                          >
+                            {currentHubData.hub.title}
+                          </h1>
+                          {currentHubData.hub.subtitle && (
+                            <p
+                              className="hub-subtitle"
+                              style={{ fontSize: "1.5rem" }}
+                            >
+                              {currentHubData.hub.subtitle}
+                            </p>
+                          )}
                         </div>
                     </div>
                     {currentHubData.hub.description && (
-                        <p className="hub-description">{currentHubData.hub.description}</p>
+                      <p
+                        className="hub-description"
+                        style={{ fontSize: "1.3rem" }}
+                      >
+                        {currentHubData.hub.description}
+                      </p>
                     )}
                 </div>
                 <div className="hub-connection-status">
