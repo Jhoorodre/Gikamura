@@ -28,8 +28,9 @@
 }
 
 .min-header {
-  margin-bottom: var(--space-4);
-  padding-bottom: var(--space-6);
+  margin-top: var(--space-36); 
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-2);
   border-bottom: var(--border-width-1) solid var(--color-border);
   text-align: center;
 }

@@ -40,7 +40,7 @@ const HubLoaderComponent = () => {
                 <div className="min-header">
                     <h1 className="min-title">Gikamura</h1>
                     <p className="min-subtitle">
-                        <em>Malo periculosam libertatem quam quietum servitium.</em>
+                        <i>Malo periculosam libertatem quam quietum servitium.</i>
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="min-form">
