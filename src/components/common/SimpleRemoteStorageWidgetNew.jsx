@@ -17,7 +17,7 @@ const SimpleRemoteStorageWidgetNew = () => {
     // Use effect to ensure route checking happens after navigation
     useEffect(() => {
         const isReadingPage = location.pathname.includes('/read/') || 
-                             location.pathname.includes('/reader/') || 
+                             location.pathname.includes('/manga/') || 
                              location.pathname.includes('/series/');
         
         if (isReadingPage) {

@@ -6,7 +6,7 @@
 // 4. Memoized context values to prevent unnecessary re-renders
 // 5. Added anti-flicker CSS for smooth visual transitions
 import { useEffect, useState, lazy, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
 import { useRemoteStorageContext } from './context/RemoteStorageContext';
 import { useServiceWorker } from './hooks/useServiceWorker';
@@ -25,16 +25,27 @@ import { UserPreferencesProvider } from './context/UserPreferencesContext';
 import MainLayout from './components/common/MainLayout';
 
 // AIDEV-NOTE: Rotas pesadas agora são carregadas sob demanda (React.lazy)
-const ReaderView = lazy(() => import('./views/ReaderView'));
-const ChapterReaderView = lazy(() => import('./views/ChapterReaderView'));
-const SeriesDetailPage = lazy(() => import('./pages/SeriesDetailPage'));
-const ItemDetailView = lazy(() => import('./views/ItemDetailView'));
 const HubView = lazy(() => import('./views/HubView'));
 const HubRouteHandler = lazy(() => import('./views/HubRouteHandler'));
 // AIDEV-NOTE: Páginas protegidas também em lazy loading
 const CollectionPage = lazy(() => import('./pages/CollectionPage'));
 const WorksPage = lazy(() => import('./pages/WorksPage'));
 const UploadPage = lazy(() => import('./pages/UploadPage'));
+// Lazy load das novas páginas modernas
+const PageView = lazy(() => import('./pages/PageView'));
+const ReaderChapter = lazy(() => import('./pages/ReaderChapter'));
+
+// Componente para redirecionar /reader/ para /manga/
+const ReaderRedirect = () => {
+    const { encodedUrl } = useParams();
+    return <Navigate to={`/manga/${encodedUrl}`} replace />;
+};
+
+// Componente para redirecionar /leitor/ com capítulo
+const LeitorChapterRedirect = () => {
+    const { encodedUrl, encodedChapterId } = useParams();
+    return <Navigate to={`/reader/${encodedUrl}/${encodedChapterId}`} replace />;
+};
 
 // Pré-carregamento das páginas principais para evitar flicking
 import('./pages/CollectionPage');
@@ -135,21 +146,13 @@ function App() {
                                 </Suspense>
                             } />
                         </Route>
-                        <Route path="/reader/:encodedUrl" element={
-                            <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
-                                <ReaderView />
-                            </Suspense>
-                        } />
-                        <Route path="/read/:encodedUrl/:chapterId" element={
-                            <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
-                                <ChapterReaderView />
-                            </Suspense>
-                        } />
-                        <Route path="/series/:encodedId" element={
-                            <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
-                                <ItemDetailView />
-                            </Suspense>
-                        } />
+                        {/* Novas rotas modernas */}
+                        <Route path="/manga/:encodedUrl" element={<PageView />} />
+                        <Route path="/reader/:encodedUrl/:encodedChapterId" element={<ReaderChapter />} />
+                        {/* Redirecionamento de rotas antigas */}
+                        <Route path="/reader/:encodedUrl" element={<ReaderRedirect />} />
+                        <Route path="/leitor/:encodedUrl" element={<ReaderRedirect />} />
+                        <Route path="/leitor/:encodedUrl/:encodedChapterId" element={<LeitorChapterRedirect />} />
                     </Routes>
                 </div>
             </HubProvider>

@@ -125,7 +125,7 @@ const HubView = () => {
         if (!item.data?.url) return;
         const encodedReaderUrl = encodeUrl(item.data.url);
         selectItem(item, currentHubData.hub.id);
-        navigate(`/reader/${encodedReaderUrl}`);
+        navigate(`/manga/${encodedReaderUrl}`);
     }, [selectItem, currentHubData?.hub?.id, navigate]);
 
     const handleSyncClick = useCallback(async () => {
