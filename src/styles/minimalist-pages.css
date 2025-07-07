@@ -799,3 +799,34 @@
   content-visibility: auto; /* AIDEV-NOTE: Otimiza renderização de listas longas */
   contain-intrinsic-size: 300px 400px; /* AIDEV-NOTE: Tamanho estimado do card para layout estável */
 }
+
+/* AIDEV-NOTE: Estilização do botão de deletar para os cards de hub. */
+.min-item-delete-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.min-item-delete-button:hover {
+    background: #dc2626; /* Cor de perigo */
+    transform: scale(1.1);
+}
+
+/* AIDEV-NOTE: Ajuste no aspect-ratio da imagem para ícones de hub, que geralmente são quadrados. */
+.min-item-card .min-item-image {
+    aspect-ratio: 1 / 1; /* Ícones de Hub são quadrados */
+    object-fit: cover;
+}
