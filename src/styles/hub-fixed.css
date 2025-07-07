@@ -626,21 +626,28 @@
 /* Melhorias para o grid de itens */
 .grid-auto-fill {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: var(--space-6);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1200px) {
     .grid-auto-fill {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: var(--space-5);
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-auto-fill {
+        grid-template-columns: repeat(3, 1fr);
         gap: var(--space-4);
     }
 }
 
-@media (min-width: 1200px) {
+@media (max-width: 480px) {
     .grid-auto-fill {
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: var(--space-8);
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-3);
     }
 }
 

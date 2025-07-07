@@ -431,243 +431,154 @@
 }
 
 /* ========================================================================== */
-/* ==                      ITEM GRID LAYOUT                               == */
+/* ==                      ITEM GRID LAYOUT (VERSÃO MELHORADA)              == */
 /* ========================================================================== */
 
-/* AIDEV-NOTE: responsive grid for item cards with improved sizing and proportions */
+/* AIDEV-NOTE: Grelha de itens com cards maiores e mais espaço. */
 .min-item-grid {
     display: grid;
-    /* AIDEV-NOTE: Uses auto-fill for adaptive columns with proportional minimum size */
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: var(--space-md); /* AIDEV-NOTE: Uses new fluid spacing system */
-    padding: var(--space-md) 0;
+    /* AIDEV-NOTE: Tamanho mínimo aumentado para 200px para cards maiores. */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-lg);
 }
 
-/* AIDEV-NOTE: item card with improved proportions and enhanced hover effects */
+/* AIDEV-NOTE: Card com posicionamento relativo para permitir a sobreposição. */
 .min-item-card {
     position: relative;
-    background: var(--color-surface);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
     cursor: pointer;
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-sm);
+    background-color: var(--color-surface);
+    /* AIDEV-NOTE: Proporção correta para capas, evitando distorção. */
+    aspect-ratio: 2 / 3; 
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
 }
 
 .min-item-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--color-border-focus);
+    transform: translateY(-8px) scale(1.04);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
 }
 
-/* AIDEV-NOTE: pin button with improved visibility and positioning */
+/* AIDEV-NOTE: Botão de pinar restaurado e posicionado no canto superior direito. */
 .min-item-pin-button {
     position: absolute;
     top: 12px;
     right: 12px;
-    z-index: 10;
-    background: rgba(0, 0, 0, 0.8);
+    z-index: 3; /* Garante que o botão fique sobre a imagem e a sobreposição */
+    background: rgba(10, 10, 10, 0.7);
     color: white;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
     transition: all 0.2s ease;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 .min-item-pin-button:hover {
-    background: rgba(0, 0, 0, 0.95);
-    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.15);
 }
 
 .min-item-pin-button.pinned {
-    background: var(--color-yellow-500, #eab308);
-    color: var(--color-yellow-900, #713f12);
+    background: #f59e0b; /* Amarelo mais vibrante para indicar que está "pinado" */
+    color: #422006;
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* AIDEV-NOTE: improved image sizing with proper aspect ratio and better visual presentation */
+/* AIDEV-NOTE: Imagem como fundo do card. */
 .min-item-image {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    aspect-ratio: var(--aspect-book); /* AIDEV-NOTE: Standard book/manga cover ratio */
-    object-fit: cover;
-    border-radius: 0;
-    display: block;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    transition: transform var(--transition-normal);
+    height: 100%;
+    object-fit: cover; /* Garante que a imagem preencha o card sem esticar. */
+    z-index: 1;
+    transition: transform 0.4s ease;
 }
 
 .min-item-card:hover .min-item-image {
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
-/* AIDEV-NOTE: enhanced content area with better spacing and typography */
+/* AIDEV-NOTE: Sobreposição escura para garantir a legibilidade do título. */
 .min-item-content {
-    padding: var(--space-md);
-    text-align: left; /* AIDEV-NOTE: Left alignment for better readability */
+    position: relative;
+    z-index: 2;
+    padding: var(--space-lg) var(--space-md);
+    background: linear-gradient(to top, rgba(0,0,0,1) 10%, rgba(0,0,0,0.7) 50%, transparent 100%);
+    width: 100%;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* AIDEV-NOTE: Ensures content fills remaining space */
+    justify-content: flex-end;
+    min-height: 50%; /* Garante espaço para o conteúdo */
 }
 
+/* AIDEV-NOTE: Estilo do título, agora visível e proporcional. */
 .min-item-title {
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-    line-height: var(--line-height-tight);
-    margin-bottom: var(--space-xs);
-    /* AIDEV-NOTE: Ensures title doesn't break layout */
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.3;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+    margin: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3; /* Permite até 3 linhas para títulos longos */
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    min-height: calc(var(--font-size-md) * var(--line-height-tight) * 2); /* AIDEV-NOTE: Reserve space for 2 lines */
 }
 
 .min-item-subtitle {
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-    line-height: var(--line-height-normal);
-    flex-grow: 1; /* AIDEV-NOTE: Pushes footer down */
+    font-size: 0.9rem;
+    color: #e5e7eb;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    margin-top: 6px;
+    opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ========================================================================== */
 /* ==                      RESPONSIVE DESIGN                              == */
 /* ========================================================================== */
 
-/* AIDEV-NOTE: mobile-first responsive design with optimized layouts */
-@media (max-width: 768px) {
-    /* Container adjustments */
-    .min-page-container {
-        padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
-    }
-    
-    /* Form layout adjustments */
-    .min-form {
-        flex-direction: column;
-    }
-    
-    .min-input {
-        min-width: auto;
-    }
-    
-    /* Tab navigation for mobile */
-    .min-tabs {
-        flex-direction: column;
-        border-bottom: none;
-    }
-    
-    .min-tab-button {
-        border-radius: var(--radius-lg, 12px);
-        border-bottom: 1px solid var(--border-primary, rgba(52, 17, 17, 0.3));
-    }
-    
-    .min-tab-button.active::after {
-        display: none;
-    }
-    
-    /* Grid adjustments for smaller screens with improved card sizing */
+@media (min-width: 1800px) {
     .min-item-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: var(--space-sm);
-        padding: var(--space-sm) 0;
-    }
-    
-    /* Content padding adjustments */
-    .min-item-content {
-        padding: var(--space-sm);
-    }
-    
-    .min-item-title {
-        font-size: var(--font-size-sm);
-    }
-    
-    .min-item-subtitle {
-        font-size: var(--font-size-sm);
-    }
-    
-    /* Pin button adjustments for mobile */
-    .min-item-pin-button {
-        width: 28px;
-        height: 28px;
-        font-size: 14px;
-        top: 8px;
-        right: 8px;
-    }
-    
-    /* Empty state adjustments */
-    .min-empty-state {
-        padding: var(--space-8, 2rem) var(--space-2, 0.5rem);
-    }
-    
-    /* Dropzone adjustments */
-    .min-dropzone {
-        padding: var(--space-6, 1.5rem);
-    }
-    
-    .min-dropzone-icon {
-        font-size: var(--text-3xl, 1.875rem);
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     }
 }
 
-/* AIDEV-NOTE: tablet adjustments for medium screens with balanced proportions */
-@media (max-width: 1024px) and (min-width: 769px) {
+@media (max-width: 768px) {
     .min-item-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: var(--space-md);
     }
-    
-    .min-item-image {
-        height: 260px;
+    .min-item-title {
+        font-size: 1rem;
     }
-    
-    /* Hub collection mobile adjustments - minimalist */
-    .hub-collection-container .panel-solid .chapter-item {
-        padding: var(--space-3, 0.75rem) var(--space-4, 1rem) !important;
-        min-height: 56px !important;
-    }
-    
-    .hub-collection-container .panel-solid .chapter-item img {
-        width: 28px !important;
-        height: 28px !important;
-    }
-    
-    .hub-collection-container .panel-solid .chapter-item button {
-        width: 28px !important;
-        height: 28px !important;
-    }
-    
-    .hub-collection-container .panel-solid .chapter-item .flex-1 p:first-child {
-        font-size: var(--text-sm, 0.875rem) !important;
-    }
-    
-    .hub-collection-container .panel-solid .chapter-item .flex-1 p:last-child {
-        font-size: var(--text-xs, 0.75rem) !important;
+    .min-item-subtitle {
+        font-size: 0.8rem;
     }
 }
 
-/* AIDEV-NOTE: large screen optimizations with spacious layout */
-@media (min-width: 1200px) {
+@media (max-width: 480px) {
     .min-item-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: var(--space-lg);
-    }
-    
-    .min-item-content {
-        padding: var(--space-md);
-    }
-    
-    .min-item-title {
-        font-size: var(--font-size-lg);
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
     }
 }
 

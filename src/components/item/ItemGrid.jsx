@@ -1,3 +1,5 @@
+// src/components/item/ItemGrid.jsx
+
 // AIDEV-NOTE: Grid de itens com design system aprimorado e proporções harmoniosas
 import { memo, createElement } from 'react';
 import Image from '../common/Image';
@@ -18,6 +20,7 @@ const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
                     key={uniqueKey}
                     className="min-item-card"
                     tabIndex={0}
+                    onClick={() => onSelectItem(item)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
@@ -25,21 +28,21 @@ const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
                         }
                     }}
                 >
-                {/* AIDEV-NOTE: Botão de favoritar com acessibilidade e design system */}
-                {onPinToggle && !item.isStatic && (
-                    <button
-                        className={`min-item-pin-button ${item.pinned ? 'pinned' : ''}`}
-                        aria-label={item.pinned ? 'Desafixar dos favoritos' : 'Fixar nos favoritos'}
-                        title={item.pinned ? 'Desafixar dos favoritos' : 'Fixar nos favoritos'}
-                        onClick={e => {
-                            e.stopPropagation();
-                            onPinToggle(item);
-                        }}
-                    >
-                        {item.pinned ? '★' : '☆'}
-                    </button>
-                )}
-                <div onClick={() => onSelectItem(item)}>
+                    {/* AIDEV-NOTE: Botão de favoritar com acessibilidade e design system */}
+                    {onPinToggle && !item.isStatic && (
+                        <button
+                            className={`min-item-pin-button ${item.pinned ? 'pinned' : ''}`}
+                            aria-label={item.pinned ? 'Desafixar dos favoritos' : 'Fixar nos favoritos'}
+                            title={item.pinned ? 'Desafixar dos favoritos' : 'Fixar nos favoritos'}
+                            onClick={e => {
+                                e.stopPropagation();
+                                onPinToggle(item);
+                            }}
+                        >
+                            {item.pinned ? '★' : '☆'}
+                        </button>
+                    )}
+                    
                     {/* AIDEV-NOTE: Renderiza ícone ou imagem com fallback e proporção consistente */}
                     {item.iconComponent ? (
                         <div className="min-item-image flex items-center justify-center">
@@ -53,12 +56,12 @@ const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
                             errorSrc="https://placehold.co/300x450/1e293b/94a3b8?text=Capa"
                         />
                     )}
+                    
                     <div className="min-item-content">
                         <h3 className="min-item-title">{item.title}</h3>
                         {item.subtitle && <p className="min-item-subtitle">{item.subtitle}</p>}
                     </div>
                 </div>
-            </div>
             );
         })}
     </div>
