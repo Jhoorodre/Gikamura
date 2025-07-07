@@ -55,21 +55,28 @@ const Header = () => {
         navigate('/');
     };
 
+    /**
+     * ✅ NOVO: Função para navegar para a página inicial e limpar os dados do hub.
+     * Garante que o usuário sempre volte para o estado inicial do Hub Loader.
+     */
+    const handleGoHome = (e) => {
+        e.preventDefault();
+        if (location.pathname !== '/') {
+            console.log('🧹 [Header] Limpando dados do hub e voltando para o início.');
+            clearHubData();
+        }
+        navigate('/');
+    };
+
     // AIDEV-NOTE: Navigation items with RemoteStorage dependency logic
     const navigationItems = [
         {
-            path: '/',
             label: 'Início',
             requiresConnection: false,
-            description: 'Voltar para a página inicial',
-            isExternal: true
-        },
-        {
+            description: 'Voltar para a página inicial com o seletor de hub.',
+            onClick: handleGoHome, 
+            isExternal: false, 
             path: '/',
-            label: 'Hub Loader',
-            requiresConnection: false,
-            description: 'Carregar novos hubs',
-            onClick: handleHubLoaderClick
         },
         {
             path: '/collection',
@@ -153,21 +160,12 @@ const Header = () => {
                     <nav className="hidden md:flex items-center space-x-1">
                         {visibleItems.map((item) => {
                             if (item.isExternal) {
-                                return (
-                                    <a
-                                        key={item.path + '-external'}
-                                        href="http://localhost:3000/"
-                                        className={`px-md py-sm rounded-lg transition-all duration-300 text-secondary hover:text-primary hover:bg-surface`}
-                                        title={item.description}
-                                    >
-                                        {item.label}
-                                    </a>
-                                );
+                                return null;
                             }
                             if (item.onClick) {
                                 return (
                                     <button
-                                        key={item.path}
+                                        key={item.label}
                                         onClick={item.onClick}
                                         className={`px-md py-sm rounded-lg transition-all duration-300 ${
                                             isActiveRoute(item.path)
@@ -182,7 +180,7 @@ const Header = () => {
                             }
                             return (
                                 <Link
-                                    key={item.path}
+                                    key={item.label}
                                     to={item.path}
                                     className={`px-md py-sm rounded-lg transition-all duration-300 ${
                                         isActiveRoute(item.path)
@@ -221,27 +219,17 @@ const Header = () => {
                                 <div className="py-2">
                                     {visibleItems.map((item) => {
                                         if (item.isExternal) {
-                                            return (
-                                                <a
-                                                    key={item.path + '-external-mobile'}
-                                                    href="http://localhost:3000/"
-                                                    className={`px-4 py-3 transition-colors w-full text-left text-text-secondary hover:text-text-primary hover:bg-surface-hover`}
-                                                    onClick={() => setIsDropdownOpen(false)}
-                                                >
-                                                    <div className="font-medium">{item.label}</div>
-                                                    <div className="text-sm text-text-tertiary">{item.description}</div>
-                                                </a>
-                                            );
+                                            return null;
                                         }
                                         if (item.onClick) {
                                             return (
                                                 <button
-                                                    key={item.path}
-                                                    onClick={() => {
-                                                        item.onClick(new Event('click'));
+                                                    key={item.label}
+                                                    onClick={(e) => {
+                                                        item.onClick(e);
                                                         setIsDropdownOpen(false);
                                                     }}
-                                                    className={`px-4 py-3 transition-colors w-full text-left ${
+                                                    className={`block w-full text-left px-4 py-3 transition-colors ${
                                                         isActiveRoute(item.path)
                                                             ? 'bg-surface-hover text-accent'
                                                             : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
@@ -254,7 +242,7 @@ const Header = () => {
                                         }
                                         return (
                                             <Link
-                                                key={item.path}
+                                                key={item.label}
                                                 to={item.path}
                                                 onClick={() => setIsDropdownOpen(false)}
                                                 className={`block px-4 py-3 transition-colors ${

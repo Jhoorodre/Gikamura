@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { loadHubJSON } from '../services/jsonReader.js';
 import api, { clearCaches } from '../services/api.js';
+import { useLocalStorage } from '../hooks/useUtils'; // AIDEV-NOTE: Persistência do último hub carregado
 
 const HubContext = createContext();
 
@@ -12,7 +13,7 @@ export const useHubContext = () => useContext(HubContext);
 export const HubProvider = ({ children }) => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const [hubUrlToLoad, setHubUrlToLoad] = useState(null);
+    const [hubUrlToLoad, setHubUrlToLoad] = useLocalStorage('lastHubUrl', null);
     const [lastAttemptedUrl, setLastAttemptedUrl] = useState("");
 
     // Carregamento do hub
@@ -41,26 +42,31 @@ export const HubProvider = ({ children }) => {
         staleTime: 5 * 60 * 1000,
         gcTime: 10 * 60 * 1000,
         refetchOnWindowFocus: false,
-        refetchOnMount: false,
+        refetchOnMount: true, // AIDEV-NOTE: Garante carregamento automático do último hub salvo
         refetchOnReconnect: false,
     });
 
     const loadHub = useCallback((url) => {
-        if (hubUrlToLoad === url) return Promise.resolve(true);
+        if (hubUrlToLoad === url && currentHubData) {
+            // Se a URL for a mesma e os dados já estiverem carregados, apenas navega
+            navigate(`/hub/${encodeURIComponent(url)}`);
+            return Promise.resolve(true);
+        }
         setLastAttemptedUrl(url);
-        setHubUrlToLoad(url);
+        setHubUrlToLoad(url); // Salva no localStorage e dispara o carregamento
         return Promise.resolve(true);
-    }, [hubUrlToLoad]);
+    }, [hubUrlToLoad, currentHubData, navigate, setHubUrlToLoad]);
 
     const retryLoadHub = useCallback(() => {
         if (lastAttemptedUrl) refetchHub();
     }, [lastAttemptedUrl, refetchHub]);
 
     const clearHubData = useCallback(() => {
-        queryClient.removeQueries(['hub']);
-        setHubUrlToLoad(null);
+        queryClient.removeQueries({ queryKey: ['hub'], exact: true });
+        setHubUrlToLoad(null); // Limpa o estado e o localStorage
         setLastAttemptedUrl("");
-    }, [queryClient]);
+        navigate('/'); // Volta para a página inicial
+    }, [queryClient, setHubUrlToLoad, navigate]);
 
     const value = {
         currentHubData,
