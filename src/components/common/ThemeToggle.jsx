@@ -6,7 +6,7 @@ const ThemeToggle = ({ className = '', size = 'md' }) => {
 
   // AIDEV-NOTE: Initialize theme from localStorage or system preference
   useEffect(() => {
-    const savedTheme = localStorage.getItem('gikamoe-theme');
+    const savedTheme = localStorage.getItem('gikamura-theme');
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     const initialTheme = savedTheme || systemTheme;
     
@@ -18,7 +18,7 @@ const ThemeToggle = ({ className = '', size = 'md' }) => {
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
-    localStorage.setItem('gikamoe-theme', newTheme);
+    localStorage.setItem('gikamura-theme', newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
@@ -62,4 +62,4 @@ const ThemeToggle = ({ className = '', size = 'md' }) => {
   );
 };
 
-export default ThemeToggle; 
+export default ThemeToggle;

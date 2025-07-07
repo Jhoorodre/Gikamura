@@ -53,7 +53,7 @@ const HubLoader = ({ onLoadHub, loading }) => {
                                 if (error) setError('');
                             }}
                             className="hub-loader-input"
-                            placeholder="https://exemplo.com/hub.json"
+                            placeholder="Git Raw"
                             required
                             disabled={loading}
                         />
@@ -65,7 +65,7 @@ const HubLoader = ({ onLoadHub, loading }) => {
                             {loading ? (
                                 <div className="hub-loader-spinner" />
                             ) : (
-                                'Carregar Hub'
+                                'Go'
                             )}
                         </button>
                     </div>

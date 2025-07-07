@@ -11,7 +11,7 @@ const ExamplePage = () => {
       {/* AIDEV-NOTE: Page header with design system */}
       <div className="mb-xl">
         <h1 className="text-xxl font-bold text-primary mb-sm">
-          Sistema de Design - Gikamoe
+          Sistema de Design - Gikamura
         </h1>
         <p className="text-lg text-secondary leading-relaxed">
           Exemplo de como usar os componentes base reutilizáveis com proporções harmoniosas.
@@ -144,11 +144,11 @@ const ExamplePage = () => {
       {/* AIDEV-NOTE: Footer with design system info */}
       <div className="mt-xxl pt-lg border-t border-border">
         <p className="text-sm text-tertiary text-center">
-          Sistema de Design Gikamoe - Proporções Harmoniosas e Consistência Visual
+          Sistema de Design Gikamura - Proporções Harmoniosas e Consistência Visual
         </p>
       </div>
     </Layout>
   );
 };
 
-export default ExamplePage; 
+export default ExamplePage;

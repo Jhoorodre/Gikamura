@@ -152,7 +152,7 @@ const Header = () => {
                             className="text-2xl font-bold text-accent orbitron hover:text-accent-hover transition-colors cursor-pointer"
                             title="Voltar ao Hub Loader"
                         >
-                            Gikamoe
+                            Gikamura
                         </button>
                     </div>
 

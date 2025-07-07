@@ -38,9 +38,9 @@ const HubLoaderComponent = () => {
         <div className="min-page-container">
             <div className="min-content-wrapper">
                 <div className="min-header">
-                    <h1 className="min-title">Gikamoe</h1>
+                    <h1 className="min-title">Gikamura</h1>
                     <p className="min-subtitle">
-                        {isConnected ? 'Bem-vindo(a) de volta.' : 'Insira o URL de um hub.json para começar.'}
+                        <em>Malo periculosam libertatem quam quietum servitium.</em>
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="min-form">
@@ -51,7 +51,7 @@ const HubLoaderComponent = () => {
                             setUrl(e.target.value);
                             resetError();
                         }}
-                        placeholder="https://exemplo.com/hub.json"
+                        placeholder="Git Raw"
                         className="min-input"
                         disabled={loading}
                     />
@@ -60,7 +60,7 @@ const HubLoaderComponent = () => {
                         disabled={loading || !url.trim()}
                         className="min-button"
                     >
-                        {loading ? 'Carregando...' : 'Carregar Hub'}
+                        {loading ? 'Carregando...' : 'Go'}
                     </button>
                     {error && (
                         <p className="min-error-message">{error}</p>
