@@ -24,6 +24,8 @@ export const useHubLoader = (defaultUrl = "") => {
         setLoading(true);
         try {
             const encodedHubUrl = encodeUrl(targetUrl);
+            console.log('🔗 [useHubLoader] Original URL:', targetUrl);
+            console.log('🔗 [useHubLoader] Encoded URL:', encodedHubUrl);
             navigate(`/hub/${encodedHubUrl}`);
             setLoading(false);
             return true;

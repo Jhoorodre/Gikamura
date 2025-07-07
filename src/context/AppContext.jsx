@@ -6,7 +6,7 @@
 // 4. Widget-level additional force refresh after connection
 // 5. Enhanced error handling and logging for debugging
 // AIDEV-TODO: Avaliar divisão deste contexto em contextos menores (ex: HubContext, UserPreferencesContext) para evitar re-renderizações globais desnecessárias e melhorar performance.
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useItem } from '../hooks/useItem';
 import { remoteStorage } from '../services/remotestorage';
 import api, { clearCaches } from '../services/api.js';
@@ -145,7 +145,8 @@ export const AppProvider = ({ children }) => {
         setHubUrlToLoad(url);
     }, []);
 
-    const value = {
+    // AIDEV-NOTE: Memoize context value to prevent unnecessary re-renders
+    const value = useMemo(() => ({
         pinnedItems,
         historyItems,
         savedHubs,
@@ -161,7 +162,23 @@ export const AppProvider = ({ children }) => {
         setHubUrl,
         hubUrlToLoad,
         lastAttemptedUrl,
-    };
+    }), [
+        pinnedItems,
+        historyItems,
+        savedHubs,
+        conflictMessage,
+        isOffline,
+        itemLoading,
+        itemError,
+        selectedItemData,
+        selectItem,
+        clearSelectedItem,
+        togglePinStatus,
+        refreshUserData,
+        setHubUrl,
+        hubUrlToLoad,
+        lastAttemptedUrl,
+    ]);
 
     return (
         <AppContext.Provider value={value}>

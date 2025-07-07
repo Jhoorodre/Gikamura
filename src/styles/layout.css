@@ -367,10 +367,21 @@
 
 /* Layout principal da aplicação */
 .app-layout {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--color-background);
+  min-height: 100vh;
+  background-color: var(--color-background);
+}
+
+.main-content {
+  flex-grow: 1;
+  padding-top: var(--header-height);
+  position: relative;
+}
+
+/* Remove o padding-top para as páginas de leitura que não têm header */
+.reading-page .main-content {
+  padding-top: 0;
 }
 
 /* Layout de página de conteúdo */
@@ -597,4 +608,57 @@
   .grid, .container {
     gap: var(--space-3);
   }
+}
+
+/*
+ AIDEV-NOTE: Animação de transição de página puramente com CSS.
+ Isso remove a necessidade da biblioteca framer-motion e corrige o erro de build.
+*/
+.page-transition-wrapper {
+  animation: fadeInPage 0.4s ease-in-out;
+}
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*
+ AIDEV-NOTE: Estilo para o contentor raiz da aplicação.
+ Garante que ele ocupe todo o espaço e sirva como base
+ para os elementos globais e o conteúdo das rotas.
+*/
+.app-root-container {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ AIDEV-NOTE: Transição real de rotas com React Transition Group
+*/
+.fade-page-enter {
+  opacity: 0;
+  transform: translateY(15px);
+}
+.fade-page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.fade-page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-page-exit-active {
+  opacity: 0;
+  transform: translateY(-15px);
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
 }

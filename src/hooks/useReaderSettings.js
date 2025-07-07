@@ -1,234 +1,93 @@
 import { useState, useCallback, useEffect } from 'react';
-
-// Hook personalizado para simular localStorage
-const useLocalStorage = (key, initialValue) => {
-  const [storedValue, setStoredValue] = useState(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      return initialValue;
-    }
-  });
-
-  const setValue = (value) => {
-    try {
-      setStoredValue(value);
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch (_error) {
-      console.error('Error saving to localStorage:', _error);
-    }
-  };
-
-  return [storedValue, setValue];
-};
+import { useLocalStorage } from './useUtils';
 
 /**
- * Hook para gerenciar configurações e estado do leitor
- * AIDEV-NOTE: This hook centralizes all persistent and temporary reader settings
+ * Hook para gerenciar configurações persistentes e estado temporário do leitor.
+ * AIDEV-NOTE: This hook centralizes all persistent and temporary reader settings.
  */
 export const useReaderSettings = () => {
-    // Persistent settings
+    // Configurações persistentes salvas no localStorage
     const [readingDirection, setReadingDirection] = useLocalStorage('reader-direction', 'ltr');
     const [readingMode, setReadingMode] = useLocalStorage('reader-mode', 'paginated');
     const [autoHideControls, setAutoHideControls] = useLocalStorage('reader-auto-hide-controls', true);
-    const [preloadPages, setPreloadPages] = useLocalStorage('reader-preload-pages', 5);
-    
-    // Temporary state
+    const [preloadPagesCount, setPreloadPagesCount] = useLocalStorage('reader-preload-pages', 3); // AIDEV-NOTE: Preload 3 pages ahead by default
+
+    // Estado temporário do componente
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [showControls, setShowControls] = useState(true);
-    
-    // Fullscreen management
-    // AIDEV-TODO: Consider supporting more browsers if needed
+
+    // Gerenciamento do modo de ecrã inteiro
     const toggleFullscreen = useCallback(async () => {
         try {
-            if (!isFullscreen) {
-                await (
-                    document.documentElement.requestFullscreen?.() ||
-                    document.documentElement.webkitRequestFullscreen?.() ||
-                    document.documentElement.msRequestFullscreen?.()
-                );
+            if (!document.fullscreenElement) {
+                await document.documentElement.requestFullscreen();
             } else {
-                await (
-                    document.exitFullscreen?.() ||
-                    document.webkitExitFullscreen?.() ||
-                    document.msExitFullscreen?.()
-                );
+                await document.exitFullscreen();
             }
         } catch (error) {
-            console.warn('Error toggling fullscreen:', error); // AIDEV-NOTE: Error is non-blocking
-        }
-    }, [isFullscreen]);
-
-    const exitFullscreen = useCallback(async () => {
-        try {
-            await (
-                document.exitFullscreen?.() ||
-                document.webkitExitFullscreen?.() ||
-                document.msExitFullscreen?.()
-            );
-        } catch (error) {
-            console.warn('Error exiting fullscreen:', error); // AIDEV-NOTE: Error is non-blocking
+            console.warn('Erro ao alternar ecrã inteiro:', error);
         }
     }, []);
 
-    // Fullscreen change monitor
+    // Monitora mudanças no estado de ecrã inteiro
     useEffect(() => {
         const handleFullscreenChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
         };
-        
-        const events = ['fullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'];
-        events.forEach(event => {
-            document.addEventListener(event, handleFullscreenChange);
-        });
-        
-        return () => {
-            events.forEach(event => {
-                document.removeEventListener(event, handleFullscreenChange);
-            });
-        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
     }, []);
 
-    // Controls management
-    // AIDEV-NOTE: showControlsTemporarily is used to auto-hide UI controls after a delay
-    const showControlsTemporarily = useCallback((duration = 4000) => {
+    // Gerenciamento da visibilidade dos controlos
+    const showControlsTemporarily = useCallback((duration = 3000) => {
         if (!autoHideControls) return;
-        
         setShowControls(true);
-        
-        const timeoutId = setTimeout(() => {
-            setShowControls(false);
-        }, duration);
-        
+        const timeoutId = setTimeout(() => setShowControls(false), duration);
         return () => clearTimeout(timeoutId);
     }, [autoHideControls]);
 
-    // Toggle reading direction
-    // AIDEV-NOTE: Flips between 'ltr' and 'rtl' for reading direction
-    const toggleReadingDirection = useCallback(() => {
-        setReadingDirection(prev => prev === 'ltr' ? 'rtl' : 'ltr');
-    }, [setReadingDirection]);
-
-    // Toggle reading mode
-    // AIDEV-NOTE: Flips between 'paginated' and 'scrolling' modes
-    const toggleReadingMode = useCallback(() => {
-        setReadingMode(prev => prev === 'paginated' ? 'scrolling' : 'paginated');
-    }, [setReadingMode]);
-
-    // Reset settings
-    // AIDEV-TODO: Add reset for any new settings added in the future
-    const resetSettings = useCallback(() => {
-        setReadingDirection('ltr');
-        setReadingMode('paginated');
-        setAutoHideControls(true);
-        setPreloadPages(5);
-    }, [setReadingDirection, setReadingMode, setAutoHideControls, setPreloadPages]);
-
     return {
-        // Settings
         readingDirection,
         setReadingDirection,
         readingMode,
         setReadingMode,
         autoHideControls,
         setAutoHideControls,
-        preloadPages,
-        setPreloadPages,
-        
-        // State
+        preloadPagesCount,
+        setPreloadPagesCount,
         isFullscreen,
         showControls,
         setShowControls,
-        
-        // Actions
         toggleFullscreen,
-        exitFullscreen,
         showControlsTemporarily,
-        toggleReadingDirection,
-        toggleReadingMode,
-        resetSettings
     };
 };
 
 /**
- * Hook for preloading images
- * AIDEV-NOTE: Preloads images for upcoming pages to improve reader UX
+ * Hook para pré-carregar imagens de forma eficiente.
+ * AIDEV-NOTE: Preloads images for upcoming pages to improve reader UX.
  */
-export const useImagePreloader = (pages, currentPage, preloadCount = 5) => {
-    const [preloadedImages, setPreloadedImages] = useState(new Set());
-    const [loadingImages, setLoadingImages] = useState(new Set());
+export const useImagePreloader = (pages, currentPage, preloadCount = 3) => {
+    useEffect(() => {
+        if (!pages || pages.length === 0 || preloadCount === 0) return;
 
-    // AIDEV-NOTE: Avoids reloading already loaded or loading images
-    const preloadImage = useCallback((url, index) => {
-        if (preloadedImages.has(index) || loadingImages.has(index)) {
-            return Promise.resolve();
-        }
-
-        setLoadingImages(prev => new Set(prev).add(index));
-
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            
-            img.onload = () => {
-                setPreloadedImages(prev => new Set(prev).add(index));
-                setLoadingImages(prev => {
-                    const newSet = new Set(prev);
-                    newSet.delete(index);
-                    return newSet;
-                });
-                resolve();
-            };
-            
-            img.onerror = () => {
-                setLoadingImages(prev => {
-                    const newSet = new Set(prev);
-                    newSet.delete(index);
-                    return newSet;
-                });
-                console.warn(`Failed to preload image ${index + 1}: ${url}`); // AIDEV-NOTE: Non-blocking image preload error
-                reject();
-            };
-            
-            img.src = url;
-        });
-    }, [preloadedImages, loadingImages]);
-
-    // AIDEV-NOTE: Preloads a range of pages (forward and backward)
-    const preloadPages = useCallback(async (startIndex, count) => {
-        if (!pages || pages.length === 0) return;
-
-        const promises = [];
-        for (let i = startIndex; i < Math.min(startIndex + count, pages.length); i++) {
-            if (i >= 0 && pages[i]) {
-                promises.push(preloadImage(pages[i], i));
+        // Pré-carrega as próximas 'preloadCount' páginas
+        for (let i = 1; i <= preloadCount; i++) {
+            const nextPage = currentPage + i;
+            if (nextPage < pages.length) {
+                const img = new Image();
+                img.src = pages[nextPage];
             }
         }
-
-        try {
-            await Promise.allSettled(promises);
-        } catch (error) {
-            console.warn('Some preloads failed:', error); // AIDEV-NOTE: Non-blocking preload error
+        
+        // Pré-carrega a página anterior para navegação fluida para trás
+        const prevPage = currentPage - 1;
+        if (prevPage >= 0) {
+            const img = new Image();
+            img.src = pages[prevPage];
         }
-    }, [pages, preloadImage]);
 
-    // Preload nearby pages when current page changes
-    useEffect(() => {
-        if (pages && pages.length > 0 && currentPage >= 0) {
-            // Preload next pages
-            preloadPages(currentPage + 1, preloadCount);
-            // Preload some previous pages too
-            preloadPages(Math.max(0, currentPage - 2), 2);
-        }
-    }, [currentPage, pages, preloadCount, preloadPages]);
-
-    return {
-        preloadedImages,
-        loadingImages,
-        isPagePreloaded: (index) => preloadedImages.has(index),
-        isPageLoading: (index) => loadingImages.has(index),
-        preloadPages
-    };
+    }, [pages, currentPage, preloadCount]);
 };
 
 /**

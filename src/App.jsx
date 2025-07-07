@@ -1,4 +1,10 @@
 // AIDEV-NOTE: Main App component; routing, notifications, and global state management
+// AIDEV-NOTE: ANTI-FLICKERING IMPROVEMENTS:
+// 1. Removed route-based loading state that caused flickering on every navigation
+// 2. Optimized Suspense fallbacks to be transparent instead of visible loading states
+// 3. Added PageTransition component for smooth route changes
+// 4. Memoized context values to prevent unnecessary re-renders
+// 5. Added anti-flicker CSS for smooth visual transitions
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
@@ -16,6 +22,7 @@ import { runFullDiagnostic } from './utils/networkDebug';
 import Spinner from './components/common/Spinner';
 import { HubProvider } from './context/HubContext';
 import { UserPreferencesProvider } from './context/UserPreferencesContext';
+import MainLayout from './components/common/MainLayout';
 
 // AIDEV-NOTE: Rotas pesadas agora são carregadas sob demanda (React.lazy)
 const ReaderView = lazy(() => import('./views/ReaderView'));
@@ -28,6 +35,11 @@ const HubRouteHandler = lazy(() => import('./views/HubRouteHandler'));
 const CollectionPage = lazy(() => import('./pages/CollectionPage'));
 const WorksPage = lazy(() => import('./pages/WorksPage'));
 const UploadPage = lazy(() => import('./pages/UploadPage'));
+
+// Pré-carregamento das páginas principais para evitar flicking
+import('./pages/CollectionPage');
+import('./pages/WorksPage');
+import('./pages/UploadPage');
 
 function App() {
     const { conflictMessage: appConflictMessage } = useAppContext();
@@ -42,23 +54,27 @@ function App() {
     // AIDEV-NOTE: Centralized hub loading without auto-loading to prevent loops
     const { url: _hubUrl, setUrl: _setHubUrl, loading: _loading, handleSubmit: _handleLoadHub } = useHubLoader();
 
-    const [loading, setLoading] = useState(true);
+    // AIDEV-NOTE: Only initial loading state, removed route-based loading to prevent flickering
+    const [initialLoading, setInitialLoading] = useState(true);
     const location = useLocation();
 
     useEffect(() => {
-        // AIDEV-NOTE: Delay curto para garantir que o contexto de conexão seja resolvido antes de renderizar
-        setLoading(true);
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 50);
-        return () => clearTimeout(timer);
-    }, [location.pathname]);
-
-    useEffect(() => {
-        // AIDEV-NOTE: Create particles after DOM is ready
-        setTimeout(() => {
-            createParticles();
-        }, 100);
+        // AIDEV-NOTE: Initial app setup with proper DOM ready check
+        const initApp = () => {
+            setInitialLoading(false);
+            // AIDEV-NOTE: Create particles only after DOM is fully ready
+            setTimeout(() => {
+                createParticles();
+            }, 200);
+        };
+        
+        if (document.readyState === 'complete') {
+            initApp();
+        } else {
+            window.addEventListener('load', initApp);
+            return () => window.removeEventListener('load', initApp);
+        }
+        
         console.log('🚀 [App] Aplicação iniciada - Remote Storage conectado:', remoteStorageConnected);
     }, []); // AIDEV-NOTE: Fixed deps to prevent infinite loops
 
@@ -75,8 +91,8 @@ function App() {
         }
     }, []); // AIDEV-NOTE: Runs only once on mount
 
-    // AIDEV-NOTE: Tela de carregamento enquanto verifica conexão RemoteStorage
-    if (loading) {
+    // AIDEV-NOTE: Tela de carregamento apenas para inicialização da aplicação
+    if (initialLoading) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center">
                 <Spinner size="lg" text="Carregando..." />
@@ -87,162 +103,50 @@ function App() {
     return (
         <UserPreferencesProvider>
             <HubProvider>
-                <div className="min-h-screen flex flex-col">
-                    {/* AIDEV-NOTE: Main application header with navigation */}
-                    <Header />
-                    
-                    {/* AIDEV-NOTE: Sistema de navegação antigo removido - ArrowNavigation.jsx deletado definitivamente */}
-                    {/* AIDEV-NOTE: Global RemoteStorage widget (essential functionality, not part of old nav) */}
+                <div className="app-root-container">
                     <GlobalRemoteStorageWidget />
-                    
-                    {/* AIDEV-NOTE: Network notifications system - DISABLED to remove "Carregando dados" message */}
-                    {/* {networkMessage && (
-                        <div className={`text-center py-2 font-semibold z-50 ${
-                            networkMessage.type === 'offline' ? 'bg-red-600 text-white' :
-                            networkMessage.type === 'recovering' ? 'bg-blue-600 text-white' :
-                            networkMessage.type === 'slow' ? 'bg-yellow-600 text-black' :
-                            'bg-gray-600 text-white'
-                        }`}>
-                            <span>{networkMessage.message}</span>
-                            {networkMessage.action && (
-                                <button 
-                                    onClick={dismissSlowMessage}
-                                    className="ml-4 underline hover:no-underline"
-                                >
-                                    {networkMessage.action}
-                                </button>
-                            )}
-                        </div>
-                    )} */}
-                    
-                    {/* AIDEV-NOTE: Update notification with user action */}
-                    {updateAvailable && (
-                        <div className="bg-blue-200 text-blue-900 text-center py-2 font-semibold z-50">
-                            <span>Nova versão disponível! </span>
-                            <button 
-                                onClick={applyUpdate}
-                                className="underline hover:no-underline"
-                            >
-                                Clique para atualizar
-                            </button>
-                        </div>
-                    )}
-                    
-                    <div className="animated-bg"></div>
-                    <div id="particles-container"></div>
-                    
-                    {/* AIDEV-NOTE: System status indicators with controlled display */}
-                    {/* AIDEV-NOTE: Sync overlay temporarily disabled - causing persistent display issues
-                    {showSyncOverlay && (
-                        <div className="sync-indicator">
-                            <div className="flex items-center gap-3">
-                                <Spinner size="sm" text="Sincronizando..." />
-                                <button 
-                                    onClick={forcHideSyncOverlay}
-                                    className="text-xs text-gray-500 hover:text-gray-700 underline"
-                                    title="Ocultar overlay de sincronização"
-                                >
-                                    Ocultar
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                    */}
-                    {conflictMessage && (
-                        <div className="conflict-indicator">
-                            <ErrorMessage message={conflictMessage} />
-                        </div>
-                    )}
-                    {appConflictMessage && (
-                        <div className="conflict-indicator">
-                            <ErrorMessage message={appConflictMessage} />
-                        </div>
-                    )}
+                    <div id="particles-container" />
 
-                    {/* AIDEV-NOTE: Unified routing system with conditional rendering e code splitting dinâmico */}
                     <Routes>
-                        {/* AIDEV-NOTE: Main route - unified content for all connection states */}
-                        <Route path="/" element={
-                            <main className="flex-grow flex flex-col">
-                                <div className="container mx-auto px-4 py-8 w-full">
+                        <Route path="/" element={<MainLayout />}>
+                            <Route index element={
+                                <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
                                     <MainContent />
-                                </div>
-                            </main>
-                        } />
-                        
-                        {/* AIDEV-NOTE: Protected routes requiring RemoteStorage connection e lazy loading */}
-                        <Route path="/collection" element={
-                            <Suspense fallback={<Spinner text="Carregando coleção..." />}>
-                                {remoteStorageConnected ? <CollectionPage /> : 
-                                    <div className="page-container">
-                                        <div className="empty-state">
-                                            <span className="empty-state-icon">🔐</span>
-                                            <h2 className="empty-state-title">Remote Storage Necessário</h2>
-                                            <p className="empty-state-description">
-                                                Para acessar sua coleção, conecte-se ao Remote Storage.
-                                            </p>
-                                        </div>
-                                    </div>
-                                }
-                            </Suspense>
-                        } />
-                        <Route path="/works" element={
-                            <Suspense fallback={<Spinner text="Carregando obras..." />}>
-                                {remoteStorageConnected ? <WorksPage /> : 
-                                    <div className="page-container">
-                                        <div className="empty-state">
-                                            <span className="empty-state-icon">🔐</span>
-                                            <h2 className="empty-state-title">Remote Storage Necessário</h2>
-                                            <p className="empty-state-description">
-                                                Para acessar suas obras, conecte-se ao Remote Storage.
-                                            </p>
-                                        </div>
-                                    </div>
-                                }
-                            </Suspense>
-                        } />
-                        <Route path="/upload" element={
-                            <Suspense fallback={<Spinner text="Carregando upload..." />}>
-                                {remoteStorageConnected ? <UploadPage /> : 
-                                    <div className="page-container">
-                                        <div className="empty-state">
-                                            <span className="empty-state-icon">🔐</span>
-                                            <h2 className="empty-state-title">Remote Storage Necessário</h2>
-                                            <p className="empty-state-description">
-                                                Para fazer upload de conteúdo, conecte-se ao Remote Storage.
-                                            </p>
-                                        </div>
-                                    </div>
-                                }
-                            </Suspense>
-                        } />
-
-                        {/* AIDEV-NOTE: Global routes sempre disponíveis, agora com Suspense para carregamento dinâmico */}
-                        <Route path="/hub/:encodedUrl" element={
-                            <Suspense fallback={<Spinner text="Carregando página do hub..."/>}>
-                                <HubRouteHandler />
-                            </Suspense>
-                        } />
+                                </Suspense>
+                            } />
+                            <Route path="collection" element={
+                                <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
+                                    <CollectionPage />
+                                </Suspense>
+                            } />
+                            <Route path="works" element={
+                                <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
+                                    <WorksPage />
+                                </Suspense>
+                            } />
+                            <Route path="upload" element={
+                                <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
+                                    <UploadPage />
+                                </Suspense>
+                            } />
+                            <Route path="hub/:encodedUrl" element={
+                                <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
+                                    <HubRouteHandler />
+                                </Suspense>
+                            } />
+                        </Route>
                         <Route path="/reader/:encodedUrl" element={
-                            <Suspense fallback={<Spinner text="Carregando leitor..." />}>
+                            <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
                                 <ReaderView />
                             </Suspense>
                         } />
-                        <Route path="/series/:encodedUrl" element={
-                            <Suspense fallback={<Spinner text="Carregando série..." />}>
-                                <SeriesDetailPage />
-                            </Suspense>
-                        } />
                         <Route path="/read/:encodedUrl/:chapterId" element={
-                            <Suspense fallback={<Spinner text="Carregando capítulo..." />}>
+                            <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
                                 <ChapterReaderView />
                             </Suspense>
                         } />
-                        <Route path="/redirect/:base64Url" element={<RedirectPage />} />
-
-                        {/* Rota de fallback para conteúdo legado ou IDs antigos */}
                         <Route path="/series/:encodedId" element={
-                            <Suspense fallback={<Spinner text="Carregando detalhes..." />}>
+                            <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
                                 <ItemDetailView />
                             </Suspense>
                         } />

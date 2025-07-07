@@ -11,15 +11,31 @@ const HubRouteHandler = () => {
     const { encodedUrl } = useParams();
     const { loadHub, currentHubData, hubLoading, hubError } = useHubContext();
 
-    // AIDEV-NOTE: Load hub data when encodedUrl changes
+    // AIDEV-NOTE: Load hub data when encodedUrl changes with improved error handling
     useEffect(() => {
         if (encodedUrl) {
             try {
-                const hubUrl = decodeUrl(encodedUrl);
-                console.log('🔗 [HubRouteHandler] Loading hub from URL:', hubUrl);
+                console.log('🔍 [HubRouteHandler] Received encodedUrl:', encodedUrl);
+                
+                // AIDEV-NOTE: First check if it's already a URL or if it needs Base64 decoding
+                let hubUrl;
+                
+                // Check if it looks like a Base64 string
+                if (encodedUrl.match(/^[A-Za-z0-9+/\-_]*={0,2}$/)) {
+                    // Try to decode as Base64
+                    console.log('🔍 [HubRouteHandler] Detected Base64, decoding...');
+                    hubUrl = decodeUrl(encodedUrl);
+                } else {
+                    // If it doesn't look like Base64, treat as direct URL
+                    console.log('🔍 [HubRouteHandler] Not Base64, using URI decoding...');
+                    hubUrl = decodeURIComponent(encodedUrl);
+                }
+                
+                console.log('🔗 [HubRouteHandler] Final URL for loading:', hubUrl);
                 loadHub(hubUrl);
             } catch (error) {
                 console.error('❌ [HubRouteHandler] Error decoding URL:', error);
+                // AIDEV-NOTE: Don't crash the app, just log the error
             }
         }
     }, [encodedUrl, loadHub]);

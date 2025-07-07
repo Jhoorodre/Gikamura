@@ -10,6 +10,7 @@
 @import './utilities.css';
 @import './minimalist-pages.css';  /* AIDEV-NOTE: Main page styles */
 @import './reader-consolidated.css';
+@import './anti-flicker.css';  /* AIDEV-NOTE: Anti-flickering styles for smooth navigation */
 
 /* ========================================================================== */
 /* ==                       APLICAÇÃO PRINCIPAL                           == */

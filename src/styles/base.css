@@ -46,7 +46,7 @@ html {
   --space-16: clamp(4rem, 8vw, 8rem);
 }
 
-/* AIDEV-NOTE: Base body styles with design token integration */
+/* AIDEV-NOTE: Base body styles with design token integration and performance optimizations */
 body {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-base);
@@ -59,6 +59,10 @@ body {
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
   min-height: 100vh;
+  /* AIDEV-NOTE: Performance optimizations to prevent flickering */
+  transform: translateZ(0);
+  will-change: auto;
+  contain: layout style paint;
 }
 
 /* === 2. TIPOGRAFIA MINIMALISTA === */

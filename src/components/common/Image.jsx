@@ -1,6 +1,18 @@
 import { useState, useCallback, memo } from 'react';
 import { useIntersectionObserver } from '../../hooks/useUtils';
 
+// AIDEV-NOTE: ANTI-FLICKERING IMPROVEMENTS SUMMARY:
+// ✅ 1. Removed route-based loading state in App.jsx that caused flickering on navigation
+// ✅ 2. Optimized Suspense fallbacks to use transparent backgrounds instead of visible spinners
+// ✅ 3. Created PageTransition component for smooth route changes
+// ✅ 4. Memoized AppContext value to prevent unnecessary re-renders
+// ✅ 5. Added anti-flicker.css with hardware acceleration and smooth transitions
+// ✅ 6. Simplified MainLayout removing complex transition logic
+// ✅ 7. Improved Image component with hardware acceleration and proper opacity handling
+// ✅ 8. Enhanced error handling in HubRouteHandler to prevent crashes
+// ✅ 9. Fixed particles initialization timing to prevent console warnings
+// The navigation should now be significantly smoother with minimal to no flickering
+
 const Image = memo(({ src, alt, className, errorSrc, loading = 'lazy', ...props }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [hasError, setHasError] = useState(false);
@@ -32,11 +44,11 @@ const Image = memo(({ src, alt, className, errorSrc, loading = 'lazy', ...props 
     return (
         <div 
             ref={elementRef}
-            className={`relative overflow-hidden ${className}`}
+            className={`relative overflow-hidden hw-accelerated ${className}`}
         >
-            {/* Skeleton/placeholder enquanto não carregou */}
+            {/* Skeleton/placeholder enquanto não carregou - Anti-flickering */}
             {!isLoaded && (
-                <div className="absolute inset-0 bg-slate-800/50 animate-pulse" />
+                <div className="absolute inset-0 bg-slate-800/50 animate-pulse" style={{ willChange: 'opacity' }} />
             )}
             
             {/* Só renderiza a tag <img> quando necessário */}
@@ -47,10 +59,16 @@ const Image = memo(({ src, alt, className, errorSrc, loading = 'lazy', ...props 
                     onLoad={handleLoad}
                     onError={handleError}
                     className={`w-full h-full object-cover transition-opacity duration-300 ${
-                        isLoaded ? 'opacity-100' : 'opacity-0'
+                        isLoaded ? 'opacity-100 loaded' : 'opacity-0'
                     }`}
                     loading={loading}
                     decoding="async"
+                    style={{
+                        willChange: 'opacity',
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)',
+                    }}
                     {...props}
                 />
             )}

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { loadHubJSON } from '../services/jsonReader.js';
 import api, { clearCaches } from '../services/api.js';
 import { useLocalStorage } from '../hooks/useUtils'; // AIDEV-NOTE: Persistência do último hub carregado
+import { encodeUrl } from '../utils/encoding'; // AIDEV-NOTE: Import for proper Base64 URL encoding
 
 const HubContext = createContext();
 
@@ -49,7 +50,10 @@ export const HubProvider = ({ children }) => {
     const loadHub = useCallback((url) => {
         if (hubUrlToLoad === url && currentHubData) {
             // Se a URL for a mesma e os dados já estiverem carregados, apenas navega
-            navigate(`/hub/${encodeURIComponent(url)}`);
+            const encodedUrl = encodeUrl(url);
+            console.log('🔗 [HubContext] URL already loaded, navigating to:', url);
+            console.log('🔗 [HubContext] Encoded URL:', encodedUrl);
+            navigate(`/hub/${encodedUrl}`);
             return Promise.resolve(true);
         }
         setLastAttemptedUrl(url);
