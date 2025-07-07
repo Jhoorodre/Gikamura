@@ -1,0 +1,49 @@
+/*
+ * CONFIGURAÇÕES GLOBAIS - GIKAMOE V3.0
+ * Arquivo: src/styles/00-config/global.css
+ */
+
+/* AIDEV-NOTE: config-global; configurações CSS personalizadas */
+@supports (color: color(display-p3 1 0 0)) {
+  :root {
+    --supports-p3: true;
+  }
+}
+
+@supports (backdrop-filter: blur(10px)) {
+  :root {
+    --supports-backdrop-filter: true;
+  }
+}
+
+@supports (container-type: inline-size) {
+  :root {
+    --supports-container-queries: true;
+  }
+}
+
+/* Feature detection */
+:root {
+  --has-hover: 0;
+  --has-touch: 0;
+}
+
+@media (hover: hover) {
+  :root {
+    --has-hover: 1;
+  }
+}
+
+@media (pointer: coarse) {
+  :root {
+    --has-touch: 1;
+  }
+}
+
+/* Environment variables */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+}

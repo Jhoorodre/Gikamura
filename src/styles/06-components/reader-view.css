@@ -1,0 +1,303 @@
+/*
+ * READER VIEW FIXES - GIKAMOE V3.0
+ * Arquivo: src/styles/06-components/reader-view.css
+ * 
+ * AIDEV-NOTE: reader-view-fixes; correções críticas para página da série
+ */
+
+/* ========================================================================== */
+/* == 📖 READER VIEW LAYOUT                                               == */
+/* ========================================================================== */
+
+/* Container principal com layout moderno */
+.reader-view-container {
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+/* Header fixo otimizado */
+.reader-header-fixed {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky);
+  border-bottom: var(--border-width-1) solid var(--color-border);
+  background: rgb(var(--color-background) / 95%);
+  backdrop-filter: blur(12px);
+}
+
+.reader-header-content {
+  max-width: var(--container-lg);
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-4);
+}
+
+.reader-nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Seção principal da obra */
+.reader-main-section {
+  max-width: var(--container-lg);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+}
+
+.reader-work-info {
+  display: flex;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+}
+
+/* Capa da obra com proporção correta */
+.reader-cover-container {
+  flex-shrink: 0;
+  width: 200px;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface-secondary);
+}
+
+.reader-cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition-transform);
+}
+
+.reader-cover-image:hover {
+  transform: scale(1.05);
+}
+
+/* Informações da obra */
+.reader-work-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.reader-work-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.reader-work-author {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+}
+
+.reader-work-description {
+  max-height: 120px;
+  overflow-y: auto;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-secondary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+}
+
+.reader-work-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: auto;
+}
+
+.reader-work-stats {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+}
+
+.reader-status-badge {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.reader-status-badge--ongoing {
+  background: var(--color-success-50);
+  color: var(--color-success);
+}
+
+.reader-status-badge--completed {
+  background: var(--color-info-50);
+  color: var(--color-info);
+}
+
+/* Lista de capítulos melhorada */
+.reader-chapters-section {
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+}
+
+.reader-chapters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: var(--border-width-1) solid var(--color-border);
+}
+
+.reader-chapters-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.reader-chapters-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Grid de capítulos otimizado */
+.reader-chapters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-3);
+}
+
+.reader-chapter-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-secondary);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.reader-chapter-card:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-surface-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.reader-chapter-number {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-10);
+  height: var(--space-10);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.reader-chapter-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.reader-chapter-title {
+  margin: 0 0 var(--space-1) 0;
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reader-chapter-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
+
+.reader-chapter-action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  transition: var(--transition-colors);
+}
+
+.reader-chapter-action:hover {
+  background: var(--color-primary-hover);
+}
+
+/* ========================================================================== */
+/* == 📱 RESPONSIVE DESIGN                                                == */
+/* ========================================================================== */
+
+@media (width <= 768px) {
+  .reader-work-info {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .reader-cover-container {
+    width: 160px;
+    margin: 0 auto;
+  }
+  
+  .reader-work-title {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .reader-chapters-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .reader-chapter-card {
+    padding: var(--space-3);
+  }
+}
+
+@media (width <= 480px) {
+  .reader-main-section {
+    padding: var(--space-4) var(--space-3);
+  }
+  
+  .reader-work-info,
+  .reader-chapters-section {
+    padding: var(--space-4);
+  }
+  
+  .reader-cover-container {
+    width: 140px;
+  }
+  
+  .reader-work-title {
+    font-size: var(--font-size-xl);
+  }
+  
+  .reader-chapters-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+}

@@ -1,0 +1,290 @@
+/* 
+ * NAVEGAÇÃO MODERNA - DESIGN LIMPO
+ * Substituindo a navegação antiga por design moderno
+ */
+
+/* ========================================================================== */
+/* == 🎯 TAB NAVIGATION MODERNA E ELEGANTE                                == */
+/* ========================================================================== */
+
+.tab-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.tab-nav__item {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.tab-nav__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: var(--transition-all);
+  border: var(--border-width-1) solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-nav__link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left var(--duration-normal) var(--ease-out);
+}
+
+.tab-nav__link:hover {
+  color: var(--color-text-primary);
+  background: var(--color-surface-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-nav__link:hover::before {
+  left: 100%;
+}
+
+.tab-nav__link:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.tab-nav__link.active {
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.tab-nav__link.active:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-lg);
+}
+
+.tab-nav__icon {
+  flex-shrink: 0;
+  width: 1.2em;
+  height: 1.2em;
+  transition: var(--transition-transform);
+}
+
+.tab-nav__link:hover .tab-nav__icon {
+  transform: scale(1.1);
+}
+
+.tab-nav__badge {
+  margin-left: var(--space-2);
+  padding: var(--space-0_5) var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-secondary);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  min-width: 1.25rem;
+  text-align: center;
+}
+
+.tab-nav__link.active .tab-nav__badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-inverse);
+}
+
+/* ========================================================================== */
+/* == 📱 NAVEGAÇÃO MOBILE                                                 == */
+/* ========================================================================== */
+
+@media (width <= 768px) {
+  .tab-nav {
+    padding: var(--space-1);
+    gap: var(--space-0_5);
+  }
+  
+  .tab-nav__link {
+    padding: var(--space-2_5) var(--space-4);
+    font-size: var(--font-size-xs);
+  }
+  
+  .tab-nav__icon {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+@media (width <= 480px) {
+  .tab-nav {
+    padding: var(--space-1);
+    border-radius: var(--radius-lg);
+  }
+  
+  .tab-nav__link {
+    padding: var(--space-2) var(--space-3);
+    min-width: auto;
+  }
+  
+  /* Stack tabs vertically on very small screens */
+  .tab-nav--mobile-stack {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .tab-nav--mobile-stack .tab-nav__link {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ========================================================================== */
+/* == 🎨 VARIAÇÕES DE ESTILO                                              == */
+/* ========================================================================== */
+
+/* Navegação compacta */
+.tab-nav--compact {
+  padding: var(--space-1);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.tab-nav--compact .tab-nav__link {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+}
+
+/* Navegação pills */
+.tab-nav--pills {
+  background: transparent;
+  border: none;
+  padding: 0;
+  gap: var(--space-2);
+}
+
+.tab-nav--pills .tab-nav__link {
+  border-radius: var(--radius-full);
+  padding: var(--space-2_5) var(--space-5);
+}
+
+/* Navegação underline moderna */
+.tab-nav--underline {
+  background: transparent;
+  border: none;
+  border-bottom: var(--border-width-1) solid var(--color-border);
+  border-radius: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.tab-nav--underline .tab-nav__link {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 3px solid transparent;
+  padding: var(--space-4) var(--space-5) var(--space-3);
+}
+
+.tab-nav--underline .tab-nav__link:hover {
+  background: var(--color-surface-hover);
+  transform: none;
+  box-shadow: none;
+  border-bottom-color: var(--color-border-hover);
+}
+
+.tab-nav--underline .tab-nav__link.active {
+  background: transparent;
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  box-shadow: none;
+  transform: none;
+}
+
+/* ========================================================================== */
+/* == ♿ ACESSIBILIDADE E MOTION                                           == */
+/* ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-nav__link,
+  .tab-nav__icon {
+    transition: none;
+  }
+  
+  .tab-nav__link:hover {
+    transform: none;
+  }
+  
+  .tab-nav__link::before {
+    display: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .tab-nav {
+    border-width: var(--border-width-2);
+  }
+  
+  .tab-nav__link {
+    border-width: var(--border-width-2);
+  }
+  
+  .tab-nav__link.active {
+    border-color: var(--color-text-primary);
+  }
+}
+
+/* ========================================================================== */
+/* == 🎯 NAVEGAÇÃO ESPECÍFICA PARA GIKAMOE                                == */
+/* ========================================================================== */
+
+/* Navegação de páginas principais */
+.main-nav {
+  margin: var(--space-6) auto;
+  max-width: 600px;
+}
+
+.main-nav .tab-nav {
+  background: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.main-nav .tab-nav__link {
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* Navegação do reader */
+.reader-nav .tab-nav {
+  background: rgba(var(--color-surface-rgb), 0.8);
+  backdrop-filter: blur(12px);
+  border: var(--border-width-1) solid rgba(var(--color-border-rgb), 0.3);
+}
+
+.reader-nav .tab-nav__link {
+  color: var(--color-text-secondary);
+}
+
+.reader-nav .tab-nav__link.active {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}

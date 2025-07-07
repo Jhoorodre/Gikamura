@@ -1,0 +1,365 @@
+/*
+ * UTILITÁRIOS DE CORES - GIKAMOE V2.0
+ * Arquivo: src/styles/06-utilities/colors.css
+ * 
+ * Classes utilitárias para cores de texto, fundo e bordas
+ * Baseado no sistema de cores científico
+ */
+
+/* ========================================================================== */
+
+/* == 🎨 TEXT COLORS                                                      == */
+
+/* ========================================================================== */
+
+/* Primary text colors */
+.text-primary { color: var(--color-text-primary) !important; }
+.text-secondary { color: var(--color-text-secondary) !important; }
+.text-tertiary { color: var(--color-text-tertiary) !important; }
+.text-quaternary { color: var(--color-text-quaternary) !important; }
+.text-inverse { color: var(--color-text-inverse) !important; }
+.text-disabled { color: var(--color-text-disabled) !important; }
+
+/* Brand colors */
+.text-brand { color: var(--color-primary) !important; }
+.text-accent { color: var(--color-accent) !important; }
+
+/* Gray scale */
+.text-white { color: var(--color-white) !important; }
+.text-black { color: var(--color-black) !important; }
+.text-gray-50 { color: var(--color-gray-50) !important; }
+.text-gray-100 { color: var(--color-gray-100) !important; }
+.text-gray-200 { color: var(--color-gray-200) !important; }
+.text-gray-300 { color: var(--color-gray-300) !important; }
+.text-gray-400 { color: var(--color-gray-400) !important; }
+.text-gray-500 { color: var(--color-gray-500) !important; }
+.text-gray-600 { color: var(--color-gray-600) !important; }
+.text-gray-700 { color: var(--color-gray-700) !important; }
+.text-gray-800 { color: var(--color-gray-800) !important; }
+.text-gray-900 { color: var(--color-gray-900) !important; }
+.text-gray-950 { color: var(--color-gray-950) !important; }
+
+/* Brand colors */
+.text-brand-50 { color: var(--color-brand-50) !important; }
+.text-brand-100 { color: var(--color-brand-100) !important; }
+.text-brand-200 { color: var(--color-brand-200) !important; }
+.text-brand-300 { color: var(--color-brand-300) !important; }
+.text-brand-400 { color: var(--color-brand-400) !important; }
+.text-brand-500 { color: var(--color-brand-500) !important; }
+.text-brand-600 { color: var(--color-brand-600) !important; }
+.text-brand-700 { color: var(--color-brand-700) !important; }
+.text-brand-800 { color: var(--color-brand-800) !important; }
+.text-brand-900 { color: var(--color-brand-900) !important; }
+.text-brand-950 { color: var(--color-brand-950) !important; }
+
+/* Semantic colors */
+.text-success { color: var(--color-success) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.text-error { color: var(--color-error) !important; }
+.text-info { color: var(--color-info) !important; }
+
+/* ========================================================================== */
+
+/* == 🎨 BACKGROUND COLORS                                                == */
+
+/* ========================================================================== */
+
+/* Primary background colors */
+.bg-background { background-color: var(--color-background) !important; }
+.bg-surface { background-color: var(--color-surface) !important; }
+.bg-surface-secondary { background-color: var(--color-surface-secondary) !important; }
+.bg-surface-hover { background-color: var(--color-surface-hover) !important; }
+
+/* Brand colors */
+.bg-primary { background-color: var(--color-primary) !important; }
+.bg-primary-hover { background-color: var(--color-primary-hover) !important; }
+.bg-primary-active { background-color: var(--color-primary-active) !important; }
+.bg-accent { background-color: var(--color-accent) !important; }
+
+/* Transparent */
+.bg-transparent { background-color: transparent !important; }
+
+/* Gray scale */
+.bg-white { background-color: var(--color-white) !important; }
+.bg-black { background-color: var(--color-black) !important; }
+.bg-gray-50 { background-color: var(--color-gray-50) !important; }
+.bg-gray-100 { background-color: var(--color-gray-100) !important; }
+.bg-gray-200 { background-color: var(--color-gray-200) !important; }
+.bg-gray-300 { background-color: var(--color-gray-300) !important; }
+.bg-gray-400 { background-color: var(--color-gray-400) !important; }
+.bg-gray-500 { background-color: var(--color-gray-500) !important; }
+.bg-gray-600 { background-color: var(--color-gray-600) !important; }
+.bg-gray-700 { background-color: var(--color-gray-700) !important; }
+.bg-gray-800 { background-color: var(--color-gray-800) !important; }
+.bg-gray-900 { background-color: var(--color-gray-900) !important; }
+.bg-gray-950 { background-color: var(--color-gray-950) !important; }
+
+/* Brand colors */
+.bg-brand-50 { background-color: var(--color-brand-50) !important; }
+.bg-brand-100 { background-color: var(--color-brand-100) !important; }
+.bg-brand-200 { background-color: var(--color-brand-200) !important; }
+.bg-brand-300 { background-color: var(--color-brand-300) !important; }
+.bg-brand-400 { background-color: var(--color-brand-400) !important; }
+.bg-brand-500 { background-color: var(--color-brand-500) !important; }
+.bg-brand-600 { background-color: var(--color-brand-600) !important; }
+.bg-brand-700 { background-color: var(--color-brand-700) !important; }
+.bg-brand-800 { background-color: var(--color-brand-800) !important; }
+.bg-brand-900 { background-color: var(--color-brand-900) !important; }
+.bg-brand-950 { background-color: var(--color-brand-950) !important; }
+
+/* Semantic colors */
+.bg-success { background-color: var(--color-success) !important; }
+.bg-success-50 { background-color: var(--color-success-50) !important; }
+.bg-warning { background-color: var(--color-warning) !important; }
+.bg-warning-50 { background-color: var(--color-warning-50) !important; }
+.bg-error { background-color: var(--color-error) !important; }
+.bg-error-50 { background-color: var(--color-error-50) !important; }
+.bg-info { background-color: var(--color-info) !important; }
+.bg-info-50 { background-color: var(--color-info-50) !important; }
+
+/* ========================================================================== */
+
+/* == 🎨 BORDER COLORS                                                    == */
+
+/* ========================================================================== */
+
+/* Primary border colors */
+.border-border { border-color: var(--color-border) !important; }
+.border-border-secondary { border-color: var(--color-border-secondary) !important; }
+.border-border-hover { border-color: var(--color-border-hover) !important; }
+.border-border-focus { border-color: var(--color-border-focus) !important; }
+
+/* Brand colors */
+.border-primary { border-color: var(--color-primary) !important; }
+.border-accent { border-color: var(--color-accent) !important; }
+
+/* Transparent */
+.border-transparent { border-color: transparent !important; }
+
+/* Gray scale */
+.border-white { border-color: var(--color-white) !important; }
+.border-black { border-color: var(--color-black) !important; }
+.border-gray-50 { border-color: var(--color-gray-50) !important; }
+.border-gray-100 { border-color: var(--color-gray-100) !important; }
+.border-gray-200 { border-color: var(--color-gray-200) !important; }
+.border-gray-300 { border-color: var(--color-gray-300) !important; }
+.border-gray-400 { border-color: var(--color-gray-400) !important; }
+.border-gray-500 { border-color: var(--color-gray-500) !important; }
+.border-gray-600 { border-color: var(--color-gray-600) !important; }
+.border-gray-700 { border-color: var(--color-gray-700) !important; }
+.border-gray-800 { border-color: var(--color-gray-800) !important; }
+.border-gray-900 { border-color: var(--color-gray-900) !important; }
+.border-gray-950 { border-color: var(--color-gray-950) !important; }
+
+/* Brand colors */
+.border-brand-50 { border-color: var(--color-brand-50) !important; }
+.border-brand-100 { border-color: var(--color-brand-100) !important; }
+.border-brand-200 { border-color: var(--color-brand-200) !important; }
+.border-brand-300 { border-color: var(--color-brand-300) !important; }
+.border-brand-400 { border-color: var(--color-brand-400) !important; }
+.border-brand-500 { border-color: var(--color-brand-500) !important; }
+.border-brand-600 { border-color: var(--color-brand-600) !important; }
+.border-brand-700 { border-color: var(--color-brand-700) !important; }
+.border-brand-800 { border-color: var(--color-brand-800) !important; }
+.border-brand-900 { border-color: var(--color-brand-900) !important; }
+.border-brand-950 { border-color: var(--color-brand-950) !important; }
+
+/* Semantic colors */
+.border-success { border-color: var(--color-success) !important; }
+.border-warning { border-color: var(--color-warning) !important; }
+.border-error { border-color: var(--color-error) !important; }
+.border-info { border-color: var(--color-info) !important; }
+
+/* ========================================================================== */
+
+/* == 🎨 GRADIENT UTILITIES                                               == */
+
+/* ========================================================================== */
+
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops)) !important;
+}
+
+.bg-gradient-to-l {
+  background-image: linear-gradient(to left, var(--tw-gradient-stops)) !important;
+}
+
+.bg-gradient-to-t {
+  background-image: linear-gradient(to top, var(--tw-gradient-stops)) !important;
+}
+
+.bg-gradient-to-b {
+  background-image: linear-gradient(to bottom, var(--tw-gradient-stops)) !important;
+}
+
+.bg-gradient-to-tr {
+  background-image: linear-gradient(to top right, var(--tw-gradient-stops)) !important;
+}
+
+.bg-gradient-to-tl {
+  background-image: linear-gradient(to top left, var(--tw-gradient-stops)) !important;
+}
+
+.bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)) !important;
+}
+
+.bg-gradient-to-bl {
+  background-image: linear-gradient(to bottom left, var(--tw-gradient-stops)) !important;
+}
+
+/* Gradient presets */
+.bg-gradient-brand {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%) !important;
+}
+
+.bg-gradient-surface {
+  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-secondary) 100%) !important;
+}
+
+.bg-gradient-dark {
+  background: linear-gradient(135deg, var(--color-gray-800) 0%, var(--color-gray-900) 100%) !important;
+}
+
+/* ========================================================================== */
+
+/* == 🎨 OPACITY UTILITIES                                                == */
+
+/* ========================================================================== */
+
+.opacity-0 { opacity: 0 !important; }
+.opacity-5 { opacity: 0.05 !important; }
+.opacity-10 { opacity: 0.1 !important; }
+.opacity-20 { opacity: 0.2 !important; }
+.opacity-25 { opacity: 0.25 !important; }
+.opacity-30 { opacity: 0.3 !important; }
+.opacity-40 { opacity: 0.4 !important; }
+.opacity-50 { opacity: 0.5 !important; }
+.opacity-60 { opacity: 0.6 !important; }
+.opacity-70 { opacity: 0.7 !important; }
+.opacity-75 { opacity: 0.75 !important; }
+.opacity-80 { opacity: 0.8 !important; }
+.opacity-90 { opacity: 0.9 !important; }
+.opacity-95 { opacity: 0.95 !important; }
+.opacity-100 { opacity: 1 !important; }
+
+/* ========================================================================== */
+
+/* == 🎨 BACKDROP UTILITIES                                               == */
+
+/* ========================================================================== */
+
+.backdrop-blur-none { backdrop-filter: none !important; }
+.backdrop-blur-sm { backdrop-filter: blur(4px) !important; }
+.backdrop-blur { backdrop-filter: blur(8px) !important; }
+.backdrop-blur-md { backdrop-filter: blur(12px) !important; }
+.backdrop-blur-lg { backdrop-filter: blur(16px) !important; }
+.backdrop-blur-xl { backdrop-filter: blur(24px) !important; }
+.backdrop-blur-2xl { backdrop-filter: blur(40px) !important; }
+.backdrop-blur-3xl { backdrop-filter: blur(64px) !important; }
+
+/* Combined backdrop effects */
+.backdrop-glass {
+  backdrop-filter: blur(8px) saturate(120%) !important;
+}
+
+.backdrop-glass-sm {
+  backdrop-filter: blur(4px) saturate(110%) !important;
+}
+
+.backdrop-glass-lg {
+  backdrop-filter: blur(16px) saturate(130%) !important;
+}
+
+/* ========================================================================== */
+
+/* == 🎨 THEME-SPECIFIC COLORS                                            == */
+
+/* ========================================================================== */
+
+/* Dark theme overrides */
+[data-theme="\"dark\""] .text-primary-theme { color: var(--color-gray-50) !important; }
+[data-theme="\"dark\""] .text-secondary-theme { color: var(--color-gray-300) !important; }
+[data-theme="\"dark\""] .bg-surface-theme { background-color: var(--color-gray-800) !important; }
+
+/* Light theme overrides */
+[data-theme="\"light\""] .text-primary-theme { color: var(--color-gray-900) !important; }
+[data-theme="\"light\""] .text-secondary-theme { color: var(--color-gray-700) !important; }
+[data-theme="\"light\""] .bg-surface-theme { background-color: var(--color-gray-100) !important; }
+
+/* ========================================================================== */
+
+/* == 🎨 HOVER & FOCUS STATES                                             == */
+
+/* ========================================================================== */
+
+.hover\\:text-primary:hover { color: var(--color-text-primary) !important; }
+.hover\\:text-secondary:hover { color: var(--color-text-secondary) !important; }
+.hover\\:text-brand:hover { color: var(--color-primary) !important; }
+.hover\\:text-accent:hover { color: var(--color-accent) !important; }
+
+.hover\\:bg-surface:hover { background-color: var(--color-surface) !important; }
+.hover\\:bg-surface-hover:hover { background-color: var(--color-surface-hover) !important; }
+.hover\\:bg-primary:hover { background-color: var(--color-primary) !important; }
+.hover\\:bg-primary-hover:hover { background-color: var(--color-primary-hover) !important; }
+
+.hover\\:border-primary:hover { border-color: var(--color-primary) !important; }
+.hover\\:border-border-hover:hover { border-color: var(--color-border-hover) !important; }
+
+.focus\\:text-primary:focus { color: var(--color-text-primary) !important; }
+.focus\\:bg-surface:focus { background-color: var(--color-surface) !important; }
+.focus\\:border-border-focus:focus { border-color: var(--color-border-focus) !important; }
+
+/* ========================================================================== */
+
+/* == 🎨 RESPONSIVE COLOR UTILITIES                                       == */
+
+/* ========================================================================== */
+
+@media (width <= 640px) {
+  .sm\\:text-primary { color: var(--color-text-primary) !important; }
+  .sm\\:text-secondary { color: var(--color-text-secondary) !important; }
+  .sm\\:bg-surface { background-color: var(--color-surface) !important; }
+  .sm\\:bg-transparent { background-color: transparent !important; }
+}
+
+@media (width <= 768px) {
+  .md\\:text-primary { color: var(--color-text-primary) !important; }
+  .md\\:text-secondary { color: var(--color-text-secondary) !important; }
+  .md\\:bg-surface { background-color: var(--color-surface) !important; }
+  .md\\:bg-transparent { background-color: transparent !important; }
+}
+
+/* ========================================================================== */
+
+/* == 🎨 ACCESSIBILITY COLORS                                             == */
+
+/* ========================================================================== */
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .text-secondary { color: var(--color-text-primary) !important; }
+  .text-tertiary { color: var(--color-text-secondary) !important; }
+  .border-border { border-color: var(--color-text-primary) !important; }
+}
+
+/* ========================================================================== */
+
+/* == 🎨 LEGACY COMPATIBILITY                                             == */
+
+/* ========================================================================== */
+
+/* Old color class names for backward compatibility */
+.color-primary { color: var(--color-primary) !important; }
+.color-secondary { color: var(--color-text-secondary) !important; }
+.color-accent { color: var(--color-accent) !important; }
+.color-muted { color: var(--color-text-tertiary) !important; }
+
+.bg-main { background-color: var(--color-background) !important; }
+.bg-card { background-color: var(--color-surface) !important; }
+.bg-hover { background-color: var(--color-surface-hover) !important; }
+
+/* Current color for SVG icons */
+.text-current { color: currentcolor !important; }
+.fill-current { fill: currentcolor !important; }
+.stroke-current { stroke: currentcolor !important; }

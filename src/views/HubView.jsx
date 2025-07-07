@@ -9,7 +9,7 @@ import { encodeUrl } from '../utils/encoding';
 import { JSONUtils } from '../services/jsonReader.js';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
-import '../styles/hub-minimal.css';
+// AIDEV-NOTE: css-unified; hub-minimal integrado ao sistema unificado via index.css
 
 const HubView = () => {
     const { encodedUrl } = useParams();

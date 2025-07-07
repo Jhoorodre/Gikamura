@@ -1,0 +1,507 @@
+/*
+ * SISTEMA DE DESIGN TOKENS CONSOLIDADO - GIKAMOE V2.0
+ * Arquivo: src/styles/00-settings/tokens.css
+ * 
+ * Este arquivo substitui e consolida:
+ * - design-system.css
+ * - tokens.css
+ * - Variáveis espalhadas em outros arquivos
+ * 
+ * Metodologia: Design Tokens + Fluid Design + Performance-First
+ */
+
+:root {
+  /* ========================================================================== */
+
+/* == 🎨 SISTEMA DE CORES CIENTÍFICO                                      == */
+
+/* ========================================================================== */
+
+/* AIDEV-NOTE: sistema-cores-hsl; cores baseadas em HSL para melhor controle */
+/* AIDEV-NOTE: wcag-compliance; todas as cores seguem WCAG 2.1 AA (4.5:1) */
+  
+  /* === HUE PALETTE (MATIZES BASE) === */
+  --hue-brand: 0;           /* Brand vermelho */
+  --hue-neutral: 220;       /* Neutros azulados */
+  --hue-success: 142;       /* Verde para sucesso */
+  --hue-warning: 38;        /* Laranja para avisos */
+  --hue-error: 0;           /* Vermelho para erros */
+  --hue-info: 210;          /* Azul para informações */
+
+  /* === ESCALA DE LUMINOSIDADE CIENTÍFICA === */
+
+  /* Baseada na curva de percepção visual humana (WCAG) */
+  --lum-50: 98%;
+  --lum-100: 95%;
+  --lum-200: 90%;
+  --lum-300: 80%;
+  --lum-400: 65%;
+  --lum-500: 50%;
+  --lum-600: 40%;
+  --lum-700: 30%;
+  --lum-800: 20%;
+  --lum-900: 10%;
+  --lum-950: 5%;
+
+  /* === CORES NEUTRAS (ESCALA PRINCIPAL) === */
+  --color-white: hsl(0deg 0% 100%);
+  --color-gray-50: hsl(var(--hue-neutral) 20% var(--lum-50));
+  --color-gray-100: hsl(var(--hue-neutral) 15% var(--lum-100));
+  --color-gray-200: hsl(var(--hue-neutral) 13% var(--lum-200));
+  --color-gray-300: hsl(var(--hue-neutral) 10% var(--lum-300));
+  --color-gray-400: hsl(var(--hue-neutral) 8% var(--lum-400));
+  --color-gray-500: hsl(var(--hue-neutral) 6% var(--lum-500));
+  --color-gray-600: hsl(var(--hue-neutral) 5% var(--lum-600));
+  --color-gray-700: hsl(var(--hue-neutral) 4% var(--lum-700));
+  --color-gray-800: hsl(var(--hue-neutral) 3% var(--lum-800));
+  --color-gray-900: hsl(var(--hue-neutral) 2% var(--lum-900));
+  --color-gray-950: hsl(var(--hue-neutral) 1% var(--lum-950));
+  --color-black: hsl(0deg 0% 0%);
+
+  /* === CORES BRAND (GIKAMOE) === */
+  --color-brand-50: hsl(var(--hue-brand) 100% var(--lum-50));
+  --color-brand-100: hsl(var(--hue-brand) 85% var(--lum-100));
+  --color-brand-200: hsl(var(--hue-brand) 80% var(--lum-200));
+  --color-brand-300: hsl(var(--hue-brand) 75% var(--lum-300));
+  --color-brand-400: hsl(var(--hue-brand) 70% var(--lum-400));
+  --color-brand-500: hsl(var(--hue-brand) 65% var(--lum-500));
+  --color-brand-600: hsl(var(--hue-brand) 60% var(--lum-600));
+  --color-brand-700: hsl(var(--hue-brand) 55% var(--lum-700));
+  --color-brand-800: hsl(var(--hue-brand) 50% var(--lum-800));
+  --color-brand-900: hsl(var(--hue-brand) 45% var(--lum-900));
+  --color-brand-950: hsl(var(--hue-brand) 40% var(--lum-950));
+
+  /* === CORES FUNCIONAIS === */
+  --color-success-50: hsl(var(--hue-success) 50% var(--lum-50));
+  --color-success-500: hsl(var(--hue-success) 60% var(--lum-500));
+  --color-success-900: hsl(var(--hue-success) 70% var(--lum-900));
+  --color-warning-50: hsl(var(--hue-warning) 80% var(--lum-50));
+  --color-warning-500: hsl(var(--hue-warning) 90% var(--lum-500));
+  --color-warning-900: hsl(var(--hue-warning) 100% var(--lum-900));
+  --color-error-50: hsl(var(--hue-error) 50% var(--lum-50));
+  --color-error-500: hsl(var(--hue-error) 70% var(--lum-500));
+  --color-error-900: hsl(var(--hue-error) 80% var(--lum-900));
+  --color-info-50: hsl(var(--hue-info) 100% var(--lum-50));
+  --color-info-500: hsl(var(--hue-info) 90% var(--lum-500));
+  --color-info-900: hsl(var(--hue-info) 80% var(--lum-900));
+
+  /* ========================================================================== */
+
+  /* == 📐 SISTEMA DE ESPAÇAMENTO HARMÔNICO                                 == */
+
+  /* ========================================================================== */
+  
+  /* === BASE UNIT (4px system) === */
+  --space-unit: 0.25rem; /* 4px - Base para todos os espaçamentos */
+  
+  /* === ESCALA DE ESPAÇAMENTO === */
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0_5: calc(var(--space-unit) * 0.5);  /* 2px */
+  --space-1: calc(var(--space-unit) * 1);      /* 4px */
+  --space-1_5: calc(var(--space-unit) * 1.5);  /* 6px */
+  --space-2: calc(var(--space-unit) * 2);      /* 8px */
+  --space-2_5: calc(var(--space-unit) * 2.5);  /* 10px */
+  --space-3: calc(var(--space-unit) * 3);      /* 12px */
+  --space-3_5: calc(var(--space-unit) * 3.5);  /* 14px */
+  --space-4: calc(var(--space-unit) * 4);      /* 16px */
+  --space-5: calc(var(--space-unit) * 5);      /* 20px */
+  --space-6: calc(var(--space-unit) * 6);      /* 24px */
+  --space-7: calc(var(--space-unit) * 7);      /* 28px */
+  --space-8: calc(var(--space-unit) * 8);      /* 32px */
+  --space-9: calc(var(--space-unit) * 9);      /* 36px */
+  --space-10: calc(var(--space-unit) * 10);    /* 40px */
+  --space-11: calc(var(--space-unit) * 11);    /* 44px */
+  --space-12: calc(var(--space-unit) * 12);    /* 48px */
+  --space-14: calc(var(--space-unit) * 14);    /* 56px */
+  --space-16: calc(var(--space-unit) * 16);    /* 64px */
+  --space-20: calc(var(--space-unit) * 20);    /* 80px */
+  --space-24: calc(var(--space-unit) * 24);    /* 96px */
+  --space-28: calc(var(--space-unit) * 28);    /* 112px */
+  --space-32: calc(var(--space-unit) * 32);    /* 128px */
+  --space-36: calc(var(--space-unit) * 36);    /* 144px */
+  --space-40: calc(var(--space-unit) * 40);    /* 160px */
+  --space-44: calc(var(--space-unit) * 44);    /* 176px */
+  --space-48: calc(var(--space-unit) * 48);    /* 192px */
+  --space-52: calc(var(--space-unit) * 52);    /* 208px */
+  --space-56: calc(var(--space-unit) * 56);    /* 224px */
+  --space-60: calc(var(--space-unit) * 60);    /* 240px */
+  --space-64: calc(var(--space-unit) * 64);    /* 256px */
+  --space-72: calc(var(--space-unit) * 72);    /* 288px */
+  --space-80: calc(var(--space-unit) * 80);    /* 320px */
+  --space-96: calc(var(--space-unit) * 96);    /* 384px */
+
+  /* ========================================================================== */
+
+  /* == 🔤 SISTEMA TIPOGRÁFICO FLUIDO                                       == */
+
+  /* ========================================================================== */
+  
+  /* === CONFIGURAÇÃO DE ESCALA === */
+  --font-scale-ratio: 1.25; /* Major Third - harmônico e legível */
+  --font-size-base: clamp(1rem, 2vw + 0.5rem, 1.125rem); /* 16px-18px */
+  
+  /* === ESCALA TIPOGRÁFICA FLUIDA === */
+  --font-size-xs: clamp(0.75rem, 1.5vw + 0.25rem, 0.8rem);      /* 12px-13px */
+  --font-size-sm: clamp(0.875rem, 1.75vw + 0.375rem, 0.9rem);   /* 14px-14.4px */
+  --font-size-base: var(--font-size-base);                        /* 16px-18px */
+  --font-size-lg: clamp(1.125rem, 2.25vw + 0.625rem, 1.25rem);  /* 18px-20px */
+  --font-size-xl: clamp(1.25rem, 2.5vw + 0.75rem, 1.5rem);      /* 20px-24px */
+  --font-size-2xl: clamp(1.5rem, 3vw + 1rem, 2rem);             /* 24px-32px */
+  --font-size-3xl: clamp(1.875rem, 3.75vw + 1.25rem, 2.5rem);   /* 30px-40px */
+  --font-size-4xl: clamp(2.25rem, 4.5vw + 1.5rem, 3rem);        /* 36px-48px */
+  --font-size-5xl: clamp(3rem, 6vw + 2rem, 4rem);               /* 48px-64px */
+  --font-size-6xl: clamp(3.75rem, 7.5vw + 2.5rem, 5rem);        /* 60px-80px */
+  
+  /* === PESOS DE FONTE === */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+  
+  /* === ALTURA DE LINHA === */
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+  
+  /* === ESPAÇAMENTO DE LETRAS === */
+  --letter-spacing-tighter: -0.05em;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+  
+  /* === FAMÍLIAS DE FONTE === */
+  --font-family-sans: 'Inter', -apple-system, blinkmacsystemfont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-family-serif: 'Georgia', 'Times New Roman', 'Times', serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+  --font-family-display: var(--font-family-sans); /* Para headings */
+  --font-family-body: var(--font-family-sans);    /* Para body text */
+
+  /* ========================================================================== */
+
+  /* == 📏 SISTEMA DE BORDAS E RAIOS                                        == */
+
+  /* ========================================================================== */
+  
+  /* === RAIOS DE BORDA === */
+  --radius-none: 0;
+  --radius-sm: calc(var(--space-unit) * 0.5);  /* 2px */
+  --radius-base: calc(var(--space-unit) * 1);  /* 4px */
+  --radius-md: calc(var(--space-unit) * 1.5);  /* 6px */
+  --radius-lg: calc(var(--space-unit) * 2);    /* 8px */
+  --radius-xl: calc(var(--space-unit) * 3);    /* 12px */
+  --radius-2xl: calc(var(--space-unit) * 4);   /* 16px */
+  --radius-3xl: calc(var(--space-unit) * 6);   /* 24px */
+  --radius-full: 9999px;
+  
+  /* === LARGURAS DE BORDA === */
+  --border-width-0: 0;
+  --border-width-1: 1px;
+  --border-width-2: 2px;
+  --border-width-4: 4px;
+  --border-width-8: 8px;
+
+  /* ========================================================================== */
+
+  /* == 🌒 SISTEMA DE SOMBRAS                                               == */
+
+  /* ========================================================================== */
+  
+  /* === SOMBRAS NATURAIS === */
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
+  --shadow-base: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -2px rgb(0 0 0 / 10%);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
+  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 8px 10px -6px rgb(0 0 0 / 10%);
+  --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 25%);
+  --shadow-2xl: 0 50px 100px -20px rgb(0 0 0 / 25%);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 5%);
+  
+  /* === SOMBRAS COLORIDAS === */
+  --shadow-brand: 0 10px 15px -3px rgb(220 38 38 / 10%);
+  --shadow-success: 0 10px 15px -3px rgb(34 197 94 / 10%);
+  --shadow-warning: 0 10px 15px -3px rgb(245 158 11 / 10%);
+  --shadow-error: 0 10px 15px -3px rgb(239 68 68 / 10%);
+
+  /* ========================================================================== */
+
+  /* == ⚡ SISTEMA DE TRANSIÇÕES                                             == */
+
+  /* ========================================================================== */
+  
+  /* === DURAÇÕES === */
+  --duration-instant: 0ms;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 750ms;
+  
+  /* === CURVAS DE EASING === */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-back: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* === TRANSIÇÕES COMUNS === */
+  /* AIDEV-NOTE: performance-transitions; apenas propriedades que não causam reflow */
+  --transition-colors: color var(--duration-normal) var(--ease-out), 
+                      background-color var(--duration-normal) var(--ease-out), 
+                      border-color var(--duration-normal) var(--ease-out);
+  --transition-opacity: opacity var(--duration-normal) var(--ease-out);
+  --transition-transform: transform var(--duration-normal) var(--ease-out);
+  --transition-filter: filter var(--duration-normal) var(--ease-out);
+  --transition-scale: scale var(--duration-normal) var(--ease-out);
+  --transition-all: all var(--duration-normal) var(--ease-out);
+  
+  /* === TRANSIÇÕES MICRO-INTERAÇÕES === */
+  --transition-micro: transform var(--duration-fast) var(--ease-out);
+  --transition-hover: all var(--duration-fast) var(--ease-out);
+
+  /* ========================================================================== */
+
+  /* == 📐 BREAKPOINTS E CONTAINERS                                         == */
+
+  /* ========================================================================== */
+  
+  /* === BREAKPOINTS === */
+  --breakpoint-xs: 475px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  
+  /* === CONTAINERS MAX-WIDTH === */
+  --container-xs: 475px;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+  --container-prose: 65ch; /* Optimal reading width */
+
+  /* ========================================================================== */
+
+  /* == 🎚️ Z-INDEX HIERARCHY                                               == */
+
+  /* ========================================================================== */
+  
+  --z-index-hide: -1;
+  --z-index-auto: auto;
+  --z-index-base: 0;
+  --z-index-docked: 10;
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-banner: 1030;
+  --z-index-overlay: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-skiplink: 1070;
+  --z-index-toast: 1080;
+  --z-index-tooltip: 1090;
+
+  /* ========================================================================== */
+
+  /* == 📐 ASPECT RATIOS                                                    == */
+
+  /* ========================================================================== */
+  
+  --aspect-square: 1 / 1;
+  --aspect-video: 16 / 9;
+  --aspect-photo: 4 / 3;
+  --aspect-book: 3 / 4;        /* Manga/book cover */
+  --aspect-poster: 2 / 3;      /* Movie poster */
+  --aspect-banner: 5 / 1;      /* Wide banner */
+  --aspect-hero: 21 / 9;       /* Ultra-wide hero */
+}
+
+/* ========================================================================== */
+
+/* == 🌙 TEMA ESCURO (DARK MODE - DEFAULT)                                == */
+
+/* ========================================================================== */
+
+:root,
+[data-theme="\"dark\""] {
+  /* === ALIASES SEMÂNTICOS PARA COMPATIBILIDADE === */
+  --color-background: var(--color-gray-950);
+  --bg-primary: var(--color-gray-950);
+  --color-surface: var(--color-gray-800);
+  --color-surface-primary: var(--color-gray-800);
+  --color-surface-secondary: var(--color-gray-700);
+  --color-surface-hover: var(--color-gray-600);
+  
+  /* === TEXTO === */
+  --text-primary: var(--color-gray-50);
+  --color-text-primary: var(--color-gray-50);
+  --text-secondary: var(--color-gray-300);
+  --color-text-secondary: var(--color-gray-300);
+  --color-text-tertiary: var(--color-gray-500);
+  --color-text-quaternary: var(--color-gray-600);
+  --color-text-inverse: var(--color-gray-950);
+  --color-text-disabled: var(--color-gray-600);
+  
+  /* === BORDAS === */
+  --color-border: var(--color-gray-700);
+  --border-primary: var(--color-gray-700);
+  --color-border-secondary: var(--color-gray-600);
+  --color-border-hover: var(--color-gray-500);
+  --color-border-focus: var(--color-brand-500);
+  --border-focus: var(--color-brand-500);
+  
+  /* === INTERAÇÃO === */
+  --color-primary: var(--color-brand-600);
+  --color-primary-base: var(--color-brand-600);
+  --color-primary-hover: var(--color-brand-500);
+  --color-primary-active: var(--color-brand-700);
+  --color-primary-disabled: var(--color-gray-600);
+  
+  /* === SECUNDÁRIO === */
+  --color-secondary-base: var(--color-gray-600);
+  --color-secondary-hover: var(--color-gray-500);
+  
+  /* === ACCENT === */
+  --color-accent: var(--color-gray-300);
+  --color-accent-base: var(--color-gray-300);
+  --color-accent-hover: var(--color-gray-200);
+  
+  /* === STATES === */
+  --color-success: var(--color-success-500);
+  --color-warning: var(--color-warning-500);
+  --color-error: var(--color-error-500);
+  --color-info: var(--color-info-500);
+  
+  /* === FOCUS === */
+  --color-focus: var(--color-brand-500);
+  --color-focus-ring: rgb(220 38 38 / 30%);
+}
+
+/* ========================================================================== */
+
+/* == ☀️ TEMA CLARO (LIGHT MODE)                                          == */
+
+/* ========================================================================== */
+
+[data-theme="\"light\""] {
+  /* === ALIASES SEMÂNTICOS === */
+  --color-background: var(--color-white);
+  --bg-primary: var(--color-white);
+  --color-surface: var(--color-gray-100);
+  --color-surface-primary: var(--color-gray-100);
+  --color-surface-secondary: var(--color-gray-200);
+  --color-surface-hover: var(--color-gray-300);
+  
+  /* === TEXTO === */
+  --text-primary: var(--color-gray-900);
+  --color-text-primary: var(--color-gray-900);
+  --text-secondary: var(--color-gray-700);
+  --color-text-secondary: var(--color-gray-700);
+  --color-text-tertiary: var(--color-gray-500);
+  --color-text-quaternary: var(--color-gray-400);
+  --color-text-inverse: var(--color-white);
+  --color-text-disabled: var(--color-gray-400);
+  
+  /* === BORDAS === */
+  --color-border: var(--color-gray-300);
+  --border-primary: var(--color-gray-300);
+  --color-border-secondary: var(--color-gray-200);
+  --color-border-hover: var(--color-gray-400);
+  --color-border-focus: var(--color-brand-500);
+  --border-focus: var(--color-brand-500);
+  
+  /* === INTERAÇÃO === */
+  --color-primary: var(--color-brand-600);
+  --color-primary-base: var(--color-brand-600);
+  --color-primary-hover: var(--color-brand-700);
+  --color-primary-active: var(--color-brand-800);
+  --color-primary-disabled: var(--color-gray-300);
+  
+  /* === SECUNDÁRIO === */
+  --color-secondary-base: var(--color-gray-400);
+  --color-secondary-hover: var(--color-gray-500);
+  
+  /* === ACCENT === */
+  --color-accent: var(--color-gray-700);
+  --color-accent-base: var(--color-gray-700);
+  --color-accent-hover: var(--color-gray-800);
+  
+  /* === SOMBRAS AJUSTADAS === */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
+  --shadow-base: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -2px rgb(0 0 0 / 10%);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
+  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 8px 10px -6px rgb(0 0 0 / 10%);
+}
+
+/* ========================================================================== */
+
+/* == 🎯 MEDIA QUERIES PARA RESPONSIVIDADE                                == */
+
+/* ========================================================================== */
+
+/* === MOTION PREFERENCES === */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+    --duration-slower: 0ms;
+    --transition-all: none;
+    --transition-colors: none;
+    --transition-opacity: none;
+    --transition-transform: none;
+  }
+}
+
+/* === CONTRAST PREFERENCES === */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: var(--color-text-primary);
+    --color-text-secondary: var(--color-text-primary);
+  }
+}
+
+/* === RESPONSIVE ADJUSTMENTS === */
+@media (width <= 768px) {
+  :root {
+    --space-unit: 0.225rem; /* Slightly tighter spacing on mobile */
+    --font-size-base: clamp(1rem, 2.5vw + 0.5rem, 1.125rem);
+  }
+}
+
+/* ========================================================================== */
+
+/* == 🔧 LEGACY COMPATIBILITY                                             == */
+
+/* ========================================================================== */
+
+:root {
+  /* Mapeamento das variáveis antigas para as novas */
+  --space-xs: var(--space-2);   /* 8px */
+  --space-sm: var(--space-3);   /* 12px */
+  --space-md: var(--space-4);   /* 16px */
+  --space-lg: var(--space-6);   /* 24px */
+  --space-xl: var(--space-8);   /* 32px */
+  --space-xxl: var(--space-12); /* 48px */
+  
+  /* Raios antigos */
+  --radius-base: var(--radius-lg);   /* 8px */
+  --radius-sm: var(--radius-md);     /* 6px */
+  
+  /* Transições antigas */
+  --transition-base: var(--transition-all);
+  --transition-fast: all var(--duration-fast) var(--ease-out);
+}

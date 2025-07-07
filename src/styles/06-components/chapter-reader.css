@@ -1,0 +1,379 @@
+/*
+ * CHAPTER READER - GIKAMOE V3.0
+ * Arquivo: src/styles/06-components/chapter-reader.css
+ * 
+ * AIDEV-NOTE: chapter-reader-styles; leitor de manga otimizado
+ */
+
+/* ========================================================================== */
+/* == 📚 CHAPTER READER LAYOUT                                            == */
+/* ========================================================================== */
+
+.chapter-reader {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: var(--color-text-primary);
+  user-select: none;
+}
+
+/* Header do leitor */
+.chapter-reader-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-index-sticky);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: var(--border-width-1) solid var(--color-border);
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.chapter-reader-header.hidden {
+  transform: translateY(-100%);
+}
+
+.chapter-reader-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: var(--container-xl);
+  margin: 0 auto;
+}
+
+.chapter-reader-back {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+.chapter-reader-back:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.chapter-reader-info {
+  flex: 1;
+  text-align: center;
+  margin: 0 var(--space-4);
+}
+
+.chapter-reader-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chapter-reader-progress {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.chapter-reader-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Container principal das páginas */
+.chapter-reader-content {
+  padding-top: 80px; /* Space for fixed header */
+  min-height: 100vh;
+}
+
+.chapter-pages-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+/* Página individual */
+.chapter-page {
+  position: relative;
+  margin-bottom: var(--space-6);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.chapter-page-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: var(--transition-opacity);
+}
+
+.chapter-page-number {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Navegação por clique */
+.chapter-page-nav {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  cursor: pointer;
+  z-index: var(--z-index-base);
+  transition: background-color var(--duration-fast);
+}
+
+.chapter-page-nav:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.chapter-page-nav--prev {
+  left: 0;
+}
+
+.chapter-page-nav--next {
+  right: 0;
+}
+
+/* Loading states */
+.chapter-page-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: var(--color-surface-secondary);
+}
+
+.chapter-page-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: var(--space-8);
+  background: var(--color-error-50);
+  color: var(--color-error);
+  text-align: center;
+}
+
+/* Footer de navegação */
+.chapter-reader-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-index-sticky);
+  padding: var(--space-4);
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  border-top: var(--border-width-1) solid var(--color-border);
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.chapter-reader-footer.hidden {
+  transform: translateY(100%);
+}
+
+.chapter-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  gap: var(--space-4);
+}
+
+.chapter-nav-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  transition: var(--transition-all);
+  min-width: 120px;
+  justify-content: center;
+}
+
+.chapter-nav-button:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+  transform: translateY(-1px);
+}
+
+.chapter-nav-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.chapter-progress-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-secondary);
+  overflow: hidden;
+}
+
+.chapter-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--duration-normal) var(--ease-out);
+}
+
+/* ========================================================================== */
+/* == ⚙️ READER SETTINGS PANEL                                            == */
+/* ========================================================================== */
+
+.reader-settings-panel {
+  position: fixed;
+  top: 80px;
+  right: var(--space-4);
+  z-index: var(--z-index-dropdown);
+  min-width: 280px;
+  padding: var(--space-6);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xl);
+  transform: translateX(100%);
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.reader-settings-panel.open {
+  transform: translateX(0);
+}
+
+.reader-setting-group {
+  margin-bottom: var(--space-4);
+}
+
+.reader-setting-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.reader-setting-slider {
+  width: 100%;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-secondary);
+  appearance: none;
+  cursor: pointer;
+}
+
+.reader-setting-slider::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  appearance: none;
+  cursor: pointer;
+}
+
+/* ========================================================================== */
+/* == 📱 RESPONSIVE DESIGN                                                == */
+/* ========================================================================== */
+
+@media (width <= 768px) {
+  .chapter-reader-content {
+    padding-top: 60px;
+  }
+  
+  .chapter-pages-container {
+    padding: var(--space-2);
+  }
+  
+  .chapter-page {
+    margin-bottom: var(--space-4);
+  }
+  
+  .chapter-reader-nav {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .chapter-reader-info {
+    margin: 0;
+  }
+  
+  .chapter-navigation {
+    gap: var(--space-2);
+  }
+  
+  .chapter-nav-button {
+    min-width: 100px;
+    padding: var(--space-2) var(--space-4);
+  }
+  
+  .reader-settings-panel {
+    right: var(--space-2);
+    left: var(--space-2);
+    min-width: auto;
+  }
+}
+
+/* ========================================================================== */
+/* == 🎯 TOUCH GESTURES                                                   == */
+/* ========================================================================== */
+
+@media (pointer: coarse) {
+  .chapter-page-nav {
+    width: 30%;
+  }
+  
+  .chapter-page-nav--prev {
+    left: 0;
+  }
+  
+  .chapter-page-nav--next {
+    right: 0;
+  }
+  
+  .chapter-nav-button {
+    min-height: var(--space-12);
+  }
+}
+
+/* ========================================================================== */
+/* == 🌙 DARK MODE OPTIMIZATIONS                                          == */
+/* ========================================================================== */
+
+.chapter-reader {
+  --reader-bg: #0a0a0a;
+  --reader-surface: #1a1a1a;
+  --reader-border: #333;
+}
+
+[data-theme="light"] .chapter-reader {
+  --reader-bg: #ffffff;
+  --reader-surface: #f8f9fa;
+  --reader-border: #e9ecef;
+  background: var(--reader-bg);
+}

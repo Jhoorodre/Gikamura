@@ -5,7 +5,7 @@ import { useAppContext } from '../context/AppContext';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 import Button from '../components/common/Button';
 import Spinner from '../components/common/Spinner';
-import '../styles/minimalist-pages.css';
+// AIDEV-NOTE: css-unified; minimalist-pages integrado ao sistema CSS unificado
 
 const UploadPage = () => {
     const { addHub, isConnected } = useAppContext();

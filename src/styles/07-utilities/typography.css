@@ -1,0 +1,508 @@
+/*
+ * UTILITÁRIOS DE TIPOGRAFIA - GIKAMOE V2.0
+ * Arquivo: src/styles/06-utilities/typography.css
+ * 
+ * Classes utilitárias para tipografia baseadas no sistema fluido
+ * Incluindo tamanhos, pesos, espaçamentos e transformações
+ */
+
+/* ========================================================================== */
+
+/* == 📝 FONT SIZES                                                       == */
+
+/* ========================================================================== */
+
+.text-xs { font-size: var(--font-size-xs) !important; }
+.text-sm { font-size: var(--font-size-sm) !important; }
+.text-base { font-size: var(--font-size-base) !important; }
+.text-lg { font-size: var(--font-size-lg) !important; }
+.text-xl { font-size: var(--font-size-xl) !important; }
+.text-2xl { font-size: var(--font-size-2xl) !important; }
+.text-3xl { font-size: var(--font-size-3xl) !important; }
+.text-4xl { font-size: var(--font-size-4xl) !important; }
+.text-5xl { font-size: var(--font-size-5xl) !important; }
+.text-6xl { font-size: var(--font-size-6xl) !important; }
+
+/* ========================================================================== */
+
+/* == ⚖️ FONT WEIGHTS                                                     == */
+
+/* ========================================================================== */
+
+.font-thin { font-weight: var(--font-weight-thin) !important; }
+.font-extralight { font-weight: var(--font-weight-extralight) !important; }
+.font-light { font-weight: var(--font-weight-light) !important; }
+.font-normal { font-weight: var(--font-weight-normal) !important; }
+.font-medium { font-weight: var(--font-weight-medium) !important; }
+.font-semibold { font-weight: var(--font-weight-semibold) !important; }
+.font-bold { font-weight: var(--font-weight-bold) !important; }
+.font-extrabold { font-weight: var(--font-weight-extrabold) !important; }
+.font-black { font-weight: var(--font-weight-black) !important; }
+
+/* ========================================================================== */
+
+/* == 📏 LINE HEIGHTS                                                     == */
+
+/* ========================================================================== */
+
+.leading-none { line-height: var(--line-height-none) !important; }
+.leading-tight { line-height: var(--line-height-tight) !important; }
+.leading-snug { line-height: var(--line-height-snug) !important; }
+.leading-normal { line-height: var(--line-height-normal) !important; }
+.leading-relaxed { line-height: var(--line-height-relaxed) !important; }
+.leading-loose { line-height: var(--line-height-loose) !important; }
+
+/* Numeric line heights */
+.leading-3 { line-height: 0.75rem !important; }
+.leading-4 { line-height: 1rem !important; }
+.leading-5 { line-height: 1.25rem !important; }
+.leading-6 { line-height: 1.5rem !important; }
+.leading-7 { line-height: 1.75rem !important; }
+.leading-8 { line-height: 2rem !important; }
+.leading-9 { line-height: 2.25rem !important; }
+.leading-10 { line-height: 2.5rem !important; }
+
+/* ========================================================================== */
+
+/* == 🔤 LETTER SPACING                                                   == */
+
+/* ========================================================================== */
+
+.tracking-tighter { letter-spacing: var(--letter-spacing-tighter) !important; }
+.tracking-tight { letter-spacing: var(--letter-spacing-tight) !important; }
+.tracking-normal { letter-spacing: var(--letter-spacing-normal) !important; }
+.tracking-wide { letter-spacing: var(--letter-spacing-wide) !important; }
+.tracking-wider { letter-spacing: var(--letter-spacing-wider) !important; }
+.tracking-widest { letter-spacing: var(--letter-spacing-widest) !important; }
+
+/* ========================================================================== */
+
+/* == 🏗️ FONT FAMILIES                                                   == */
+
+/* ========================================================================== */
+
+.font-sans { font-family: var(--font-family-sans) !important; }
+.font-serif { font-family: var(--font-family-serif) !important; }
+.font-mono { font-family: var(--font-family-mono) !important; }
+.font-display { font-family: var(--font-family-display) !important; }
+.font-body { font-family: var(--font-family-body) !important; }
+
+/* ========================================================================== */
+
+/* == 📐 TEXT ALIGNMENT                                                   == */
+
+/* ========================================================================== */
+
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+.text-justify { text-align: justify !important; }
+.text-start { text-align: start !important; }
+.text-end { text-align: end !important; }
+
+/* ========================================================================== */
+
+/* == 🔄 TEXT TRANSFORM                                                   == */
+
+/* ========================================================================== */
+
+.uppercase { text-transform: uppercase !important; }
+.lowercase { text-transform: lowercase !important; }
+.capitalize { text-transform: capitalize !important; }
+.normal-case { text-transform: none !important; }
+
+/* ========================================================================== */
+
+/* == 🎨 TEXT DECORATION                                                  == */
+
+/* ========================================================================== */
+
+.underline { text-decoration: underline !important; }
+.overline { text-decoration: overline !important; }
+.line-through { text-decoration: line-through !important; }
+.no-underline { text-decoration: none !important; }
+
+/* Decoration styles */
+.decoration-solid { text-decoration-style: solid !important; }
+.decoration-double { text-decoration-style: double !important; }
+.decoration-dotted { text-decoration-style: dotted !important; }
+.decoration-dashed { text-decoration-style: dashed !important; }
+.decoration-wavy { text-decoration-style: wavy !important; }
+
+/* Decoration thickness */
+.decoration-auto { text-decoration-thickness: auto !important; }
+.decoration-from-font { text-decoration-thickness: from-font !important; }
+.decoration-0 { text-decoration-thickness: 0 !important; }
+.decoration-1 { text-decoration-thickness: 1px !important; }
+.decoration-2 { text-decoration-thickness: 2px !important; }
+.decoration-4 { text-decoration-thickness: 4px !important; }
+.decoration-8 { text-decoration-thickness: 8px !important; }
+
+/* Underline offset */
+.underline-offset-auto { text-underline-offset: auto !important; }
+.underline-offset-0 { text-underline-offset: 0 !important; }
+.underline-offset-1 { text-underline-offset: 1px !important; }
+.underline-offset-2 { text-underline-offset: 2px !important; }
+.underline-offset-4 { text-underline-offset: 4px !important; }
+.underline-offset-8 { text-underline-offset: 8px !important; }
+
+/* ========================================================================== */
+
+/* == ✂️ TEXT OVERFLOW                                                    == */
+
+/* ========================================================================== */
+
+.truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.text-ellipsis { text-overflow: ellipsis !important; }
+.text-clip { text-overflow: clip !important; }
+
+/* Multi-line truncation */
+.line-clamp-1 {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-line-clamp: 1 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+.line-clamp-2 {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+.line-clamp-3 {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+.line-clamp-4 {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-line-clamp: 4 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+.line-clamp-5 {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-line-clamp: 5 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+.line-clamp-6 {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-line-clamp: 6 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+.line-clamp-none {
+  display: block !important;
+  overflow: visible !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: unset !important;
+}
+
+/* ========================================================================== */
+
+/* == 🔤 WHITE SPACE                                                      == */
+
+/* ========================================================================== */
+
+.whitespace-normal { white-space: normal !important; }
+.whitespace-nowrap { white-space: nowrap !important; }
+.whitespace-pre { white-space: pre !important; }
+.whitespace-pre-line { white-space: pre-line !important; }
+.whitespace-pre-wrap { white-space: pre-wrap !important; }
+.whitespace-break-spaces { white-space: break-spaces !important; }
+
+/* ========================================================================== */
+
+/* == 📝 WORD BREAK                                                       == */
+
+/* ========================================================================== */
+
+.break-normal {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+.break-words { overflow-wrap: break-word !important; }
+.break-all { word-break: break-all !important; }
+.break-keep { word-break: keep-all !important; }
+
+/* ========================================================================== */
+
+/* == 🎭 FONT VARIANT                                                     == */
+
+/* ========================================================================== */
+
+.normal-nums { font-variant-numeric: normal !important; }
+.ordinal { font-variant-numeric: ordinal !important; }
+.slashed-zero { font-variant-numeric: slashed-zero !important; }
+.lining-nums { font-variant-numeric: lining-nums !important; }
+.oldstyle-nums { font-variant-numeric: oldstyle-nums !important; }
+.proportional-nums { font-variant-numeric: proportional-nums !important; }
+.tabular-nums { font-variant-numeric: tabular-nums !important; }
+.diagonal-fractions { font-variant-numeric: diagonal-fractions !important; }
+.stacked-fractions { font-variant-numeric: stacked-fractions !important; }
+
+/* ========================================================================== */
+
+/* == 🎨 TEXT STYLES COMBINADOS                                           == */
+
+/* ========================================================================== */
+
+/* Headings presets */
+.heading-1 {
+  font-family: var(--font-family-display) !important;
+  font-size: var(--font-size-4xl) !important;
+  font-weight: var(--font-weight-bold) !important;
+  line-height: var(--line-height-tight) !important;
+  letter-spacing: var(--letter-spacing-tight) !important;
+}
+
+.heading-2 {
+  font-family: var(--font-family-display) !important;
+  font-size: var(--font-size-3xl) !important;
+  font-weight: var(--font-weight-bold) !important;
+  line-height: var(--line-height-tight) !important;
+  letter-spacing: var(--letter-spacing-tight) !important;
+}
+
+.heading-3 {
+  font-family: var(--font-family-display) !important;
+  font-size: var(--font-size-2xl) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: var(--line-height-tight) !important;
+}
+
+.heading-4 {
+  font-family: var(--font-family-display) !important;
+  font-size: var(--font-size-xl) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: var(--line-height-snug) !important;
+}
+
+.heading-5 {
+  font-family: var(--font-family-display) !important;
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-medium) !important;
+  line-height: var(--line-height-snug) !important;
+}
+
+.heading-6 {
+  font-family: var(--font-family-display) !important;
+  font-size: var(--font-size-base) !important;
+  font-weight: var(--font-weight-medium) !important;
+  line-height: var(--line-height-normal) !important;
+}
+
+/* Body text presets */
+.body-large {
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-normal) !important;
+  line-height: var(--line-height-relaxed) !important;
+}
+
+.body-normal {
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-size-base) !important;
+  font-weight: var(--font-weight-normal) !important;
+  line-height: var(--line-height-relaxed) !important;
+}
+
+.body-small {
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-normal) !important;
+  line-height: var(--line-height-normal) !important;
+}
+
+/* Caption and labels */
+.caption {
+  color: var(--color-text-tertiary) !important;
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-size-xs) !important;
+  font-weight: var(--font-weight-normal) !important;
+  line-height: var(--line-height-normal) !important;
+}
+
+.label {
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-medium) !important;
+  line-height: var(--line-height-normal) !important;
+}
+
+/* Code and monospace */
+.code {
+  padding: var(--space-1) var(--space-2) !important;
+  border-radius: var(--radius-base) !important;
+  background-color: var(--color-surface-secondary) !important;
+  font-family: var(--font-family-mono) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-normal) !important;
+  line-height: var(--line-height-normal) !important;
+}
+
+.code-block {
+  padding: var(--space-4) !important;
+  overflow-x: auto !important;
+  border-radius: var(--radius-lg) !important;
+  background-color: var(--color-surface-secondary) !important;
+  font-family: var(--font-family-mono) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-normal) !important;
+  line-height: var(--line-height-relaxed) !important;
+}
+
+/* ========================================================================== */
+
+/* == 📱 RESPONSIVE TYPOGRAPHY                                            == */
+
+/* ========================================================================== */
+
+@media (width <= 640px) {
+  .sm\\:text-xs { font-size: var(--font-size-xs) !important; }
+  .sm\\:text-sm { font-size: var(--font-size-sm) !important; }
+  .sm\\:text-base { font-size: var(--font-size-base) !important; }
+  .sm\\:text-lg { font-size: var(--font-size-lg) !important; }
+  .sm\\:text-xl { font-size: var(--font-size-xl) !important; }
+  .sm\\:text-2xl { font-size: var(--font-size-2xl) !important; }
+  
+  .sm\\:text-left { text-align: left !important; }
+  .sm\\:text-center { text-align: center !important; }
+  .sm\\:text-right { text-align: right !important; }
+  
+  .sm\\:leading-tight { line-height: var(--line-height-tight) !important; }
+  .sm\\:leading-normal { line-height: var(--line-height-normal) !important; }
+  .sm\\:leading-relaxed { line-height: var(--line-height-relaxed) !important; }
+}
+
+@media (width <= 768px) {
+  .md\\:text-xs { font-size: var(--font-size-xs) !important; }
+  .md\\:text-sm { font-size: var(--font-size-sm) !important; }
+  .md\\:text-base { font-size: var(--font-size-base) !important; }
+  .md\\:text-lg { font-size: var(--font-size-lg) !important; }
+  .md\\:text-xl { font-size: var(--font-size-xl) !important; }
+  .md\\:text-2xl { font-size: var(--font-size-2xl) !important; }
+  
+  .md\\:text-left { text-align: left !important; }
+  .md\\:text-center { text-align: center !important; }
+  .md\\:text-right { text-align: right !important; }
+}
+
+@media (width >= 1024px) {
+  .lg\\:text-sm { font-size: var(--font-size-sm) !important; }
+  .lg\\:text-base { font-size: var(--font-size-base) !important; }
+  .lg\\:text-lg { font-size: var(--font-size-lg) !important; }
+  .lg\\:text-xl { font-size: var(--font-size-xl) !important; }
+  .lg\\:text-2xl { font-size: var(--font-size-2xl) !important; }
+  .lg\\:text-3xl { font-size: var(--font-size-3xl) !important; }
+  .lg\\:text-4xl { font-size: var(--font-size-4xl) !important; }
+}
+
+/* ========================================================================== */
+
+/* == ♿ ACCESSIBILITY                                                     == */
+
+/* ========================================================================== */
+
+/* High contrast adjustments */
+@media (prefers-contrast: high) {
+  .text-secondary { color: var(--color-text-primary) !important; }
+  .text-tertiary { color: var(--color-text-secondary) !important; }
+  .caption { color: var(--color-text-secondary) !important; }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .text-balance { text-wrap: auto !important; }
+  .text-pretty { text-wrap: auto !important; }
+}
+
+/* ========================================================================== */
+
+/* == 🎨 ADVANCED TEXT FEATURES                                           == */
+
+/* ========================================================================== */
+
+/* CSS Text Level 4 features */
+.text-balance { text-wrap: balance !important; }
+.text-pretty { text-wrap: pretty !important; }
+.text-stable { text-wrap: stable !important; }
+
+/* Font display for web fonts */
+.font-display-auto { font-display: auto !important; }
+.font-display-block { font-display: block !important; }
+.font-display-swap { font-display: swap !important; }
+.font-display-fallback { font-display: fallback !important; }
+.font-display-optional { font-display: optional !important; }
+
+/* Font smoothing */
+.antialiased {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+.subpixel-antialiased {
+  -webkit-font-smoothing: auto !important;
+  -moz-osx-font-smoothing: auto !important;
+}
+
+/* ========================================================================== */
+
+/* == 🔄 LEGACY COMPATIBILITY                                             == */
+
+/* ========================================================================== */
+
+/* Old typography classes for backward compatibility */
+.text-muted { color: var(--color-text-tertiary) !important; }
+.text-disabled { color: var(--color-text-disabled) !important; }
+
+.h1 { @extend .heading-1; }
+.h2 { @extend .heading-2; }
+.h3 { @extend .heading-3; }
+.h4 { @extend .heading-4; }
+.h5 { @extend .heading-5; }
+.h6 { @extend .heading-6; }
+
+/* Alternative approach without @extend */
+.h1 {
+  font-family: var(--font-family-display) !important;
+  font-size: var(--font-size-4xl) !important;
+  font-weight: var(--font-weight-bold) !important;
+  line-height: var(--line-height-tight) !important;
+}
+
+.h2 {
+  font-family: var(--font-family-display) !important;
+  font-size: var(--font-size-3xl) !important;
+  font-weight: var(--font-weight-bold) !important;
+  line-height: var(--line-height-tight) !important;
+}
+
+.h3 {
+  font-family: var(--font-family-display) !important;
+  font-size: var(--font-size-2xl) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: var(--line-height-tight) !important;
+}
+
+.small { font-size: var(--font-size-sm) !important; }
+
+.lead {
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-normal) !important;
+  line-height: var(--line-height-relaxed) !important;
+}

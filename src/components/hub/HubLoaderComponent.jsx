@@ -4,7 +4,7 @@ import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 import { useHubLoader } from '../../hooks/useHubLoader';
 import { useLocation } from 'react-router-dom';
 import HubHistory from './HubHistory';
-import '../../styles/minimalist-pages.css';
+// AIDEV-NOTE: css-unified; usando sistema CSS unificado via index.css
 
 const HubLoaderComponent = () => {
     const { savedHubs, removeHub } = useAppContext();

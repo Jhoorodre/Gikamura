@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAppContext } from '../../context/AppContext';
-import '../../styles/hub-loader.css';
+// AIDEV-NOTE: css-legacy; removido import direto, usando sistema unificado
 import HubHistory from './HubHistory';
 import { encodeUrl } from '../../utils/encoding';
 import { APP_CONFIG } from '../../constants/app';

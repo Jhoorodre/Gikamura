@@ -1,0 +1,467 @@
+/*
+ * RESET E BASE CSS MODERNIZADO - GIKAMOE V2.0
+ * Arquivo: src/styles/02-generic/reset.css
+ * 
+ * Reset moderno baseado em CSS Reset 2.0 + normalize.css
+ * Otimizado para performance e acessibilidade
+ */
+
+/* ========================================================================== */
+
+/* == 🔄 MODERN CSS RESET                                                 == */
+
+/* ========================================================================== */
+
+/* === BOX SIZING === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* === REMOVE DEFAULT MARGINS === */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* === ROOT SETUP === */
+html {
+  /* Prevent horizontal scroll */
+  overflow-x: hidden;
+  
+  /* Responsive font size */
+  font-size: 100%; /* 16px base */
+
+  /* Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizelegibility;
+  
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  
+  /* Better font kerning */
+  text-size-adjust: 100%;
+}
+
+/* === BODY SETUP === */
+body {
+  min-height: 100vh;
+  
+  /* Prevent horizontal scroll */
+  overflow-x: hidden;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  
+  /* Performance optimizations */
+  will-change: auto;
+  contain: layout style paint;
+  
+  /* Better font rendering */
+  font-feature-settings: 'kern' 1;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+}
+
+/* === LISTS === */
+ul,
+ol {
+  list-style: none;
+}
+
+/* === MEDIA === */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* === FORM ELEMENTS === */
+input,
+button,
+textarea,
+select {
+  color: inherit;
+  font: inherit;
+}
+
+/* Remove default button styles */
+button {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* === TYPOGRAPHY === */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-text-primary);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  text-wrap: balance; /* Better text wrapping */
+}
+
+p {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  text-wrap: pretty; /* Better paragraph wrapping */
+}
+
+/* === LINKS === */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* === FORM ELEMENTS RESET === */
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+legend {
+  padding: 0;
+}
+
+/* === DETAILS/SUMMARY === */
+details {
+  display: block;
+}
+
+summary {
+  display: list-item;
+  cursor: pointer;
+}
+
+/* === HIDDEN ATTRIBUTE === */
+[hidden] {
+  display: none !important;
+}
+
+/* ========================================================================== */
+
+/* == ♿ ACCESSIBILITY IMPROVEMENTS                                        == */
+
+/* ========================================================================== */
+
+/* === FOCUS MANAGEMENT === */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  border-radius: var(--radius-sm);
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* === HIGH CONTRAST === */
+@media (prefers-contrast: high) {
+  *:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+}
+
+/* === SCREEN READER ONLY === */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  white-space: nowrap;
+}
+
+/* === SKIP LINKS === */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  z-index: var(--z-index-skiplink);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  transition: top var(--duration-fast) var(--ease-out);
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* ========================================================================== */
+
+/* == 🎨 SELECTION STYLES                                                 == */
+
+/* ========================================================================== */
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  text-shadow: none;
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  text-shadow: none;
+}
+
+/* ========================================================================== */
+
+/* == 📜 SCROLLBAR STYLES                                                 == */
+
+/* ========================================================================== */
+
+/* === WEBKIT SCROLLBARS === */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-secondary);
+  transition: background var(--duration-normal);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-surface-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--color-surface);
+}
+
+/* === FIREFOX SCROLLBARS === */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-secondary) var(--color-surface);
+}
+
+/* ========================================================================== */
+
+/* == 🖨️ PRINT STYLES                                                     == */
+
+/* ========================================================================== */
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: black !important;
+    text-shadow: none !important;
+  }
+  
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+  
+  a[href]::after {
+    content: \" (\" attr(href) \")\";
+  }
+  
+  abbr[title]::after {
+    content: \" (\" attr(title) \")\";
+  }
+  
+  a[href^=\"#\"]::after,
+  a[href^=\"javascript:\"]::after {
+    content: \"\";
+  }
+  
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    page-break-inside: avoid;
+  }
+  
+  thead {
+    display: table-header-group;
+  }
+  
+  tr,
+  img {
+    page-break-inside: avoid;
+  }
+  
+  img {
+    max-width: 100% !important;
+  }
+  
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+  
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}
+
+/* ========================================================================== */
+
+/* == 🔧 DEVELOPMENT HELPERS                                              == */
+
+/* ========================================================================== */
+
+/* Debug mode - uncomment to visualize layout issues */
+
+/*
+[data-debug=\"true\"] * {
+  outline: 1px solid red !important;
+}
+
+[data-debug=\"true\"] *:nth-child(2n) {
+  outline-color: blue !important;
+}
+
+[data-debug=\"true\"] *:nth-child(3n) {
+  outline-color: green !important;
+}
+*/
+
+/* ========================================================================== */
+
+/* == 📱 MOBILE OPTIMIZATIONS                                             == */
+
+/* ========================================================================== */
+
+@media (width <= 640px) {
+  /* Improve touch targets */
+  button,
+  input,
+  select,
+  textarea,
+  a {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Prevent zoom on input focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* === LANDSCAPE MOBILE === */
+@media (height <= 500px) and (orientation: landscape) {
+  /* Adjust viewport height calculations */
+  body {
+    min-height: 100svh; /* Small viewport height */
+  }
+}
+
+/* ========================================================================== */
+
+/* == 🎭 UTILITY CLASSES                                                  == */
+
+/* ========================================================================== */
+
+/* === DISPLAY === */
+.block { display: block; }
+.inline { display: inline; }
+.inline-block { display: inline-block; }
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.grid { display: grid; }
+.hidden { display: none; }
+
+/* === VISIBILITY === */
+.visible { visibility: visible; }
+.invisible { visibility: hidden; }
+
+/* === OVERFLOW === */
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+.overflow-scroll { overflow: scroll; }
+
+/* === TEXT UTILITIES === */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+.uppercase { text-transform: uppercase; }
+.lowercase { text-transform: lowercase; }
+.capitalize { text-transform: capitalize; }
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* === POSITION === */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+/* === CURSOR === */
+.cursor-pointer { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed; }
+.cursor-default { cursor: default; }
+
+/* === USER SELECT === */
+.select-none { user-select: none; }
+.select-text { user-select: text; }
+.select-all { user-select: all; }
+
+/* === POINTER EVENTS === */
+.pointer-events-none { pointer-events: none; }
+.pointer-events-auto { pointer-events: auto; }

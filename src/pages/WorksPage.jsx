@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import ItemGrid from '../components/item/ItemGrid';
 import { encodeUrl } from '../utils/encoding';
 import ProtectedRoute from '../components/common/ProtectedRoute';
-import '../styles/minimalist-pages.css';
+// AIDEV-NOTE: css-unified; minimalist-pages integrado ao sistema CSS unificado
 
 const WorksPage = () => {
     const { pinnedItems, togglePinStatus, selectItem, currentHubData } = useAppContext();

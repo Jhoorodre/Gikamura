@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { encodeUrl } from '../utils/encoding';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 import Image from '../components/common/Image'; // AIDEV-NOTE: Importado para usar nos cards.
-import '../styles/minimalist-pages.css';
+// AIDEV-NOTE: css-unified; minimalist-pages integrado ao sistema CSS unificado
 
 const CollectionPage = () => {
     const { savedHubs, removeHub } = useAppContext();

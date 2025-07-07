@@ -1,205 +1,288 @@
 /*
- * CSS principal de index e resets globais
- * AIDEV-NOTE: Main index styles and global resets with modular architecture
- * AIDEV-TODO: Consolidate overlapping styles from multiple files
+ * ARQUIVO PRINCIPAL CSS - GIKAMOE V3.0 (REESTRUTURADO)
+ * Arquivo: src/styles/index.css
+ * 
+ * Nova arquitetura ITCSS otimizada e reorganizada
+ * Ordem: Config → Tokens → Tools → Generic → Base → Objects → Components → Utilities → Themes
  */
-@import './design-system.css';  /* AIDEV-NOTE: New centralized design system */
-@import './base.css';
-@import './layout.css';
-@import './components.css';
-@import './utilities.css';
-@import './minimalist-pages.css';  /* AIDEV-NOTE: Main page styles */
-@import './reader-consolidated.css';
-@import './anti-flicker.css';  /* AIDEV-NOTE: Anti-flickering styles for smooth navigation */
+
+/* AIDEV-NOTE: css-architecture; estrutura ITCSS v3.0 reestruturada */
 
 /* ========================================================================== */
-/* ==                       APLICAÇÃO PRINCIPAL                           == */
+/* == 00 CONFIG (Configurações Globais)                                   == */
+/* ========================================================================== */
+@import url('./00-config/global.css');
+
+/* ========================================================================== */
+/* == 01 TOKENS (Design System)                                           == */
+/* ========================================================================== */
+@import url('./01-tokens/design-tokens.css');
+
+/* ========================================================================== */
+/* == 02 TOOLS (Mixins e Funções)                                         == */
+/* ========================================================================== */
+@import url('./02-tools/mixins.css');
+
+/* ========================================================================== */
+/* == 03 GENERIC (Reset e Normalize)                                      == */
+/* ========================================================================== */
+@import url('./03-generic/normalize.css');
+
+/* ========================================================================== */
+/* == 04 BASE (Elementos HTML)                                            == */
+/* ========================================================================== */
+@import url('./04-base/elements.css');
+
+/* ========================================================================== */
+/* == 05 OBJECTS (Layout Patterns)                                        == */
+/* ========================================================================== */
+@import url('./05-objects/grid-layouts.css');
+
+/* ========================================================================== */
+/* == 06 COMPONENTS (UI Components)                                       == */
+/* ========================================================================== */
+@import url('./06-components/buttons.css');
+@import url('./06-components/cards.css');
+@import url('./06-components/forms.css');
+@import url('./06-components/reader.css');
+@import url('./06-components/navigation.css');
+@import url('./06-components/navigation-modern.css');
+@import url('./06-components/header-modern.css');
+@import url('./06-components/hub-loader.css');
+@import url('./06-components/minimalist-pages.css');
+@import url('./06-components/hub-minimal.css');
+@import url('./06-components/reader-view.css');
+@import url('./06-components/chapter-reader.css');
+
+/* ========================================================================== */
+/* == 07 UTILITIES (Helper Classes)                                       == */
+/* ========================================================================== */
+@import url('./07-utilities/spacing.css');
+@import url('./07-utilities/colors.css');
+@import url('./07-utilities/typography.css');
+@import url('./07-utilities/responsive.css');
+
+/* ========================================================================== */
+/* == 08 THEMES (Variações de Tema)                                       == */
+/* ========================================================================== */
+@import url('./08-themes/theme-variants.css');
+
+/* ========================================================================== */
+/* == 📱 ROOT APPLICATION                                                 == */
 /* ========================================================================== */
 
+/* AIDEV-NOTE: app-root; container principal da aplicação */
 html, body {
-  min-height: 100vh;
   width: 100vw;
+  min-height: 100vh;
   background: var(--color-background);
-  color: var(--text-primary);
-  transition: background var(--theme-transition), color var(--theme-transition);
+  color: var(--color-text-primary);
+  transition: background-color var(--duration-normal), color var(--duration-normal);
 }
 
-/* AIDEV-NOTE: Root container with full viewport and flex structure */
 #root {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background: transparent;
-    z-index: var(--z-base);
-    background: var(--bg-primary);
+  position: relative;
+  z-index: var(--z-index-base);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-background);
+  contain: layout style;
 }
 
 /* ========================================================================== */
-/* ==                      TIPOGRAFIA ESPECIAL                            == */
+/* == 🎭 BRAND TYPOGRAPHY                                                 == */
 /* ========================================================================== */
 
-/* AIDEV-NOTE: Special typography for brand elements with consistent styling */
-.orbitron { 
-    font-family: var(--font-family-mono); 
-    font-weight: var(--font-weight-bold);
-    letter-spacing: 0.05em;
-    color: var(--color-accent);
-    background: none;
-    background-clip: unset;
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: unset;
-    text-shadow: none;
+.orbitron {
+  background: none;
+  background-clip: unset;
+  color: var(--color-accent); 
+  font-family: var(--font-family-mono); 
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-wide);
+  -webkit-text-fill-color: unset;
+  text-shadow: none;
 }
 
 /* ========================================================================== */
-/* ==                  LAYOUT MINIMALISTA                                 == */
+/* == 🏠 MINIMAL PAGE LAYOUT                                              == */
 /* ========================================================================== */
 
-/* AIDEV-NOTE: Minimal page layout with clean background */
 .minimal-page {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    min-height: 100vh;
-    padding: var(--space-8) var(--space-4);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Remove gradientes, partículas, animações e efeitos decorativos */
-.animated-bg, #particles-container, .glow-effect, .glass-morphism {
-    display: none !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: var(--space-8) var(--space-4);
+  background: var(--color-background);
+  color: var(--color-text-primary);
 }
 
 /* ========================================================================== */
-/* ==                  ANIMAÇÕES GLOBAIS SIMPLIFICADAS                    == */
+/* == ♿ ACESSIBILIDADE GLOBAL                                             == */
 /* ========================================================================== */
 
-.fade-in, .scale-in, .slide-up, .fade-in-minimal {
-    animation: none !important;
+/* AIDEV-NOTE: wcag-focus-system; sistema de foco avançado WCAG 2.1 AA */
+*:focus {
+  outline: none;
 }
-
-/* ========================================================================== */
-/* ==                  BOTÕES E INPUTS MINIMALISTAS                       == */
-/* ========================================================================== */
-
-button, .btn {
-    background: var(--color-secondary-base);
-    color: var(--color-accent-base);
-    border: none;
-    border-radius: var(--radius-base);
-    padding: var(--space-3) var(--space-5);
-    font-size: var(--font-size-base);
-    font-family: var(--font-family-sans);
-    font-weight: var(--font-weight-medium);
-    cursor: pointer;
-    transition: background var(--transition-fast);
-    box-shadow: none;
-}
-button:hover, .btn:hover {
-    background: var(--color-primary-hover);
-}
-button:active, .btn:active {
-    background: var(--color-primary-active);
-}
-button:disabled, .btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-input, textarea, select {
-    background: var(--color-surface-primary);
-    color: var(--color-accent-base);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-base);
-    padding: var(--space-3) var(--space-4);
-    font-size: var(--font-size-base);
-    font-family: var(--font-family-sans);
-    box-shadow: none;
-    outline: none;
-    transition: border var(--transition-fast);
-}
-input:focus, textarea:focus, select:focus {
-    border-color: var(--color-secondary-base);
-}
-
-/* ========================================================================== */
-/* ==                  UTILITÁRIOS DE TEXTO E BORDAS                      == */
-/* ========================================================================== */
-
-.text-primary { color: var(--color-text-primary); }
-.text-secondary { color: var(--color-text-secondary); }
-.text-accent { color: var(--color-accent-base); }
-
-.border-primary { border-color: var(--color-border); }
-.border-accent { border-color: var(--color-secondary-base); }
-
-/* ========================================================================== */
-/* ==                  ACESSIBILIDADE                                     == */
-/* ========================================================================== */
 
 *:focus-visible {
-  outline: 2px solid var(--color-secondary-base);
-  outline-offset: 2px;
   border-radius: var(--radius-sm);
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--color-focus-ring);
+  transition: outline-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+
+/* Skip links para navegação */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--space-4);
+  z-index: var(--z-index-skiplink);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  text-decoration: none;
+  transition: top var(--duration-fast);
+}
+
+.skip-link:focus {
+  top: var(--space-4);
 }
 
 /* ========================================================================== */
-/* ==                  BACK TO TOP BUTTON                                 == */
+/* == 🔼 BACK TO TOP BUTTON                                               == */
 /* ========================================================================== */
 
-/* AIDEV-NOTE: Floating back to top button for reading interfaces */
 .back-to-top-btn {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 3rem;
-  height: 3rem;
-  background: var(--color-secondary-base);
-  color: var(--color-background);
-  border: none;
-  border-radius: 50%;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  z-index: var(--z-index-docked);
   display: flex;
-  align-items: center;
   justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-  z-index: 1000;
+  align-items: center;
+  width: var(--space-12);
+  height: var(--space-12);
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  box-shadow: var(--shadow-lg);
   opacity: 0.9;
+  color: var(--color-text-inverse);
+  cursor: pointer;
+  transition: var(--transition-all);
+  contain: layout style;
 }
 
 .back-to-top-btn:hover {
-  background: var(--color-secondary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  background: var(--color-primary-hover);
+  box-shadow: var(--shadow-xl);
   opacity: 1;
+  transform: translateY(-2px) scale(1.05);
 }
 
 .back-to-top-btn:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
-/* AIDEV-NOTE: Dark theme adjustments */
-@media (prefers-color-scheme: dark) {
-  .back-to-top-btn {
-    background: var(--color-accent-base);
-    color: var(--color-background);
+/* ========================================================================== */
+/* == 📱 RESPONSIVE OVERRIDES                                             == */
+/* ========================================================================== */
+
+@media (width <= 768px) {
+  .minimal-page {
+    padding: var(--space-6) var(--space-3);
   }
   
-  .back-to-top-btn:hover {
-    background: var(--color-accent-hover);
+  .back-to-top-btn {
+    right: var(--space-4);
+    bottom: var(--space-4);
+    width: var(--space-10);
+    height: var(--space-10);
   }
 }
 
-/* AIDEV-NOTE: Mobile responsive adjustments */
-@media (max-width: 768px) {
-  .back-to-top-btn {
-    bottom: 1rem;
-    right: 1rem;
-    width: 2.5rem;
-    height: 2.5rem;
+@media (width <= 480px) {
+  .minimal-page {
+    padding: var(--space-4) var(--space-2);
   }
+}
+
+/* ========================================================================== */
+/* == 🎭 THEME TRANSITIONS                                                == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: performance-transitions; transições suaves de tema */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: var(--duration-normal);
+  transition-timing-function: var(--ease-out);
+}
+
+/* ========================================================================== */
+/* == 🖨️ PRINT STYLES                                                     == */
+/* ========================================================================== */
+
+@media print {
+  .back-to-top-btn,
+  .reader-header,
+  .reader-footer {
+    display: none !important;
+  }
+  
+  * {
+    background: white !important;
+    box-shadow: none !important;
+    color: black !important;
+  }
+}
+
+/* ========================================================================== */
+/* == 🔧 LEGACY COMPATIBILITY                                             == */
+/* ========================================================================== */
+
+/* AIDEV-NOTE: legacy-support; suporte para classes antigas durante migração */
+
+/* Remove elementos desnecessários */
+.animated-bg, 
+#particles-container, 
+.glow-effect, 
+.glass-morphism {
+  display: none !important;
+}
+
+/* Remove animações desnecessárias */
+.fade-in, 
+.scale-in, 
+.slide-up, 
+.fade-in-minimal {
+  animation: none !important;
+}
+
+/* Classes de compatibilidade */
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-accent { color: var(--color-accent); }
+.border-primary { border-color: var(--color-border); }
+.border-accent { border-color: var(--color-border-focus); }
+.bg-primary { background-color: var(--color-background); }
+.bg-surface { background-color: var(--color-surface); }
+
+/* ========================================================================== */
+/* == 🎯 DEVELOPMENT HELPERS                                              == */
+/* ========================================================================== */
+
+/* Debug grid overlay */
+[data-debug="grid"] {
+  background-image: 
+    linear-gradient(rgba(255, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: var(--space-4) var(--space-4);
 }

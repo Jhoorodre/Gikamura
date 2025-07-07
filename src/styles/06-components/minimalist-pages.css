@@ -1,0 +1,459 @@
+/*
+ * MINIMALIST PAGES - GIKAMOE V3.0
+ * Arquivo: src/styles/06-components/minimalist-pages.css
+ * 
+ * AIDEV-NOTE: minimalist-components; estilos para páginas minimalistas
+ */
+
+/* ========================================================================== */
+/* == 📄 MINIMALIST PAGE LAYOUT                                           == */
+/* ========================================================================== */
+
+.min-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: calc(100vh - 60px);
+  padding: var(--space-8) var(--space-4);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+.min-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: 100%;
+  max-width: var(--container-lg);
+}
+
+.min-header {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-6);
+  border-bottom: var(--border-width-1) solid var(--color-border);
+  text-align: center;
+}
+
+.min-title {
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.min-subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-normal);
+}
+
+/* ========================================================================== */
+/* == 📝 MINIMALIST FORMS                                                 == */
+/* ========================================================================== */
+
+.min-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.min-input {
+  flex-grow: 1;
+  min-width: 200px;
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  transition: var(--transition-colors);
+  min-height: var(--space-12);
+}
+
+.min-input:focus {
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+  outline: none;
+}
+
+.min-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.min-button {
+  padding: var(--space-3) var(--space-6);
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--transition-colors), var(--transition-transform);
+  min-height: var(--space-12);
+}
+
+.min-button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.min-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.min-textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: var(--space-4);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  resize: vertical;
+  transition: var(--transition-colors);
+}
+
+.min-textarea:focus {
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+  outline: none;
+}
+
+/* ========================================================================== */
+/* == 💬 FEEDBACK MESSAGES                                                == */
+/* ========================================================================== */
+
+.min-error-message {
+  width: 100%;
+  padding: var(--space-3);
+  border: var(--border-width-1) solid var(--color-error);
+  border-radius: var(--radius-lg);
+  background: var(--color-error-50);
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.min-validation-result {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+}
+
+.min-validation-result.valid {
+  border: var(--border-width-1) solid var(--color-success);
+  background: var(--color-success-50);
+}
+
+.min-validation-result.invalid {
+  border: var(--border-width-1) solid var(--color-error);
+  background: var(--color-error-50);
+}
+
+/* ========================================================================== */
+/* == 📋 SECTIONS                                                         == */
+/* ========================================================================== */
+
+.min-history-section {
+  margin-top: var(--space-8);
+}
+
+.min-section-title {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width-1) solid var(--color-border);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.min-empty-state {
+  padding: var(--space-12) var(--space-4);
+  border: var(--border-width-2) dashed var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.min-empty-icon {
+  display: block;
+  margin-bottom: var(--space-4);
+  opacity: 0.7;
+  font-size: var(--font-size-5xl);
+}
+
+.min-empty-title {
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.min-empty-description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+}
+
+/* ========================================================================== */
+/* == 🎛️ TABS                                                             == */
+/* ========================================================================== */
+
+.min-tabs {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: var(--border-width-1) solid var(--color-border);
+}
+
+.min-tab-button {
+  position: relative;
+  padding: var(--space-3) var(--space-6);
+  border: none;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.min-tab-button:hover {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.min-tab-button.active {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.min-tab-button.active::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--color-primary);
+}
+
+/* ========================================================================== */
+/* == 📤 UPLOAD COMPONENTS                                                == */
+/* ========================================================================== */
+
+.min-upload-content {
+  padding: var(--space-8) 0;
+}
+
+.min-dropzone {
+  padding: var(--space-8);
+  border: var(--border-width-2) dashed var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.min-dropzone:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-surface-hover);
+}
+
+.min-dropzone-input {
+  display: none;
+}
+
+.min-dropzone-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  cursor: pointer;
+}
+
+.min-dropzone-icon {
+  opacity: 0.7;
+  font-size: var(--font-size-4xl);
+}
+
+/* ========================================================================== */
+/* == 🃏 ITEM GRID                                                        == */
+/* ========================================================================== */
+
+.min-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-6);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.min-item-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: var(--transition-all);
+  aspect-ratio: 3 / 4; /* MANGA BOOK proportions */
+  height: auto;
+  max-height: 350px;
+  contain: layout style;
+}
+
+.min-item-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-8px) scale(1.04);
+}
+
+.min-item-pin-button {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: var(--z-index-docked);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--space-9);
+  height: var(--space-9);
+  border: var(--border-width-1) solid rgb(255 255 255 / 10%);
+  border-radius: var(--radius-full);
+  background: rgb(10 10 10 / 70%);
+  backdrop-filter: blur(8px);
+  color: white;
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.min-item-pin-button:hover {
+  background: rgb(0 0 0 / 90%);
+  transform: scale(1.15);
+}
+
+.min-item-pin-button.pinned {
+  border-color: rgb(255 255 255 / 30%);
+  background: var(--color-warning);
+  color: var(--color-text-inverse);
+}
+
+/* DELETE BUTTON FOR HUB CARDS */
+.min-item-delete-button {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: var(--z-index-docked);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--space-8);
+  height: var(--space-8);
+  border: none;
+  border-radius: var(--radius-full);
+  background: rgb(220 38 38 / 80%);
+  color: white;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.min-item-delete-button:hover {
+  background: rgb(220 38 38 / 100%);
+  transform: scale(1.1);
+}
+
+.min-item-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: var(--z-index-base);
+  width: 100%;
+  height: 100%;
+  transition: var(--transition-transform);
+  object-fit: cover;
+}
+
+.min-item-card:hover .min-item-image {
+  transform: scale(1.1);
+}
+
+.min-item-content {
+  position: relative;
+  z-index: var(--z-index-docked);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 50%;
+  padding: var(--space-6) var(--space-4);
+  background: linear-gradient(to top, rgb(0 0 0 / 100%) 10%, rgb(0 0 0 / 70%) 50%, transparent 100%);
+}
+
+.min-item-title {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: white;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  text-shadow: 0 2px 8px rgb(0 0 0 / 90%);
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.min-item-subtitle {
+  margin-top: var(--space-1_5);
+  overflow: hidden;
+  opacity: 0.9;
+  color: rgb(229 231 235);
+  font-size: var(--font-size-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgb(0 0 0 / 80%);
+}
+
+/* ========================================================================== */
+/* == 📱 RESPONSIVE                                                       == */
+/* ========================================================================== */
+
+@media (width <= 768px) {
+  .min-item-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-4);
+  }
+  
+  .min-item-title {
+    font-size: var(--font-size-base);
+  }
+  
+  .min-item-subtitle {
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (width <= 480px) {
+  .min-item-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+}

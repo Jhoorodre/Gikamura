@@ -1,0 +1,210 @@
+/*
+ * HUB LOADER COMPONENT - GIKAMOE V3.0
+ * Arquivo: src/styles/06-components/hub-loader.css
+ * 
+ * AIDEV-NOTE: hub-loader-classes; classes específicas para HubLoader component
+ */
+
+/* ========================================================================== */
+/* == 🔗 HUB LOADER COMPONENT                                             == */
+/* ========================================================================== */
+
+.hub-loader-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: var(--space-8);
+  background: var(--color-background);
+  contain: layout style;
+}
+
+.hub-loader-content {
+  position: relative;
+  padding: var(--space-12);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-3xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  color: var(--color-text-primary);
+  max-width: 600px;
+  width: 100%;
+  contain: layout style;
+}
+
+.hub-loader-header {
+  position: relative;
+  margin-bottom: var(--space-10);
+  text-align: center;
+}
+
+.hub-loader-title {
+  margin-bottom: var(--space-6);
+  color: var(--color-accent);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.hub-loader-subtitle {
+  max-width: 600px;
+  margin: 0 auto var(--space-10);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+}
+
+.hub-loader-form {
+  position: relative;
+  z-index: var(--z-index-base);
+}
+
+.hub-loader-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+@media (width >= 768px) {
+  .hub-loader-input-group {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+.hub-loader-input {
+  flex: 1;
+  padding: var(--space-4) var(--space-6);
+  border: var(--border-width-2) solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  outline: none;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-base);
+  letter-spacing: var(--letter-spacing-wide);
+  transition: var(--transition-colors);
+  min-height: var(--space-12); /* Touch target */
+}
+
+.hub-loader-input::placeholder {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.hub-loader-input:focus {
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.hub-loader-input:hover:not(:focus) {
+  border-color: var(--color-border-hover);
+}
+
+.hub-loader-button {
+  padding: var(--space-4) var(--space-6);
+  border: none;
+  border-radius: var(--radius-2xl);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-colors), var(--transition-transform);
+  min-height: var(--space-12); /* Touch target */
+  min-width: var(--space-20);
+}
+
+.hub-loader-button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.hub-loader-button:active {
+  background: var(--color-primary-active);
+  transform: translateY(0) scale(1);
+}
+
+.hub-loader-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.hub-loader-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-text-secondary);
+  border-top: 2px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================================================== */
+/* == 📱 RESPONSIVE DESIGN                                                == */
+/* ========================================================================== */
+
+@media (width <= 768px) {
+  .hub-loader-container {
+    padding: var(--space-4);
+  }
+  
+  .hub-loader-content {
+    padding: var(--space-8);
+  }
+  
+  .hub-loader-title {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .hub-loader-subtitle {
+    margin-bottom: var(--space-8);
+    font-size: var(--font-size-base);
+  }
+  
+  .hub-loader-input-group {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .hub-loader-button {
+    width: 100%;
+    padding: var(--space-4) var(--space-6);
+  }
+}
+
+/* ========================================================================== */
+/* == ♿ ACCESSIBILITY                                                     == */
+/* ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-loader-button:hover {
+    transform: none;
+  }
+  
+  .hub-loader-spinner {
+    animation-duration: 2s;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .hub-loader-content {
+    border-width: var(--border-width-2);
+  }
+  
+  .hub-loader-input {
+    border-width: var(--border-width-2);
+  }
+}

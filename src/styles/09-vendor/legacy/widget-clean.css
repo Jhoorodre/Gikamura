@@ -15,8 +15,8 @@
     bottom: 20px !important;
     left: 20px !important;
     z-index: 9999 !important;
-    pointer-events: none !important;
     font-family: var(--font-family-sans) !important;
+    pointer-events: none !important;
 }
 
 #rs-widget-global *,
@@ -27,66 +27,65 @@
 /* === BASIC WIDGET STRUCTURE === */
 #rs-widget-global .rs-widget,
 #remotestorage-widget .rs-widget {
-    all: unset !important;
+    overflow: hidden !important;
+    border-radius: 50% !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    color: var(--color-accent-base) !important;
     font-family: var(--font-family-sans) !important;
     font-size: 12px !important;
     line-height: 1.2 !important;
-    color: var(--color-accent-base) !important;
-    border-radius: 50% !important;
-    overflow: hidden !important;
-    box-shadow: none !important;
     transition: background var(--transition-fast) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    all: unset !important;
 }
 
 /* === CLOSED STATE - SMALL ELEGANT BUBBLE === */
 #rs-widget-global .rs-widget.rs-closed,
 #remotestorage-widget .rs-widget.rs-closed {
+    position: relative !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
     width: 56px !important;
     height: 56px !important;
-    background: var(--color-secondary-base) !important;
     border: 2px solid var(--color-accent-base) !important;
+    background: var(--color-secondary-base) !important;
     cursor: pointer !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    position: relative !important;
 }
 
 #rs-widget-global .rs-widget.rs-closed:hover,
 #remotestorage-widget .rs-widget.rs-closed:hover {
-    transform: none !important;
-    box-shadow: none !important;
     background: var(--color-primary-hover) !important;
+    box-shadow: none !important;
+    transform: none !important;
 }
 
 #rs-widget-global .rs-widget.rs-closed .rs-widget-icon,
 #remotestorage-widget .rs-widget.rs-closed .rs-widget-icon {
+    position: relative !important;
+    z-index: 2 !important;
     display: flex !important;
-    align-items: center !important;
     justify-content: center !important;
+    align-items: center !important;
     width: 100% !important;
     height: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    position: relative !important;
-    z-index: 2 !important;
 }
 
 #rs-widget-global .rs-widget.rs-closed .rs-widget-icon::before,
 #remotestorage-widget .rs-widget.rs-closed .rs-widget-icon::before {
     content: '☁' !important;
-    font-size: 20px !important;
-    color: var(--color-accent-base) !important;
     display: block !important;
+    color: var(--color-accent-base) !important;
+    font-size: 20px !important;
     text-shadow: none !important;
 }
 
 #rs-widget-global .rs-widget.rs-closed.rs-state-connected,
 #remotestorage-widget .rs-widget.rs-closed.rs-state-connected {
-    background: var(--color-success) !important;
     border-color: var(--color-success) !important;
+    background: var(--color-success) !important;
     animation: none !important;
 }
 
@@ -103,46 +102,46 @@
     width: 280px !important;
     height: auto !important;
     max-height: 200px !important;
-    background: var(--color-surface-primary) !important;
+    padding: 16px !important;
     border: 1px solid var(--color-secondary-base) !important;
     border-radius: 12px !important;
-    padding: 16px !important;
-    color: var(--color-accent-base) !important;
+    background: var(--color-surface-primary) !important;
     box-shadow: none !important;
+    color: var(--color-accent-base) !important;
 }
 
 #rs-widget-global .rs-widget input,
 #remotestorage-widget .rs-widget input {
     width: 100% !important;
+    margin: 8px 0 !important;
     padding: 8px 12px !important;
     border: 2px solid var(--color-secondary-base) !important;
     border-radius: 6px !important;
-    font-size: 14px !important;
-    margin: 8px 0 !important;
     background: var(--color-background) !important;
     color: var(--color-accent-base) !important;
+    font-size: 14px !important;
     transition: border-color var(--transition-fast) !important;
 }
 
 #rs-widget-global .rs-widget input:focus,
 #remotestorage-widget .rs-widget input:focus {
-    outline: none !important;
     border-color: var(--color-accent-base) !important;
+    outline: none !important;
     box-shadow: none !important;
 }
 
 #rs-widget-global .rs-widget button,
 #remotestorage-widget .rs-widget button {
+    margin: 4px 2px !important;
+    padding: 8px 16px !important;
+    border: none !important;
+    border-radius: 6px !important;
     background: var(--color-secondary-base) !important;
     color: var(--color-accent-base) !important;
-    border: none !important;
-    padding: 8px 16px !important;
-    border-radius: 6px !important;
     font-size: 12px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
     transition: background var(--transition-fast) !important;
-    margin: 4px 2px !important;
 }
 
 #rs-widget-global .rs-widget button:hover,
@@ -157,13 +156,13 @@
     position: absolute !important;
     top: 8px !important;
     right: 8px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
     width: 20px !important;
     height: 20px !important;
-    background: var(--color-background) !important;
     border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    background: var(--color-background) !important;
     font-size: 12px !important;
     cursor: pointer !important;
 }
@@ -171,7 +170,7 @@
 /* Removidas animações e efeitos decorativos para o minimalismo */
 
 /* Responsive adjustments */
-@media (max-width: 480px) {
+@media (width <= 480px) {
     #rs-widget-global .rs-widget.rs-opened,
     #remotestorage-widget .rs-widget.rs-opened {
         width: calc(100vw - 40px) !important;

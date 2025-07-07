@@ -1,0 +1,113 @@
+/*
+ * ELEMENTOS HTML BASE - GIKAMOE V3.0
+ * Arquivo: src/styles/04-base/elements.css
+ */
+
+/* AIDEV-NOTE: base-elements; estilos base para elementos HTML */
+
+html {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background: var(--color-background);
+  scroll-behavior: smooth;
+  tab-size: 2;
+}
+
+body {
+  margin: 0;
+  font-synthesis: none;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4) 0;
+}
+
+h1 { font-size: var(--font-size-4xl); }
+h2 { font-size: var(--font-size-3xl); }
+h3 { font-size: var(--font-size-2xl); }
+h4 { font-size: var(--font-size-xl); }
+h5 { font-size: var(--font-size-lg); }
+h6 { font-size: var(--font-size-base); }
+
+/* Text elements */
+p {
+  margin: 0 0 var(--space-4) 0;
+  line-height: var(--line-height-relaxed);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+/* Lists */
+ul, ol {
+  margin: 0 0 var(--space-4) 0;
+  padding-left: var(--space-6);
+}
+
+li {
+  margin-bottom: var(--space-1);
+}
+
+/* Code */
+code, kbd, pre, samp {
+  font-family: var(--font-family-mono);
+  font-size: 0.9em;
+}
+
+code {
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+}
+
+pre {
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  margin: 0 0 var(--space-4) 0;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 var(--space-4) 0;
+}
+
+th, td {
+  padding: var(--space-3);
+  text-align: left;
+  border-bottom: var(--border-width-1) solid var(--color-border);
+}
+
+th {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
