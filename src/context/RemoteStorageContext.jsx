@@ -1,5 +1,5 @@
 // AIDEV-NOTE: RemoteStorage connection and sync management with anti-leak protection
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { remoteStorage } from '../services/remotestorage';
 
 const RemoteStorageContext = createContext();
@@ -291,7 +291,8 @@ export const RemoteStorageProvider = ({ children }) => {
         }
     }, [isSyncing]);
 
-    const value = {
+    // AIDEV-NOTE: Memoize context value to prevent unnecessary re-renders
+    const value = useMemo(() => ({
         isConnected,
         isSyncing,
         lastSyncTime,
@@ -301,7 +302,17 @@ export const RemoteStorageProvider = ({ children }) => {
         enableAutoSync,
         disableAutoSync,
         canSync
-    };
+    }), [
+        isConnected,
+        isSyncing,
+        lastSyncTime,
+        syncStats,
+        conflictMessage,
+        forceSync,
+        enableAutoSync,
+        disableAutoSync,
+        canSync
+    ]);
 
     return (
         <RemoteStorageContext.Provider value={value}>

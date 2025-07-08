@@ -1,5 +1,5 @@
 // AIDEV-NOTE: HubContext isola estado e lógica do hub para evitar re-renderizações globais
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { loadHubJSON } from '../services/jsonReader.js';
@@ -72,7 +72,8 @@ export const HubProvider = ({ children }) => {
         navigate('/'); // Volta para a página inicial
     }, [queryClient, setHubUrlToLoad, navigate]);
 
-    const value = {
+    // AIDEV-NOTE: Memoize context value to prevent unnecessary re-renders
+    const value = useMemo(() => ({
         currentHubData,
         currentHubUrl: hubUrlToLoad,
         lastAttemptedUrl,
@@ -81,7 +82,16 @@ export const HubProvider = ({ children }) => {
         loadHub,
         retryLoadHub,
         clearHubData,
-    };
+    }), [
+        currentHubData,
+        hubUrlToLoad,
+        lastAttemptedUrl,
+        hubLoading,
+        hubError,
+        loadHub,
+        retryLoadHub,
+        clearHubData
+    ]);
 
     return (
         <HubContext.Provider value={value}>

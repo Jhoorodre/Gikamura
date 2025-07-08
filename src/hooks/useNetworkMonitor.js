@@ -1,6 +1,6 @@
 // AIDEV-NOTE: Network quality monitoring with recovery logic and user notifications
-import { useState, useEffect, useCallback } from 'react';
-import { clearNetworkCache } from '../services/networkService.js';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { clearNetworkCache, cancellableFetch } from '../services/networkService.js';
 
 /**
  * Hook para monitoramento da qualidade de rede e recuperação de falhas
@@ -12,6 +12,9 @@ export const useNetworkMonitor = () => {
     const [networkQuality, setNetworkQuality] = useState('unknown'); // AIDEV-NOTE: fast, slow, offline, unknown
     const [connectionType, setConnectionType] = useState('unknown');
     const [retryCount, setRetryCount] = useState(0);
+    
+    // AIDEV-NOTE: Track pending network test to allow cancellation
+    const currentTestRef = useRef(null);
 
     // AIDEV-NOTE: Detects connection type if browser supports it
     useEffect(() => {
@@ -57,21 +60,30 @@ export const useNetworkMonitor = () => {
         };
     }, []);
 
-    // AIDEV-NOTE: Tests network quality with response time measurement
+    // AIDEV-NOTE: Tests network quality with response time measurement and cancellation support
     const testNetworkQuality = useCallback(async () => {
         if (!isOnline) {
             setNetworkQuality('offline');
             return 'offline';
         }
 
+        // AIDEV-NOTE: Cancel previous test if still running
+        if (currentTestRef.current) {
+            currentTestRef.current.cancel();
+        }
+
         try {
             const startTime = Date.now();
             
-            // AIDEV-NOTE: Tests with small fast URL for quality assessment
-            const response = await fetch('https://httpbin.org/uuid', {
+            // AIDEV-NOTE: Use cancellable fetch for proper cleanup
+            const testRequest = await cancellableFetch('https://httpbin.org/uuid', {
                 method: 'GET',
-                cache: 'no-cache'
+                cache: 'no-cache',
+                timeout: 5000
             });
+            
+            currentTestRef.current = testRequest;
+            const response = testRequest.response;
             
             const endTime = Date.now();
             const responseTime = endTime - startTime;
@@ -87,14 +99,19 @@ export const useNetworkMonitor = () => {
                 }
                 
                 setNetworkQuality(quality);
+                currentTestRef.current = null; // Clear completed test
                 return quality;
             } else {
                 setNetworkQuality('slow');
+                currentTestRef.current = null;
                 return 'slow';
             }
         } catch (error) {
-            console.warn('[NetworkMonitor] Erro ao testar qualidade da rede:', error);
-            setNetworkQuality('slow');
+            if (error.name !== 'AbortError') {
+                console.warn('[NetworkMonitor] Erro ao testar qualidade da rede:', error);
+                setNetworkQuality('slow');
+            }
+            currentTestRef.current = null;
             return 'slow';
         }
     }, [isOnline]);
@@ -165,6 +182,16 @@ export const useNetworkMonitor = () => {
                 };
         }
     }, [isOnline, networkQuality]);
+
+    // AIDEV-NOTE: Cleanup on unmount to cancel pending requests
+    useEffect(() => {
+        return () => {
+            if (currentTestRef.current) {
+                currentTestRef.current.cancel();
+                currentTestRef.current = null;
+            }
+        };
+    }, []);
 
     return {
         isOnline,

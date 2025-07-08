@@ -1,6 +1,7 @@
 // AIDEV-NOTE: Series CRUD operations, history management, and RemoteStorage sync
 import { remoteStorage } from "./remotestorage.js";
 import { RS_PATH } from "./rs/rs-config.js";
+import { withErrorHandling, AppError, ERROR_TYPES } from "../utils/errorHandler.js";
 
 const MAX_HISTORY_ITEMS = 20;
 const SORT_KEY = "timestamp";
@@ -653,7 +654,7 @@ const api = {
 
   // AIDEV-NOTE: CRITICAL - Filtered queries for different views, especially for "Obras" page reliability
   async getAllPinnedSeries() {
-    try {
+    const result = await withErrorHandling(async () => {
       const allSeries = await getCachedSeries();
       const cleanSeries = cleanMalformedData(allSeries || {}, 'series');
       const all = getSortedArray(cleanSeries);
@@ -665,14 +666,13 @@ const api = {
       }
       
       return pinned;
-    } catch (error) {
-      console.error('❌ [API] getAllPinnedSeries: Erro ao carregar séries pinadas:', error);
-      return [];
-    }
+    }, { operation: 'getAllPinnedSeries' });
+    
+    return result.success ? result.data : [];
   },
 
   async getAllUnpinnedSeries() {
-    try {
+    const result = await withErrorHandling(async () => {
       const allSeries = await getCachedSeries();
       const cleanSeries = cleanMalformedData(allSeries || {}, 'series');
       const all = getSortedArray(cleanSeries);
@@ -684,10 +684,9 @@ const api = {
       }
       
       return unpinned;
-    } catch (error) {
-      console.error('❌ [API] getAllUnpinnedSeries: Erro ao carregar séries não pinadas:', error);
-      return [];
-    }
+    }, { operation: 'getAllUnpinnedSeries' });
+    
+    return result.success ? result.data : [];
   },
 
   // AIDEV-NOTE: Hub management methods

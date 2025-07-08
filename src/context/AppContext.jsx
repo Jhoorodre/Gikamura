@@ -11,6 +11,7 @@ import { useItem } from '../hooks/useItem';
 import { remoteStorage } from '../services/remotestorage';
 import api, { clearCaches } from '../services/api.js';
 import { RS_PATH } from '../services/rs/rs-config.js';
+import { useRemoteStorageContext } from './RemoteStorageContext';
 
 const AppContext = createContext();
 
@@ -24,6 +25,13 @@ export const AppProvider = ({ children }) => {
     const [isOffline, setIsOffline] = useState(() => !navigator.onLine);
     const [hubUrlToLoad, setHubUrlToLoad] = useState(null);
     const [lastAttemptedUrl, setLastAttemptedUrl] = useState(null);
+    
+    // AIDEV-NOTE: Track refresh operations to prevent race conditions
+    const refreshInProgressRef = useRef(false);
+    const refreshIdRef = useRef(0);
+    
+    // AIDEV-NOTE: Get RemoteStorage connection state from dedicated context
+    const { isConnected: remoteStorageConnected } = useRemoteStorageContext();
 
     const {
         loading: itemLoading,
@@ -33,49 +41,104 @@ export const AppProvider = ({ children }) => {
         clearSelectedItem
     } = useItem();
 
-    const refreshUserData = useCallback(() => {
-        // AIDEV-NOTE: Load pinned series first as they are critical for "Obras" page
-        api.getAllPinnedSeries().then(data => {
-            // AIDEV-NOTE: Validate data before setting state to prevent invalid renders
-            if (Array.isArray(data)) {
-                setPinnedItems(data);
+    const refreshUserData = useCallback(async () => {
+        // AIDEV-NOTE: Prevent concurrent executions to avoid race conditions
+        if (refreshInProgressRef.current) {
+            if (import.meta.env?.DEV) {
+                console.log('🔄 [AppContext] refreshUserData: Refresh já em progresso, ignorando chamada');
+            }
+            return;
+        }
+        
+        refreshInProgressRef.current = true;
+        const currentRefreshId = ++refreshIdRef.current;
+        
+        if (import.meta.env?.DEV) {
+            console.log(`🔄 [AppContext] refreshUserData: Iniciando refresh #${currentRefreshId}`);
+        }
+        
+        try {
+            // AIDEV-NOTE: Load all data concurrently with proper error handling
+            const [pinnedResult, unpinnedResult, hubsResult] = await Promise.allSettled([
+                api.getAllPinnedSeries(),
+                api.getAllUnpinnedSeries(),
+                api.getAllHubs()
+            ]);
+            
+            // AIDEV-NOTE: Check if this is still the current refresh operation
+            if (currentRefreshId !== refreshIdRef.current) {
                 if (import.meta.env?.DEV) {
-                    console.log('📌 [AppContext] refreshUserData: Obras pinadas carregadas:', data.length);
-                    data.forEach((item, index) => {
-                        console.log(`  ${index + 1}. ${item.title} (${item.source}:${item.slug}) - Pinned: ${item.pinned}`);
-                    });
+                    console.log(`🔄 [AppContext] refreshUserData: Refresh #${currentRefreshId} cancelado (novo refresh iniciado)`);
+                }
+                return;
+            }
+            
+            // Process pinned items
+            if (pinnedResult.status === 'fulfilled') {
+                const data = pinnedResult.value;
+                if (Array.isArray(data)) {
+                    setPinnedItems(data);
+                    if (import.meta.env?.DEV) {
+                        console.log(`📌 [AppContext] refreshUserData #${currentRefreshId}: Obras pinadas carregadas:`, data.length);
+                        data.forEach((item, index) => {
+                            console.log(`  ${index + 1}. ${item.title} (${item.source}:${item.slug}) - Pinned: ${item.pinned}`);
+                        });
+                    }
+                } else {
+                    console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: getAllPinnedSeries retornou dados inválidos:`, data);
+                    setPinnedItems([]);
                 }
             } else {
-                console.error('❌ [AppContext] refreshUserData: getAllPinnedSeries retornou dados inválidos:', data);
+                console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro ao carregar obras pinadas:`, pinnedResult.reason);
                 setPinnedItems([]);
             }
-        }).catch(error => {
-            console.error('❌ [AppContext] refreshUserData: Erro ao carregar obras pinadas:', error);
-            setPinnedItems([]);
-        });
-        
-        api.getAllUnpinnedSeries().then(data => {
-            // AIDEV-NOTE: Validate data before setting state
-            if (Array.isArray(data)) {
-                setHistoryItems(data);
-                if (import.meta.env?.DEV) {
-                    console.log('📄 [AppContext] refreshUserData: Histórico carregado:', data.length);
-                    data.forEach((item, index) => {
-                        console.log(`  ${index + 1}. ${item.title} (${item.source}:${item.slug}) - Pinned: ${item.pinned}`);
-                    });
+            
+            // Process unpinned items
+            if (unpinnedResult.status === 'fulfilled') {
+                const data = unpinnedResult.value;
+                if (Array.isArray(data)) {
+                    setHistoryItems(data);
+                    if (import.meta.env?.DEV) {
+                        console.log(`📄 [AppContext] refreshUserData #${currentRefreshId}: Histórico carregado:`, data.length);
+                        data.forEach((item, index) => {
+                            console.log(`  ${index + 1}. ${item.title} (${item.source}:${item.slug}) - Pinned: ${item.pinned}`);
+                        });
+                    }
+                } else {
+                    console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: getAllUnpinnedSeries retornou dados inválidos:`, data);
+                    setHistoryItems([]);
                 }
             } else {
-                console.error('❌ [AppContext] refreshUserData: getAllUnpinnedSeries retornou dados inválidos:', data);
+                console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro ao carregar histórico:`, unpinnedResult.reason);
                 setHistoryItems([]);
             }
-        }).catch(error => {
-            console.error('❌ [AppContext] refreshUserData: Erro ao carregar histórico:', error);
-            setHistoryItems([]);
-        });
-        
-        api.getAllHubs().then(setSavedHubs).catch(error => {
-            console.error('❌ [AppContext] refreshUserData: Erro ao carregar hubs salvos:', error);
-        });
+            
+            // Process hubs
+            if (hubsResult.status === 'fulfilled') {
+                const data = hubsResult.value;
+                if (Array.isArray(data)) {
+                    setSavedHubs(data);
+                    if (import.meta.env?.DEV) {
+                        console.log(`🏠 [AppContext] refreshUserData #${currentRefreshId}: Hubs carregados:`, data.length);
+                    }
+                } else {
+                    console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: getAllHubs retornou dados inválidos:`, data);
+                    setSavedHubs([]);
+                }
+            } else {
+                console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro ao carregar hubs:`, hubsResult.reason);
+                setSavedHubs([]);
+            }
+            
+            if (import.meta.env?.DEV) {
+                console.log(`✅ [AppContext] refreshUserData #${currentRefreshId}: Concluído com sucesso`);
+            }
+            
+        } catch (error) {
+            console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro inesperado:`, error);
+        } finally {
+            refreshInProgressRef.current = false;
+        }
     }, []);
 
     const handleChange = useCallback((event) => {
@@ -84,26 +147,19 @@ export const AppProvider = ({ children }) => {
         }
     }, [refreshUserData]);
 
+    // AIDEV-NOTE: React to RemoteStorage connection changes from context
     useEffect(() => {
-        const handleConnectionChange = () => {
-            const isNowConnected = remoteStorage.connected;
-            if (isNowConnected) {
-                console.log('🔌 [AppContext] RemoteStorage conectado - resetando sync e recarregando dados');
-                api.resetSync();
-                clearCaches();
-                refreshUserData();
-            }
-        };
-        remoteStorage.on('connected', handleConnectionChange);
-        remoteStorage.on('disconnected', handleConnectionChange);
-        return () => {
-            remoteStorage.removeEventListener('connected', handleConnectionChange);
-            remoteStorage.removeEventListener('disconnected', handleConnectionChange);
-        };
-    }, [refreshUserData]);
+        if (remoteStorageConnected) {
+            console.log('🔌 [AppContext] RemoteStorage conectado via context - resetando sync e recarregando dados');
+            api.resetSync();
+            clearCaches();
+            refreshUserData();
+        }
+    }, [remoteStorageConnected, refreshUserData]);
 
     useEffect(() => {
-        if (remoteStorage.connected && remoteStorage.private) {
+        // AIDEV-NOTE: Use context state instead of direct remoteStorage.connected check
+        if (remoteStorageConnected && remoteStorage.private) {
             refreshUserData();
             remoteStorage.private.on('change', handleChange);
             return () => {
@@ -112,7 +168,7 @@ export const AppProvider = ({ children }) => {
                 }
             };
         }
-    }, [remoteStorage.connected, refreshUserData, handleChange]);
+    }, [remoteStorageConnected, refreshUserData, handleChange]);
 
     const togglePinStatus = useCallback(async (item) => {
         if (!item || !item.slug || !item.source) return;

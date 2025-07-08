@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useHubContext } from '../context/HubContext';
-import { decodeUrl } from '../utils/encoding';
+import { decodeHubUrl } from '../utils/urlDecoder';
 import HubView from './HubView';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
@@ -17,19 +17,8 @@ const HubRouteHandler = () => {
             try {
                 console.log('🔍 [HubRouteHandler] Received encodedUrl:', encodedUrl);
                 
-                // AIDEV-NOTE: First check if it's already a URL or if it needs Base64 decoding
-                let hubUrl;
-                
-                // Check if it looks like a Base64 string
-                if (encodedUrl.match(/^[A-Za-z0-9+/\-_]*={0,2}$/)) {
-                    // Try to decode as Base64
-                    console.log('🔍 [HubRouteHandler] Detected Base64, decoding...');
-                    hubUrl = decodeUrl(encodedUrl);
-                } else {
-                    // If it doesn't look like Base64, treat as direct URL
-                    console.log('🔍 [HubRouteHandler] Not Base64, using URI decoding...');
-                    hubUrl = decodeURIComponent(encodedUrl);
-                }
+                // AIDEV-NOTE: Use centralized URL decoding logic
+                const hubUrl = decodeHubUrl(encodedUrl);
                 
                 console.log('🔗 [HubRouteHandler] Final URL for loading:', hubUrl);
                 loadHub(hubUrl);
@@ -58,7 +47,8 @@ const HubRouteHandler = () => {
                     onRetry={() => {
                         if (encodedUrl) {
                             try {
-                                const hubUrl = decodeUrl(encodedUrl);
+                                // AIDEV-NOTE: Use same centralized logic for retry
+                                const hubUrl = decodeHubUrl(encodedUrl);
                                 loadHub(hubUrl);
                             } catch (error) {
                                 console.error('❌ [HubRouteHandler] Retry error:', error);

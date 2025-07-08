@@ -33,12 +33,14 @@ const ItemViewer = ({
     const [lastSavedPage, setLastSavedPage] = useState(-1);
     const [isTransitioning, setIsTransitioning] = useState(false);
 
+    // AIDEV-NOTE: Stable mouse move handler to prevent listener accumulation
+    const handleMouseMove = useCallback(() => setShowControls(true), [setShowControls]);
+    
     // Mostrar controlos com movimento do rato
     useEffect(() => {
-        const handleMouseMove = () => setShowControls(true);
         window.addEventListener('mousemove', handleMouseMove);
         return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, [setShowControls]);
+    }, [handleMouseMove]);
 
     // Ocultar controlos automaticamente
     useEffect(() => {
@@ -78,17 +80,19 @@ const ItemViewer = ({
     const goToNextPage = useCallback(() => goToPage(page + 1), [page, goToPage]);
     const goToPrevPage = useCallback(() => goToPage(page - 1), [page, goToPage]);
 
+    // AIDEV-NOTE: Stable keyboard handler to prevent listener accumulation
+    const handleKeyPress = useCallback((e) => {
+        if (e.key === 'ArrowLeft') readingDirection === 'rtl' ? goToNextPage() : goToPrevPage();
+        else if (e.key === 'ArrowRight') readingDirection === 'rtl' ? goToPrevPage() : goToNextPage();
+        else if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+        else if (e.key === 'Escape' && isFullscreen) document.exitFullscreen();
+    }, [goToNextPage, goToPrevPage, readingDirection, isFullscreen, toggleFullscreen]);
+    
     // Controlos de teclado
     useEffect(() => {
-        const handleKeyPress = (e) => {
-            if (e.key === 'ArrowLeft') readingDirection === 'rtl' ? goToNextPage() : goToPrevPage();
-            else if (e.key === 'ArrowRight') readingDirection === 'rtl' ? goToPrevPage() : goToNextPage();
-            else if (e.key === 'f' || e.key === 'F') toggleFullscreen();
-            else if (e.key === 'Escape' && isFullscreen) document.exitFullscreen();
-        };
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [goToNextPage, goToPrevPage, readingDirection, isFullscreen, toggleFullscreen]);
+    }, [handleKeyPress]);
 
     // Salvar progresso
     useEffect(() => {
@@ -98,7 +102,7 @@ const ItemViewer = ({
             }, 1000);
             return () => clearTimeout(timeoutId);
         }
-    }, [page, lastSavedPage, onSaveProgress, entryKey, totalPages]);
+    }, [page, lastSavedPage, onSaveProgress, totalPages]); // AIDEV-NOTE: Removed entryKey dependency to prevent unnecessary re-runs
 
     if (!pages || totalPages === 0) {
         return (

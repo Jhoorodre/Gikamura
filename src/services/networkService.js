@@ -61,6 +61,7 @@ const isRetryableError = (error) => {
 
 /**
  * AIDEV-NOTE: Attempts fetch with specific URL and timeout control
+ * Returns both response and controller for external cancellation
  */
 const attemptFetch = async (url, options = {}) => {
   const controller = new AbortController();
@@ -90,7 +91,7 @@ const attemptFetch = async (url, options = {}) => {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     
-    return response;
+    return { response, controller };
   } catch (error) {
     clearTimeout(timeoutId);
     throw error;
@@ -99,6 +100,7 @@ const attemptFetch = async (url, options = {}) => {
 
 /**
  * Tenta múltiplos proxies se necessário
+ * AIDEV-NOTE: Updated to handle new attemptFetch return format
  */
 const fetchWithFallbacks = async (originalUrl, options = {}) => {
   let lastError;
@@ -106,9 +108,9 @@ const fetchWithFallbacks = async (originalUrl, options = {}) => {
   for (const proxy of FALLBACK_PROXIES) {
     try {
       const url = proxy ? `${proxy}${encodeURIComponent(originalUrl)}` : originalUrl;
-      const response = await attemptFetch(url, options);
+      const { response, controller } = await attemptFetch(url, options);
       
-      // Se chegou aqui, deu certo
+      // Se chegou aqui, deu certo - return just the response for backward compatibility
       return response;
     } catch (error) {
       lastError = error;
@@ -130,6 +132,37 @@ const fetchWithFallbacks = async (originalUrl, options = {}) => {
   }
   
   throw lastError;
+};
+
+/**
+ * Versão cancelável que retorna controller para cancelamento externo
+ * AIDEV-NOTE: Simplified cancellable fetch with external signal support
+ */
+export const cancellableFetch = async (url, options = {}) => {
+  const controller = new AbortController();
+  
+  // Combine external signal with internal signal if provided
+  if (options.signal) {
+    const combinedSignal = AbortSignal.any ? 
+      AbortSignal.any([controller.signal, options.signal]) :
+      controller.signal; // Fallback for older browsers
+    options = { ...options, signal: combinedSignal };
+  } else {
+    options = { ...options, signal: controller.signal };
+  }
+  
+  try {
+    const response = await robustFetch(url, options);
+    return {
+      response,
+      cancel: () => controller.abort(),
+      controller
+    };
+  } catch (error) {
+    // Ensure controller is aborted on error
+    controller.abort();
+    throw error;
+  }
 };
 
 /**

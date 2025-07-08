@@ -8,6 +8,19 @@ const useImageCache = () => {
     const preloadWorkerRef = useRef(null);
     const maxCacheSize = useRef(100); // Máximo de imagens em cache
     const preloadBatchSize = useRef(3); // Carregar 3 imagens por vez
+    
+    // AIDEV-NOTE: Track component mount status to prevent memory leaks
+    const isMountedRef = useRef(true);
+    const pendingLoads = useRef(new Set()); // Track pending image loads
+    
+    // AIDEV-NOTE: Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            isMountedRef.current = false;
+            // Cancel all pending image loads
+            pendingLoads.current.clear();
+        };
+    }, []);
 
     // Limpar cache antigo baseado no LRU (Least Recently Used)
     const cleanCache = useCallback(() => {
@@ -71,6 +84,12 @@ const useImageCache = () => {
     // Pré-carregar uma única imagem
     const preloadImage = useCallback((url) => {
         return new Promise((resolve, reject) => {
+            // AIDEV-NOTE: Check if component is still mounted
+            if (!isMountedRef.current) {
+                reject(new Error('Component unmounted'));
+                return;
+            }
+            
             // Verificar cache atual
             setCache(currentCache => {
                 if (currentCache.has(url)) {
@@ -82,13 +101,35 @@ const useImageCache = () => {
                     return newCache;
                 }
                 
+                // AIDEV-NOTE: Track this load to allow cancellation
+                pendingLoads.current.add(url);
+                
                 // Carregar nova imagem
                 const img = new Image();
                 img.onload = () => {
-                    addToCache(url, img);
-                    resolve(img);
+                    // AIDEV-NOTE: Check if still mounted and not cancelled
+                    if (isMountedRef.current && pendingLoads.current.has(url)) {
+                        pendingLoads.current.delete(url);
+                        addToCache(url, img);
+                        resolve(img);
+                    } else {
+                        // AIDEV-NOTE: Clean up image handlers to prevent memory leaks
+                        img.onload = null;
+                        img.onerror = null;
+                        img.src = '';
+                        reject(new Error('Load cancelled'));
+                    }
                 };
-                img.onerror = () => reject(new Error(`Falha ao carregar: ${url}`));
+                img.onerror = () => {
+                    if (isMountedRef.current && pendingLoads.current.has(url)) {
+                        pendingLoads.current.delete(url);
+                        // AIDEV-NOTE: Clean up image handlers
+                        img.onload = null;
+                        img.onerror = null;
+                        img.src = '';
+                        reject(new Error(`Falha ao carregar: ${url}`));
+                    }
+                };
                 img.src = url;
                 
                 return currentCache;
@@ -98,7 +139,7 @@ const useImageCache = () => {
 
     // Worker para pré-carregamento em lotes
     const processPreloadQueue = useCallback(async () => {
-        if (isPreloading || preloadQueue.length === 0) return;
+        if (isPreloading || preloadQueue.length === 0 || !isMountedRef.current) return;
         
         setIsPreloading(true);
         
@@ -106,27 +147,48 @@ const useImageCache = () => {
             const batch = preloadQueue.slice(0, preloadBatchSize.current);
             const remaining = preloadQueue.slice(preloadBatchSize.current);
             
-            setPreloadQueue(remaining);
+            // AIDEV-NOTE: Only update state if component is still mounted
+            if (isMountedRef.current) {
+                setPreloadQueue(remaining);
+            }
             
             // Carregar em paralelo o lote atual
             await Promise.allSettled(
                 batch.map(url => preloadImage(url))
             );
             
+            // AIDEV-NOTE: Check if component is still mounted before continuing
+            if (!isMountedRef.current) return;
+            
             // Pequena pausa para não sobrecarregar
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => {
+                const timer = setTimeout(resolve, 100);
+                // AIDEV-NOTE: Clear timeout if component unmounts
+                if (!isMountedRef.current) {
+                    clearTimeout(timer);
+                }
+            });
             
         } catch (error) {
-            console.warn('Erro no pré-carregamento:', error);
+            if (isMountedRef.current) {
+                console.warn('Erro no pré-carregamento:', error);
+            }
         } finally {
-            setIsPreloading(false);
+            if (isMountedRef.current) {
+                setIsPreloading(false);
+            }
         }
     }, [isPreloading, preloadQueue, preloadImage]);
 
     // Efeito para processar fila de pré-carregamento
     useEffect(() => {
-        if (preloadQueue.length > 0 && !isPreloading) {
-            const timer = setTimeout(processPreloadQueue, 50);
+        if (preloadQueue.length > 0 && !isPreloading && isMountedRef.current) {
+            const timer = setTimeout(() => {
+                // AIDEV-NOTE: Double-check component is still mounted before processing
+                if (isMountedRef.current) {
+                    processPreloadQueue();
+                }
+            }, 50);
             return () => clearTimeout(timer);
         }
     }, [preloadQueue, isPreloading, processPreloadQueue]);
