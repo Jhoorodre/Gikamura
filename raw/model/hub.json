@@ -1,0 +1,216 @@
+{
+  "schema": {
+    "version": "0.0",
+    "format": "application/json",
+    "encoding": "utf-8"
+  },
+  "meta": {
+    "version": "0.0.0",
+    "lastUpdated": "placeholder_datetime",
+    "language": "placeholder_language",
+    "region": "placeholder_region",
+    "updateFrequency": "placeholder_frequency",
+    "nextUpdate": "placeholder_datetime",
+    "apiVersion": "v0",
+    "cacheControl": {
+      "maxAge": 0,
+      "staleWhileRevalidate": 0
+    }
+  },
+  "hub": {
+    "id": "placeholder_hub_id",
+    "title": "placeholder_hub_title",
+    "subtitle": "placeholder_hub_subtitle",
+    "slug": "placeholder_hub_slug",
+    "icon": {
+      "url": "https://placeholder.url/icon.jpg",
+      "alt": "placeholder_alt_text",
+      "type": "image/jpeg"
+    },
+    "description": "placeholder_description",
+    "disclaimer": "placeholder_disclaimer",
+    "team": {
+      "name": "placeholder_team_name",
+      "type": "placeholder_team_type",
+      "status": "active",
+      "founded": "placeholder_year",
+      "members": {
+        "total": 0,
+        "translators": 0,
+        "editors": 0,
+        "typesetters": 0,
+        "quality_assurance": 0
+      },
+      "contact": "contact@placeholder.com"
+    },
+    "website": {
+      "primary": "https://placeholder.url/primary",
+      "cdn": "https://placeholder.url/cdn"
+    }
+  },
+  "social": {
+    "platforms": [
+      {
+        "id": "placeholder_platform_id_1",
+        "name": "placeholder_platform_name_1",
+        "platform": "placeholder_platform_1",
+        "url": "https://placeholder.url/social1",
+        "description": "placeholder_social_description_1",
+        "primary": true,
+        "memberCount": "0+",
+        "features": ["feature1", "feature2"]
+      }
+    ]
+  },
+  "series": [
+    {
+      "id": "placeholder_series_id_1",
+      "title": "placeholder_series_title_1",
+      "originalTitle": "placeholder_original_title_1",
+      "slug": "placeholder_series_slug_1",
+      "author": {
+        "name": "placeholder_author_name",
+        "originalName": "placeholder_original_name",
+        "nationality": "placeholder_nationality"
+      },
+      "publication": {
+        "year": 0,
+        "publisher": "placeholder_publisher",
+        "originalLanguage": "placeholder_lang"
+      },
+      "status": {
+        "translation": "completed",
+        "original": "completed",
+        "lastUpdated": "placeholder_datetime"
+      },
+      "type": "placeholder_type",
+      "demographics": "placeholder_demographics",
+      "genres": ["genre1", "genre2", "genre3"],
+      "tags": ["tag1", "tag2", "tag3"],
+      "cover": {
+        "url": "https://placeholder.url/cover1.jpg",
+        "alt": "placeholder_alt_text_1",
+        "type": "image/jpeg"
+      },
+      "description": "placeholder_series_description_1",
+      "chapters": {
+        "total": 0,
+        "translated": 0,
+        "available": 0,
+        "status": "completed"
+      },
+      "rating": {
+        "community": 0.0,
+        "totalVotes": 0
+      },
+      "data": {
+        "url": "https://placeholder.url/data1.json",
+        "format": "json",
+        "size": "0MB"
+      },
+      "priority": 1,
+      "featured": true,
+      "completionDate": "placeholder_date"
+    }
+  ],
+  "statistics": {
+    "overview": {
+      "totalSeries": 0,
+      "completedSeries": 0,
+      "ongoingSeries": 0,
+      "totalChapters": 0,
+      "totalPages": 0
+    },
+    "team": {
+      "totalMembers": 0,
+      "activeMembers": 0,
+      "roles": {
+        "translators": 0,
+        "editors": 0,
+        "typesetters": 0,
+        "quality_assurance": 0
+      }
+    },
+    "community": {
+      "totalFollowers": 0,
+      "activeUsers": 0,
+      "averageRating": 0.0,
+      "totalVotes": 0
+    },
+    "content": {
+      "totalFileSize": "0MB",
+      "averageChapterSize": "0KB",
+      "supportedFormats": ["json"]
+    }
+  },
+  "schedule": {
+    "updates": {
+      "frequency": "placeholder_frequency",
+      "day": "placeholder_day",
+      "time": "00:00",
+      "timezone": "Placeholder/Timezone"
+    },
+    "maintenance": {
+      "day": "placeholder_day",
+      "time": "00:00",
+      "duration": "0 hours",
+      "timezone": "Placeholder/Timezone"
+    }
+  },
+  "technical": {
+    "api": {
+      "version": "0.0",
+      "baseUrl": "https://placeholder.url/api",
+      "endpoints": {
+        "hub": "hub.json",
+        "series": "series/{id}.json"
+      }
+    },
+    "cache": {
+      "policy": "public, max-age=0",
+      "etag": true,
+      "compression": "gzip"
+    },
+    "formats": {
+      "supported": ["json"],
+      "primary": "json",
+      "encoding": "utf-8"
+    }
+  },
+  "legal": {
+    "copyright": {
+      "notice": "placeholder_copyright_notice",
+      "holder": "placeholder_holder",
+      "year": "placeholder_year"
+    },
+    "disclaimer": "placeholder_disclaimer",
+    "support": {
+      "message": "placeholder_support_message",
+      "links": [
+        {
+          "name": "placeholder_link_name_1",
+          "url": "https://placeholder.url/support1",
+          "language": "en"
+        }
+      ]
+    }
+  },
+  "features": {
+    "search": {
+      "enabled": true,
+      "fields": ["field1", "field2"]
+    },
+    "filtering": {
+      "enabled": true,
+      "options": ["option1", "option2"]
+    },
+    "sorting": {
+      "enabled": true,
+      "options": ["option1", "option2"]
+    },
+    "notifications": {
+      "enabled": true,
+      "types": ["type1", "type2"]
+    }
+  }
+}
