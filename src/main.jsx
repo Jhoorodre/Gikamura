@@ -11,7 +11,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // AIDEV-NOTE: React Query client with default config for caching
 const queryClient = new QueryClient();
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+// Anti-flickering improvements
+const rootElement = document.getElementById('root');
+rootElement.style.visibility = 'visible';
+rootElement.style.opacity = '1';
+
+root.render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
       <RemoteStorageProvider>
@@ -20,5 +27,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </AppProvider>
       </RemoteStorageProvider>
     </QueryClientProvider>
-  </BrowserRouter>,
-)
+  </BrowserRouter>
+);

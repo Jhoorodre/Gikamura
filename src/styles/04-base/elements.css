@@ -13,6 +13,9 @@ html {
   background: var(--color-background);
   scroll-behavior: smooth;
   tab-size: 2;
+  /* Anti-flickering improvements */
+  visibility: visible;
+  opacity: 1;
 }
 
 body {
@@ -21,6 +24,78 @@ body {
   text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* Anti-flickering and performance improvements */
+  visibility: visible;
+  opacity: 1;
+  min-height: 100vh;
+  overflow-x: hidden;
+  
+  /* Prevent flash of white/wrong colors on load */
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  
+  /* Improve font loading */
+  font-display: swap;
+}
+
+/* Prevent flash of unstyled content */
+body:not(.fonts-loaded) {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Root container anti-flickering */
+#root {
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  
+  /* Prevent layout shifts */
+  contain: layout style;
+  
+  /* Smooth transitions only after initial load */
+  transition: none;
+}
+
+/* Enable transitions after page load */
+body.loaded #root {
+  transition: background-color var(--duration-normal) var(--ease-out),
+              color var(--duration-normal) var(--ease-out);
+}
+
+/* App container improvements */
+.app-root-container {
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  
+  /* Prevent flickering during navigation */
+  contain: layout style;
+}
+
+/* Page transition improvements */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity var(--duration-normal) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out);
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity var(--duration-normal) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out);
 }
 
 /* Headings */

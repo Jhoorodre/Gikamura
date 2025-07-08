@@ -74,18 +74,14 @@ const Header = () => {
 
     const isActiveRoute = (path) => location.pathname === path;
 
-    // AIDEV-NOTE: Logo navigation
+    // AIDEV-NOTE: Logo navigation - always clear hub data when going to home
     const handleLogoClick = (e) => {
         e.preventDefault();
         
-        if (location.pathname === '/') {
-            return;
-        }
+        // Always clear hub data when going to home
+        clearHubData();
         
-        if (!location.pathname.startsWith('/hub/')) {
-            clearHubData();
-        }
-        
+        // Navigate to home
         navigate('/');
     };
 
@@ -135,6 +131,7 @@ const Header = () => {
                                     }
                                 `}
                                 title={item.description}
+                                onClick={item.path === '/' ? () => clearHubData() : undefined}
                             >
                                 {item.label}
                             </Link>
@@ -189,6 +186,7 @@ const Header = () => {
                                                         : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                                                     }
                                                 `}
+                                                onClick={item.path === '/' ? () => clearHubData() : undefined}
                                             >
                                                 <div className="font-medium">{item.label}</div>
                                                 <div className="text-xs opacity-75">{item.description}</div>

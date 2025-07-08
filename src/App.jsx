@@ -61,9 +61,13 @@ function App() {
     const location = useLocation();
 
     useEffect(() => {
-        // AIDEV-NOTE: Initial app setup with proper DOM ready check
+        // AIDEV-NOTE: Initial app setup with proper DOM ready check and anti-flickering
         const initApp = () => {
+            // Mark body as loaded to enable transitions
+            document.body.classList.add('loaded');
+            
             setInitialLoading(false);
+            
             // AIDEV-NOTE: Create particles only after DOM is fully ready
             setTimeout(() => {
                 createParticles();
@@ -112,39 +116,39 @@ function App() {
                     <Routes>
                         <Route path="/" element={<MainLayout />}>
                             <Route index element={
-                                <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
+                                <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}> 
                                     <MainContent />
                                 </Suspense>
                             } />
                             <Route path="collection" element={
-                                <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
+                                <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}> 
                                     <CollectionPage />
                                 </Suspense>
                             } />
                             <Route path="works" element={
-                                <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
+                                <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}> 
                                     <WorksPage />
                                 </Suspense>
                             } />
                             <Route path="upload" element={
-                                <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
+                                <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}> 
                                     <UploadPage />
                                 </Suspense>
                             } />
                             <Route path="hub/:encodedUrl" element={
-                                <Suspense fallback={<div className="min-h-screen bg-transparent" />}> 
+                                <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}> 
                                     <HubRouteHandler />
                                 </Suspense>
                             } />
                         </Route>
                         {/* Novas rotas modernas */}
                         <Route path="/manga/:encodedUrl" element={
-                            <Suspense fallback={<div className="min-h-screen bg-transparent" />}>
+                            <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}>
                                 <PageView />
                             </Suspense>
                         } />
                         <Route path="/reader/:encodedUrl/:encodedChapterId" element={
-                            <Suspense fallback={<div className="min-h-screen bg-transparent" />}>
+                            <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}>
                                 <ReaderChapter />
                             </Suspense>
                         } />
