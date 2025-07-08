@@ -43,6 +43,7 @@ const ReaderChapter = () => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [viewMode, setViewMode] = useState('single'); // 'single' ou 'scroll'
     const [fitMode, setFitMode] = useState('original');
+    const [showBackToTop, setShowBackToTop] = useState(false);
     
     // Define fitMode padrão baseado no viewMode
     useEffect(() => {
@@ -130,6 +131,20 @@ const ReaderChapter = () => {
         const timer = setTimeout(saveReadingProgress, 1000);
         return () => clearTimeout(timer);
     }, [saveReadingProgress]);
+    
+    // Detecta scroll para mostrar botão voltar ao topo
+    useEffect(() => {
+        const handleScroll = () => {
+            if (viewMode === 'scroll') {
+                setShowBackToTop(window.scrollY > 500);
+            }
+        };
+        
+        if (viewMode === 'scroll') {
+            window.addEventListener('scroll', handleScroll);
+            return () => window.removeEventListener('scroll', handleScroll);
+        }
+    }, [viewMode]);
 
     // Controles automáticos
     const resetControlsTimer = useCallback(() => {
@@ -137,8 +152,11 @@ const ReaderChapter = () => {
         if (controlsTimeoutRef.current) {
             clearTimeout(controlsTimeoutRef.current);
         }
-        controlsTimeoutRef.current = setTimeout(() => setShowControls(false), 4000);
-    }, []);
+        // No modo scroll, não ocultar controles automaticamente
+        if (viewMode !== 'scroll') {
+            controlsTimeoutRef.current = setTimeout(() => setShowControls(false), 4000);
+        }
+    }, [viewMode]);
 
     const handleInteraction = useCallback((e) => {
         e.stopPropagation();
@@ -177,6 +195,11 @@ const ReaderChapter = () => {
         setShowPageOverview(false);
         resetControlsTimer();
     }, [pages.length, resetControlsTimer]);
+    
+    // Função para voltar ao topo
+    const scrollToTop = useCallback(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
 
     // Navegação por capítulos
     const goToChapter = useCallback((chapterIdToGo) => {
@@ -443,6 +466,15 @@ const ReaderChapter = () => {
                         >
                             <FullscreenIcon className="w-4 h-4" />
                         </button>
+                        {viewMode === 'scroll' && (
+                            <button 
+                                className="btn btn-sm"
+                                onClick={() => setShowControls(false)}
+                                title="Ocultar controles"
+                            >
+                                <EyeIcon className="w-4 h-4" style={{ opacity: 0.5 }} />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -498,7 +530,7 @@ const ReaderChapter = () => {
                     </div>
                 ) : (
                     // Scroll Mode
-                    <div className="chapter-pages-container">
+                    <div className="chapter-pages-container" onClick={handleInteraction}>
                         {pages.map((pageUrl, index) => (
                             <div key={index} className="chapter-page">
                                 <CachedImage
@@ -609,6 +641,28 @@ const ReaderChapter = () => {
                         ))}
                     </div>
                 </div>
+            )}
+
+            {/* Back to Top Button (apenas no modo scroll) */}
+            {viewMode === 'scroll' && showBackToTop && (
+                <button 
+                    onClick={scrollToTop}
+                    className="back-to-top-btn"
+                    title="Voltar ao topo"
+                >
+                    <ChevronLeftIcon className="w-5 h-5" style={{ transform: 'rotate(90deg)' }} />
+                </button>
+            )}
+
+            {/* Toggle Controls Button (apenas no modo scroll quando controles estão ocultos) */}
+            {viewMode === 'scroll' && !showControls && (
+                <button 
+                    onClick={() => setShowControls(true)}
+                    className="toggle-controls-btn"
+                    title="Mostrar controles"
+                >
+                    <EyeIcon className="w-5 h-5" />
+                </button>
             )}
 
             {/* Footer Navigation */}

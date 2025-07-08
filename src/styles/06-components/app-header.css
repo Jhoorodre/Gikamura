@@ -228,6 +228,134 @@
   background-color: var(--color-surface-hover);
 }
 
+/* ========================================================================== */
+/* == 📱 MOBILE MENU IMPROVEMENTS                                         == */
+/* ========================================================================== */
+
+/* Mobile menu button improvements */
+.app-header .mobile-nav button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-12);
+  height: var(--space-12);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-header .mobile-nav button:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+  transform: translateY(-1px);
+}
+
+.app-header .mobile-nav button:active {
+  transform: translateY(0);
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.app-header .mobile-nav button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+/* Mobile dropdown improvements */
+.app-header .mobile-nav .absolute {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  min-width: 280px;
+  max-width: 90vw;
+  background: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-2xl);
+  z-index: var(--z-index-dropdown);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  animation: slideDown var(--duration-normal) var(--ease-out);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mobile dropdown items */
+.app-header .mobile-nav .absolute a {
+  display: block;
+  padding: var(--space-4) var(--space-5);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: all var(--duration-fast) var(--ease-out);
+  border-bottom: var(--border-width-1) solid var(--color-border);
+  position: relative;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-header .mobile-nav .absolute a:last-child {
+  border-bottom: none;
+}
+
+.app-header .mobile-nav .absolute a:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+  transform: translateX(4px);
+}
+
+.app-header .mobile-nav .absolute a:active {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  transform: translateX(0);
+}
+
+.app-header .mobile-nav .absolute a.bg-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-weight: var(--font-weight-semibold);
+}
+
+.app-header .mobile-nav .absolute a.bg-primary:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateX(4px);
+}
+
+/* Mobile menu typography */
+.app-header .mobile-nav .absolute .font-medium {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-1);
+}
+
+.app-header .mobile-nav .absolute .text-xs {
+  font-size: var(--font-size-sm);
+  opacity: 0.8;
+  line-height: var(--line-height-relaxed);
+}
+
+/* Connection status in mobile menu */
+.app-header .mobile-nav .border-t {
+  border-top: var(--border-width-1) solid var(--color-border);
+  margin-top: var(--space-2);
+  padding-top: var(--space-4);
+  background-color: var(--color-surface-secondary);
+}
+
 /* Mobile menu styles */
 .app-header .ml-2 {
   margin-left: var(--space-2);
