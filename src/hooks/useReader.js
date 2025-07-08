@@ -88,7 +88,12 @@ export const useReader = () => {
                 console.log('📚 [useReader] Progresso carregado:', progressData);
             }
         } catch (error) {
-            console.warn('⚠️ [useReader] Erro ao carregar progresso:', error);
+            // AIDEV-NOTE: 404 é esperado para obras sem progresso salvo - não loggar como erro
+            if (error.status === 404 || error.message?.includes('404')) {
+                console.log('📚 [useReader] Nenhum progresso salvo encontrado (primeira vez acessando obra)');
+            } else {
+                console.warn('⚠️ [useReader] Erro ao carregar progresso:', error);
+            }
         }
     }, [currentReaderUrl]);
 
