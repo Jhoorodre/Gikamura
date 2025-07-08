@@ -3,31 +3,36 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useHubContext } from '../context/HubContext';
 import { decodeHubUrl } from '../utils/urlDecoder';
+import { useRouteError } from '../hooks/useRouteError';
 import HubView from './HubView';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
+import RouteErrorBoundary from '../components/common/RouteErrorBoundary';
 
 const HubRouteHandler = () => {
     const { encodedUrl } = useParams();
     const { loadHub, currentHubData, hubLoading, hubError } = useHubContext();
+    const { handleRouteError, safeAsyncOperation } = useRouteError({
+        redirectOnError: true,
+        redirectPath: '/'
+    });
 
-    // AIDEV-NOTE: Load hub data when encodedUrl changes with improved error handling
+    // AIDEV-NOTE: Load hub data when encodedUrl changes with standardized error handling
     useEffect(() => {
         if (encodedUrl) {
-            try {
-                console.log('🔍 [HubRouteHandler] Received encodedUrl:', encodedUrl);
-                
+            safeAsyncOperation(async () => {
                 // AIDEV-NOTE: Use centralized URL decoding logic
                 const hubUrl = decodeHubUrl(encodedUrl);
-                
-                console.log('🔗 [HubRouteHandler] Final URL for loading:', hubUrl);
-                loadHub(hubUrl);
-            } catch (error) {
-                console.error('❌ [HubRouteHandler] Error decoding URL:', error);
-                // AIDEV-NOTE: Don't crash the app, just log the error
-            }
+                await loadHub(hubUrl);
+            }, {
+                operation: 'hub_loading',
+                encodedUrl,
+                route: '/hub/:encodedUrl'
+            }).catch(() => {
+                // Error is already handled by useRouteError
+            });
         }
-    }, [encodedUrl, loadHub]);
+    }, [encodedUrl, loadHub, safeAsyncOperation]);
 
     // AIDEV-NOTE: Show loading state while hub is loading
     if (hubLoading) {
@@ -51,7 +56,9 @@ const HubRouteHandler = () => {
                                 const hubUrl = decodeHubUrl(encodedUrl);
                                 loadHub(hubUrl);
                             } catch (error) {
-                                console.error('❌ [HubRouteHandler] Retry error:', error);
+                                if (import.meta.env?.DEV) {
+                                    console.error('❌ [HubRouteHandler] Retry error:', error);
+                                }
                             }
                         }
                     }} 
@@ -60,8 +67,20 @@ const HubRouteHandler = () => {
         );
     }
 
-    // AIDEV-NOTE: Show HubView once data is loaded
-    return <HubView />;
+    // AIDEV-NOTE: Show HubView once data is loaded with error boundary
+    return (
+        <RouteErrorBoundary
+            title="Erro ao carregar hub"
+            onError={(errorInfo) => {
+                // Optional: send error to monitoring service
+                if (import.meta.env?.DEV) {
+                    console.error('[HubRouteHandler] Route error:', errorInfo);
+                }
+            }}
+        >
+            <HubView />
+        </RouteErrorBoundary>
+    );
 };
 
 export default HubRouteHandler;

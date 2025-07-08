@@ -23,6 +23,7 @@ import Spinner from './components/common/Spinner';
 import { HubProvider } from './context/HubContext';
 import { UserPreferencesProvider } from './context/UserPreferencesContext';
 import MainLayout from './components/common/MainLayout';
+import { ReaderToMangaRedirect, LeitorToReaderRedirect } from './components/common/RouteRedirects';
 
 // AIDEV-NOTE: Rotas pesadas agora são carregadas sob demanda (React.lazy)
 const HubView = lazy(() => import('./views/HubView'));
@@ -35,17 +36,7 @@ const UploadPage = lazy(() => import('./pages/UploadPage'));
 const PageView = lazy(() => import('./pages/PageView'));
 const ReaderChapter = lazy(() => import('./pages/ReaderChapter'));
 
-// Componente para redirecionar /reader/ para /manga/
-const ReaderRedirect = () => {
-    const { encodedUrl } = useParams();
-    return <Navigate to={`/manga/${encodedUrl}`} replace />;
-};
-
-// Componente para redirecionar /leitor/ com capítulo
-const LeitorChapterRedirect = () => {
-    const { encodedUrl, encodedChapterId } = useParams();
-    return <Navigate to={`/reader/${encodedUrl}/${encodedChapterId}`} replace />;
-};
+// AIDEV-NOTE: Redirect components moved to RouteRedirects.jsx for better organization
 
 // Pré-carregamento das páginas principais para evitar flicking
 import('./pages/CollectionPage');
@@ -147,12 +138,20 @@ function App() {
                             } />
                         </Route>
                         {/* Novas rotas modernas */}
-                        <Route path="/manga/:encodedUrl" element={<PageView />} />
-                        <Route path="/reader/:encodedUrl/:encodedChapterId" element={<ReaderChapter />} />
-                        {/* Redirecionamento de rotas antigas */}
-                        <Route path="/reader/:encodedUrl" element={<ReaderRedirect />} />
-                        <Route path="/leitor/:encodedUrl" element={<ReaderRedirect />} />
-                        <Route path="/leitor/:encodedUrl/:encodedChapterId" element={<LeitorChapterRedirect />} />
+                        <Route path="/manga/:encodedUrl" element={
+                            <Suspense fallback={<div className="min-h-screen bg-transparent" />}>
+                                <PageView />
+                            </Suspense>
+                        } />
+                        <Route path="/reader/:encodedUrl/:encodedChapterId" element={
+                            <Suspense fallback={<div className="min-h-screen bg-transparent" />}>
+                                <ReaderChapter />
+                            </Suspense>
+                        } />
+                        {/* AIDEV-NOTE: Simplified redirect routes using centralized components */}
+                        <Route path="/reader/:encodedUrl" element={<ReaderToMangaRedirect />} />
+                        <Route path="/leitor/:encodedUrl" element={<ReaderToMangaRedirect />} />
+                        <Route path="/leitor/:encodedUrl/:encodedChapterId" element={<LeitorToReaderRedirect />} />
                     </Routes>
                 </div>
             </HubProvider>

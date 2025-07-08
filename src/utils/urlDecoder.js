@@ -2,8 +2,8 @@
 import { decodeUrl } from './encoding';
 
 /**
- * AIDEV-NOTE: Centralized URL decoding with automatic detection
- * Handles both Base64 encoded URLs and regular URI-encoded URLs
+ * AIDEV-NOTE: Centralized URL decoding with Base64-first approach
+ * Prioritizes Base64 URL-safe decoding with fallback to URI decoding
  */
 export const decodeHubUrl = (encodedUrl) => {
     if (!encodedUrl) {
@@ -11,24 +11,19 @@ export const decodeHubUrl = (encodedUrl) => {
     }
     
     try {
-        console.log('🔍 [URLDecoder] Processing encoded URL:', encodedUrl);
-        
-        // Check if it looks like a Base64 string
-        if (encodedUrl.match(/^[A-Za-z0-9+/\-_]*={0,2}$/)) {
-            // Try to decode as Base64
-            console.log('🔍 [URLDecoder] Detected Base64, decoding...');
+        // AIDEV-NOTE: Try Base64 decoding first (preferred method)
+        try {
             const decoded = decodeUrl(encodedUrl);
-            console.log('🔗 [URLDecoder] Base64 decoded URL:', decoded);
             return decoded;
-        } else {
-            // If it doesn't look like Base64, treat as URI-encoded
-            console.log('🔍 [URLDecoder] Not Base64, using URI decoding...');
+        } catch (base64Error) {
+            // AIDEV-NOTE: Fallback to URI decoding for legacy support only
             const decoded = decodeURIComponent(encodedUrl);
-            console.log('🔗 [URLDecoder] URI decoded URL:', decoded);
             return decoded;
         }
     } catch (error) {
-        console.error('❌ [URLDecoder] Error decoding URL:', error);
+        if (import.meta.env?.DEV) {
+            console.error('❌ [URLDecoder] All decoding methods failed:', error);
+        }
         throw new Error(`Failed to decode URL: ${error.message}`);
     }
 };
@@ -61,7 +56,9 @@ export const decodeAndValidateExternalUrl = (encodedUrl) => {
         validateExternalUrl(decodedUrl);
         return decodedUrl;
     } catch (error) {
-        console.error('❌ [URLDecoder] Validation failed:', error);
+        if (import.meta.env?.DEV) {
+            console.error('❌ [URLDecoder] Validation failed:', error);
+        }
         throw error;
     }
 };
