@@ -19,7 +19,7 @@ rootElement.style.visibility = 'visible';
 rootElement.style.opacity = '1';
 
 root.render(
-  <BrowserRouter>
+  <BrowserRouter basename="/Gikamura">
     <QueryClientProvider client={queryClient}>
       <RemoteStorageProvider>
         <AppProvider>
