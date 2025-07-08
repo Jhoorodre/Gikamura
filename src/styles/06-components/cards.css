@@ -343,10 +343,6 @@
   backdrop-filter: blur(10px);
 }
 
-[data-theme="\"light\""] .card--glass {
-  border: var(--border-width-1) solid rgb(0 0 0 / 10%);
-  background: rgb(0 0 0 / 5%);
-}
 
 /* === STATUS CARDS === */
 .card--success {
@@ -393,6 +389,26 @@
 
 .card--xl {
   min-height: var(--space-40);
+}
+
+/* ========================================================================== */
+/* == 🎨 CARD VARIANTS (DESIGN SYSTEM INTEGRATION)                       == */
+/* ========================================================================== */
+
+.card--outlined {
+  border: var(--border-width-2) solid var(--color-border);
+  background-color: transparent;
+}
+
+.card--ghost {
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.card--elevated {
+  box-shadow: var(--shadow-lg);
+  border: none;
 }
 
 /* ========================================================================== */
@@ -498,9 +514,10 @@
 
 .manga-card__image {
   width: 100%;
-  height: 70%;
+  height: 100%;
   transition: transform var(--duration-normal) var(--ease-out);
   object-fit: cover;
+  display: block;
 }
 
 .manga-card:hover .manga-card__image {

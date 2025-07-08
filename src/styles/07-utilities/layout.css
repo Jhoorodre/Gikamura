@@ -1,0 +1,231 @@
+/*
+ * LAYOUT UTILITIES - GIKAMOE V2.0
+ * Arquivo: src/styles/07-utilities/layout.css
+ * 
+ * Utility classes for layout and positioning
+ */
+
+/* ========================================================================== */
+/* == 📐 FLEXBOX UTILITIES                                                == */
+/* ========================================================================== */
+
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+.items-baseline { align-items: baseline; }
+.justify-center { justify-content: center; }
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+
+/* ========================================================================== */
+/* == 🎯 GRID UTILITIES                                                   == */
+/* ========================================================================== */
+
+.grid { display: grid; }
+.inline-grid { display: inline-grid; }
+
+/* ========================================================================== */
+/* == 📏 DIMENSION UTILITIES                                              == */
+/* ========================================================================== */
+
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+.w-fit { width: fit-content; }
+.w-min { width: min-content; }
+.w-max { width: max-content; }
+.w-screen { width: 100vw; }
+
+.h-full { height: 100%; }
+.h-auto { height: auto; }
+.h-fit { height: fit-content; }
+.h-screen { height: 100vh; }
+
+.min-h-screen { min-height: 100vh; }
+.min-h-full { min-height: 100%; }
+
+/* ========================================================================== */
+/* == 📍 POSITION UTILITIES                                               == */
+/* ========================================================================== */
+
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+.static { position: static; }
+
+/* ========================================================================== */
+/* == 🎭 DISPLAY UTILITIES                                                == */
+/* ========================================================================== */
+
+.block { display: block; }
+.inline { display: inline; }
+.inline-block { display: inline-block; }
+.hidden { display: none; }
+
+/* ========================================================================== */
+/* == 🎯 OVERFLOW UTILITIES                                               == */
+/* ========================================================================== */
+
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+.overflow-scroll { overflow: scroll; }
+.overflow-visible { overflow: visible; }
+
+.overflow-x-hidden { overflow-x: hidden; }
+.overflow-y-hidden { overflow-y: hidden; }
+.overflow-x-auto { overflow-x: auto; }
+.overflow-y-auto { overflow-y: auto; }
+
+/* ========================================================================== */
+/* == 🎨 VISUAL UTILITIES                                                 == */
+/* ========================================================================== */
+
+.rounded { border-radius: var(--radius-base); }
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-2xl { border-radius: var(--radius-2xl); }
+.rounded-3xl { border-radius: var(--radius-3xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+.border { border: var(--border-width-1) solid var(--color-border); }
+.border-2 { border: var(--border-width-2) solid var(--color-border); }
+.border-4 { border: var(--border-width-4) solid var(--color-border); }
+.border-none { border: none; }
+
+.shadow { box-shadow: var(--shadow-base); }
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+.shadow-2xl { box-shadow: var(--shadow-2xl); }
+.shadow-none { box-shadow: none; }
+
+/* ========================================================================== */
+/* == ⚡ TRANSITION UTILITIES                                              == */
+/* ========================================================================== */
+
+.transition-all { transition: var(--transition-all); }
+.transition-colors { transition: var(--transition-colors); }
+.transition-opacity { transition: var(--transition-opacity); }
+.transition-transform { transition: var(--transition-transform); }
+.transition-none { transition: none; }
+
+.duration-75 { transition-duration: 75ms; }
+.duration-100 { transition-duration: 100ms; }
+.duration-150 { transition-duration: var(--duration-fast); }
+.duration-200 { transition-duration: 200ms; }
+.duration-300 { transition-duration: var(--duration-normal); }
+.duration-500 { transition-duration: var(--duration-slow); }
+.duration-700 { transition-duration: 700ms; }
+.duration-1000 { transition-duration: 1000ms; }
+
+/* ========================================================================== */
+/* == 🎪 TRANSFORM UTILITIES                                              == */
+/* ========================================================================== */
+
+.transform { transform: translateZ(0); }
+.scale-95 { transform: scale(0.95); }
+.scale-100 { transform: scale(1); }
+.scale-105 { transform: scale(1.05); }
+.scale-110 { transform: scale(1.1); }
+
+.rotate-0 { transform: rotate(0deg); }
+.rotate-90 { transform: rotate(90deg); }
+.rotate-180 { transform: rotate(180deg); }
+.rotate-270 { transform: rotate(270deg); }
+
+/* ========================================================================== */
+/* == 👁️ OPACITY UTILITIES                                                == */
+/* ========================================================================== */
+
+.opacity-0 { opacity: 0; }
+.opacity-25 { opacity: 0.25; }
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+.opacity-100 { opacity: 1; }
+
+/* ========================================================================== */
+/* == 🖱️ CURSOR UTILITIES                                                 == */
+/* ========================================================================== */
+
+.cursor-auto { cursor: auto; }
+.cursor-default { cursor: default; }
+.cursor-pointer { cursor: pointer; }
+.cursor-wait { cursor: wait; }
+.cursor-text { cursor: text; }
+.cursor-move { cursor: move; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+/* ========================================================================== */
+/* == 👤 USER SELECT UTILITIES                                            == */
+/* ========================================================================== */
+
+.select-none { user-select: none; }
+.select-text { user-select: text; }
+.select-all { user-select: all; }
+.select-auto { user-select: auto; }
+
+/* ========================================================================== */
+/* == 📍 POINTER EVENTS UTILITIES                                         == */
+/* ========================================================================== */
+
+.pointer-events-none { pointer-events: none; }
+.pointer-events-auto { pointer-events: auto; }
+
+/* ========================================================================== */
+/* == 🏗️ OBJECT FIT UTILITIES                                             == */
+/* ========================================================================== */
+
+.object-contain { object-fit: contain; }
+.object-cover { object-fit: cover; }
+.object-fill { object-fit: fill; }
+.object-none { object-fit: none; }
+.object-scale-down { object-fit: scale-down; }
+
+/* ========================================================================== */
+/* == 📐 ASPECT RATIO UTILITIES                                           == */
+/* ========================================================================== */
+
+.aspect-auto { aspect-ratio: auto; }
+.aspect-square { aspect-ratio: 1 / 1; }
+.aspect-video { aspect-ratio: 16 / 9; }
+.aspect-book { aspect-ratio: 3 / 4; }
+.aspect-photo { aspect-ratio: 4 / 3; }
+.aspect-poster { aspect-ratio: 2 / 3; }
+
+/* ========================================================================== */
+/* == 🎯 SVG AND ICON UTILITIES                                           == */
+/* ========================================================================== */
+
+.w-4 { width: var(--space-4); }
+.h-4 { height: var(--space-4); }
+.w-5 { width: var(--space-5); }
+.h-5 { height: var(--space-5); }
+.w-10 { width: var(--space-10); }
+.h-10 { height: var(--space-10); }
+
+/* ========================================================================== */
+/* == 📏 SPACING UTILITIES                                                == */
+/* ========================================================================== */
+
+.space-x-1 > * + * { margin-left: var(--space-1); }
+.space-x-2 > * + * { margin-left: var(--space-2); }
+.space-x-3 > * + * { margin-left: var(--space-3); }
+.space-x-4 > * + * { margin-left: var(--space-4); }
+
+.mr-2 { margin-right: var(--space-2); }
+.ml-4 { margin-left: var(--space-4); }
+.mt-2 { margin-top: var(--space-2); }
+.mb-1 { margin-bottom: var(--space-1); }

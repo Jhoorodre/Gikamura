@@ -509,16 +509,6 @@
   color: var(--color-text-primary);
 }
 
-/* Minimal theme variation */
-[data-theme="\"minimal\""] .btn {
-  border-radius: var(--radius-base);
-  box-shadow: none;
-}
-
-[data-theme="\"minimal\""] .btn:hover:not(:disabled, [aria-disabled="\"true\""]) {
-  box-shadow: none;
-  transform: none;
-}
 
 /* ========================================================================== */
 
@@ -565,16 +555,7 @@
 
 /* ========================================================================== */
 
-/* Mapeamento das classes antigas para as novas */
-.btn-primary { @extend .btn--primary; }
-.btn-secondary { @extend .btn--secondary; }
-.btn-ghost { @extend .btn--ghost; }
-.btn-danger { @extend .btn--destructive; }
-.btn-sm { @extend .btn--sm; }
-.btn-lg { @extend .btn--lg; }
-.btn-reader { @extend .btn--reader; }
-
-/* Classes de compatibilidade sem @extend (mais seguras) */
+/* Classes de compatibilidade para legacy support */
 .btn-primary {
   border-color: var(--color-primary);
   background-color: var(--color-primary);

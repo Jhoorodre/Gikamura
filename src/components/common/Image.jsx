@@ -44,7 +44,12 @@ const Image = memo(({ src, alt, className, errorSrc, loading = 'lazy', ...props 
     return (
         <div 
             ref={elementRef}
-            className={`relative overflow-hidden hw-accelerated ${className}`}
+            className={`relative overflow-hidden ${className}`}
+            style={{
+                contain: 'layout style',
+                transform: 'translateZ(0)',
+                willChange: 'auto'
+            }}
         >
             {/* Skeleton/placeholder enquanto não carregou - Anti-flickering */}
             {!isLoaded && (

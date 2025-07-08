@@ -470,14 +470,7 @@
 .text-muted { color: var(--color-text-tertiary) !important; }
 .text-disabled { color: var(--color-text-disabled) !important; }
 
-.h1 { @extend .heading-1; }
-.h2 { @extend .heading-2; }
-.h3 { @extend .heading-3; }
-.h4 { @extend .heading-4; }
-.h5 { @extend .heading-5; }
-.h6 { @extend .heading-6; }
-
-/* Alternative approach without @extend */
+/* Heading utility classes without @extend */
 .h1 {
   font-family: var(--font-family-display) !important;
   font-size: var(--font-size-4xl) !important;

@@ -1,0 +1,269 @@
+/*
+ * ITEM GRID COMPONENT - GIKAMOE V2.0
+ * Arquivo: src/styles/06-components/item-grid.css
+ * 
+ * Grid para itens de manga/obras com design system
+ */
+
+/* ========================================================================== */
+/* == 📱 ITEM GRID BASE                                                   == */
+/* ========================================================================== */
+
+.min-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-4);
+  padding: var(--space-4);
+  width: 100%;
+  contain: layout style;
+}
+
+/* ========================================================================== */
+/* == 🃏 ITEM CARD                                                        == */
+/* ========================================================================== */
+
+.min-item-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: var(--transition-all);
+  aspect-ratio: var(--aspect-book);
+  contain: layout style;
+  min-height: 320px;
+}
+
+.min-item-card:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.min-item-card:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ========================================================================== */
+/* == 🖼️ ITEM IMAGE                                                       == */
+/* ========================================================================== */
+
+.min-item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform var(--duration-normal) var(--ease-out);
+  background-color: var(--color-surface-secondary);
+  display: block;
+  image-rendering: optimizeQuality;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Fix for image container in grid items */
+.min-item-card .min-item-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Ensure content is above image */
+.min-item-card .min-item-content {
+  z-index: 2;
+}
+
+/* Fix for button positioning */
+.min-item-card .min-item-pin-button {
+  z-index: 3;
+}
+
+.min-item-card:hover .min-item-image {
+  transform: scale(1.05);
+}
+
+/* ========================================================================== */
+/* == 📝 ITEM CONTENT                                                     == */
+/* ========================================================================== */
+
+.min-item-content {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: var(--space-3);
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 95%) 0%,
+    rgb(0 0 0 / 85%) 50%,
+    rgb(0 0 0 / 40%) 80%,
+    transparent 100%
+  );
+  color: white;
+  backdrop-filter: blur(2px);
+  z-index: var(--z-index-base);
+}
+
+.min-item-title {
+  display: -webkit-box;
+  margin: 0 0 var(--space-1) 0;
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.min-item-subtitle {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: rgb(255 255 255 / 80%);
+  font-size: var(--font-size-xs);
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+/* ========================================================================== */
+/* == ⭐ PIN BUTTON                                                        == */
+/* ========================================================================== */
+
+.min-item-pin-button {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: var(--z-index-docked);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--space-8);
+  height: var(--space-8);
+  border: none;
+  border-radius: var(--radius-full);
+  background-color: rgb(0 0 0 / 60%);
+  color: white;
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  transition: var(--transition-all);
+  backdrop-filter: blur(4px);
+}
+
+.min-item-pin-button:hover {
+  background-color: rgb(0 0 0 / 80%);
+  transform: scale(1.1);
+}
+
+.min-item-pin-button.pinned {
+  background-color: var(--color-warning);
+  color: white;
+}
+
+.min-item-pin-button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ========================================================================== */
+/* == 📱 RESPONSIVE GRID                                                  == */
+/* ========================================================================== */
+
+@media (width <= 480px) {
+  .min-item-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--space-2);
+    padding: var(--space-2);
+  }
+
+  .min-item-card {
+    min-height: 220px;
+  }
+}
+
+@media (width >= 640px) {
+  .min-item-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .min-item-card {
+    min-height: 280px;
+  }
+}
+
+@media (width >= 768px) {
+  .min-item-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-4);
+    padding: var(--space-4);
+  }
+
+  .min-item-card {
+    min-height: 320px;
+  }
+}
+
+@media (width >= 1024px) {
+  .min-item-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-5);
+  }
+
+  .min-item-card {
+    min-height: 340px;
+  }
+}
+
+@media (width >= 1280px) {
+  .min-item-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .min-item-card {
+    min-height: 360px;
+  }
+}
+
+/* ========================================================================== */
+/* == ♿ ACCESSIBILITY                                                     == */
+/* ========================================================================== */
+
+.min-item-card[tabindex]:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ========================================================================== */
+/* == 🎭 MOTION PREFERENCES                                               == */
+/* ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .min-item-card,
+  .min-item-image,
+  .min-item-pin-button {
+    transition: none;
+  }
+  
+  .min-item-card:hover {
+    transform: none;
+  }
+  
+  .min-item-card:hover .min-item-image {
+    transform: none;
+  }
+  
+  .min-item-pin-button:hover {
+    transform: none;
+  }
+}

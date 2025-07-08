@@ -45,12 +45,15 @@
 @import url('./06-components/cards.css');
 @import url('./06-components/forms.css');
 @import url('./06-components/reader.css');
-@import url('./06-components/navigation-modern.css');@import url('./06-components/header-modern.css');
-
-@import url('./06-components/hub-loader.css');@import url('./06-components/minimalist-pages.css');
-@import url('./06-components/hub-minimal.css');@import url('./06-components/reader-view.css');
+@import url('./06-components/navigation-modern.css');
+@import url('./06-components/header-modern.css');
+@import url('./06-components/hub-loader.css');
+@import url('./06-components/minimalist-pages.css');
+@import url('./06-components/hub-minimal.css');
+@import url('./06-components/reader-view.css');
 @import url('./06-components/chapter-reader.css');
-
+@import url('./06-components/item-grid.css');
+@import url('./06-components/app-header.css');
 
 @import url('./06-components/navigation.css');
 @import url('./06-components/readerstyles.css');
@@ -61,6 +64,7 @@
 @import url('./07-utilities/spacing.css');
 @import url('./07-utilities/colors.css');
 @import url('./07-utilities/typography.css');
+@import url('./07-utilities/layout.css');
 @import url('./07-utilities/responsive.css');
 
 /* ========================================================================== */
@@ -74,11 +78,17 @@
 
 /* AIDEV-NOTE: app-root; container principal da aplicação */
 html, body {
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
   background: var(--color-background);
   color: var(--color-text-primary);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
   transition: background-color var(--duration-normal), color var(--duration-normal);
+  overflow-x: hidden;
 }
 
 #root {
@@ -275,6 +285,73 @@ html, body {
 .border-accent { border-color: var(--color-border-focus); }
 .bg-primary { background-color: var(--color-background); }
 .bg-surface { background-color: var(--color-surface); }
+
+/* Utility classes for spacing */
+.p-sm { padding: var(--space-2); }
+.p-md { padding: var(--space-4); }
+.p-lg { padding: var(--space-6); }
+.p-xl { padding: var(--space-8); }
+
+.px-sm { padding-left: var(--space-2); padding-right: var(--space-2); }
+.px-md { padding-left: var(--space-4); padding-right: var(--space-4); }
+.px-lg { padding-left: var(--space-6); padding-right: var(--space-6); }
+
+.py-xs { padding-top: var(--space-1); padding-bottom: var(--space-1); }
+.py-sm { padding-top: var(--space-2); padding-bottom: var(--space-2); }
+.py-md { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+
+.ml-xs { margin-left: var(--space-1); }
+.mr-xs { margin-right: var(--space-1); }
+.ml-md { margin-left: var(--space-4); }
+.mr-md { margin-right: var(--space-4); }
+
+.gap-sm { gap: var(--space-2); }
+.gap-md { gap: var(--space-4); }
+.gap-2 { gap: var(--space-2); }
+
+/* Space utilities */
+.space-x-1 > * + * { margin-left: var(--space-1); }
+.space-x-2 > * + * { margin-left: var(--space-2); }
+.space-x-3 > * + * { margin-left: var(--space-3); }
+.space-x-4 > * + * { margin-left: var(--space-4); }
+
+/* Additional responsive utilities */
+.hidden { display: none; }
+
+/* Mobile first responsive classes */
+.md\:hidden { display: block; }
+.md\:flex { display: none; }
+
+@media (width >= 768px) {
+  .md\:hidden { display: none; }
+  .md\:flex { display: flex; }
+  .hidden.md\:flex { display: flex; }
+}
+
+/* XL breakpoint utilities */
+.xl\:inline { display: none; }
+@media (width >= 1280px) {
+  .xl\:inline { display: inline; }
+}
+
+/* Stroke width for SVG */
+svg[stroke] {
+  stroke-width: 2;
+}
+
+/* Container utility */
+.container {
+  width: 100%;
+  max-width: var(--container-2xl);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+@media (width <= 768px) {
+  .container {
+    padding: 0 var(--space-3);
+  }
+}
 
 /* ========================================================================== */
 /* == 🎯 DEVELOPMENT HELPERS                                              == */

@@ -3,7 +3,6 @@ import Layout from './Layout';
 import Card from './Card';
 import Button from './Button';
 import LoadingSpinner from './LoadingSpinner';
-import ThemeToggle from './ThemeToggle';
 
 const ExamplePage = () => {
   return (
@@ -81,9 +80,7 @@ const ExamplePage = () => {
             Mude entre tema claro e escuro com transições suaves.
           </p>
           <div className="flex gap-sm">
-            <ThemeToggle size="sm" />
-            <ThemeToggle size="md" />
-            <ThemeToggle size="lg" />
+            {/* Theme toggle removido */}
           </div>
         </Card>
 

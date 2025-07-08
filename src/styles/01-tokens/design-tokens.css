@@ -330,12 +330,11 @@
 
 /* ========================================================================== */
 
-/* == 🌙 TEMA ESCURO (DARK MODE - DEFAULT)                                == */
+/* == 🎨 TEMA PRINCIPAL (DARK)                                            == */
 
 /* ========================================================================== */
 
-:root,
-[data-theme="\"dark\""] {
+:root {
   /* === ALIASES SEMÂNTICOS PARA COMPATIBILIDADE === */
   --color-background: var(--color-gray-950);
   --bg-primary: var(--color-gray-950);
@@ -389,62 +388,6 @@
   --color-focus-ring: rgb(220 38 38 / 30%);
 }
 
-/* ========================================================================== */
-
-/* == ☀️ TEMA CLARO (LIGHT MODE)                                          == */
-
-/* ========================================================================== */
-
-[data-theme="\"light\""] {
-  /* === ALIASES SEMÂNTICOS === */
-  --color-background: var(--color-white);
-  --bg-primary: var(--color-white);
-  --color-surface: var(--color-gray-100);
-  --color-surface-primary: var(--color-gray-100);
-  --color-surface-secondary: var(--color-gray-200);
-  --color-surface-hover: var(--color-gray-300);
-  
-  /* === TEXTO === */
-  --text-primary: var(--color-gray-900);
-  --color-text-primary: var(--color-gray-900);
-  --text-secondary: var(--color-gray-700);
-  --color-text-secondary: var(--color-gray-700);
-  --color-text-tertiary: var(--color-gray-500);
-  --color-text-quaternary: var(--color-gray-400);
-  --color-text-inverse: var(--color-white);
-  --color-text-disabled: var(--color-gray-400);
-  
-  /* === BORDAS === */
-  --color-border: var(--color-gray-300);
-  --border-primary: var(--color-gray-300);
-  --color-border-secondary: var(--color-gray-200);
-  --color-border-hover: var(--color-gray-400);
-  --color-border-focus: var(--color-brand-500);
-  --border-focus: var(--color-brand-500);
-  
-  /* === INTERAÇÃO === */
-  --color-primary: var(--color-brand-600);
-  --color-primary-base: var(--color-brand-600);
-  --color-primary-hover: var(--color-brand-700);
-  --color-primary-active: var(--color-brand-800);
-  --color-primary-disabled: var(--color-gray-300);
-  
-  /* === SECUNDÁRIO === */
-  --color-secondary-base: var(--color-gray-400);
-  --color-secondary-hover: var(--color-gray-500);
-  
-  /* === ACCENT === */
-  --color-accent: var(--color-gray-700);
-  --color-accent-base: var(--color-gray-700);
-  --color-accent-hover: var(--color-gray-800);
-  
-  /* === SOMBRAS AJUSTADAS === */
-  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 5%);
-  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
-  --shadow-base: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -2px rgb(0 0 0 / 10%);
-  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
-  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 8px 10px -6px rgb(0 0 0 / 10%);
-}
 
 /* ========================================================================== */
 

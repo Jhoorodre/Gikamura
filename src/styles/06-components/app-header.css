@@ -1,0 +1,149 @@
+/*
+ * APP HEADER COMPONENT - GIKAMOE V2.0
+ * Arquivo: src/styles/06-components/app-header.css
+ * 
+ * Header principal da aplicação com design system
+ */
+
+/* ========================================================================== */
+/* == 🏠 APP HEADER BASE                                                  == */
+/* ========================================================================== */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky);
+  width: 100%;
+  border-bottom: var(--border-width-1) solid var(--color-border);
+  background-color: var(--color-background);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+  contain: layout style;
+}
+
+.app-header .container {
+  max-width: var(--container-2xl);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+/* ========================================================================== */
+/* == 🎯 HEADER LAYOUT                                                    == */
+/* ========================================================================== */
+
+.app-header .flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--space-16); /* 64px */
+}
+
+/* ========================================================================== */
+/* == 🏷️ BRAND/LOGO                                                       == */
+/* ========================================================================== */
+
+.app-header .orbitron {
+  background: none;
+  background-clip: unset;
+  color: var(--color-accent);
+  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-2xl);
+  letter-spacing: var(--letter-spacing-wide);
+  text-decoration: none;
+  transition: var(--transition-colors);
+  -webkit-text-fill-color: unset;
+  text-shadow: none;
+}
+
+.app-header .orbitron:hover {
+  color: var(--color-primary);
+}
+
+/* ========================================================================== */
+/* == 📱 RESPONSIVE DESIGN                                                == */
+/* ========================================================================== */
+
+/* Force hide mobile menu on desktop */
+@media (width >= 768px) {
+  .app-header .md\:hidden {
+    display: none !important;
+  }
+  
+  .app-header .md\:flex {
+    display: flex !important;
+  }
+}
+
+@media (width <= 768px) {
+  .app-header .container {
+    padding: 0 var(--space-3);
+  }
+  
+  .app-header .flex {
+    min-height: var(--space-14); /* 56px */
+  }
+  
+  .app-header .orbitron {
+    font-size: var(--font-size-xl);
+  }
+  
+  /* Force hide desktop nav on mobile */
+  .app-header .hidden {
+    display: none !important;
+  }
+}
+
+@media (width <= 480px) {
+  .app-header .container {
+    padding: 0 var(--space-2);
+  }
+  
+  .app-header .flex {
+    min-height: var(--space-12); /* 48px */
+  }
+  
+  .app-header .orbitron {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* ========================================================================== */
+/* == 📱 NAVIGATION RESPONSIVE CONTROL                                    == */
+/* ========================================================================== */
+
+/* Desktop navigation */
+.desktop-nav {
+  display: none;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+@media (width >= 768px) {
+  .desktop-nav {
+    display: flex;
+  }
+}
+
+/* Mobile navigation */
+.mobile-nav {
+  display: flex;
+  align-items: center;
+}
+
+@media (width >= 768px) {
+  .mobile-nav {
+    display: none;
+  }
+}
+
+/* ========================================================================== */
+/* == 🎭 MOTION PREFERENCES                                               == */
+/* ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .app-header .orbitron {
+    transition: none;
+  }
+}
+

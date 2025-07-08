@@ -691,7 +691,16 @@
 
 /* Old class names for backward compatibility */
 .form-control {
-  @extend .form-input;
+  /* Same styles as form-input */
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  transition: var(--transition-colors), border-color var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out);
 }
 
 input.form-control,

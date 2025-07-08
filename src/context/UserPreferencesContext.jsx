@@ -6,14 +6,11 @@ const UserPreferencesContext = createContext();
 export const useUserPreferences = () => useContext(UserPreferencesContext);
 
 export const UserPreferencesProvider = ({ children }) => {
-    // Exemplo de preferências: tema, idioma, layout, etc
-    const [theme, setTheme] = useState('dark');
+    // Preferências do usuário: idioma, layout, etc
     const [language, setLanguage] = useState('pt-BR');
     // Adicione outras preferências conforme necessário
 
     const value = {
-        theme,
-        setTheme,
         language,
         setLanguage,
     };

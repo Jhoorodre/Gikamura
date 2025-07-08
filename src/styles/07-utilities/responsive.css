@@ -23,6 +23,10 @@
 .inline-grid { display: inline-grid; }
 .hidden { display: none; }
 
+/* === SPECIFIC RESPONSIVE CLASSES === */
+.md\:hidden { display: block; }
+.md\:flex { display: none; }
+
 /* === SMALL (640px+) === */
 @media (width >= 640px) {
   .sm\:block { display: block; }
@@ -44,7 +48,7 @@
   .md\:inline-flex { display: inline-flex; }
   .md\:grid { display: grid; }
   .md\:inline-grid { display: inline-grid; }
-  .md\:hidden { display: none; }
+  .md\:hidden { display: none !important; }
 }
 
 /* === LARGE (1024px+) === */

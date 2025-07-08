@@ -1,13 +1,14 @@
-// AIDEV-NOTE: Main application header with design system integration
-import { useState } from 'react';
+// AIDEV-NOTE: Header simplificado - abas desktop, dropdown mobile
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 import { useHubContext } from '../../context/HubContext';
 import { encodeUrl } from '../../utils/encoding';
-import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const mobileMenuRef = useRef(null);
+    
     const { isConnected } = useRemoteStorageContext() || { isConnected: false };
     const { currentHubData, currentHubUrl, lastAttemptedUrl, clearHubData } = useHubContext() || { 
         currentHubData: null, 
@@ -15,74 +16,23 @@ const Header = () => {
         lastAttemptedUrl: null,
         clearHubData: () => {} 
     };
+    
     const location = useLocation();
     const navigate = useNavigate();
 
-    // AIDEV-NOTE: Smart navigation for Hub Loader button - vai para hub atual ou página inicial
-
-    // AIDEV-NOTE: Smart navigation for Hub Loader button - vai para hub atual ou página inicial
-    const handleHubLoaderClick = (e) => {
-        e.preventDefault();
-        
-        // AIDEV-NOTE: Debug logs para entender o estado atual
-        console.log('🔍 [Header] Hub Loader clicked:', {
-            isConnected,
-            currentHubData: !!currentHubData,
-            currentHubUrl,
-            lastAttemptedUrl,
-            hubTitle: currentHubData?.hub?.title,
-            currentPath: location.pathname
-        });
-        
-        // AIDEV-NOTE: Use currentHubUrl or lastAttemptedUrl as fallback
-        const hubUrl = currentHubUrl || lastAttemptedUrl;
-        
-        // AIDEV-NOTE: Se há hub carregado e URL disponível, navega para o hub
-        if (currentHubData && hubUrl) {
-            try {
-                const encodedHubUrl = encodeUrl(hubUrl);
-                const hubRoute = `/hub/${encodedHubUrl}`;
-                console.log('🎯 [Header] Navegando para hub atual:', hubRoute);
-                navigate(hubRoute);
-                return;
-            } catch (error) {
-                console.error('❌ [Header] Erro ao codificar URL do hub:', error);
-            }
-        }
-        
-        // AIDEV-NOTE: Se não há hub carregado, vai para página inicial
-        console.log('🏠 [Header] Indo para página inicial');
-        navigate('/');
-    };
-
-    /**
-     * ✅ NOVO: Função para navegar para a página inicial e limpar os dados do hub.
-     * Garante que o usuário sempre volte para o estado inicial do Hub Loader.
-     */
-    const handleGoHome = (e) => {
-        e.preventDefault();
-        if (location.pathname !== '/') {
-            console.log('🧹 [Header] Limpando dados do hub e voltando para o início.');
-            clearHubData();
-        }
-        navigate('/');
-    };
-
-    // AIDEV-NOTE: Navigation items with RemoteStorage dependency logic
+    // AIDEV-NOTE: Navigation items configuration
     const navigationItems = [
         {
-            label: 'Início',
-            requiresConnection: false,
-            description: 'Voltar para a página inicial com o seletor de hub.',
-            onClick: handleGoHome, 
-            isExternal: false, 
+            label: 'Inicio',
             path: '/',
+            requiresConnection: false,
+            description: 'Voltar para a pagina inicial'
         },
         {
             path: '/collection',
-            label: 'Coleção',
+            label: 'Colecao',
             requiresConnection: true,
-            description: 'Seus itens salvos e histórico'
+            description: 'Seus itens salvos e historico'
         },
         {
             path: '/works',
@@ -94,29 +44,44 @@ const Header = () => {
             path: '/upload',
             label: 'Upload',
             requiresConnection: true,
-            description: 'Enviar conteúdo'
+            description: 'Enviar conteudo'
         }
     ];
 
-    // AIDEV-NOTE: Filter items based on RemoteStorage connection status
+    // AIDEV-NOTE: Filter items based on RemoteStorage connection
     const visibleItems = navigationItems.filter(item => 
         !item.requiresConnection || isConnected
     );
 
+    // AIDEV-NOTE: Close mobile menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+                setIsMobileMenuOpen(false);
+            }
+        };
+
+        if (isMobileMenuOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isMobileMenuOpen]);
+
+    // AIDEV-NOTE: Close mobile menu on route change
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [location.pathname]);
+
     const isActiveRoute = (path) => location.pathname === path;
 
-    const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-
-    // AIDEV-NOTE: Logo navigation - vai para página inicial, limpa estado apenas se necessário
+    // AIDEV-NOTE: Logo navigation
     const handleLogoClick = (e) => {
         e.preventDefault();
         
-        // AIDEV-NOTE: Se já estamos na página inicial, não faz nada para evitar limpar estado desnecessariamente
         if (location.pathname === '/') {
             return;
         }
         
-        // AIDEV-NOTE: Só limpa dados se não estamos em rota de hub para preservar navegação
         if (!location.pathname.startsWith('/hub/')) {
             clearHubData();
         }
@@ -124,7 +89,7 @@ const Header = () => {
         navigate('/');
     };
 
-    // AIDEV-NOTE: Hide header in reading pages to avoid conflicts
+    // AIDEV-NOTE: Hide header in reading pages
     const isReadingPage = location.pathname.includes('/read/') || 
                          location.pathname.includes('/reader/') || 
                          location.pathname.includes('/series/');
@@ -133,10 +98,9 @@ const Header = () => {
         return null;
     }
 
-    // AIDEV-NOTE: Show header when viewing hubs, regardless of RemoteStorage connection
+    // AIDEV-NOTE: Show header when viewing hubs
     const isHubPage = location.pathname.includes('/hub/');
     
-    // AIDEV-NOTE: Hide header only when not connected AND not viewing a hub
     if (!isConnected && !isHubPage) {
         return null;
     }
@@ -145,7 +109,8 @@ const Header = () => {
         <header className="app-header">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
-                    {/* AIDEV-NOTE: Brand/Logo area - smart navigation to hub or loader */}
+                    
+                    {/* Logo */}
                     <div className="flex items-center">
                         <button
                             onClick={handleLogoClick}
@@ -156,118 +121,93 @@ const Header = () => {
                         </button>
                     </div>
 
-                    {/* AIDEV-NOTE: Desktop navigation with design system */}
-                    <nav className="hidden md:flex items-center space-x-1">
-                        {visibleItems.map((item) => {
-                            if (item.isExternal) {
-                                return null;
-                            }
-                            if (item.onClick) {
-                                return (
-                                    <button
-                                        key={item.label}
-                                        onClick={item.onClick}
-                                        className={`px-md py-sm rounded-lg transition-all duration-300 ${
-                                            isActiveRoute(item.path)
-                                                ? 'bg-primary text-inverse font-medium border border-border-focus'
-                                                : 'text-secondary hover:text-primary hover:bg-surface'
-                                        }`}
-                                        title={item.description}
-                                    >
-                                        {item.label}
-                                    </button>
-                                );
-                            }
-                            return (
-                                <Link
-                                    key={item.label}
-                                    to={item.path}
-                                    className={`px-md py-sm rounded-lg transition-all duration-300 ${
-                                        isActiveRoute(item.path)
-                                            ? 'bg-primary text-inverse font-medium border border-border-focus'
-                                            : 'text-secondary hover:text-primary hover:bg-surface'
-                                    }`}
-                                    title={item.description}
-                                >
-                                    {item.label}
-                                </Link>
-                            );
-                        })}
-                        {/* AIDEV-NOTE: Theme toggle in desktop navigation */}
-                        <div className="ml-md">
-                            <ThemeToggle size="sm" />
+                    {/* Desktop Navigation - Abas lado a lado */}
+                    <nav className="desktop-nav">
+                        {visibleItems.map((item) => (
+                            <Link
+                                key={item.path}
+                                to={item.path}
+                                className={`
+                                    px-4 py-2 rounded-lg font-medium transition-all duration-200
+                                    ${isActiveRoute(item.path)
+                                        ? 'bg-primary text-white shadow-md'
+                                        : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
+                                    }
+                                `}
+                                title={item.description}
+                            >
+                                {item.label}
+                            </Link>
+                        ))}
+                        
+                        
+                        {/* Status de conexao no desktop */}
+                        <div className="ml-2 flex items-center space-x-2">
+                            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-success' : 'bg-warning'}`}></div>
+                            <span className="text-xs text-text-secondary">
+                                {isConnected ? 'Conectado' : 'Local'}
+                            </span>
                         </div>
                     </nav>
 
-                    {/* AIDEV-NOTE: Mobile dropdown navigation with design system */}
-                    <div className="md:hidden relative flex items-center gap-sm">
-                        <ThemeToggle size="sm" />
+                    {/* Mobile Navigation - Dropdown apenas */}
+                    <div className="mobile-nav">
                         
-                        <button
-                            onClick={toggleDropdown}
-                            className="flex items-center gap-2 px-md py-sm rounded-lg bg-surface text-accent border border-border transition-all duration-300"
-                            aria-expanded={isDropdownOpen}
-                            aria-label="Menu de navegação"
-                        >
-                            <span>Menu</span>
-                            <span className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}>▼</span>
-                        </button>
+                        <div className="relative" ref={mobileMenuRef}>
+                            <button
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                className="flex items-center justify-center w-10 h-10 rounded-lg bg-surface border border-border hover:bg-surface-hover transition-colors"
+                                aria-expanded={isMobileMenuOpen}
+                                aria-label="Menu de navegacao"
+                            >
+                                <svg 
+                                    className={`w-5 h-5 transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-90' : ''}`}
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    {isMobileMenuOpen ? (
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    ) : (
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                    )}
+                                </svg>
+                            </button>
 
-                        {/* AIDEV-NOTE: Mobile dropdown menu */}
-                        {isDropdownOpen && (
-                            <div className="absolute right-0 top-full mt-2 w-64 bg-surface border border-border rounded-lg shadow-lg z-50">
-                                <div className="py-2">
-                                    {visibleItems.map((item) => {
-                                        if (item.isExternal) {
-                                            return null;
-                                        }
-                                        if (item.onClick) {
-                                            return (
-                                                <button
-                                                    key={item.label}
-                                                    onClick={(e) => {
-                                                        item.onClick(e);
-                                                        setIsDropdownOpen(false);
-                                                    }}
-                                                    className={`block w-full text-left px-4 py-3 transition-colors ${
-                                                        isActiveRoute(item.path)
-                                                            ? 'bg-surface-hover text-accent'
-                                                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
-                                                    }`}
-                                                >
-                                                    <div className="font-medium">{item.label}</div>
-                                                    <div className="text-sm text-text-tertiary">{item.description}</div>
-                                                </button>
-                                            );
-                                        }
-                                        return (
+                            {/* Mobile Menu Dropdown */}
+                            {isMobileMenuOpen && (
+                                <div className="absolute right-0 top-full mt-2 w-64 bg-surface border border-border rounded-lg shadow-lg z-50">
+                                    <div className="py-2">
+                                        {visibleItems.map((item) => (
                                             <Link
-                                                key={item.label}
+                                                key={item.path}
                                                 to={item.path}
-                                                onClick={() => setIsDropdownOpen(false)}
-                                                className={`block px-4 py-3 transition-colors ${
-                                                    isActiveRoute(item.path)
-                                                        ? 'bg-surface-hover text-accent'
+                                                className={`
+                                                    block px-4 py-3 transition-colors
+                                                    ${isActiveRoute(item.path)
+                                                        ? 'bg-primary text-white'
                                                         : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
-                                                }`}
+                                                    }
+                                                `}
                                             >
                                                 <div className="font-medium">{item.label}</div>
-                                                <div className="text-sm text-text-tertiary">{item.description}</div>
+                                                <div className="text-xs opacity-75">{item.description}</div>
                                             </Link>
-                                        );
-                                    })}
-                                    {/* AIDEV-NOTE: Connection status indicator in mobile menu */}
-                                    <div className="px-4 py-2 border-t border-border mt-2">
-                                        <div className="flex items-center gap-2 text-sm">
-                                            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-success' : 'bg-warning'}`}></div>
-                                            <span className="text-text-secondary">
-                                                {isConnected ? 'RemoteStorage Conectado' : 'Modo Local'}
-                                            </span>
+                                        ))}
+                                        
+                                        {/* Connection Status in Mobile */}
+                                        <div className="px-4 py-3 border-t border-border mt-2">
+                                            <div className="flex items-center space-x-2 text-sm">
+                                                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-success' : 'bg-warning'}`}></div>
+                                                <span className="text-text-secondary">
+                                                    {isConnected ? 'RemoteStorage Conectado' : 'Modo Local'}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

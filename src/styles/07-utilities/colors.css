@@ -208,6 +208,22 @@
   background-image: linear-gradient(to bottom left, var(--tw-gradient-stops)) !important;
 }
 
+/* ========================================================================== */
+/* == 🎨 ADDITIONAL UTILITY CLASSES                                       == */
+/* ========================================================================== */
+
+/* Text color aliases for component compatibility */
+.text-text-primary { color: var(--color-text-primary) !important; }
+.text-text-secondary { color: var(--color-text-secondary) !important; }
+.text-text-tertiary { color: var(--color-text-tertiary) !important; }
+
+/* Additional semantic colors */
+.text-accent-hover { color: var(--color-accent-hover) !important; }
+.bg-surface-hover { background-color: var(--color-surface-hover) !important; }
+
+/* Focus and interaction states */
+.border-border-focus { border-color: var(--color-border-focus) !important; }
+
 /* Gradient presets */
 .bg-gradient-brand {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%) !important;

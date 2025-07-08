@@ -13,18 +13,18 @@ const Button = forwardRef(({
 }, ref) => {
   // AIDEV-NOTE: Button variants with semantic styling
   const variants = {
-    primary: 'bg-primary text-inverse hover:bg-accent hover:text-inverse',
-    secondary: 'bg-surface text-accent border border-border hover:bg-primary hover:text-inverse',
-    ghost: 'bg-transparent text-accent hover:bg-surface',
-    danger: 'bg-error text-inverse hover:bg-red-600',
-    success: 'bg-success text-inverse hover:bg-green-600'
+    primary: 'btn--primary',
+    secondary: 'btn--secondary', 
+    ghost: 'btn--ghost',
+    danger: 'btn--destructive',
+    success: 'btn--success'
   };
 
   // AIDEV-NOTE: Size variants for consistent proportions
   const sizes = {
-    sm: 'px-sm py-xs text-sm rounded-md',
-    md: 'px-md py-sm text-base rounded-lg',
-    lg: 'px-lg py-md text-lg rounded-xl'
+    sm: 'btn--sm',
+    md: '', // Default size
+    lg: 'btn--lg'
   };
 
   // AIDEV-NOTE: Loading state styling
@@ -36,18 +36,12 @@ const Button = forwardRef(({
       ref={ref}
       disabled={disabled || loading}
       className={`
-        button
+        btn
         ${variants[variant]}
         ${sizes[size]}
         ${loadingClasses}
         ${disabledClasses}
         ${className}
-        inline-flex items-center justify-center
-        font-medium
-        transition-all duration-300
-        focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-        disabled:pointer-events-none
-        shadow-sm
       `}
       {...props}
     >
@@ -61,14 +55,14 @@ const Button = forwardRef(({
 
       {/* AIDEV-NOTE: Icon positioning */}
       {icon && iconPosition === 'left' && !loading && (
-        <span className="mr-xs">{icon}</span>
+        <span className="btn__icon btn__icon--start">{icon}</span>
       )}
 
       {children}
 
       {/* AIDEV-NOTE: Icon positioning */}
       {icon && iconPosition === 'right' && !loading && (
-        <span className="ml-xs">{icon}</span>
+        <span className="btn__icon btn__icon--end">{icon}</span>
       )}
     </button>
   );
