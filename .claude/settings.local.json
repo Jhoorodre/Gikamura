@@ -4,7 +4,9 @@
       "Bash(find:*)",
       "Bash(grep:*)",
       "Bash(npm run lint)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(gh repo view:*)",
+      "Bash(git remote get-url:*)"
     ],
     "deny": []
   }

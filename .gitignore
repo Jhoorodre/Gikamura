@@ -106,6 +106,7 @@ tmp/
 *.code-workspace
 gikamoe.code-workspace
 settings.local.json
+gikamura.code-workspace
 
 # Storybook
 storybook-static

@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+> **IMPORTANTE:** Claude Dev e qualquer IA devem SEMPRE seguir o sistema de comentários estruturados AIDEV ao gerar código, revisões ou sugestões neste repositório. Consulte a seção "AIDEV Comments System" abaixo para detalhes.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Development Commands
