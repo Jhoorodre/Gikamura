@@ -20,6 +20,12 @@ const getBasename = () => {
   
   // Em produção, detectar automaticamente baseado na URL atual
   const currentPath = window.location.pathname;
+  const hostname = window.location.hostname;
+  
+  // AIDEV-NOTE: Detecção específica para GitHub Pages
+  if (hostname.includes('github.io') || hostname.includes('githubusercontent.com')) {
+    return '/gikamura';
+  }
   
   // Se a página atual é a raiz ou já tem conteúdo, sem basename
   if (currentPath === '/' || currentPath === '/index.html') {
