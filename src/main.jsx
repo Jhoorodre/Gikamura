@@ -11,19 +11,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // AIDEV-NOTE: React Query client with default config for caching
 const queryClient = new QueryClient();
 
-// AIDEV-NOTE: Configure basename for GitHub Pages - auto-detect from URL
+// AIDEV-NOTE: Configure basename for GitHub Pages - detect from hostname
 const getBasename = () => {
-  // Se estiver em produção, detectar automaticamente o basename
-  if (import.meta.env.PROD) {
-    const path = window.location.pathname;
-    // Se a URL atual já contém /gikamura, usar como basename
-    if (path.startsWith('/gikamura')) {
-      return '/gikamura';
-    }
-    // Se não, assumir que não precisa de basename (domínio customizado)
-    return '';
+  // Se estiver em produção no GitHub Pages, usar basename
+  if (import.meta.env.PROD && window.location.hostname.includes('github.io')) {
+    return '/gikamura';
   }
-  // Em desenvolvimento, sem basename
+  // Para outros casos (desenvolvimento ou domínio customizado), sem basename
   return '';
 };
 
