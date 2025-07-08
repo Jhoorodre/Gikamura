@@ -11,6 +11,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // AIDEV-NOTE: React Query client with default config for caching
 const queryClient = new QueryClient();
 
+// AIDEV-NOTE: Configure basename for GitHub Pages
+const basename = import.meta.env.PROD ? '/Gikamura' : '';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 // Anti-flickering improvements
@@ -19,7 +22,7 @@ rootElement.style.visibility = 'visible';
 rootElement.style.opacity = '1';
 
 root.render(
-  <BrowserRouter basename="/Gikamura">
+  <BrowserRouter basename={basename}>
     <QueryClientProvider client={queryClient}>
       <RemoteStorageProvider>
         <AppProvider>
