@@ -105,6 +105,7 @@ tmp/
 # Arquivos de workspace
 *.code-workspace
 gikamoe.code-workspace
+settings.local.json
 
 # Storybook
 storybook-static

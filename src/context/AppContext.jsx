@@ -201,6 +201,25 @@ export const AppProvider = ({ children }) => {
         setHubUrlToLoad(url);
     }, []);
 
+    // AIDEV-NOTE: Remove hub from saved hubs with proper error handling
+    const removeHub = useCallback(async (hubUrl) => {
+        try {
+            // Remove from RemoteStorage
+            await api.removeHub(hubUrl);
+            
+            // Update local state by removing the hub
+            setSavedHubs(prevHubs => prevHubs.filter(hub => hub.url !== hubUrl));
+            
+            if (import.meta.env?.DEV) {
+                console.log('✅ [AppContext] Hub removido com sucesso:', hubUrl);
+            }
+        } catch (error) {
+            console.error('❌ [AppContext] Erro ao remover hub:', error);
+            // Refresh data to sync with RemoteStorage state
+            await refreshUserData();
+        }
+    }, [refreshUserData]);
+
     // AIDEV-NOTE: Memoize context value to prevent unnecessary re-renders
     const value = useMemo(() => ({
         pinnedItems,
@@ -218,6 +237,7 @@ export const AppProvider = ({ children }) => {
         setHubUrl,
         hubUrlToLoad,
         lastAttemptedUrl,
+        removeHub,
     }), [
         pinnedItems,
         historyItems,
@@ -234,6 +254,7 @@ export const AppProvider = ({ children }) => {
         setHubUrl,
         hubUrlToLoad,
         lastAttemptedUrl,
+        removeHub,
     ]);
 
     return (

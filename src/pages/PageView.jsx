@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useReader } from '../hooks/useReader';
 import { useRemoteStorageContext } from '../context/RemoteStorageContext';
+import { useHubContext } from '../context/HubContext';
 import { decodeUrl, encodeUrl } from '../utils/encoding';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
@@ -29,6 +30,7 @@ const PageView = () => {
     const navigate = useNavigate();
     const { readerData, isLoading, error, loadReader } = useReader();
     const { isConnected } = useRemoteStorageContext();
+    const { currentHubData, currentHubUrl } = useHubContext();
     
     const [viewMode, setViewMode] = useState('grid'); // 'grid' ou 'list'
     const [isBookmarked, setIsBookmarked] = useState(false);
@@ -153,10 +155,28 @@ const PageView = () => {
         }
     }, [readerData?.title, chapters.length]);
 
-    // Volta ao hub (página anterior)
+    // Volta ao hub carregado ou página anterior
     const goBackToHub = useCallback(() => {
-        navigate(-1);
-    }, [navigate]);
+        if (import.meta.env?.DEV) {
+            console.log('🔙 [PageView] goBackToHub - currentHubUrl:', currentHubUrl);
+            console.log('🔙 [PageView] goBackToHub - currentHubData:', currentHubData);
+        }
+        
+        if (currentHubUrl) {
+            // Retorna ao hub atual que está carregado
+            const encodedHubUrl = encodeUrl(currentHubUrl);
+            if (import.meta.env?.DEV) {
+                console.log('🔙 [PageView] Navegando para hub:', `/hub/${encodedHubUrl}`);
+            }
+            navigate(`/hub/${encodedHubUrl}`);
+        } else {
+            // Fallback para página anterior se não houver hub carregado
+            if (import.meta.env?.DEV) {
+                console.log('🔙 [PageView] Nenhum hub carregado, voltando página anterior');
+            }
+            navigate(-1);
+        }
+    }, [currentHubUrl, currentHubData, navigate]);
 
     // Renderização condicional
     if (isLoading || !readerData) {
@@ -188,7 +208,7 @@ const PageView = () => {
             <nav className="breadcrumb">
                 <button onClick={goBackToHub} className="breadcrumb-btn">
                     <ChevronLeftIcon className="w-4 h-4" />
-                    Série
+                    Hub
                 </button>
                 <ChevronRightIcon className="breadcrumb-separator" />
                 <span className="breadcrumb-current">{title}</span>
