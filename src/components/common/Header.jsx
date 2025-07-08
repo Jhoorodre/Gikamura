@@ -84,6 +84,17 @@ const Header = () => {
         // Navigate to home
         navigate('/');
     };
+    
+    // AIDEV-NOTE: Handle navigation to home for mobile menu
+    const handleHomeNavigation = (e) => {
+        e.preventDefault();
+        
+        // Clear hub data to show HubLoader
+        clearHubData();
+        
+        // Navigate to home
+        navigate('/');
+    };
 
     // AIDEV-NOTE: Hide header in reading pages
     const isReadingPage = location.pathname.includes('/read/') || 
@@ -131,7 +142,10 @@ const Header = () => {
                                     }
                                 `}
                                 title={item.description}
-                                onClick={item.path === '/' ? () => clearHubData() : undefined}
+                                onClick={item.path === '/' ? (e) => {
+                                    e.preventDefault();
+                                    handleHomeNavigation(e);
+                                } : undefined}
                             >
                                 {item.label}
                             </Link>
@@ -186,7 +200,10 @@ const Header = () => {
                                                         : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                                                     }
                                                 `}
-                                                onClick={item.path === '/' ? () => clearHubData() : undefined}
+                                                onClick={item.path === '/' ? (e) => {
+                                                    e.preventDefault();
+                                                    handleHomeNavigation(e);
+                                                } : undefined}
                                             >
                                                 <div className="font-medium">{item.label}</div>
                                                 <div className="text-xs opacity-75">{item.description}</div>
