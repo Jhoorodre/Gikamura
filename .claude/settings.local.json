@@ -19,7 +19,12 @@
       "Bash(git config:*)",
       "Bash(git fetch:*)",
       "WebFetch(domain:github.com)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(gh auth:*)",
+      "Bash(command -v:*)",
+      "Bash(\"/mnt/c/Program Files/GitHub CLI/gh.exe\" auth status)",
+      "Bash(\"/mnt/c/Program Files/GitHub CLI/gh.exe\" auth setup-git)",
+      "Bash(\"/mnt/c/Program Files/GitHub CLI/gh.exe\" auth token)"
     ],
     "deny": []
   }
