@@ -5,6 +5,7 @@ import { useReader } from '../hooks/useReader';
 import { useRemoteStorageContext } from '../context/RemoteStorageContext';
 import { useHubContext } from '../context/HubContext';
 import { decodeUrl, encodeUrl } from '../utils/encoding';
+import { NavigationService } from '../utils/navigationService';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Button from '../components/common/Button';
@@ -133,13 +134,12 @@ const PageView = () => {
         }
     }, [isBookmarked, isConnected]);
 
-    // Compartilhar
+    // AIDEV-NOTE: Compartilhar com URL limpa (sem basename)
     const handleShare = useCallback(async () => {
-        const shareData = {
+        const shareData = NavigationService.generateShareData({
             title: readerData.title,
-            text: `Confira "${readerData.title}" - ${chapters.length} capítulos disponíveis`,
-            url: window.location.href
-        };
+            text: `Confira "${readerData.title}" - ${chapters.length} capítulos disponíveis`
+        });
 
         if (navigator.share) {
             try {
@@ -148,8 +148,8 @@ const PageView = () => {
                 console.log('Compartilhamento cancelado');
             }
         } else {
-            // Fallback: copiar para clipboard
-            navigator.clipboard.writeText(window.location.href);
+            // Fallback: copiar para clipboard com URL limpa
+            navigator.clipboard.writeText(shareData.url);
             setShowShareMenu(true);
             setTimeout(() => setShowShareMenu(false), 2000);
         }

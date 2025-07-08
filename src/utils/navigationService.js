@@ -152,6 +152,51 @@ export class NavigationService {
         upload: () => '/upload',
         home: () => '/'
     };
+
+    /**
+     * AIDEV-NOTE: Generate clean URLs for sharing (without basename)
+     */
+    static generateShareUrl = (url = window.location.href) => {
+        try {
+            // Se é uma URL completa, criar objeto URL
+            if (url.startsWith('http')) {
+                const urlObj = new URL(url);
+                let pathname = urlObj.pathname;
+                
+                // Remove basename /gikamura se presente
+                if (pathname.startsWith('/gikamura')) {
+                    pathname = pathname.replace('/gikamura', '') || '/';
+                }
+                
+                // Reconstrói a URL sem o basename
+                return `${urlObj.origin}${pathname}${urlObj.search}${urlObj.hash}`;
+            }
+            
+            // Se é uma URL relativa, apenas remove o basename
+            let cleanUrl = url;
+            if (cleanUrl.startsWith('/gikamura')) {
+                cleanUrl = cleanUrl.replace('/gikamura', '') || '/';
+            }
+            
+            return cleanUrl;
+        } catch (error) {
+            console.error('Erro ao gerar URL de compartilhamento:', error);
+            return url; // Retorna a URL original em caso de erro
+        }
+    };
+
+    /**
+     * AIDEV-NOTE: Generate share data with clean URLs
+     */
+    static generateShareData = ({ title, text, url = null }) => {
+        const shareUrl = url ? NavigationService.generateShareUrl(url) : NavigationService.generateShareUrl();
+        
+        return {
+            title,
+            text,
+            url: shareUrl
+        };
+    };
 }
 
 /**

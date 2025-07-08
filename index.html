@@ -64,6 +64,19 @@
     <!-- Preload critical CSS -->
     <link rel="preload" href="/src/styles/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     
+    <!-- GitHub Pages SPA redirect handler -->
+    <script>
+      // AIDEV-NOTE: Handle GitHub Pages SPA routing
+      // This script checks if we're being redirected from a 404 and restores the original URL
+      (function() {
+        const redirect = sessionStorage.getItem('redirect');
+        if (redirect) {
+          sessionStorage.removeItem('redirect');
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
+    
     <!-- Anti-flickering script -->
     <script>
       // Mark fonts as loaded when they're ready

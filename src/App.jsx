@@ -24,6 +24,9 @@ import { HubProvider } from './context/HubContext';
 import { UserPreferencesProvider } from './context/UserPreferencesContext';
 import MainLayout from './components/common/MainLayout';
 import { ReaderToMangaRedirect, LeitorToReaderRedirect } from './components/common/RouteRedirects';
+import GuardedHubRoute from './components/common/GuardedHubRoute';
+import GuardedMangaRoute from './components/common/GuardedMangaRoute';
+import GuardedReaderRoute from './components/common/GuardedReaderRoute';
 
 // AIDEV-NOTE: Rotas pesadas agora são carregadas sob demanda (React.lazy)
 const HubView = lazy(() => import('./views/HubView'));
@@ -137,25 +140,27 @@ function App() {
                             } />
                             <Route path="hub/:encodedUrl" element={
                                 <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}> 
-                                    <HubRouteHandler />
+                                    <GuardedHubRoute />
                                 </Suspense>
                             } />
                         </Route>
-                        {/* Novas rotas modernas */}
+                        {/* AIDEV-NOTE: Rotas modernas com validação de parâmetros */}
                         <Route path="/manga/:encodedUrl" element={
                             <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}>
-                                <PageView />
+                                <GuardedMangaRoute />
                             </Suspense>
                         } />
                         <Route path="/reader/:encodedUrl/:encodedChapterId" element={
                             <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}>
-                                <ReaderChapter />
+                                <GuardedReaderRoute />
                             </Suspense>
                         } />
                         {/* AIDEV-NOTE: Simplified redirect routes using centralized components */}
                         <Route path="/reader/:encodedUrl" element={<ReaderToMangaRedirect />} />
                         <Route path="/leitor/:encodedUrl" element={<ReaderToMangaRedirect />} />
                         <Route path="/leitor/:encodedUrl/:encodedChapterId" element={<LeitorToReaderRedirect />} />
+                        {/* AIDEV-NOTE: Catch-all route for invalid URLs */}
+                        <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </div>
             </HubProvider>

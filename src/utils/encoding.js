@@ -69,14 +69,44 @@ export const isValidUrl = (str) => {
 
 /**
  * Valida se uma string é Base64 válida
+ * AIDEV-NOTE: Enhanced validation for Base64 strings
  * @param {string} str - String a ser validada
  * @returns {boolean} - Se é Base64 válida
  */
 export const isValidBase64 = (str) => {
   try {
+    if (!str || typeof str !== 'string') {
+      return false;
+    }
+    
+    // Verifica se contém apenas caracteres Base64 válidos (incluindo URL-safe)
+    const base64Regex = /^[A-Za-z0-9+/\-_]*={0,2}$/;
+    if (!base64Regex.test(str)) {
+      return false;
+    }
+    
     // Tenta decodificar para verificar se é válida
     decodeUrl(str);
     return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Valida se uma string Base64 codificada contém uma URL válida
+ * AIDEV-NOTE: Validates both Base64 encoding and URL content
+ * @param {string} encodedStr - String Base64 codificada
+ * @returns {boolean} - Se é uma URL Base64 válida
+ */
+export const isValidEncodedUrl = (encodedStr) => {
+  try {
+    if (!isValidBase64(encodedStr)) {
+      return false;
+    }
+    
+    const decodedUrl = decodeUrl(encodedStr);
+    return isValidUrl(decodedUrl);
   } catch {
     return false;
   }

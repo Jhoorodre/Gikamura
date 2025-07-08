@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/Gikamura/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/gikamura/' : '/',
   plugins: [react()],
   resolve: {
     // AIDEV-NOTE: Path aliases for cleaner imports (FSD architecture ready)

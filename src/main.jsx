@@ -12,7 +12,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 
 // AIDEV-NOTE: Configure basename for GitHub Pages
-const basename = import.meta.env.PROD ? '/Gikamura' : '';
+const basename = import.meta.env.PROD ? '/gikamura' : '';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

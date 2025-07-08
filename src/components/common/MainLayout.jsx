@@ -8,8 +8,12 @@ import PageTransition from './PageTransition';
 const MainLayout = () => {
   const location = useLocation();
 
-  // O header não deve aparecer nas páginas de leitura para uma experiência imersiva.
-  const isReadingPage = location.pathname.startsWith('/read') || location.pathname.startsWith('/reader');
+  // AIDEV-NOTE: O header não deve aparecer nas páginas de leitura para uma experiência imersiva.
+  // Corrigido para detectar corretamente as páginas de leitura baseado nas rotas definidas
+  const isReadingPage = location.pathname.startsWith('/reader/') || 
+                       location.pathname.startsWith('/leitor/') ||
+                       location.pathname.includes('/reader/') ||
+                       location.pathname.includes('/leitor/');
 
   return (
     <div className="app-layout">
