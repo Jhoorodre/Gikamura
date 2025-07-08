@@ -1,6 +1,8 @@
-# Gikamoe - React Reader Platform
+# Gikamura - React Reader Platform
 
 A modern React application for reading manga/webtoons with RemoteStorage synchronization support.
+
+🌐 **Live Demo**: [https://jhoorodre.github.io/Gikamura/](https://jhoorodre.github.io/Gikamura/)
 
 ## Architecture & Code Organization
 
