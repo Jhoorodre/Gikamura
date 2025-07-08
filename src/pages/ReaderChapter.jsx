@@ -340,7 +340,7 @@ const ReaderChapter = () => {
 
     if (!readerData || pages.length === 0) {
         return (
-            <div className="chapter-viewer loading">
+            <div className="chapter-reader loading">
                 <Spinner size="lg" text="Carregando páginas..." />
             </div>
         );
@@ -349,96 +349,74 @@ const ReaderChapter = () => {
     return (
         <div 
             ref={containerRef}
-            className={`chapter-viewer ${viewMode} ${fitMode}`}
+            className={`chapter-reader ${viewMode === 'scroll' ? 'scroll-mode' : 'single-mode'} ${fitMode}`}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
         >
             {/* Header com controles */}
-            <div className={`viewer-header ${showControls ? 'visible' : ''}`}>
-                <div className="header-left">
+            <div className={`chapter-reader-header ${showControls ? '' : 'hidden'}`}>
+                <div className="chapter-reader-nav">
                     <button 
                         onClick={() => navigate(`/manga/${encodedUrl}`)} 
-                        className="control-btn back-btn"
+                        className="chapter-reader-back"
                         title="Voltar aos capítulos"
                     >
                         <ChevronLeftIcon className="w-5 h-5" />
+                        Voltar
                     </button>
-                    <div className="chapter-info">
-                        <span className="work-title">{readerData.title}</span>
-                        <span className="chapter-title">
+                    <div className="chapter-reader-info">
+                        <h1 className="chapter-reader-title">{readerData.title}</h1>
+                        <div className="chapter-reader-progress">
                             Cap. {navigationInfo.current?.id} 
                             {navigationInfo.current?.title && ` - ${navigationInfo.current.title}`}
-                        </span>
-                    </div>
-                </div>
-
-                <div className="header-center">
-                <div className="page-indicator">
-                {viewMode === 'single' ? (
-                <span>{currentPage + 1} / {pages.length}</span>
-                ) : (
-                <span>Cap. {navigationInfo.current?.id}</span>
-                )}
-                {viewMode === 'single' && (
-                <div className="progress-bar-mini">
-                <div 
-                className="progress-fill-mini"
-                style={{ width: `${((currentPage + 1) / pages.length) * 100}%` }}
-                />
-                </div>
-                )}
-                    {isPreloading && (
-                            <div className="cache-indicator" title="Pré-carregando próximas páginas">
-                                    <div className="loading-dot"></div>
-                                </div>
-                            )}
                         </div>
                     </div>
 
-                <div className="header-right">
-                    <button 
-                        className="control-btn"
-                        onClick={() => setViewMode(prev => prev === 'single' ? 'scroll' : 'single')}
-                        title={viewMode === 'single' ? 'Modo scroll' : 'Modo página'}
-                    >
-                        {viewMode === 'single' ? <ViewColumnsIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                    </button>
-                    <button 
-                        className="control-btn"
-                        onClick={() => setShowPageOverview(!showPageOverview)}
-                        title="Visão geral das páginas"
-                    >
-                        <GridIcon className="w-5 h-5" />
-                    </button>
-                    <button 
-                        className="control-btn"
-                        onClick={() => setShowSettings(!showSettings)}
-                        title="Configurações"
-                    >
-                        <CogIcon className="w-5 h-5" />
-                    </button>
-                    <button 
-                        className="control-btn"
-                        onClick={toggleFullscreen}
-                        title="Tela cheia"
-                    >
-                        <FullscreenIcon className="w-5 h-5" />
-                    </button>
+                    <div className="chapter-reader-controls">
+                        <span className="chapter-reader-progress">
+                            {viewMode === 'single' ? (
+                                `${currentPage + 1} / ${pages.length}`
+                            ) : (
+                                `Cap. ${navigationInfo.current?.id}`
+                            )}
+                        </span>
+                        
+                        <button 
+                            className="btn btn-sm"
+                            onClick={() => setViewMode(prev => prev === 'single' ? 'scroll' : 'single')}
+                            title={viewMode === 'single' ? 'Modo scroll' : 'Modo página'}
+                        >
+                            {viewMode === 'single' ? <ViewColumnsIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                        </button>
+                        <button 
+                            className="btn btn-sm"
+                            onClick={() => setShowPageOverview(!showPageOverview)}
+                            title="Visão geral das páginas"
+                        >
+                            <GridIcon className="w-4 h-4" />
+                        </button>
+                        <button 
+                            className="btn btn-sm"
+                            onClick={() => setShowSettings(!showSettings)}
+                            title="Configurações"
+                        >
+                            <CogIcon className="w-4 h-4" />
+                        </button>
+                        <button 
+                            className="btn btn-sm"
+                            onClick={toggleFullscreen}
+                            title="Tela cheia"
+                        >
+                            <FullscreenIcon className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Controles laterais (apenas no modo single) */}
+            {/* Navigation Areas (apenas no modo single) */}
             {viewMode === 'single' && (
                 <>
-                    <div className={`side-controls left ${showControls ? 'visible' : ''}`}>
-                        <button 
-                            onClick={goToPrevPage}
-                            disabled={currentPage === 0 && !navigationInfo.prev}
-                            className="nav-btn prev-btn"
-                            title="Página anterior"
-                        >
-                            <ChevronLeftIcon className="w-8 h-8" />
-                        </button>
+                    <div className="chapter-page-nav chapter-page-nav--prev" onClick={goToPrevPage}>
                         {navigationInfo.prev && currentPage === 0 && (
                             <div className="chapter-nav-hint">
                                 Cap. {navigationInfo.prev}
@@ -446,15 +424,7 @@ const ReaderChapter = () => {
                         )}
                     </div>
 
-                    <div className={`side-controls right ${showControls ? 'visible' : ''}`}>
-                        <button 
-                            onClick={goToNextPage}
-                            disabled={currentPage === pages.length - 1 && !navigationInfo.next}
-                            className="nav-btn next-btn"
-                            title="Próxima página"
-                        >
-                            <ChevronRightIcon className="w-8 h-8" />
-                        </button>
+                    <div className="chapter-page-nav chapter-page-nav--next" onClick={goToNextPage}>
                         {navigationInfo.next && currentPage === pages.length - 1 && (
                             <div className="chapter-nav-hint">
                                 Cap. {navigationInfo.next}
@@ -464,158 +434,177 @@ const ReaderChapter = () => {
                 </>
             )}
 
-            {/* Container das páginas */}
-            {viewMode === 'single' ? (
-                // Modo página única
-                <div className="page-container" onClick={handleInteraction}>
-                    <div 
-                        className="page-wrapper"
-                        style={{ 
-                            transform: `scale(${zoomLevel})`,
-                            transformOrigin: 'center center'
-                        }}
-                    >
-                        <CachedImage
-                            src={pages[currentPage]}
-                            alt={`Página ${currentPage + 1}`}
-                            className={`page-image ${fitMode}`}
-                            loading="eager"
-                            onError={(e) => {
-                                console.error('Erro ao carregar página:', pages[currentPage]);
-                            }}
-                        />
-                    </div>
-                </div>
-            ) : (
-                // Modo scroll contínuo
-                <div className="scroll-container">
-                    {pages.map((pageUrl, index) => (
-                        <div key={index} className="scroll-page">
-                            <CachedImage
-                                src={pageUrl}
-                                alt={`Página ${index + 1}`}
-                                className={`page-image ${fitMode}`}
-                                loading={index < 3 ? 'eager' : 'lazy'}
-                            />
+            {/* Content Area */}
+            <div className="chapter-reader-content">
+                {viewMode === 'single' ? (
+                    // Single Page Mode
+                    <div className="chapter-pages-container" onClick={handleInteraction}>
+                        <div className="chapter-page">
+                            <div 
+                                className="chapter-page-image"
+                                style={{ 
+                                    transform: `scale(${zoomLevel})`,
+                                    transformOrigin: 'center center'
+                                }}
+                            >
+                                <CachedImage
+                                    src={pages[currentPage]}
+                                    alt={`Página ${currentPage + 1}`}
+                                    className={`chapter-page-image ${fitMode}`}
+                                    loading="eager"
+                                    onError={(e) => {
+                                        console.error('Erro ao carregar página:', pages[currentPage]);
+                                    }}
+                                />
+                            </div>
+                            <div className="chapter-page-number">
+                                {currentPage + 1}
+                            </div>
                         </div>
-                    ))}
-                </div>
-            )}
+                    </div>
+                ) : (
+                    // Scroll Mode
+                    <div className="chapter-pages-container">
+                        {pages.map((pageUrl, index) => (
+                            <div key={index} className="chapter-page">
+                                <CachedImage
+                                    src={pageUrl}
+                                    alt={`Página ${index + 1}`}
+                                    className={`chapter-page-image ${fitMode}`}
+                                    loading={index < 3 ? 'eager' : 'lazy'}
+                                />
+                                <div className="chapter-page-number">
+                                    {index + 1}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
 
-            {/* Painel de configurações */}
+            {/* Settings Panel */}
             {showSettings && (
-                <div className="settings-panel">
-                    <div className="settings-header">
-                        <h3>Configurações do Leitor</h3>
+                <div className={`reader-settings-panel ${showSettings ? 'open' : ''}`}>
+                    <div className="reader-setting-group">
                         <button 
                             onClick={() => setShowSettings(false)}
-                            className="close-btn"
+                            className="btn btn-sm"
+                            style={{ float: 'right' }}
                         >
                             ✕
                         </button>
+                        <h3>Configurações</h3>
                     </div>
                     
-                    <div className="settings-content">
-                        <div className="setting-group">
-                            <label>Ajuste da Imagem</label>
-                            <div className="setting-buttons">
-                                <button 
-                                    className={`setting-btn ${fitMode === 'fit-width' ? 'active' : ''}`}
-                                    onClick={() => setFitMode('fit-width')}
-                                >
-                                    Largura
-                                </button>
-                                <button 
-                                    className={`setting-btn ${fitMode === 'fit-height' ? 'active' : ''}`}
-                                    onClick={() => setFitMode('fit-height')}
-                                >
-                                    Altura
-                                </button>
-                                <button 
-                                    className={`setting-btn ${fitMode === 'original' ? 'active' : ''}`}
-                                    onClick={() => setFitMode('original')}
-                                >
-                                    Original
-                                </button>
-                            </div>
+                    <div className="reader-setting-group">
+                        <label className="reader-setting-label">Ajuste da Imagem</label>
+                        <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                            <button 
+                                className={`btn btn-sm ${fitMode === 'fit-width' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setFitMode('fit-width')}
+                            >
+                                Largura
+                            </button>
+                            <button 
+                                className={`btn btn-sm ${fitMode === 'fit-height' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setFitMode('fit-height')}
+                            >
+                                Altura
+                            </button>
+                            <button 
+                                className={`btn btn-sm ${fitMode === 'original' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setFitMode('original')}
+                            >
+                                Original
+                            </button>
                         </div>
+                    </div>
 
-                        <div className="setting-group">
-                            <label>Zoom: {Math.round(zoomLevel * 100)}%</label>
-                            <div className="zoom-controls">
-                                <button onClick={handleZoomOut} className="zoom-btn">
-                                    <ZoomOutIcon className="w-4 h-4" />
-                                </button>
-                                <input 
-                                    type="range"
-                                    min="0.5"
-                                    max="3"
-                                    step="0.25"
-                                    value={zoomLevel}
-                                    onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
-                                    className="zoom-slider"
-                                />
-                                <button onClick={handleZoomIn} className="zoom-btn">
-                                    <ZoomInIcon className="w-4 h-4" />
-                                </button>
-                            </div>
+                    <div className="reader-setting-group">
+                        <label className="reader-setting-label">Zoom: {Math.round(zoomLevel * 100)}%</label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                            <button onClick={handleZoomOut} className="btn btn-sm">
+                                <ZoomOutIcon className="w-4 h-4" />
+                            </button>
+                            <input 
+                                type="range"
+                                min="0.5"
+                                max="3"
+                                step="0.25"
+                                value={zoomLevel}
+                                onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
+                                className="reader-setting-slider"
+                            />
+                            <button onClick={handleZoomIn} className="btn btn-sm">
+                                <ZoomInIcon className="w-4 h-4" />
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Visão geral das páginas */}
+            {/* Page Overview */}
             {showPageOverview && (
-                <div className="page-overview">
-                    <div className="overview-header">
-                        <h3>Páginas do Capítulo</h3>
+                <div className="reader-settings-panel open">
+                    <div className="reader-setting-group">
                         <button 
                             onClick={() => setShowPageOverview(false)}
-                            className="close-btn"
+                            className="btn btn-sm"
+                            style={{ float: 'right' }}
                         >
                             ✕
                         </button>
+                        <h3>Páginas do Capítulo</h3>
                     </div>
-                    <div className="overview-grid">
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 'var(--space-2)', maxHeight: '400px', overflowY: 'auto' }}>
                         {pages.map((pageUrl, index) => (
                             <div 
                                 key={index}
-                                className={`overview-item ${index === currentPage ? 'current' : ''}`}
+                                className={`card ${index === currentPage ? 'border-primary' : ''}`}
                                 onClick={() => goToPage(index)}
+                                style={{ cursor: 'pointer', textAlign: 'center', padding: 'var(--space-2)' }}
                             >
                                 <img 
                                     src={pageUrl} 
                                     alt={`Página ${index + 1}`}
                                     loading="lazy"
+                                    style={{ width: '100%', height: '60px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }}
                                 />
-                                <span className="page-number">{index + 1}</span>
+                                <small>{index + 1}</small>
                             </div>
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* Footer com navegação de capítulos */}
-            <div className={`viewer-footer ${showControls ? 'visible' : ''}`}>
+            {/* Footer Navigation */}
+            <div className={`chapter-reader-footer ${showControls ? '' : 'hidden'}`}>
                 <div className="chapter-navigation">
                     {navigationInfo.prev && (
                         <button 
                             onClick={() => goToChapter(navigationInfo.prev)}
-                            className="chapter-nav-btn prev"
+                            className="chapter-nav-button"
                         >
                             <ChevronLeftIcon className="w-4 h-4" />
                             Cap. {navigationInfo.prev}
                         </button>
                     )}
                     
-                    <span className="chapter-position">
+                    <div className="chapter-progress-bar">
+                        <div 
+                            className="chapter-progress-fill"
+                            style={{ width: `${((currentPage + 1) / pages.length) * 100}%` }}
+                        />
+                    </div>
+                    
+                    <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
                         {navigationInfo.current?.index} de {navigationInfo.current?.total}
                     </span>
                     
                     {navigationInfo.next && (
                         <button 
                             onClick={() => goToChapter(navigationInfo.next)}
-                            className="chapter-nav-btn next"
+                            className="chapter-nav-button"
                         >
                             Cap. {navigationInfo.next}
                             <ChevronRightIcon className="w-4 h-4" />

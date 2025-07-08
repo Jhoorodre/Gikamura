@@ -181,7 +181,7 @@ const PageView = () => {
     // Renderização condicional
     if (isLoading || !readerData) {
         return (
-            <div className="modern-reader-container loading">
+            <div className="reader-view-container loading">
                 <Spinner size="lg" text="Carregando obra..." />
             </div>
         );
@@ -189,7 +189,7 @@ const PageView = () => {
 
     if (error) {
         return (
-            <div className="modern-reader-container error">
+            <div className="reader-view-container error">
                 <ErrorMessage
                     title="Erro ao Carregar a Obra"
                     message={error.message}
@@ -203,222 +203,183 @@ const PageView = () => {
     const nextChapter = getNextChapter();
 
     return (
-        <div className="modern-reader-container">
-            {/* Breadcrumb */}
-            <nav className="breadcrumb">
-                <button onClick={goBackToHub} className="breadcrumb-btn">
-                    <ChevronLeftIcon className="w-4 h-4" />
-                    Hub
-                </button>
-                <ChevronRightIcon className="breadcrumb-separator" />
-                <span className="breadcrumb-current">{title}</span>
-            </nav>
-
-            {/* Cabeçalho da obra */}
-            <div className="manga-header">
-                <div className="manga-cover">
-                    <Image
-                        src={cover}
-                        alt={`Capa de ${title}`}
-                        className="manga-cover-image"
-                        errorSrc="https://placehold.co/300x450/1e293b/94a3b8?text=Capa"
-                    />
-                    <div className="cover-overlay">
-                        <button 
-                            className={`bookmark-btn ${isBookmarked ? 'bookmarked' : ''}`}
-                            onClick={handleBookmark}
-                            title={isBookmarked ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-                        >
-                            <HeartIcon className="w-6 h-6" />
+        <div className="reader-view-container">
+            {/* Navigation Header */}
+            <div className="reader-header-fixed">
+                <div className="reader-header-content">
+                    <div className="reader-nav-buttons">
+                        <button onClick={goBackToHub} className="btn btn-secondary">
+                            <ChevronLeftIcon className="w-4 h-4" />
+                            Voltar ao Hub
                         </button>
-                    </div>
-                </div>
-
-                <div className="manga-details">
-                    <h1 className="manga-title">{title}</h1>
-                    <p className="manga-author">por {author || 'Autor desconhecido'}</p>
-                    
-                    {/* Metadados */}
-                    <div className="manga-meta">
-                        <span className={`manga-status status-${status?.toLowerCase().replace(' ', '-')}`}>
-                            {status || 'Status indefinido'}
-                        </span>
-                        <span className="manga-stats">
-                            <BookOpenIcon className="w-4 h-4" />
-                            {stats.totalChapters} capítulos
-                        </span>
-                        {publishedDate && (
-                            <span className="manga-date">
-                                <CalendarIcon className="w-4 h-4" />
-                                {new Date(publishedDate).toLocaleDateString('pt-BR')}
-                            </span>
-                        )}
-                        <div className="manga-rating">
-                            {[...Array(5)].map((_, i) => (
-                                <StarIcon key={i} className="w-4 h-4 text-yellow-400" />
-                            ))}
-                            <span className="rating-text">4.5/5</span>
-                        </div>
-                    </div>
-
-                    {/* Gêneros */}
-                    {genres && genres.length > 0 && (
-                        <div className="manga-genres">
-                            <TagIcon className="w-4 h-4" />
-                            <div className="genre-tags">
-                                {genres.map((genre, index) => (
-                                    <span key={index} className="genre-tag">{genre}</span>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Progresso de leitura */}
-                    {stats.readChapters > 0 && (
-                        <div className="reading-progress">
-                            <div className="progress-info">
-                                <span>Progresso: {stats.readChapters}/{stats.totalChapters}</span>
-                                <span>{stats.progressPercent}%</span>
-                            </div>
-                            <div className="progress-bar">
-                                <div 
-                                    className="progress-fill" 
-                                    style={{ width: `${stats.progressPercent}%` }}
-                                />
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Descrição */}
-                    {description && (
-                        <p className="manga-description">{description}</p>
-                    )}
-
-                    {/* Botões de ação */}
-                    <div className="action-buttons">
-                        <Button
-                            onClick={handleContinueReading}
-                            className="btn-primary btn-continue"
-                            disabled={chapters.length === 0}
-                        >
-                            <PlayIcon className="w-5 h-5" />
-                            {stats.readChapters > 0 ? 'Continuar Leitura' : 'Começar a Ler'}
-                        </Button>
-                        
-                        {nextChapter && (
-                            <Button
-                                onClick={() => handleChapterSelect(nextChapter.id)}
-                                className="btn-secondary"
-                            >
-                                Próximo: Cap. {nextChapter.id}
-                            </Button>
-                        )}
-
-                        <button 
-                            className="btn-icon" 
-                            onClick={handleShare}
-                            title="Compartilhar"
-                        >
-                            <ShareIcon className="w-5 h-5" />
-                        </button>
-                        
-                        {showShareMenu && (
-                            <div className="share-tooltip">Link copiado!</div>
-                        )}
+                        <span className="text-secondary">→ {title}</span>
                     </div>
                 </div>
             </div>
 
-            {/* Lista de capítulos */}
-            <div className="chapter-list-container">
-                <div className="chapter-list-header">
-                    <h2 className="chapter-list-title">
-                        Capítulos ({stats.totalChapters})
-                    </h2>
-                    <div className="chapter-controls">
-                        <div className="sort-controls">
+            {/* Main Content */}
+            <div className="reader-main-section">
+                <div className="reader-work-info">
+                    <div className="reader-cover-container">
+                        <Image
+                            src={cover}
+                            alt={`Capa de ${title}`}
+                            className="reader-cover-image"
+                            errorSrc="https://placehold.co/300x450/1e293b/94a3b8?text=Capa"
+                        />
+                    </div>
+
+                    <div className="reader-work-details">
+                        <h1 className="reader-work-title">{title}</h1>
+                        <p className="reader-work-author">por {author || 'Autor desconhecido'}</p>
+                        
+                        {/* Description */}
+                        {description && (
+                            <div className="reader-work-description">{description}</div>
+                        )}
+                        
+                        {/* Meta Information */}
+                        <div className="reader-work-meta">
+                            <span className={`reader-status-badge reader-status-badge--${status?.toLowerCase().replace(' ', '-') || 'ongoing'}`}>
+                                {status || 'Em Andamento'}
+                            </span>
+                            <span className="reader-work-stats">
+                                <BookOpenIcon className="w-4 h-4" />
+                                {stats.totalChapters} capítulos
+                            </span>
+                            {publishedDate && (
+                                <span className="reader-work-stats">
+                                    <CalendarIcon className="w-4 h-4" />
+                                    {new Date(publishedDate).toLocaleDateString('pt-BR')}
+                                </span>
+                            )}
                             <button 
-                                className={`sort-btn ${sortOrder === 'asc' ? 'active' : ''}`}
+                                className="btn btn-icon"
+                                onClick={handleBookmark}
+                                title={isBookmarked ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                            >
+                                <HeartIcon className={`w-5 h-5 ${isBookmarked ? 'text-red-500' : ''}`} />
+                            </button>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="reader-work-meta">
+                            <Button
+                                onClick={handleContinueReading}
+                                className="btn btn-primary"
+                                disabled={chapters.length === 0}
+                            >
+                                <PlayIcon className="w-5 h-5" />
+                                {stats.readChapters > 0 ? 'Continuar Leitura' : 'Começar a Ler'}
+                            </Button>
+                            
+                            {nextChapter && (
+                                <Button
+                                    onClick={() => handleChapterSelect(nextChapter.id)}
+                                    className="btn btn-secondary"
+                                >
+                                    Próximo: Cap. {nextChapter.id}
+                                </Button>
+                            )}
+
+                            <button 
+                                className="btn btn-icon" 
+                                onClick={handleShare}
+                                title="Compartilhar"
+                            >
+                                <ShareIcon className="w-5 h-5" />
+                            </button>
+                            
+                            {showShareMenu && (
+                                <div className="tooltip">Link copiado!</div>
+                            )}
+                        </div>
+                        
+                        {/* Progress */}
+                        {stats.readChapters > 0 && (
+                            <div className="reader-work-meta">
+                                <small>Progresso: {stats.readChapters}/{stats.totalChapters} ({stats.progressPercent}%)</small>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Chapter List */}
+                <div className="reader-chapters-section">
+                    <div className="reader-chapters-header">
+                        <h2 className="reader-chapters-title">
+                            Capítulos ({stats.totalChapters})
+                        </h2>
+                        <div className="reader-chapters-controls">
+                            <button 
+                                className={`btn btn-sm ${sortOrder === 'asc' ? 'btn-primary' : 'btn-secondary'}`}
                                 onClick={() => setSortOrder('asc')}
                                 title="Ordem crescente"
                             >
                                 <SortAscendingIcon className="w-4 h-4" />
                             </button>
                             <button 
-                                className={`sort-btn ${sortOrder === 'desc' ? 'active' : ''}`}
+                                className={`btn btn-sm ${sortOrder === 'desc' ? 'btn-primary' : 'btn-secondary'}`}
                                 onClick={() => setSortOrder('desc')}
                                 title="Ordem decrescente"
                             >
                                 <SortDescendingIcon className="w-4 h-4" />
                             </button>
-                        </div>
-                        <div className="view-controls">
                             <button 
-                                className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                                className={`btn btn-sm ${viewMode === 'grid' ? 'btn-primary' : 'btn-secondary'}`}
                                 onClick={() => setViewMode('grid')}
                                 title="Visualização em grade"
                             >
-                                <GridIcon className="w-5 h-5" />
+                                <GridIcon className="w-4 h-4" />
                             </button>
                             <button 
-                                className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                                className={`btn btn-sm ${viewMode === 'list' ? 'btn-primary' : 'btn-secondary'}`}
                                 onClick={() => setViewMode('list')}
                                 title="Visualização em lista"
                             >
-                                <ListIcon className="w-5 h-5" />
+                                <ListIcon className="w-4 h-4" />
                             </button>
                         </div>
                     </div>
-                </div>
 
-                <div className={`chapter-list ${viewMode}`}>
-                    {chapters.map((chapter) => (
-                        <div
-                            key={chapter.id}
-                            className={`chapter-item ${chapter.isRead ? 'read' : 'unread'}`}
-                            onClick={() => handleChapterSelect(chapter.id)}
-                        >
-                            <div className="chapter-info">
-                                <div className="chapter-header">
-                                    <span className="chapter-number">#{chapter.index}</span>
-                                    <span className="chapter-id">Cap. {chapter.id}</span>
-                                    {chapter.isRead && (
-                                        <span className="read-indicator">✓</span>
-                                    )}
+                    <div className="reader-chapters-grid">
+                        {chapters.map((chapter) => (
+                            <div
+                                key={chapter.id}
+                                className={`reader-chapter-card ${chapter.isRead ? 'read' : 'unread'}`}
+                                onClick={() => handleChapterSelect(chapter.id)}
+                            >
+                                <div className="reader-chapter-number">
+                                    {chapter.index}
                                 </div>
-                                <span className="chapter-title">
-                                    {chapter.title || `Capítulo ${chapter.id}`}
-                                </span>
-                                {chapter.lastPage > 0 && (
-                                    <div className="chapter-progress">
-                                        <div className="progress-mini">
-                                            <div 
-                                                className="progress-mini-fill"
-                                                style={{ 
-                                                    width: `${(chapter.lastPage / chapter.totalPages) * 100}%` 
-                                                }}
-                                            />
-                                        </div>
-                                        <span className="progress-text">
-                                            {chapter.lastPage}/{chapter.totalPages}
-                                        </span>
+                                <div className="reader-chapter-info">
+                                    <h3 className="reader-chapter-title">
+                                        Cap. {chapter.id}
+                                        {chapter.title && ` - ${chapter.title}`}
+                                    </h3>
+                                    <div className="reader-chapter-meta">
+                                        <span>{chapter.totalPages} páginas</span>
+                                        {chapter.isRead && <span>✓ Lido</span>}
+                                        {chapter.lastPage > 0 && !chapter.isRead && (
+                                            <span>Página {chapter.lastPage}/{chapter.totalPages}</span>
+                                        )}
                                     </div>
-                                )}
+                                </div>
+                                <div className="reader-chapter-action">
+                                    <PlayIcon className="w-4 h-4" />
+                                </div>
                             </div>
-                            <div className="chapter-actions">
-                                <PlayIcon className="chapter-play-icon" />
-                                <span className="page-count">{chapter.totalPages}p</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {chapters.length === 0 && (
-                    <div className="empty-chapters">
-                        <BookOpenIcon className="w-12 h-12 text-gray-400" />
-                        <p>Nenhum capítulo disponível ainda</p>
+                        ))}
                     </div>
-                )}
+
+                    {chapters.length === 0 && (
+                        <div className="min-empty-state">
+                            <BookOpenIcon className="min-empty-icon" />
+                            <div className="min-empty-title">Nenhum capítulo disponível</div>
+                            <div className="min-empty-description">Esta obra ainda não possui capítulos para leitura.</div>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
