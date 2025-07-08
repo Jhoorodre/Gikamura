@@ -60,6 +60,26 @@
   border-color: var(--color-border-hover);
 }
 
+.chapter-reader-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  margin-left: var(--space-2);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+.chapter-reader-home:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+  color: var(--color-text-primary);
+}
+
 .chapter-reader-info {
   flex: 1;
   text-align: center;

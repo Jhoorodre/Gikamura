@@ -6,7 +6,15 @@
       "Bash(npm run lint)",
       "Bash(rg:*)",
       "Bash(gh repo view:*)",
-      "Bash(git remote get-url:*)"
+      "Bash(git remote get-url:*)",
+      "Bash(rm:*)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:jhoorodre.github.io)",
+      "Bash(npm run build:*)",
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(git remote set-url:*)"
     ],
     "deny": []
   }

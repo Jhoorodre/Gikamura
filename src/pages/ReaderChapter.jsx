@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import { useReader } from '../hooks/useReader';
 import useImageCache from '../hooks/useImageCache';
+import { useHubContext } from '../context/HubContext';
 import { decodeUrl, encodeUrl } from '../utils/encoding';
 import Spinner from '../components/common/Spinner';
 import CachedImage from '../components/common/CachedImage';
@@ -15,13 +16,15 @@ import {
     ZoomOutIcon,
     GridIcon,
     ViewColumnsIcon,
-    EyeIcon
+    EyeIcon,
+    HomeIcon
 } from '../components/common/Icones';
 
 const ReaderChapter = () => {
     const { encodedUrl, encodedChapterId } = useParams();
     const navigate = useNavigate();
     const { readerData, loadReader } = useReader();
+    const { currentHubData, currentHubUrl } = useHubContext();
     const { 
         getImage, 
         preloadChapterPages, 
@@ -181,6 +184,29 @@ const ReaderChapter = () => {
         navigate(`/reader/${encodedUrl}/${encodedChapter}`);
     }, [encodedUrl, navigate]);
 
+    // Navegação inteligente de volta
+    const handleBackNavigation = useCallback(() => {
+        // Se existe hub context, volta para o hub
+        if (currentHubData && currentHubUrl) {
+            const encodedHubUrl = encodeUrl(currentHubUrl);
+            navigate(`/hub/${encodedHubUrl}`);
+            return;
+        }
+        
+        // Se não existe hub context, tenta ir para a página do manga
+        try {
+            navigate(`/manga/${encodedUrl}`);
+        } catch (error) {
+            // Se falhar, vai para a home
+            navigate('/');
+        }
+    }, [currentHubData, currentHubUrl, encodedUrl, navigate]);
+
+    // Navegação para home (fallback)
+    const handleHomeNavigation = useCallback(() => {
+        navigate('/');
+    }, [navigate]);
+
     // Controles de zoom
     const handleZoomIn = useCallback(() => {
         setZoomLevel(prev => Math.min(prev + 0.25, 3));
@@ -238,7 +264,7 @@ const ReaderChapter = () => {
                     if (isFullscreen) {
                         toggleFullscreen();
                     } else {
-                        navigate(`/manga/${encodedUrl}`);
+                        handleBackNavigation();
                     }
                     break;
                 case 'f':
@@ -280,8 +306,7 @@ const ReaderChapter = () => {
     }, [
         goToNextPage, 
         goToPrevPage, 
-        navigate, 
-        encodedUrl, 
+        handleBackNavigation, 
         isFullscreen, 
         toggleFullscreen,
         showSettings,
@@ -357,13 +382,22 @@ const ReaderChapter = () => {
             <div className={`chapter-reader-header ${showControls ? '' : 'hidden'}`}>
                 <div className="chapter-reader-nav">
                     <button 
-                        onClick={() => navigate(`/manga/${encodedUrl}`)} 
+                        onClick={handleBackNavigation} 
                         className="chapter-reader-back"
-                        title="Voltar aos capítulos"
+                        title={currentHubData && currentHubUrl ? 'Voltar ao hub' : 'Voltar aos capítulos'}
                     >
                         <ChevronLeftIcon className="w-5 h-5" />
-                        Voltar
+                        {currentHubData && currentHubUrl ? 'Hub' : 'Voltar'}
                     </button>
+                    {(!currentHubData || !currentHubUrl) && (
+                        <button 
+                            onClick={handleHomeNavigation} 
+                            className="chapter-reader-home"
+                            title="Ir para a página inicial"
+                        >
+                            <HomeIcon className="w-4 h-4" />
+                        </button>
+                    )}
                     <div className="chapter-reader-info">
                         <h1 className="chapter-reader-title">{readerData.title}</h1>
                         <div className="chapter-reader-progress">
