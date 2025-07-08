@@ -26,8 +26,9 @@ export default defineConfig({
     target: 'es2015',
     minify: 'terser',
     sourcemap: false,
+    outDir: 'dist',
+    emptyOutDir: true,
     rollupOptions: {
-      input: path.resolve(__dirname, './index.html'),
       output: {
         // AIDEV-NOTE: Manual chunk splitting for better caching and performance
         manualChunks: {
