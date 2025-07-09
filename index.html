@@ -72,7 +72,24 @@
         const redirect = sessionStorage.getItem('redirect');
         if (redirect) {
           sessionStorage.removeItem('redirect');
-          history.replaceState(null, null, redirect);
+          
+          // Debug info
+          console.log('🔄 [Index] Restaurando URL:', {
+            currentUrl: window.location.href,
+            redirectTo: redirect
+          });
+          
+          // Aguardar o DOM estar pronto antes de mudar a URL
+          const restoreUrl = function() {
+            history.replaceState(null, null, redirect);
+            console.log('✅ [Index] URL restaurada:', window.location.href);
+          };
+          
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', restoreUrl);
+          } else {
+            restoreUrl();
+          }
         }
       })();
     </script>
