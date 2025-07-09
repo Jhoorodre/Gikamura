@@ -63,6 +63,11 @@ export const Base64RouteGuard = ({
     if (!isValidBase64(encodedValue)) {
       if (import.meta.env?.DEV) {
         console.warn(`[Base64RouteGuard] Invalid Base64 parameter '${key}': ${encodedValue}, redirecting to:`, redirectTo);
+        console.warn(`[Base64RouteGuard] Validation details:`, {
+          hasValue: !!encodedValue,
+          valueType: typeof encodedValue,
+          isValidBase64: isValidBase64(encodedValue)
+        });
       }
       return <Navigate to={redirectTo} replace />;
     }
@@ -71,6 +76,10 @@ export const Base64RouteGuard = ({
     if (validateUrls && !isValidEncodedUrl(encodedValue)) {
       if (import.meta.env?.DEV) {
         console.warn(`[Base64RouteGuard] Invalid URL in encoded parameter '${key}': ${encodedValue}, redirecting to:`, redirectTo);
+        console.warn(`[Base64RouteGuard] URL validation details:`, {
+          isValidBase64: isValidBase64(encodedValue),
+          isValidEncodedUrl: isValidEncodedUrl(encodedValue)
+        });
       }
       return <Navigate to={redirectTo} replace />;
     }
@@ -123,6 +132,16 @@ export const MangaRouteGuard = ({ children, encodedUrl }) => {
  * @param {string} props.encodedChapterId - Base64 encoded chapter ID parameter
  */
 export const ReaderRouteGuard = ({ children, encodedUrl, encodedChapterId }) => {
+  // AIDEV-NOTE: Debug reader route validation
+  if (import.meta.env?.DEV) {
+    console.log('📖 [ReaderRouteGuard] Validando parâmetros:', {
+      encodedUrl,
+      encodedChapterId,
+      encodedUrlValid: encodedUrl && typeof encodedUrl === 'string',
+      encodedChapterIdValid: encodedChapterId && typeof encodedChapterId === 'string'
+    });
+  }
+  
   return (
     <Base64RouteGuard
       encodedParams={{ encodedUrl, encodedChapterId }}

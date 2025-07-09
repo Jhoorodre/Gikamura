@@ -55,11 +55,40 @@ const handleInitialRoute = () => {
     sessionStorage.removeItem('reactRouterPath');
     
     console.log('🔄 [Router] Redirecionando para:', reactRouterPath);
+    console.log('🔄 [Router] Basename atual:', basename);
+    console.log('🔄 [Router] URL antes do redirect:', window.location.href);
+    
+    // Special handling for reader routes
+    if (reactRouterPath.startsWith('/reader/')) {
+      console.log('📖 [Router] Detectado route do reader, aplicando diretamente');
+    }
     
     // Use setTimeout to ensure React Router is ready
     setTimeout(() => {
-      window.history.replaceState(null, null, basename + reactRouterPath);
-      console.log('✅ [Router] Redirecionamento completo:', window.location.href);
+      const newUrl = basename + reactRouterPath;
+      console.log('🔄 [Router] Aplicando URL:', newUrl);
+      
+      // Try to prevent any React Router interference
+      window.history.replaceState(null, null, newUrl);
+      
+      // Force a second update to ensure it sticks
+      setTimeout(() => {
+        if (window.location.pathname !== newUrl) {
+          console.log('⚠️ [Router] URL foi alterada, forçando correção');
+          window.history.replaceState(null, null, newUrl);
+        }
+        console.log('✅ [Router] Redirecionamento completo:', window.location.href);
+        
+        // Verify the redirect actually worked
+        setTimeout(() => {
+          console.log('🔍 [Router] Verificação final:', {
+            expectedPath: reactRouterPath,
+            actualPath: window.location.pathname,
+            fullUrl: window.location.href,
+            matches: window.location.pathname === newUrl
+          });
+        }, 50);
+      }, 50);
     }, 100);
   }
 };
