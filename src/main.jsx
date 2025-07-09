@@ -65,29 +65,23 @@ const handleInitialRoute = () => {
     
     // Use setTimeout to ensure React Router is ready
     setTimeout(() => {
-      const newUrl = basename + reactRouterPath;
-      console.log('🔄 [Router] Aplicando URL:', newUrl);
+      // CRITICAL FIX: Don't apply full URL - let React Router handle it with basename
+      // Just update the history to the router path, React Router will handle basename
+      console.log('🔄 [Router] Aplicando path para React Router:', reactRouterPath);
       
-      // Try to prevent any React Router interference
-      window.history.replaceState(null, null, newUrl);
+      // Apply only the router path, React Router handles basename internally
+      window.history.replaceState(null, null, reactRouterPath);
       
-      // Force a second update to ensure it sticks
+      console.log('✅ [Router] Redirecionamento completo:', window.location.href);
+      
+      // Verify the redirect actually worked
       setTimeout(() => {
-        if (window.location.pathname !== newUrl) {
-          console.log('⚠️ [Router] URL foi alterada, forçando correção');
-          window.history.replaceState(null, null, newUrl);
-        }
-        console.log('✅ [Router] Redirecionamento completo:', window.location.href);
-        
-        // Verify the redirect actually worked
-        setTimeout(() => {
-          console.log('🔍 [Router] Verificação final:', {
-            expectedPath: reactRouterPath,
-            actualPath: window.location.pathname,
-            fullUrl: window.location.href,
-            matches: window.location.pathname === newUrl
-          });
-        }, 50);
+        console.log('🔍 [Router] Verificação final:', {
+          expectedPath: reactRouterPath,
+          actualPath: window.location.pathname,
+          fullUrl: window.location.href,
+          routerShouldHandle: 'React Router with basename should handle this'
+        });
       }, 50);
     }, 100);
   }
