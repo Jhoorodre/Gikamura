@@ -6,6 +6,7 @@ import { useRemoteStorageContext } from '../context/RemoteStorageContext';
 import { useHubContext } from '../context/HubContext';
 import { decodeUrl, encodeUrl } from '../utils/encoding';
 import { NavigationService } from '../utils/navigationService';
+import { getHubUrl, getMangaUrl, getReaderUrl } from '../config/routes';
 import Spinner from '../components/common/Spinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Button from '../components/common/Button';
@@ -106,7 +107,7 @@ const PageView = () => {
     // Navegação para capítulo
     const handleChapterSelect = useCallback((chapterId) => {
         const encodedChapterId = encodeUrl(chapterId);
-        navigate(`/reader/${encodedUrl}/${encodedChapterId}`);
+        navigate(getReaderUrl(encodedUrl, encodedChapterId));
     }, [encodedUrl, navigate]);
 
     // Continuar leitura (último capítulo lido ou primeiro não lido)
@@ -166,9 +167,9 @@ const PageView = () => {
             // Retorna ao hub atual que está carregado
             const encodedHubUrl = encodeUrl(currentHubUrl);
             if (import.meta.env?.DEV) {
-                console.log('🔙 [PageView] Navegando para hub:', `/hub/${encodedHubUrl}`);
+                console.log('🔙 [PageView] Navegando para hub:', getHubUrl(encodedHubUrl));
             }
-            navigate(`/hub/${encodedHubUrl}`);
+            navigate(getHubUrl(encodedHubUrl));
         } else {
             // Fallback para página anterior se não houver hub carregado
             if (import.meta.env?.DEV) {

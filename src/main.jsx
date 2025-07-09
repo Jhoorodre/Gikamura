@@ -11,88 +11,29 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // AIDEV-NOTE: React Query client with default config for caching
 const queryClient = new QueryClient();
 
-// AIDEV-NOTE: Configure basename universalmente - funciona em qualquer domínio
+// AIDEV-NOTE: Configure basename simples e consistente
 const getBasename = () => {
   // Em desenvolvimento, sem basename
   if (import.meta.env.DEV) {
     return '';
   }
   
-  // Em produção, detectar automaticamente baseado na URL atual
-  const currentPath = window.location.pathname;
-  const hostname = window.location.hostname;
-  
-  // AIDEV-NOTE: Detecção específica para GitHub Pages
-  if (hostname.includes('github.io') || hostname.includes('githubusercontent.com')) {
+  // GitHub Pages sempre usa /gikamura
+  if (window.location.hostname.includes('github.io')) {
     return '/gikamura';
   }
   
-  // Se a página atual é a raiz ou já tem conteúdo, sem basename
-  if (currentPath === '/' || currentPath === '/index.html') {
-    return '';
-  }
-  
-  // Se a URL contém /gikamura/, usar como basename
-  if (currentPath.includes('/gikamura/')) {
-    return '/gikamura';
-  }
-  
-  // Se a URL começa com /gikamura (sem trailing slash)
-  if (currentPath.startsWith('/gikamura')) {
-    return '/gikamura';
-  }
-  
-  // Para domínios customizados, sem basename
+  // Outros ambientes, sem basename
   return '';
 };
 
 const basename = getBasename();
-
-// AIDEV-NOTE: Handle GitHub Pages SPA routing from sessionStorage
-const handleInitialRoute = () => {
-  const reactRouterPath = sessionStorage.getItem('reactRouterPath');
-  if (reactRouterPath) {
-    sessionStorage.removeItem('reactRouterPath');
-    
-    if (import.meta.env.DEV) {
-        console.log('🔄 [Router] Redirecionando para:', reactRouterPath);
-        console.log('🔄 [Router] Basename atual:', basename);
-        console.log('🔄 [Router] URL antes do redirect:', window.location.href);
-    }
-    
-    // Special handling for reader routes
-    if (reactRouterPath.startsWith('/reader/') && import.meta.env.DEV) {
-      console.log('📖 [Router] Detectado route do reader, aplicando diretamente');
-    }
-    
-    // Use setTimeout to ensure React Router is ready
-    setTimeout(() => {
-      // CRITICAL FIX: Force actual navigation to notify React Router
-      const fullUrl = basename + reactRouterPath;
-      if (import.meta.env.DEV) {
-          console.log('🔄 [Router] Aplicando URL completa:', fullUrl);
-      }
-      
-      // Force actual navigation that React Router can detect
-      window.location.href = fullUrl;
-      
-      if (import.meta.env.DEV) {
-          console.log('✅ [Router] Redirecionamento completo:', window.location.href);
-      }
-    }, 100);
-  }
-};
 
 // AIDEV-NOTE: Debug do basename para verificar configuração
 if (import.meta.env.DEV) {
     console.log('🔗 [Router] Basename detectado:', basename);
     console.log('🔗 [Router] URL atual:', window.location.pathname);
     console.log('🔗 [Router] Hostname:', window.location.hostname);
-}
-
-// Handle initial route after DOM is ready
-document.addEventListener('DOMContentLoaded', handleInitialRoute);
-if (import.meta.env.DEV) {
     console.log('🔗 [Router] Produção:', import.meta.env.PROD);
 }
 

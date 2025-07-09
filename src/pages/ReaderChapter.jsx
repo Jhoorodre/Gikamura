@@ -5,6 +5,7 @@ import { useReader } from '../hooks/useReader';
 import useImageCache from '../hooks/useImageCache';
 import { useHubContext } from '../context/HubContext';
 import { decodeUrl, encodeUrl } from '../utils/encoding';
+import { getHubUrl, getMangaUrl, getReaderUrl } from '../config/routes';
 import Spinner from '../components/common/Spinner';
 import CachedImage from '../components/common/CachedImage';
 import { 
@@ -186,7 +187,7 @@ const ReaderChapter = () => {
         } else if (navigationInfo.next) {
             // Auto-navegar para próximo capítulo
             const encodedNext = encodeUrl(navigationInfo.next);
-            navigate(`/reader/${encodedUrl}/${encodedNext}`);
+            navigate(getReaderUrl(encodedUrl, encodedNext));
         }
         resetControlsTimer();
     }, [currentPage, pages.length, navigationInfo.next, encodedUrl, navigate, resetControlsTimer, viewMode]);
@@ -199,7 +200,7 @@ const ReaderChapter = () => {
         } else if (navigationInfo.prev) {
             // Auto-navegar para capítulo anterior
             const encodedPrev = encodeUrl(navigationInfo.prev);
-            navigate(`/reader/${encodedUrl}/${encodedPrev}`);
+            navigate(getReaderUrl(encodedUrl, encodedPrev));
         }
         resetControlsTimer();
     }, [currentPage, navigationInfo.prev, encodedUrl, navigate, resetControlsTimer, viewMode]);
@@ -218,7 +219,7 @@ const ReaderChapter = () => {
     // Navegação por capítulos
     const goToChapter = useCallback((chapterIdToGo) => {
         const encodedChapter = encodeUrl(chapterIdToGo);
-        navigate(`/reader/${encodedUrl}/${encodedChapter}`);
+        navigate(getReaderUrl(encodedUrl, encodedChapter));
     }, [encodedUrl, navigate]);
 
     // Navegação inteligente de volta
@@ -235,18 +236,18 @@ const ReaderChapter = () => {
         if (currentHubData && currentHubUrl) {
             const encodedHubUrl = encodeUrl(currentHubUrl);
             if (import.meta.env?.DEV) {
-                console.log('📖 [ReaderChapter] Navegando para hub:', `/hub/${encodedHubUrl}`);
+                console.log('📖 [ReaderChapter] Navegando para hub:', getHubUrl(encodedHubUrl));
             }
-            navigate(`/hub/${encodedHubUrl}`);
+            navigate(getHubUrl(encodedHubUrl));
             return;
         }
         
         // Se não existe hub context, tenta ir para a página do manga
         try {
             if (import.meta.env?.DEV) {
-                console.log('📖 [ReaderChapter] Navegando para manga:', `/manga/${encodedUrl}`);
+                console.log('📖 [ReaderChapter] Navegando para manga:', getMangaUrl(encodedUrl));
             }
-            navigate(`/manga/${encodedUrl}`);
+            navigate(getMangaUrl(encodedUrl));
         } catch (error) {
             // Se falhar, vai para a home
             if (import.meta.env?.DEV) {

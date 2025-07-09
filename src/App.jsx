@@ -18,7 +18,7 @@ import RedirectPage from './pages/RedirectPage';
 import ErrorMessage from './components/common/ErrorMessage';
 import GlobalRemoteStorageWidget from './components/common/SimpleRemoteStorageWidgetNew';
 import Header from './components/common/Header';
-import { runFullDiagnostic } from './utils/networkDebug';
+// import { runFullDiagnostic } from './utils/networkDebug'; // Removido
 import Spinner from './components/common/Spinner';
 import { HubProvider } from './context/HubContext';
 import { UserPreferencesProvider } from './context/UserPreferencesContext';
@@ -27,6 +27,10 @@ import { ReaderToMangaRedirect, LeitorToReaderRedirect } from './components/comm
 import GuardedHubRoute from './components/common/GuardedHubRoute';
 import GuardedMangaRoute from './components/common/GuardedMangaRoute';
 import GuardedReaderRoute from './components/common/GuardedReaderRoute';
+import { ROUTES } from './config/routes';
+import { useRouteDebug } from './utils/routeDebugger';
+import { useRoutePersistence } from './utils/routeStatePersister';
+import { useRefreshHandler } from './hooks/useRefreshHandler';
 
 // AIDEV-NOTE: Rotas pesadas agora são carregadas sob demanda (React.lazy)
 const HubView = lazy(() => import('./views/HubView'));
@@ -62,6 +66,15 @@ function App() {
     // AIDEV-NOTE: Only initial loading state, removed route-based loading to prevent flickering
     const [initialLoading, setInitialLoading] = useState(true);
     const location = useLocation();
+    
+    // AIDEV-NOTE: Debug de rotas para identificar problemas
+    useRouteDebug();
+    
+    // AIDEV-NOTE: Persistência de estado de rotas
+    useRoutePersistence();
+    
+    // AIDEV-NOTE: Handler para refresh (F5)
+    useRefreshHandler();
     
     // AIDEV-NOTE: Debug da rota atual
     useEffect(() => {
@@ -101,18 +114,7 @@ function App() {
         }
     }, []); // AIDEV-NOTE: Fixed deps to prevent infinite loops
 
-    // AIDEV-NOTE: One-time network diagnostic in dev mode only
-    useEffect(() => {
-        const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
-        if (isDevelopment) {
-            console.log('🩺 [App] Executando diagnóstico de rede uma única vez...');
-            runFullDiagnostic().then(() => {
-                console.log('✅ [App] Diagnóstico completo finalizado');
-            }).catch(error => {
-                console.error('❌ [App] Erro no diagnóstico:', error);
-            });
-        }
-    }, []); // AIDEV-NOTE: Runs only once on mount
+    // AIDEV-NOTE: Network diagnostic removed to avoid unnecessary complexity
 
     // AIDEV-NOTE: Tela de carregamento apenas para inicialização da aplicação
     if (initialLoading) {
@@ -131,16 +133,14 @@ function App() {
                     <div id="particles-container" />
 
                     <Routes>
-                        <Route path="/" element={<MainLayout />}>
+                        <Route path={ROUTES.HOME} element={<MainLayout />}>
                             <Route index element={
                                 <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}> 
-                                    {import.meta.env?.DEV && console.log('🎯 [App] Renderizando MainContent (index route)')}
                                     <MainContent />
                                 </Suspense>
                             } />
                             <Route path="collection" element={
                                 <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}> 
-                                    {import.meta.env?.DEV && console.log('🎯 [App] Renderizando CollectionPage')}
                                     <CollectionPage />
                                 </Suspense>
                             } />
@@ -161,22 +161,22 @@ function App() {
                             } />
                         </Route>
                         {/* AIDEV-NOTE: Rotas modernas com validação de parâmetros */}
-                        <Route path="/manga/:encodedUrl" element={
+                        <Route path={ROUTES.MANGA} element={
                             <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}>
                                 <GuardedMangaRoute />
                             </Suspense>
                         } />
-                        <Route path="/reader/:encodedUrl/:encodedChapterId" element={
+                        <Route path={ROUTES.READER} element={
                             <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}>
                                 <GuardedReaderRoute />
                             </Suspense>
                         } />
                         {/* AIDEV-NOTE: Simplified redirect routes using centralized components */}
-                        <Route path="/reader/:encodedUrl" element={<ReaderToMangaRedirect />} />
-                        <Route path="/leitor/:encodedUrl" element={<ReaderToMangaRedirect />} />
-                        <Route path="/leitor/:encodedUrl/:encodedChapterId" element={<LeitorToReaderRedirect />} />
+                        <Route path={ROUTES.READER_OLD} element={<ReaderToMangaRedirect />} />
+                        <Route path={ROUTES.LEITOR_OLD} element={<ReaderToMangaRedirect />} />
+                        <Route path={ROUTES.LEITOR_CHAPTER_OLD} element={<LeitorToReaderRedirect />} />
                         {/* AIDEV-NOTE: Catch-all route for invalid URLs */}
-                        <Route path="*" element={<Navigate to="/" replace />} />
+                        <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
                     </Routes>
                 </div>
             </HubProvider>

@@ -79,8 +79,11 @@ export const isValidBase64 = (str) => {
       return false;
     }
     
+    // Remove espaços e quebras de linha
+    str = str.trim();
+    
     // Verifica se contém apenas caracteres Base64 válidos (incluindo URL-safe)
-    const base64Regex = /^[A-Za-z0-9+/\-_]*={0,2}$/;
+    const base64Regex = /^[A-Za-z0-9+/\-_]*={0,3}$/;
     if (!base64Regex.test(str)) {
       return false;
     }

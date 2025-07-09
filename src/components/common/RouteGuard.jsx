@@ -1,4 +1,5 @@
 // AIDEV-NOTE: Route guard components for parameter validation and error handling
+import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { isValidBase64, isValidEncodedUrl } from '../../utils/encoding';
 
@@ -51,38 +52,58 @@ export const Base64RouteGuard = ({
   redirectTo = '/', 
   validateUrls = true 
 }) => {
-  for (const [key, encodedValue] of Object.entries(encodedParams)) {
-    if (!encodedValue) {
-      if (import.meta.env?.DEV) {
-        console.warn(`[Base64RouteGuard] Missing encoded parameter '${key}', redirecting to:`, redirectTo);
+  // AIDEV-NOTE: Delay validation to avoid race conditions on refresh
+  const [isValidated, setIsValidated] = useState(false);
+  const [isValid, setIsValid] = useState(true);
+  
+  useEffect(() => {
+    const validate = () => {
+      for (const [key, encodedValue] of Object.entries(encodedParams)) {
+        if (!encodedValue) {
+          if (import.meta.env?.DEV) {
+            console.warn(`[Base64RouteGuard] Missing encoded parameter '${key}'`);
+          }
+          setIsValid(false);
+          setIsValidated(true);
+          return;
+        }
+        
+        // Validate Base64 format
+        if (!isValidBase64(encodedValue)) {
+          if (import.meta.env?.DEV) {
+            console.warn(`[Base64RouteGuard] Invalid Base64 parameter '${key}': ${encodedValue}`);
+          }
+          setIsValid(false);
+          setIsValidated(true);
+          return;
+        }
+        
+        // Validate URL content if requested
+        if (validateUrls && !isValidEncodedUrl(encodedValue)) {
+          if (import.meta.env?.DEV) {
+            console.warn(`[Base64RouteGuard] Invalid URL in encoded parameter '${key}': ${encodedValue}`);
+          }
+          setIsValid(false);
+          setIsValidated(true);
+          return;
+        }
       }
-      return <Navigate to={redirectTo} replace />;
-    }
+      
+      setIsValid(true);
+      setIsValidated(true);
+    };
     
-    // Validate Base64 format
-    if (!isValidBase64(encodedValue)) {
-      if (import.meta.env?.DEV) {
-        console.warn(`[Base64RouteGuard] Invalid Base64 parameter '${key}': ${encodedValue}, redirecting to:`, redirectTo);
-        console.warn(`[Base64RouteGuard] Validation details:`, {
-          hasValue: !!encodedValue,
-          valueType: typeof encodedValue,
-          isValidBase64: isValidBase64(encodedValue)
-        });
-      }
-      return <Navigate to={redirectTo} replace />;
-    }
-    
-    // Validate URL content if requested
-    if (validateUrls && !isValidEncodedUrl(encodedValue)) {
-      if (import.meta.env?.DEV) {
-        console.warn(`[Base64RouteGuard] Invalid URL in encoded parameter '${key}': ${encodedValue}, redirecting to:`, redirectTo);
-        console.warn(`[Base64RouteGuard] URL validation details:`, {
-          isValidBase64: isValidBase64(encodedValue),
-          isValidEncodedUrl: isValidEncodedUrl(encodedValue)
-        });
-      }
-      return <Navigate to={redirectTo} replace />;
-    }
+    // Small delay to ensure params are ready
+    const timer = setTimeout(validate, 10);
+    return () => clearTimeout(timer);
+  }, [encodedParams, validateUrls]);
+  
+  if (!isValidated) {
+    return null; // Show nothing while validating
+  }
+  
+  if (!isValid) {
+    return <Navigate to={redirectTo} replace />;
   }
   
   return children;
