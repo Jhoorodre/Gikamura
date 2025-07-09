@@ -73,15 +73,27 @@
         if (redirect) {
           sessionStorage.removeItem('redirect');
           
+          // AIDEV-NOTE: CRITICAL FIX - Convert full path to React Router path
+          // Remove /gikamura from the beginning for React Router
+          const basePath = '/gikamura';
+          let routerPath = redirect;
+          
+          if (redirect.startsWith(basePath + '/')) {
+            routerPath = redirect.slice(basePath.length);
+          } else if (redirect.startsWith(basePath)) {
+            routerPath = redirect.slice(basePath.length) || '/';
+          }
+          
           // Debug info
           console.log('🔄 [Index] Restaurando URL:', {
             currentUrl: window.location.href,
-            redirectTo: redirect
+            originalRedirect: redirect,
+            routerPath: routerPath
           });
           
           // Aguardar o DOM estar pronto antes de mudar a URL
           const restoreUrl = function() {
-            history.replaceState(null, null, redirect);
+            history.replaceState(null, null, routerPath);
             console.log('✅ [Index] URL restaurada:', window.location.href);
           };
           

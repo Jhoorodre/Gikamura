@@ -12,31 +12,21 @@
             const currentPath = window.location.pathname;
             const basePath = '/gikamura';
             
-            // Remove base path if present, otherwise use full path
-            let pathWithoutBase;
-            if (currentPath.startsWith(basePath + '/')) {
-                pathWithoutBase = currentPath.slice(basePath.length);
-            } else if (currentPath.startsWith(basePath)) {
-                pathWithoutBase = currentPath.slice(basePath.length) || '/';
-            } else {
-                pathWithoutBase = currentPath;
-            }
-            
-            // Ensure we have a valid path (default to root if empty)
-            const path = pathWithoutBase || '/';
+            // AIDEV-NOTE: CRITICAL FIX - Store the FULL path, not the path without base
+            // React Router with basename will handle the base path internally
             const search = window.location.search || '';
             const hash = window.location.hash || '';
             
-            // Store the complete redirect information
-            const redirectUrl = path + search + hash;
+            // Store the complete ORIGINAL URL path (including /gikamura)
+            const redirectUrl = currentPath + search + hash;
             sessionStorage.setItem('redirect', redirectUrl);
             
             // Debug info
             console.log('🔄 [404] Redirecionando:', {
                 currentPath,
                 basePath,
-                pathWithoutBase,
-                redirectUrl
+                redirectUrl,
+                willRedirectTo: basePath + '/'
             });
             
             // Redirect to the main page
