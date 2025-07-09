@@ -4,6 +4,7 @@
 import { memo, createElement } from 'react';
 import Image from '../common/Image';
 import { FixedSizeGrid as Grid } from 'react-window'; // AIDEV-NOTE: Para virtualização de listas
+import { itemsCompare } from '../../utils/performanceUtils';
 
 const ItemGrid = memo(({ items, onSelectItem, onPinToggle }) => (
     <div className="min-item-grid">

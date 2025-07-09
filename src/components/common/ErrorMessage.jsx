@@ -1,6 +1,7 @@
 // AIDEV-NOTE: Reusable error display component with retry functionality and proper UX
 
 import Button from './Button';
+import { getFriendlyError } from '../../utils/friendlyErrors';
 
 const ErrorMessage = ({ message, onRetry, title = 'Ops! Algo deu errado' }) => {
     return (
@@ -16,7 +17,7 @@ const ErrorMessage = ({ message, onRetry, title = 'Ops! Algo deu errado' }) => {
                 {/* AIDEV-NOTE: Error content with fallback for non-string messages */}
                 <div className="text-center space-y-2">
                     <h3 className="text-lg font-semibold text-white">{title}</h3>
-                    <p className="text-slate-300 text-sm leading-relaxed">{typeof message === 'string' ? message : 'Ocorreu um erro inesperado.'}</p>
+                    <p className="text-slate-300 text-sm leading-relaxed">{getFriendlyError(message)}</p>
                 </div>
                 
                 {/* AIDEV-NOTE: Optional retry button with loading state support */}

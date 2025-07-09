@@ -1,0 +1,141 @@
+/* Skeleton Loading Components */
+.skeleton {
+  background-color: var(--color-skeleton-base, #e0e0e0);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dark mode support */
+:root[data-theme="dark"] .skeleton {
+  background-color: var(--color-skeleton-base-dark, #2a2a2a);
+}
+
+/* Variants */
+.skeleton--rectangular {
+  border-radius: var(--radius-sm);
+}
+
+.skeleton--circular {
+  border-radius: 50%;
+}
+
+.skeleton--text {
+  border-radius: var(--radius-xs);
+}
+
+/* Animations */
+.skeleton--pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton--wave::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: skeleton-wave 1.5s linear infinite;
+}
+
+:root[data-theme="dark"] .skeleton--wave::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes skeleton-wave {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+/* Pre-built components */
+.skeleton-text-line {
+  margin-bottom: var(--space-2);
+}
+
+.skeleton-text-line:last-child {
+  margin-bottom: 0;
+}
+
+.skeleton-card {
+  background: var(--color-background);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.skeleton-card-content {
+  padding: var(--space-4);
+}
+
+.skeleton-card-title {
+  margin-bottom: var(--space-3);
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-4);
+}
+
+.skeleton-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+.skeleton-item-cover {
+  margin-bottom: var(--space-2);
+}
+
+.skeleton-item-title {
+  margin-bottom: var(--space-1);
+}
+
+.skeleton-chapter-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.skeleton-chapter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-background);
+  border-radius: var(--radius-md);
+}
+
+.skeleton-chapter-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
