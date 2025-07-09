@@ -65,24 +65,14 @@ const handleInitialRoute = () => {
     
     // Use setTimeout to ensure React Router is ready
     setTimeout(() => {
-      // CRITICAL FIX: Apply the full URL with basename to maintain consistency
+      // CRITICAL FIX: Force actual navigation to notify React Router
       const fullUrl = basename + reactRouterPath;
       console.log('🔄 [Router] Aplicando URL completa:', fullUrl);
       
-      // Apply the full URL to maintain basename consistency
-      window.history.replaceState(null, null, fullUrl);
+      // Force actual navigation that React Router can detect
+      window.location.href = fullUrl;
       
       console.log('✅ [Router] Redirecionamento completo:', window.location.href);
-      
-      // Verify the redirect actually worked
-      setTimeout(() => {
-        console.log('🔍 [Router] Verificação final:', {
-          expectedPath: reactRouterPath,
-          actualPath: window.location.pathname,
-          fullUrl: window.location.href,
-          hasBasename: window.location.pathname.startsWith(basename)
-        });
-      }, 50);
     }, 100);
   }
 };
