@@ -136,13 +136,18 @@ const ReaderChapter = () => {
     useEffect(() => {
         const handleScroll = () => {
             if (viewMode === 'scroll') {
-                setShowBackToTop(window.scrollY > 500);
+                setShowBackToTop(window.scrollY > 200);
             }
         };
         
         if (viewMode === 'scroll') {
+            // Verifica posição inicial
+            handleScroll();
             window.addEventListener('scroll', handleScroll);
             return () => window.removeEventListener('scroll', handleScroll);
+        } else {
+            // Limpa estado quando não está no modo scroll
+            setShowBackToTop(false);
         }
     }, [viewMode]);
 
@@ -650,7 +655,7 @@ const ReaderChapter = () => {
                     className="back-to-top-btn"
                     title="Voltar ao topo"
                 >
-                    <ChevronLeftIcon className="w-5 h-5" style={{ transform: 'rotate(90deg)' }} />
+                    ↑
                 </button>
             )}
 
