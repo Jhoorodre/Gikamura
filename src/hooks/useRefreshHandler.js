@@ -13,6 +13,20 @@ export const useRefreshHandler = () => {
   const isInitialMount = useRef(true);
   
   useEffect(() => {
+    // Verifica se há um path armazenado do redirecionamento 404
+    const reactRouterPath = sessionStorage.getItem('reactRouterPath');
+    if (reactRouterPath && isInitialMount.current) {
+      sessionStorage.removeItem('reactRouterPath');
+      
+      if (import.meta.env?.DEV) {
+        console.log('🔄 [RefreshHandler] Navegando para path salvo:', reactRouterPath);
+      }
+      
+      navigate(reactRouterPath, { replace: true });
+      isInitialMount.current = false;
+      return;
+    }
+    
     // Detecta se é refresh (F5)
     const isPageRefresh = performance.navigation.type === 1 || 
                          (performance.getEntriesByType('navigation')[0]?.type === 'reload');

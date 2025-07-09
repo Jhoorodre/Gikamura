@@ -1,16 +1,10 @@
-// AIDEV-NOTE: Main App component; routing, notifications, and global state management
-// AIDEV-NOTE: ANTI-FLICKERING IMPROVEMENTS:
-// 1. Removed route-based loading state that caused flickering on every navigation
-// 2. Optimized Suspense fallbacks to be transparent instead of visible loading states
-// 3. Added PageTransition component for smooth route changes
-// 4. Memoized context values to prevent unnecessary re-renders
-// 5. Added anti-flicker CSS for smooth visual transitions
+// Main App component - routing and global state
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { useAppContext } from './context/AppContext';
 import { useRemoteStorageContext } from './context/RemoteStorageContext';
 import { useServiceWorker } from './hooks/useServiceWorker';
-// import { useNetworkNotifications } from './hooks/useNetworkMonitor'; // AIDEV-NOTE: Disabled to remove network messages
+
 import { useHubLoader } from './hooks/useHubLoader';
 import { createParticles } from './utils/particles.js';
 import MainContent from './components/common/MainContent';
@@ -18,7 +12,7 @@ import RedirectPage from './pages/RedirectPage';
 import ErrorMessage from './components/common/ErrorMessage';
 import GlobalRemoteStorageWidget from './components/common/SimpleRemoteStorageWidgetNew';
 import Header from './components/common/Header';
-// import { runFullDiagnostic } from './utils/networkDebug'; // Removido
+
 import Spinner from './components/common/Spinner';
 import { HubProvider } from './context/HubContext';
 import { UserPreferencesProvider } from './context/UserPreferencesContext';
@@ -32,20 +26,20 @@ import { useRouteDebug } from './utils/routeDebugger';
 import { useRoutePersistence } from './utils/routeStatePersister';
 import { useRefreshHandler } from './hooks/useRefreshHandler';
 
-// AIDEV-NOTE: Rotas pesadas agora são carregadas sob demanda (React.lazy)
+// Lazy loading routes
 const HubView = lazy(() => import('./views/HubView'));
 const HubRouteHandler = lazy(() => import('./views/HubRouteHandler'));
-// AIDEV-NOTE: Páginas protegidas também em lazy loading
+
 const CollectionPage = lazy(() => import('./pages/CollectionPage'));
 const WorksPage = lazy(() => import('./pages/WorksPage'));
 const UploadPage = lazy(() => import('./pages/UploadPage'));
-// Lazy load das novas páginas modernas
+
 const PageView = lazy(() => import('./pages/PageView'));
 const ReaderChapter = lazy(() => import('./pages/ReaderChapter'));
 
-// AIDEV-NOTE: Redirect components moved to RouteRedirects.jsx for better organization
 
-// Pré-carregamento das páginas principais para evitar flicking
+
+// Preload main pages
 import('./pages/CollectionPage');
 import('./pages/WorksPage');
 import('./pages/UploadPage');
@@ -54,29 +48,23 @@ function App() {
     const { conflictMessage: appConflictMessage } = useAppContext();
     const { isConnected: remoteStorageConnected, conflictMessage } = useRemoteStorageContext();
     const { updateAvailable, applyUpdate } = useServiceWorker();
-    // const { networkMessage, dismissSlowMessage } = useNetworkNotifications(); // AIDEV-NOTE: Disabled to remove network messages
-    
-    // AIDEV-NOTE: Sync overlay temporarily disabled
-    // const { isConnected: remoteStorageConnected, isSyncing, conflictMessage } = useRemoteStorageContext();
-    // const { showOverlay: showSyncOverlay, forceHide: forcHideSyncOverlay } = useSyncOverlay(isSyncing);
-    
-    // AIDEV-NOTE: Centralized hub loading without auto-loading to prevent loops
+
     const { url: _hubUrl, setUrl: _setHubUrl, loading: _loading, handleSubmit: _handleLoadHub } = useHubLoader();
 
-    // AIDEV-NOTE: Only initial loading state, removed route-based loading to prevent flickering
+
     const [initialLoading, setInitialLoading] = useState(true);
     const location = useLocation();
     
-    // AIDEV-NOTE: Debug de rotas para identificar problemas
+
     useRouteDebug();
     
-    // AIDEV-NOTE: Persistência de estado de rotas
+
     useRoutePersistence();
     
-    // AIDEV-NOTE: Handler para refresh (F5)
+
     useRefreshHandler();
     
-    // AIDEV-NOTE: Debug da rota atual
+
     useEffect(() => {
         if (import.meta.env?.DEV) {
             console.log('🎯 [App] Rota atual:', {
@@ -89,14 +77,14 @@ function App() {
     }, [location]);
 
     useEffect(() => {
-        // AIDEV-NOTE: Initial app setup with proper DOM ready check and anti-flickering
+
         const initApp = () => {
-            // Mark body as loaded to enable transitions
+
             document.body.classList.add('loaded');
             
             setInitialLoading(false);
             
-            // AIDEV-NOTE: Create particles only after DOM is fully ready
+
             setTimeout(() => {
                 createParticles();
             }, 200);
@@ -112,11 +100,11 @@ function App() {
         if (import.meta.env.DEV) {
             console.log('🚀 [App] Aplicação iniciada - Remote Storage conectado:', remoteStorageConnected);
         }
-    }, []); // AIDEV-NOTE: Fixed deps to prevent infinite loops
+    }, []);
 
-    // AIDEV-NOTE: Network diagnostic removed to avoid unnecessary complexity
 
-    // AIDEV-NOTE: Tela de carregamento apenas para inicialização da aplicação
+
+
     if (initialLoading) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center">
@@ -160,7 +148,7 @@ function App() {
                                 </Suspense>
                             } />
                         </Route>
-                        {/* AIDEV-NOTE: Rotas modernas com validação de parâmetros */}
+
                         <Route path={ROUTES.MANGA} element={
                             <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}>
                                 <GuardedMangaRoute />
@@ -171,11 +159,11 @@ function App() {
                                 <GuardedReaderRoute />
                             </Suspense>
                         } />
-                        {/* AIDEV-NOTE: Simplified redirect routes using centralized components */}
+
                         <Route path={ROUTES.READER_OLD} element={<ReaderToMangaRedirect />} />
                         <Route path={ROUTES.LEITOR_OLD} element={<ReaderToMangaRedirect />} />
                         <Route path={ROUTES.LEITOR_CHAPTER_OLD} element={<LeitorToReaderRedirect />} />
-                        {/* AIDEV-NOTE: Catch-all route for invalid URLs */}
+
                         <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
                     </Routes>
                 </div>

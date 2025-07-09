@@ -94,10 +94,8 @@
           // Store the router path for React Router to pick up
           sessionStorage.setItem('reactRouterPath', routerPath);
           
-          // Ensure we're on the correct base URL
-          if (window.location.pathname !== basePath + '/') {
-            window.location.replace(basePath + '/');
-          }
+          // Don't force redirect - let React Router handle the routing
+          // Just ensure we don't have extra path segments that would confuse React Router
         }
       })();
     </script>

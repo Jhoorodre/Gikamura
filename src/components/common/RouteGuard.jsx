@@ -55,13 +55,24 @@ export const Base64RouteGuard = ({
   // AIDEV-NOTE: Delay validation to avoid race conditions on refresh
   const [isValidated, setIsValidated] = useState(false);
   const [isValid, setIsValid] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
   
   useEffect(() => {
     const validate = () => {
+      // Se parâmetros ainda não estão disponíveis e temos tentativas restantes
+      const hasEmptyParams = Object.values(encodedParams).some(v => !v);
+      if (hasEmptyParams && retryCount < 5) {
+        if (import.meta.env?.DEV) {
+          console.log(`[Base64RouteGuard] Parâmetros vazios, tentativa ${retryCount + 1}/5`);
+        }
+        setRetryCount(prev => prev + 1);
+        return;
+      }
+      
       for (const [key, encodedValue] of Object.entries(encodedParams)) {
         if (!encodedValue) {
           if (import.meta.env?.DEV) {
-            console.warn(`[Base64RouteGuard] Missing encoded parameter '${key}'`);
+            console.warn(`[Base64RouteGuard] Missing encoded parameter '${key}' após ${retryCount} tentativas`);
           }
           setIsValid(false);
           setIsValidated(true);
@@ -93,10 +104,10 @@ export const Base64RouteGuard = ({
       setIsValidated(true);
     };
     
-    // Small delay to ensure params are ready
-    const timer = setTimeout(validate, 10);
+    // Delay maior para garantir que parâmetros estejam prontos após refresh
+    const timer = setTimeout(validate, 100);
     return () => clearTimeout(timer);
-  }, [encodedParams, validateUrls]);
+  }, [encodedParams, validateUrls, retryCount]);
   
   if (!isValidated) {
     return null; // Show nothing while validating
