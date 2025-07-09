@@ -63,6 +63,15 @@ const ReaderChapter = () => {
 
     // Carrega os dados da obra
     useEffect(() => {
+        if (import.meta.env?.DEV) {
+            console.log('📖 [ReaderChapter] useEffect loadReader:', {
+                readerData: !!readerData,
+                readerUrl,
+                chapterId,
+                willLoad: !readerData
+            });
+        }
+        
         if (!readerData) {
             loadReader(readerUrl);
         }
@@ -214,18 +223,35 @@ const ReaderChapter = () => {
 
     // Navegação inteligente de volta
     const handleBackNavigation = useCallback(() => {
+        if (import.meta.env?.DEV) {
+            console.log('📖 [ReaderChapter] handleBackNavigation chamado:', {
+                currentHubData: !!currentHubData,
+                currentHubUrl,
+                encodedUrl
+            });
+        }
+        
         // Se existe hub context, volta para o hub
         if (currentHubData && currentHubUrl) {
             const encodedHubUrl = encodeUrl(currentHubUrl);
+            if (import.meta.env?.DEV) {
+                console.log('📖 [ReaderChapter] Navegando para hub:', `/hub/${encodedHubUrl}`);
+            }
             navigate(`/hub/${encodedHubUrl}`);
             return;
         }
         
         // Se não existe hub context, tenta ir para a página do manga
         try {
+            if (import.meta.env?.DEV) {
+                console.log('📖 [ReaderChapter] Navegando para manga:', `/manga/${encodedUrl}`);
+            }
             navigate(`/manga/${encodedUrl}`);
         } catch (error) {
             // Se falhar, vai para a home
+            if (import.meta.env?.DEV) {
+                console.log('📖 [ReaderChapter] Navegando para home por erro:', error);
+            }
             navigate('/');
         }
     }, [currentHubData, currentHubUrl, encodedUrl, navigate]);
@@ -392,6 +418,15 @@ const ReaderChapter = () => {
     }, [currentPage, pages.length, navigationInfo.nextPages, preloadChapter]);
 
     if (!readerData || pages.length === 0) {
+        if (import.meta.env?.DEV) {
+            console.log('📖 [ReaderChapter] Renderizando loading:', {
+                hasReaderData: !!readerData,
+                pagesLength: pages.length,
+                readerUrl,
+                chapterId,
+                readerDataChapters: readerData?.chapters ? Object.keys(readerData.chapters) : 'no chapters'
+            });
+        }
         return (
             <div className="chapter-reader loading">
                 <Spinner size="lg" text="Carregando páginas..." />
