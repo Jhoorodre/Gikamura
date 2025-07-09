@@ -62,6 +62,18 @@ function App() {
     // AIDEV-NOTE: Only initial loading state, removed route-based loading to prevent flickering
     const [initialLoading, setInitialLoading] = useState(true);
     const location = useLocation();
+    
+    // AIDEV-NOTE: Debug da rota atual
+    useEffect(() => {
+        if (import.meta.env?.DEV) {
+            console.log('🎯 [App] Rota atual:', {
+                pathname: location.pathname,
+                search: location.search,
+                hash: location.hash,
+                key: location.key
+            });
+        }
+    }, [location]);
 
     useEffect(() => {
         // AIDEV-NOTE: Initial app setup with proper DOM ready check and anti-flickering
@@ -120,11 +132,13 @@ function App() {
                         <Route path="/" element={<MainLayout />}>
                             <Route index element={
                                 <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}> 
+                                    {import.meta.env?.DEV && console.log('🎯 [App] Renderizando MainContent (index route)')}
                                     <MainContent />
                                 </Suspense>
                             } />
                             <Route path="collection" element={
                                 <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)', opacity: 0 }} />}> 
+                                    {import.meta.env?.DEV && console.log('🎯 [App] Renderizando CollectionPage')}
                                     <CollectionPage />
                                 </Suspense>
                             } />
