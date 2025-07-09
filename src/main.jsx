@@ -48,10 +48,29 @@ const getBasename = () => {
 
 const basename = getBasename();
 
+// AIDEV-NOTE: Handle GitHub Pages SPA routing from sessionStorage
+const handleInitialRoute = () => {
+  const reactRouterPath = sessionStorage.getItem('reactRouterPath');
+  if (reactRouterPath) {
+    sessionStorage.removeItem('reactRouterPath');
+    
+    console.log('🔄 [Router] Redirecionando para:', reactRouterPath);
+    
+    // Use setTimeout to ensure React Router is ready
+    setTimeout(() => {
+      window.history.replaceState(null, null, basename + reactRouterPath);
+      console.log('✅ [Router] Redirecionamento completo:', window.location.href);
+    }, 100);
+  }
+};
+
 // AIDEV-NOTE: Debug do basename para verificar configuração
 console.log('🔗 [Router] Basename detectado:', basename);
 console.log('🔗 [Router] URL atual:', window.location.pathname);
 console.log('🔗 [Router] Hostname:', window.location.hostname);
+
+// Handle initial route after DOM is ready
+document.addEventListener('DOMContentLoaded', handleInitialRoute);
 console.log('🔗 [Router] Produção:', import.meta.env.PROD);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

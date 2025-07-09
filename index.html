@@ -73,8 +73,8 @@
         if (redirect) {
           sessionStorage.removeItem('redirect');
           
-          // AIDEV-NOTE: CRITICAL FIX - Convert full path to React Router path
-          // Remove /gikamura from the beginning for React Router
+          // AIDEV-NOTE: CRITICAL FIX - Don't change URL here, let React Router handle it
+          // Just ensure we're on the correct base URL and store the target path
           const basePath = '/gikamura';
           let routerPath = redirect;
           
@@ -85,22 +85,18 @@
           }
           
           // Debug info
-          console.log('🔄 [Index] Restaurando URL:', {
+          console.log('🔄 [Index] Preparando redirecionamento:', {
             currentUrl: window.location.href,
             originalRedirect: redirect,
             routerPath: routerPath
           });
           
-          // Aguardar o DOM estar pronto antes de mudar a URL
-          const restoreUrl = function() {
-            history.replaceState(null, null, routerPath);
-            console.log('✅ [Index] URL restaurada:', window.location.href);
-          };
+          // Store the router path for React Router to pick up
+          sessionStorage.setItem('reactRouterPath', routerPath);
           
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', restoreUrl);
-          } else {
-            restoreUrl();
+          // Ensure we're on the correct base URL
+          if (window.location.pathname !== basePath + '/') {
+            window.location.replace(basePath + '/');
           }
         }
       })();
