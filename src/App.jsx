@@ -96,7 +96,9 @@ function App() {
             return () => window.removeEventListener('load', initApp);
         }
         
-        console.log('🚀 [App] Aplicação iniciada - Remote Storage conectado:', remoteStorageConnected);
+        if (import.meta.env.DEV) {
+            console.log('🚀 [App] Aplicação iniciada - Remote Storage conectado:', remoteStorageConnected);
+        }
     }, []); // AIDEV-NOTE: Fixed deps to prevent infinite loops
 
     // AIDEV-NOTE: One-time network diagnostic in dev mode only

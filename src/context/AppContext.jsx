@@ -5,7 +5,12 @@
 // 3. Manual force refresh function available (forceRefreshPinnedWorks)
 // 4. Widget-level additional force refresh after connection
 // 5. Enhanced error handling and logging for debugging
-// AIDEV-TODO: Avaliar divisão deste contexto em contextos menores (ex: HubContext, UserPreferencesContext) para evitar re-renderizações globais desnecessárias e melhorar performance.
+// AIDEV-TODO: PERFORMANCE - Dividir este contexto em contextos menores:
+// - PinnedItemsContext: pinnedItems, historyItems, togglePinStatus
+// - HubContext: savedHubs, hubUrlToLoad, setHubUrl, removeHub
+// - AppStateContext: conflictMessage, isOffline, refreshUserData
+// - ItemContext: itemLoading, itemError, selectedItemData, selectItem, clearSelectedItem
+// Isso evitará re-renderizações globais quando apenas um subset de dados mudar.
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useItem } from '../hooks/useItem';
 import { remoteStorage } from '../services/remotestorage';
@@ -26,8 +31,8 @@ export const AppProvider = ({ children }) => {
     const [hubUrlToLoad, setHubUrlToLoad] = useState(null);
     const [lastAttemptedUrl, setLastAttemptedUrl] = useState(null);
     
-    // AIDEV-NOTE: Track refresh operations to prevent race conditions
-    const refreshInProgressRef = useRef(false);
+    // AIDEV-NOTE: Fixed race condition with proper queue management
+    const refreshQueue = useRef(Promise.resolve());
     const refreshIdRef = useRef(0);
     
     // AIDEV-NOTE: Get RemoteStorage connection state from dedicated context
@@ -42,103 +47,99 @@ export const AppProvider = ({ children }) => {
     } = useItem();
 
     const refreshUserData = useCallback(async () => {
-        // AIDEV-NOTE: Prevent concurrent executions to avoid race conditions
-        if (refreshInProgressRef.current) {
+        // AIDEV-NOTE: Queue refresh operations to prevent race conditions
+        refreshQueue.current = refreshQueue.current.then(async () => {
+            const currentRefreshId = ++refreshIdRef.current;
+            
             if (import.meta.env?.DEV) {
-                console.log('🔄 [AppContext] refreshUserData: Refresh já em progresso, ignorando chamada');
-            }
-            return;
-        }
-        
-        refreshInProgressRef.current = true;
-        const currentRefreshId = ++refreshIdRef.current;
-        
-        if (import.meta.env?.DEV) {
-            console.log(`🔄 [AppContext] refreshUserData: Iniciando refresh #${currentRefreshId}`);
-        }
-        
-        try {
-            // AIDEV-NOTE: Load all data concurrently with proper error handling
-            const [pinnedResult, unpinnedResult, hubsResult] = await Promise.allSettled([
-                api.getAllPinnedSeries(),
-                api.getAllUnpinnedSeries(),
-                api.getAllHubs()
-            ]);
-            
-            // AIDEV-NOTE: Check if this is still the current refresh operation
-            if (currentRefreshId !== refreshIdRef.current) {
-                if (import.meta.env?.DEV) {
-                    console.log(`🔄 [AppContext] refreshUserData: Refresh #${currentRefreshId} cancelado (novo refresh iniciado)`);
-                }
-                return;
+                console.log(`🔄 [AppContext] refreshUserData: Iniciando refresh #${currentRefreshId}`);
             }
             
-            // Process pinned items
-            if (pinnedResult.status === 'fulfilled') {
-                const data = pinnedResult.value;
-                if (Array.isArray(data)) {
-                    setPinnedItems(data);
+            try {
+                // AIDEV-NOTE: Load all data concurrently with proper error handling
+                const [pinnedResult, unpinnedResult, hubsResult] = await Promise.allSettled([
+                    api.getAllPinnedSeries(),
+                    api.getAllUnpinnedSeries(),
+                    api.getAllHubs()
+                ]);
+                
+                // AIDEV-NOTE: Check if this is still the current refresh operation
+                if (currentRefreshId !== refreshIdRef.current) {
                     if (import.meta.env?.DEV) {
-                        console.log(`📌 [AppContext] refreshUserData #${currentRefreshId}: Obras pinadas carregadas:`, data.length);
-                        data.forEach((item, index) => {
-                            console.log(`  ${index + 1}. ${item.title} (${item.source}:${item.slug}) - Pinned: ${item.pinned}`);
-                        });
+                        console.log(`🔄 [AppContext] refreshUserData: Refresh #${currentRefreshId} cancelado (novo refresh iniciado)`);
+                    }
+                    return;
+                }
+                
+                // Process pinned items
+                if (pinnedResult.status === 'fulfilled') {
+                    const data = pinnedResult.value;
+                    if (Array.isArray(data)) {
+                        setPinnedItems(data);
+                        if (import.meta.env?.DEV) {
+                            console.log(`📌 [AppContext] refreshUserData #${currentRefreshId}: Obras pinadas carregadas:`, data.length);
+                            data.forEach((item, index) => {
+                                console.log(`  ${index + 1}. ${item.title} (${item.source}:${item.slug}) - Pinned: ${item.pinned}`);
+                            });
+                        }
+                    } else {
+                        console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: getAllPinnedSeries retornou dados inválidos:`, data);
+                        setPinnedItems([]);
                     }
                 } else {
-                    console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: getAllPinnedSeries retornou dados inválidos:`, data);
+                    console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro ao carregar obras pinadas:`, pinnedResult.reason);
                     setPinnedItems([]);
                 }
-            } else {
-                console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro ao carregar obras pinadas:`, pinnedResult.reason);
-                setPinnedItems([]);
-            }
-            
-            // Process unpinned items
-            if (unpinnedResult.status === 'fulfilled') {
-                const data = unpinnedResult.value;
-                if (Array.isArray(data)) {
-                    setHistoryItems(data);
-                    if (import.meta.env?.DEV) {
-                        console.log(`📄 [AppContext] refreshUserData #${currentRefreshId}: Histórico carregado:`, data.length);
-                        data.forEach((item, index) => {
-                            console.log(`  ${index + 1}. ${item.title} (${item.source}:${item.slug}) - Pinned: ${item.pinned}`);
-                        });
+                
+                // Process unpinned items
+                if (unpinnedResult.status === 'fulfilled') {
+                    const data = unpinnedResult.value;
+                    if (Array.isArray(data)) {
+                        setHistoryItems(data);
+                        if (import.meta.env?.DEV) {
+                            console.log(`📄 [AppContext] refreshUserData #${currentRefreshId}: Histórico carregado:`, data.length);
+                            data.forEach((item, index) => {
+                                console.log(`  ${index + 1}. ${item.title} (${item.source}:${item.slug}) - Pinned: ${item.pinned}`);
+                            });
+                        }
+                    } else {
+                        console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: getAllUnpinnedSeries retornou dados inválidos:`, data);
+                        setHistoryItems([]);
                     }
                 } else {
-                    console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: getAllUnpinnedSeries retornou dados inválidos:`, data);
+                    console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro ao carregar histórico:`, unpinnedResult.reason);
                     setHistoryItems([]);
                 }
-            } else {
-                console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro ao carregar histórico:`, unpinnedResult.reason);
-                setHistoryItems([]);
-            }
-            
-            // Process hubs
-            if (hubsResult.status === 'fulfilled') {
-                const data = hubsResult.value;
-                if (Array.isArray(data)) {
-                    setSavedHubs(data);
-                    if (import.meta.env?.DEV) {
-                        console.log(`🏠 [AppContext] refreshUserData #${currentRefreshId}: Hubs carregados:`, data.length);
+                
+                // Process hubs
+                if (hubsResult.status === 'fulfilled') {
+                    const data = hubsResult.value;
+                    if (Array.isArray(data)) {
+                        setSavedHubs(data);
+                        if (import.meta.env?.DEV) {
+                            console.log(`🏠 [AppContext] refreshUserData #${currentRefreshId}: Hubs carregados:`, data.length);
+                        }
+                    } else {
+                        console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: getAllHubs retornou dados inválidos:`, data);
+                        setSavedHubs([]);
                     }
                 } else {
-                    console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: getAllHubs retornou dados inválidos:`, data);
+                    console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro ao carregar hubs:`, hubsResult.reason);
                     setSavedHubs([]);
                 }
-            } else {
-                console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro ao carregar hubs:`, hubsResult.reason);
-                setSavedHubs([]);
+                
+                if (import.meta.env?.DEV) {
+                    console.log(`✅ [AppContext] refreshUserData #${currentRefreshId}: Concluído com sucesso`);
+                }
+                
+            } catch (error) {
+                console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro inesperado:`, error);
             }
-            
-            if (import.meta.env?.DEV) {
-                console.log(`✅ [AppContext] refreshUserData #${currentRefreshId}: Concluído com sucesso`);
-            }
-            
-        } catch (error) {
-            console.error(`❌ [AppContext] refreshUserData #${currentRefreshId}: Erro inesperado:`, error);
-        } finally {
-            refreshInProgressRef.current = false;
-        }
+        }).catch(error => {
+            console.error('❌ [AppContext] Erro na fila de refresh:', error);
+        });
+        
+        return refreshQueue.current;
     }, []);
 
     const handleChange = useCallback((event) => {
@@ -150,7 +151,9 @@ export const AppProvider = ({ children }) => {
     // AIDEV-NOTE: React to RemoteStorage connection changes from context
     useEffect(() => {
         if (remoteStorageConnected) {
-            console.log('🔌 [AppContext] RemoteStorage conectado via context - resetando sync e recarregando dados');
+            if (import.meta.env.DEV) {
+                console.log('🔌 [AppContext] RemoteStorage conectado via context - resetando sync e recarregando dados');
+            }
             api.resetSync();
             clearCaches();
             refreshUserData();

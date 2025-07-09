@@ -2,6 +2,7 @@
 import { remoteStorage } from "./remotestorage.js";
 import { RS_PATH } from "./rs/rs-config.js";
 import { withErrorHandling, AppError, ERROR_TYPES } from "../utils/errorHandler.js";
+import { sanitizeUrl, sanitizeHtml } from "../utils/security/urlSanitizer.js";
 
 const MAX_HISTORY_ITEMS = 20;
 const SORT_KEY = "timestamp";
@@ -79,7 +80,7 @@ let lastSyncTime = 0;
 let seriesCache = null;
 let hubsCache = null;
 let cacheTime = 0;
-const CACHE_DURATION = 5000; // 5 segundos
+const CACHE_DURATION = 60000; // 60 segundos (1 minuto)
 
 // AIDEV-NOTE: Throttling timestamps para evitar spam de logs
 let lastDeduplicateLog = 0;
@@ -453,21 +454,33 @@ const api = {
   // AIDEV-NOTE: Series methods with history limit management
   maxHistory: MAX_HISTORY_ITEMS,
 
-  // AIDEV-NOTE: Adds or updates series with history limit enforcement
+  // AIDEV-NOTE: Adds or updates series with history limit enforcement and URL sanitization
   async pushSeries(slug, coverUrl, source, url, title) {
     console.log('📊 [API] pushSeries called with:', { slug, coverUrl, source, url, title });
     
+    // Sanitize inputs
+    const sanitizedUrl = sanitizeUrl(url);
+    if (!sanitizedUrl) {
+      throw new AppError('URL da série inválida ou insegura', ERROR_TYPES.VALIDATION);
+    }
+    const sanitizedCoverUrl = coverUrl ? sanitizeUrl(coverUrl) : null;
+    const sanitizedTitle = sanitizeHtml(title);
+    
     const rs = remoteStorage['Gika'];
-    const allSeries = getSortedArray(await getCachedSeries());
+    if (!rs) {
+      throw new AppError('RemoteStorage não disponível', ERROR_TYPES.STORAGE);
+    }
+    const cachedSeries = await getCachedSeries();
+    const allSeries = getSortedArray(cachedSeries || {});
     const existingSeries = allSeries.find(e => e.slug === slug && e.source === source);
 
     if (existingSeries) {
       // AIDEV-NOTE: Preserve all required fields when updating existing series
       console.log('📊 [API] Updating existing series');
       const updatedData = { 
-        title, 
-        url, 
-        coverUrl,
+        title: sanitizedTitle, 
+        url: sanitizedUrl, 
+        coverUrl: sanitizedCoverUrl,
         timestamp: Date.now(),
         // Preserve required fields from schema
         slug: existingSeries.slug,
@@ -483,7 +496,7 @@ const api = {
       const oldest = unpinnedSeries[unpinnedSeries.length - 1];
       await rs.removeSeries(oldest.slug, oldest.source);
     }
-    return rs.addSeries(slug, coverUrl, source, url, title, false, []);
+    return rs.addSeries(slug, sanitizedCoverUrl, source, sanitizedUrl, sanitizedTitle, false, []);
   },
 
   removeSeries: (slug, source) => remoteStorage['Gika']?.removeSeries(slug, source),
@@ -581,6 +594,11 @@ const api = {
       throw new Error("Dados insuficientes para fixar a série.");
     }
 
+    // Sanitize inputs
+    const sanitizedUrl = url ? sanitizeUrl(url) : null;
+    const sanitizedCoverUrl = coverUrl ? sanitizeUrl(coverUrl) : null;
+    const sanitizedTitle = title ? sanitizeHtml(title) : null;
+
     const rs = remoteStorage['Gika'];
     let existingSeries = null;
     
@@ -599,9 +617,9 @@ const api = {
       const updatedData = { 
         pinned: true, 
         timestamp: Date.now(),
-        // Preserve required fields from schema
-        url: existingSeries.url || url, // Use existing URL or fallback to new one
-        title: existingSeries.title || title,
+        // Preserve required fields from schema (sanitized)
+        url: existingSeries.url || sanitizedUrl,
+        title: existingSeries.title || sanitizedTitle,
         slug: existingSeries.slug || slug,
         source: existingSeries.source || source
       };
@@ -613,7 +631,10 @@ const api = {
     
     console.debug("[api.pinSeries] Série não existe, criando nova como pinned:true");
     // AIDEV-NOTE: Use addSeries method instead of direct storeObject call
-    const result = await rs.addSeries(slug, coverUrl, source, url, title, true, []);
+    if (!sanitizedUrl) {
+      throw new AppError('URL da série inválida ou insegura', ERROR_TYPES.VALIDATION);
+    }
+    const result = await rs.addSeries(slug, sanitizedCoverUrl, source, sanitizedUrl, sanitizedTitle, true, []);
     clearCaches(); // AIDEV-NOTE: Clear caches after data modification
     console.debug('[api.pinSeries] Sucesso ao criar nova série:', result);
     return result;
@@ -656,8 +677,9 @@ const api = {
   async getAllPinnedSeries() {
     const result = await withErrorHandling(async () => {
       const allSeries = await getCachedSeries();
+      if (!allSeries) return [];
       const cleanSeries = cleanMalformedData(allSeries || {}, 'series');
-      const all = getSortedArray(cleanSeries);
+      const all = getSortedArray(cleanSeries || {});
       const deduplicated = deduplicateSeries(all); // AIDEV-NOTE: Remove duplicates before filtering
       const pinned = deduplicated.filter(e => e.pinned);
       
@@ -674,8 +696,9 @@ const api = {
   async getAllUnpinnedSeries() {
     const result = await withErrorHandling(async () => {
       const allSeries = await getCachedSeries();
+      if (!allSeries) return [];
       const cleanSeries = cleanMalformedData(allSeries || {}, 'series');
-      const all = getSortedArray(cleanSeries);
+      const all = getSortedArray(cleanSeries || {});
       const deduplicated = deduplicateSeries(all); // AIDEV-NOTE: Remove duplicates before filtering
       const unpinned = deduplicated.filter(e => !e.pinned);
       
@@ -689,10 +712,16 @@ const api = {
     return result.success ? result.data : [];
   },
 
-  // AIDEV-NOTE: Hub management methods
+  // AIDEV-NOTE: Hub management methods with URL sanitization
   addHub: (url, title, iconUrl) => {
-    const normalizedUrl = normalizeHubUrl(url);
-    return remoteStorage['Gika']?.addHub(normalizedUrl, title, iconUrl);
+    const sanitizedUrl = sanitizeUrl(url);
+    if (!sanitizedUrl) {
+      throw new AppError('URL inválida ou insegura', ERROR_TYPES.VALIDATION);
+    }
+    const normalizedUrl = normalizeHubUrl(sanitizedUrl);
+    const sanitizedTitle = sanitizeHtml(title);
+    const sanitizedIconUrl = iconUrl ? sanitizeUrl(iconUrl) : null;
+    return remoteStorage['Gika']?.addHub(normalizedUrl, sanitizedTitle, sanitizedIconUrl);
   },
 
   removeHub: async (url) => {

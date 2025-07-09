@@ -54,12 +54,14 @@ const handleInitialRoute = () => {
   if (reactRouterPath) {
     sessionStorage.removeItem('reactRouterPath');
     
-    console.log('🔄 [Router] Redirecionando para:', reactRouterPath);
-    console.log('🔄 [Router] Basename atual:', basename);
-    console.log('🔄 [Router] URL antes do redirect:', window.location.href);
+    if (import.meta.env.DEV) {
+        console.log('🔄 [Router] Redirecionando para:', reactRouterPath);
+        console.log('🔄 [Router] Basename atual:', basename);
+        console.log('🔄 [Router] URL antes do redirect:', window.location.href);
+    }
     
     // Special handling for reader routes
-    if (reactRouterPath.startsWith('/reader/')) {
+    if (reactRouterPath.startsWith('/reader/') && import.meta.env.DEV) {
       console.log('📖 [Router] Detectado route do reader, aplicando diretamente');
     }
     
@@ -67,24 +69,32 @@ const handleInitialRoute = () => {
     setTimeout(() => {
       // CRITICAL FIX: Force actual navigation to notify React Router
       const fullUrl = basename + reactRouterPath;
-      console.log('🔄 [Router] Aplicando URL completa:', fullUrl);
+      if (import.meta.env.DEV) {
+          console.log('🔄 [Router] Aplicando URL completa:', fullUrl);
+      }
       
       // Force actual navigation that React Router can detect
       window.location.href = fullUrl;
       
-      console.log('✅ [Router] Redirecionamento completo:', window.location.href);
+      if (import.meta.env.DEV) {
+          console.log('✅ [Router] Redirecionamento completo:', window.location.href);
+      }
     }, 100);
   }
 };
 
 // AIDEV-NOTE: Debug do basename para verificar configuração
-console.log('🔗 [Router] Basename detectado:', basename);
-console.log('🔗 [Router] URL atual:', window.location.pathname);
-console.log('🔗 [Router] Hostname:', window.location.hostname);
+if (import.meta.env.DEV) {
+    console.log('🔗 [Router] Basename detectado:', basename);
+    console.log('🔗 [Router] URL atual:', window.location.pathname);
+    console.log('🔗 [Router] Hostname:', window.location.hostname);
+}
 
 // Handle initial route after DOM is ready
 document.addEventListener('DOMContentLoaded', handleInitialRoute);
-console.log('🔗 [Router] Produção:', import.meta.env.PROD);
+if (import.meta.env.DEV) {
+    console.log('🔗 [Router] Produção:', import.meta.env.PROD);
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

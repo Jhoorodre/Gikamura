@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchJSONWithCache } from '../services/networkService.js';
 import api from '../services/api.js';
 import { remoteStorage } from '../services/remotestorage.js';
+import { ERROR_TYPES } from '../utils/errorHandler.js';
 
 export const useItem = () => {
     const [selection, setSelection] = useState(null);
@@ -33,12 +34,19 @@ export const useItem = () => {
                 // Atualiza histórico em background (somente se conectado)
                 if (remoteStorage.connected) {
                     api.pushSeries(
-                        itemFromHub.slug,
-                        typeof itemFromHub.cover === 'string' ? itemFromHub.cover : itemFromHub.cover?.url || '',
-                        hubId,
-                        itemFromHub.data.url,
-                        seriesDetails.title
-                    ).catch(err => console.warn("Falha ao atualizar o histórico da série:", err));
+                    itemFromHub.slug,
+                    typeof itemFromHub.cover === 'string' ? itemFromHub.cover : itemFromHub.cover?.url || '',
+                    hubId,
+                    itemFromHub.data.url,
+                    seriesDetails.title
+                    ).catch(err => {
+                console.error("Falha ao atualizar o histórico da série:", err);
+                // Notificar o usuário se o erro for crítico
+                if (err.type === ERROR_TYPES.VALIDATION || err.type === ERROR_TYPES.STORAGE) {
+                    // Poderia adicionar um toast ou notificação aqui
+                    console.error("Erro crítico ao salvar histórico:", err.message);
+                }
+            });
                 } else {
                     console.log('📚 [useItem] RemoteStorage não conectado - não salvando histórico');
                 }
