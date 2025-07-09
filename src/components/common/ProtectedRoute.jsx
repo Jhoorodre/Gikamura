@@ -2,8 +2,19 @@ import { useRemoteStorageContext } from '../../context/RemoteStorageContext';
 
 const ProtectedRoute = ({ children, fallback = null }) => {
     const { isConnected } = useRemoteStorageContext();
+    
+    // AIDEV-NOTE: Debug do status de conexão
+    if (import.meta.env?.DEV) {
+        console.log('🔒 [ProtectedRoute] Status de conexão:', {
+            isConnected,
+            willBlockAccess: !isConnected
+        });
+    }
 
     if (!isConnected) {
+        if (import.meta.env?.DEV) {
+            console.log('🔒 [ProtectedRoute] Bloqueando acesso - RemoteStorage não conectado');
+        }
         return fallback || (
             <div className="fade-in text-center py-16">
                 <div className="text-6xl mb-4">🔒</div>
@@ -16,6 +27,10 @@ const ProtectedRoute = ({ children, fallback = null }) => {
                 </p>
             </div>
         );
+    }
+
+    if (import.meta.env?.DEV) {
+        console.log('🔒 [ProtectedRoute] Acesso liberado - RemoteStorage conectado');
     }
 
     return children;
