@@ -1,0 +1,68 @@
+{
+  "v": "2.1",
+  "updated": "2025-06-25",
+  "hub": {
+    "id": "hub-001",
+    "name": "Scan Hub BR",
+    "desc": "Grupo de tradução colaborativo",
+    "lang": "pt-BR"
+  },
+  "social": [
+    {
+      "type": "discord",
+      "url": "https://discord.gg/...",
+      "primary": true
+    },
+    {
+      "type": "telegram", 
+      "url": "https://t.me/..."
+    }
+  ],
+  "featured": [
+    {
+      "id": "w001",
+      "title": "Torre dos Deuses P1",
+      "slug": "torre-p1",
+      "cover": "https://files.catbox.moe/abc123.jpg",
+      "status": "complete",
+      "chapters": 78,
+      "rating": 4.8,
+      "priority": 1
+    },
+    {
+      "id": "w002", 
+      "title": "Torre dos Deuses P2",
+      "slug": "torre-p2",
+      "cover": "https://files.catbox.moe/abc123..jpg",
+      "status": "ongoing",
+      "chapters": 337,
+      "rating": 4.9,
+      "priority": 2
+    },
+    {
+      "id": "w004",
+      "title": "Torre dos Deuses P3",
+      "slug": "torre-p3",
+      "cover": "https://files.catbox.moe/abc123.png", 
+      "status": "ongoing",
+      "chapters": 45,
+      "rating": 4.8,
+      "priority": 4,
+      "latest": true
+    }
+  ],
+  "pagination": {
+    "works_url": "api/works.json",
+    "per_page": 50,
+    "search_url": "api/search.json"
+  },
+  "stats": {
+    "total_works": 4,
+    "total_chapters": 461,
+    "avg_rating": 4.8
+  },
+  "legal": {
+    "notice": "Projeto de fãs sem fins lucrativos",
+    "support": "Apoie o autor oficial"
+  }
+}
