@@ -7,17 +7,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 - `npm run dev` - Start development server on localhost:3000
-- `npm run build` - Build for production
+- `npm run build` - Build for production with Vite optimization
 - `npm run lint` - Run ESLint for code quality
 - `npm run preview` - Preview production build locally
+
+**No Test Framework Configured** - Testing approach should be determined case-by-case
 
 ## Architecture Overview
 
 ### Core Technology Stack
 - **React 19** with hooks and context for state management
-- **Vite** for fast development and optimized builds
-- **React Query** for server state management and caching
-- **React Router** for client-side routing
+- **Vite 7** for fast development and optimized builds with path aliases
+- **TanStack React Query 5** for server state management and caching
+- **React Router 7** for client-side routing with centralized route config
 - **RemoteStorage.js** for decentralized data synchronization
 
 ### Key Architecture Patterns
@@ -31,6 +33,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Service Layer**
 - `api.js` - Core CRUD operations for series, chapters, and hubs with RemoteStorage
 - `jsonReader.js` - Hub JSON parsing and validation
+- `jsonValidator.js` - Hub JSON schema validation
 - `networkService.js` - Network utilities and error handling
 - `rs/` directory - RemoteStorage configuration and schemas
 
@@ -46,6 +49,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `useHubLoader.js` - Hub loading logic
 - `useReader.js` - Reading experience functionality
 - `useNetworkMonitor.js` - Network status monitoring
+- `useRefreshHandler.js` - Route state persistence on refresh
+- `useRouteError.js` - Route error handling
 
 ### Data Flow & RemoteStorage Integration
 
@@ -95,6 +100,11 @@ Use `grep -r "AIDEV-" src/` to find all anchor comments.
 - Base namespace: "Gika"
 - All user data stored under this namespace
 
+**Route Configuration** (`src/config/routes.js`)
+- Centralized route definitions and URL generators
+- Helper functions: `getHubUrl()`, `getMangaUrl()`, `getReaderUrl()`
+- Consistent basename handling for development vs GitHub Pages
+
 ## Development Guidelines
 
 ### Code Style & Patterns
@@ -118,17 +128,20 @@ Use `grep -r "AIDEV-" src/` to find all anchor comments.
 - Use intersection observer for scroll-based features
 
 ### Testing & Validation
-- No specific test framework configured - check for existing patterns
+- No specific test framework configured - determine approach case-by-case
 - Use browser dev tools for RemoteStorage debugging
-- Validate JSON schema compliance for hub data
+- Validate JSON schema compliance for hub data with `jsonValidator.js`
 - Test network failure scenarios and offline functionality
+- Debug routes with `RouteDebugger` (development only)
 
 ## Common Development Tasks
 
 ### Adding New Routes
+- Add route definition to `config/routes.js`
 - Add lazy-loaded component in `App.jsx`
 - Use Suspense with transparent fallback to prevent flickering
 - Follow the established route structure pattern
+- Update URL generators if needed
 
 ### RemoteStorage Operations
 - Use `api.js` methods: `pushSeries()`, `pinSeries()`, `addHub()`
@@ -141,6 +154,7 @@ Use `grep -r "AIDEV-" src/` to find all anchor comments.
 - Use established CSS organization (ITCSS methodology)
 - Implement proper loading and error states
 - Ensure responsive design across breakpoints
+- Use path aliases (@, @app, @pages, etc.) for imports
 
 ### Hub Integration
 - Validate hub JSON structure with `jsonValidator.js`
